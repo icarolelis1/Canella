@@ -9,11 +9,14 @@ project ("Higgy")
 find_package(Vulkan REQUIRED )
 
 # Adicione a origem ao executável deste projeto.
-add_executable (Higgy "Higgy.cpp" "Higgy.h")
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Higgy)
+add_executable (Higgy Higgy.cpp )
+
+include_directories(Higgy PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/third_party/nlhoman)
+
+add_subdirectory(HiggySrc)
 
 target_include_directories(Higgy PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/third_party/GLFW64/include)
 
-target_link_libraries(Higgy PRIVATE Vulkan::Vulkan  ${CMAKE_CURRENT_SOURCE_DIR}/third_party/GLFW64/lib-vc2015/glfw3dll.lib)
+target_link_libraries(Higgy PUBLIC Render Vulkan::Vulkan)
 # TODO: Adicione testes e instale destinos, se necessário.
