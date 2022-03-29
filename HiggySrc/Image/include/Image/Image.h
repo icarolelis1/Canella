@@ -1,0 +1,6 @@
+namespace Higgy{
+    class Image{
+
+    };
+
+}
