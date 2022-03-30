@@ -1,19 +1,20 @@
 ﻿#include <iostream>
-#include "Render/Render.h"
-#include <vulkan/vulkan.h>
 #include <json.hpp>
 #include <fstream>
-#include <Window/Window.h>
+#include "Application/Application.h"
+
 int main()
 {
-	//Load Config File
-	
-	nlohmann::json j;
-	
-	RenderSystem::RenderConfig cofig;
-	RenderSystem::Render::createRender(j);
 
-	Engine::Window w;
-	w.initialize(j);
+	//Load Config File (PASS THE RIGHT FOLDER)
+	std::fstream f("../../../config.json");
+	nlohmann::json j;
+	f>>j;
+
+	//Create Application
+	Application::App Trotty;
+	Trotty.initialize(j);
+
+
 	return 0;
 }

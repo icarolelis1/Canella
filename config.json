@@ -1,0 +1,15 @@
+{
+    "App":{
+        "Name" :"Trotty",
+        "AppVersion" : "1.0",
+        "Api" : "Vulkan"
+    },
+    "SceneGraph":{
+        "Entities":[
+            
+        ]
+        
+    }
+
+    
+}

@@ -1,6 +1,7 @@
 {
     "App":{
         "Name" :"Trotty",
-        "API" : "Vulkan"
+        "AppVersion":"1.0",
+        "Api" : "Vulkan"
     }
 }

@@ -1,7 +1,0 @@
-/home/i/Documentos/icaroDev/Higgy/build/CMakeFiles/Higgy.dir
-/home/i/Documentos/icaroDev/Higgy/build/CMakeFiles/edit_cache.dir
-/home/i/Documentos/icaroDev/Higgy/build/CMakeFiles/rebuild_cache.dir
-/home/i/Documentos/icaroDev/Higgy/build/HiggySrc/CMakeFiles/Render.dir
-/home/i/Documentos/icaroDev/Higgy/build/HiggySrc/CMakeFiles/Engine.dir
-/home/i/Documentos/icaroDev/Higgy/build/HiggySrc/CMakeFiles/edit_cache.dir
-/home/i/Documentos/icaroDev/Higgy/build/HiggySrc/CMakeFiles/rebuild_cache.dir

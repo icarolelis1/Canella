@@ -12,9 +12,18 @@ target_include_directories(Render PUBLIC Render/include
 )
 
 
-add_library(Engine Window/src/Window.cpp)
+add_library(Engine Window/src/Window.cpp
+                            Component/src/Component.cpp
+                            Entity/src/Entity.cpp    
+)
 
 
 target_include_directories(Engine PUBLIC Window/include
-
+                                        Component/include   
+                                         Entity/include
 )
+
+add_library(Application  Application/src/Application.cpp)
+
+
+target_include_directories(Application PUBLIC Application/include)

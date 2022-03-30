@@ -8,7 +8,7 @@ project ("Higgy")
 set(LIBS_DIR "./libs")
 #Vulkan
 find_package(Vulkan REQUIRED)
-
+add_definitions(-DCMAKE_EXPORT_COMPILE_COMMANDS=ON)
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 SET(OS_LIBS_DIR ${LIBS_DIR}/linux)
@@ -40,6 +40,7 @@ glfw
 Vulkan::Vulkan
                         Render 
                         Engine
+                        Application
                         )
 
 
