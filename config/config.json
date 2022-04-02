@@ -3,5 +3,11 @@
         "Name" :"Trotty",
         "AppVersion":"1.0",
         "Api" : "Vulkan"
+    },
+    
+    "Window":{
+        "Title":"Trotty",
+        "Height" : 1080,
+        "Width" : 1920
     }
 }

@@ -29,7 +29,9 @@ find_package(glm REQUIRED PATHS  ${LIBS_DIR}/glm/lib/cmake/glm)
 add_executable (Higgy Higgy.cpp)
 
 include_directories(Higgy PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/third_party/nlhoman 
+                                    
                                     ${OS_LIBS_DIR}/glfw/include
+                                    ${LIBS_DIR}/glm/include
                                     ${Vulkan_INCLUDE_DIRS} )
 
 add_subdirectory(HiggySrc)
@@ -37,11 +39,7 @@ add_subdirectory(HiggySrc)
 target_link_libraries(Higgy PRIVATE 
 glfw
 
-Vulkan::Vulkan
-                        Render 
-                        Engine
-                        Application
-                        )
+Vulkan::Vulkan Application )
 
 
 # TODO: Adicione testes e instale destinos, se necessário.

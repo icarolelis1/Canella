@@ -4,7 +4,10 @@
 #include <json.hpp>
 #include <iostream>
 #include <string>
-
+#include <Entity/Entity.h>
+#include <Render/Render.h>
+#include <Component/Component.h>
+#include <Window/Window.h>
 
 namespace Application{
     class App{
@@ -16,7 +19,8 @@ namespace Application{
             std::string appName;
             std::string AppVersion;
             std::string graphicsAPI;
-
+            RenderSystem::Render* render;
+            Engine::Window window;
 
 
     };
