@@ -6,6 +6,21 @@
     },
     "SceneGraph":{
         "Entities":[
+            {
+                "e1":
+                {
+                    "id":"E1",
+                    "Components":[
+                        {
+                            "Transform":
+                            {
+                                "id":"Transform-E1",
+                                "type":"TRANSFORM"
+                            }
+                        }
+                    ]
+                }
+            }
             
         ]
         

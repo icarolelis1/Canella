@@ -10,4 +10,5 @@ void Engine::Component::setActivated(bool b){isActivated=b;};
 Engine::COMPONENT_TYPE Engine::Component::getComponentType(){return componentType;};
 void Engine::Component::interfaceUI(){};
 const std::string Engine::Component::getId(){return id;};
+void Engine::Component::setComponentType(Engine::COMPONENT_TYPE _type){componentType =_type; };
 

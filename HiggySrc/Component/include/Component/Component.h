@@ -10,7 +10,8 @@ enum class COMPONENT_TYPE
 	{
 		SCRIPT,
 		COLLISOR,
-		MESH
+		MESH,
+        TRANSFORM
 	};
 
     class Component{
@@ -22,9 +23,10 @@ enum class COMPONENT_TYPE
             virtual void onStart();
             virtual void onUpdate(float dt);
             virtual void loadState(nlohmann::json& config)=0;
-            virtual void saveState(nlohmann::json& config) const=0 ;
+            virtual void saveState(nlohmann::json& config) =0 ;
             virtual void interfaceUI();
             COMPONENT_TYPE getComponentType();
+            void setComponentType(Engine::COMPONENT_TYPE type);
             bool isComponentAlive() const;
             void setActivated(bool b);
 

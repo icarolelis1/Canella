@@ -20,6 +20,8 @@ add_library(Engine Window/src/Window.cpp
                             Component/src/Component.cpp
                             Entity/src/Entity.cpp  
                             Input/src/Input.cpp
+                            Scenegraph/src/Scenegraph.cpp
+                            defaultComponents/Transform/src/Transform.cpp
 )
 
 
@@ -27,6 +29,9 @@ target_include_directories(Engine PUBLIC Window/include
                                         Component/include   
                                          Entity/include
                                          Input/include
+                                         Scenegraph/include
+                                         defaultComponents/Transform/include
+
 )
 
 add_library(Application  Application/src/Application.cpp        
