@@ -11,4 +11,4 @@ Engine::COMPONENT_TYPE Engine::Component::getComponentType(){return componentTyp
 void Engine::Component::interfaceUI(){};
 const std::string Engine::Component::getId(){return id;};
 void Engine::Component::setComponentType(Engine::COMPONENT_TYPE _type){componentType =_type; };
-
+void Engine::Component::onAwake(){};

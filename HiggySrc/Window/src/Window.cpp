@@ -31,16 +31,4 @@ void Engine::Window::initialize(nlohmann::json& config){
 	glfwSetMouseButtonCallback(m_window,mouse_btn_callBack);
     glfwSetKeyCallback(m_window,key_btn_callBack);
 
-    while(!glfwWindowShouldClose(m_window)){
-
-        glfwPollEvents();
-        if(keyboard->getKeyPressed(GLFW_KEY_A)){
-            std::cout<<"A";
-        }
-
-        Engine::CursorPos p = mouse->getCursorPos();
-        std::cout<<"X "<<p.x <<" Y "<<p.y <<std::endl;
-
-    }
-
 };

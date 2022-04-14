@@ -4,11 +4,12 @@
 #include <json.hpp>
 #include <iostream>
 #include <string>
-#include <Entity/Entity.h>
-#include <Render/Render.h>
-#include <Component/Component.h>
-#include <Window/Window.h>
-
+#include "Entity/Entity.h"
+#include "Render/Render.h"
+#include "Component/Component.h"
+#include "Window/Window.h"
+#include "Scenegraph/Scenegraph.h"
+#include <iostream>
 namespace Application{
     class App{
         public:
@@ -21,7 +22,7 @@ namespace Application{
             std::string graphicsAPI;
             RenderSystem::Render* render;
             Engine::Window window;
-
+            Engine::Scenegraph* scenegraph;
 
     };
 

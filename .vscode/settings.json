@@ -79,6 +79,9 @@
         "set": "cpp",
         "string_view": "cpp",
         "fstream": "cpp",
-        "cinttypes": "cpp"
+        "cinttypes": "cpp",
+        "condition_variable": "cpp",
+        "mutex": "cpp",
+        "thread": "cpp"
     }
 }

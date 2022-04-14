@@ -17,7 +17,6 @@ enum class COMPONENT_TYPE
     class Component{
         public:
             Component(const std::string ComponentID);   
-           virtual std::shared_ptr<Engine::Component> createComponent() = 0;
             const std::string getId();
             virtual void onAwake();
             virtual void onStart();
@@ -29,11 +28,14 @@ enum class COMPONENT_TYPE
             void setComponentType(Engine::COMPONENT_TYPE type);
             bool isComponentAlive() const;
             void setActivated(bool b);
+            void setId(std::string id);
 
         private:
             bool isActivated;
             const std::string id;
             COMPONENT_TYPE componentType;
+
+
 
     };
 

@@ -26,7 +26,7 @@ std::shared_ptr<Engine::Component> Engine::ComponentContainer::getComponent(Engi
 void Engine::ComponentContainer::setActivated(bool b){
     std::unordered_map<std::string, std::shared_ptr<Component> >::iterator it;
 		it = components.begin();
-		while (it != components.end()) {
+		while (it != components.end()) {	
 			it->second->setActivated(b);
 			it++;
 		}
@@ -40,9 +40,25 @@ void Engine::ComponentContainer::listComponents(){
 
 	}
 
+void Engine::ComponentContainer::addComponent(std::shared_ptr<Component>component, std::string name){
+	if (components.count(name) > 0) {
+				name.append(std::to_string(components.count(name) + 1));
+			}
+			components[name] = std::move(component);
+}
 
 //Entity Definitions
-Engine::Entity::Entity(const std::string _id ):id(_id) {};
+
+
+void Engine::Entity::listComponents() {
+	componentsContainer.listComponents();
+}
+
+Engine::Entity::Entity(const std::string _id ):id(_id){
+	std::string transformId = _id + "_Transform";
+	transform = std::make_shared<Engine::Transform>(transformId);
+	componentsContainer.addComponent(transform,transform->getId());
+};
 void Engine::Entity::attachComponent(std::shared_ptr<Engine::Component> component)
 {
 	componentsContainer.addComponent(component,component->getId());

@@ -1,13 +1,31 @@
 {
     "App":{
         "Name" :"Trotty",
-        "AppVersion":"1.0",
+        "AppVersion" : "9991.0",
         "Api" : "Vulkan"
     },
-    
+    "Scenegraph":{
+        "Entities":[
+            {
+                    "Parent":"Root",
+                    "Id":"E1",
+                    "Components":[
+                        {
+                            "Id":"Transform-E1",
+                            "type":"TRANSFORM"   
+                        }
+                    ]
+            
+            }
+            
+        ]
+        
+    },
     "Window":{
-        "Title":"Trotty",
-        "Height" : 1080,
-        "Width" : 1920
+        "Width":1920,
+        "Height":1080,
+        "Title":"Warm"
+
     }
+    
 }

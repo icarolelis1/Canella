@@ -9,6 +9,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "Component/Component.h"
 #include <memory>
+#include <json.hpp>
 using Vector3 = glm::vec3;
 
 namespace Engine{
@@ -27,7 +28,7 @@ namespace Engine{
 class Transform :public Component{
 
 	public:
-Transform(std::string id);
+		Transform(std::string id);
 
 		void start();
 		void update(float timeStep);
@@ -53,7 +54,9 @@ Transform(std::string id);
 		void shouldUpdateRotations(bool b);
         void loadState(nlohmann::json& config);
         void saveState(nlohmann::json& config) ;
-        std::shared_ptr<Engine::Component>createComponent();
+
+		//Function to be added in the componentRegistry
+		static std::shared_ptr<Engine::Component> create(const nlohmann::json& config);
         
 
 	private:
@@ -68,7 +71,8 @@ Transform(std::string id);
 		float angle = 0;
 		float rotAngle;
     };
-}
+};
+
 
 
 #endif

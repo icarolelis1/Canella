@@ -1,14 +1,12 @@
 {
     "App":{
         "Name" :"Trotty",
-        "AppVersion" : "1.0",
+        "AppVersion" : "9991.0",
         "Api" : "Vulkan"
     },
-    "SceneGraph":{
+    "Scenegraph":{
         "Entities":[
             {
-                "e1":
-                {
                     "id":"E1",
                     "Components":[
                         {
@@ -19,7 +17,7 @@
                             }
                         }
                     ]
-                }
+            
             }
             
         ]

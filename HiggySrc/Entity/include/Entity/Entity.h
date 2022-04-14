@@ -3,8 +3,9 @@
 #define ENTITY
 #include <json.hpp>
 #include <string>
-#include <Component/Component.h>
+#include "Component/Component.h"
 #include <unordered_map>
+#include "Transform/Transform.h"
 #include <iostream>
 namespace Engine{
 
@@ -31,20 +32,23 @@ namespace Engine{
             void setActivated(bool b);
             void loadState(nlohmann::json& config);
             void saveState(nlohmann::json& config) const ;
-            void listComponents() const ;
+            void listComponents()  ;
             void displayOnUi();
             void attachComponent(std::shared_ptr<Engine::Component> component);
 	        std::shared_ptr<Engine::Component> getComponent(std::string id);
 		    std::shared_ptr<Engine::Component> getComponent(Engine::COMPONENT_TYPE componentType);
 		    std::shared_ptr<Entity> getSharedPointer();
             void setEnableComponents(bool b);
+           std::shared_ptr<Engine::Transform> transform;
+            const std::string id;
 
         private:
             bool activated = true;
-            const std::string id;
             ComponentContainer componentsContainer; 
 
     };
+
+    using SEntity = std::shared_ptr<Engine::Entity>;
 }
 
 
