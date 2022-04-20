@@ -11,6 +11,7 @@ namespace Engine{
             public:
                 static ComponentRegistry& getInstance();
                 void registerComponent(const std::string& id,functionCreation);
+                void initializeRegistry();
                 std::map<const std::string,functionCreation> registry;
 
             private:

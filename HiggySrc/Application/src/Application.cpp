@@ -22,3 +22,18 @@ void Application::App::initialize(nlohmann::json& config){
 
 
 }   
+void Application::App::run(){
+    while(playing){
+        playing = !window.shouldCloseWindow();
+        //Poll Events
+        glfwPollEvents();
+
+        //Run Engine Stuff
+
+    }
+
+    close();
+}
+void Application::App::close(){
+
+}

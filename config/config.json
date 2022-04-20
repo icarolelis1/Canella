@@ -1,6 +1,6 @@
 {
     "App":{
-        "Name" :"Trotty",
+        "Name" :"dsadsadasd",
         "AppVersion" : "9991.0",
         "Api" : "Vulkan"
     },
@@ -10,10 +10,7 @@
                     "Parent":"Root",
                     "Id":"E1",
                     "Components":[
-                        {
-                            "Id":"Transform-E1",
-                            "type":"TRANSFORM"   
-                        }
+                  
                     ]
             
             }

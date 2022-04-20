@@ -168,7 +168,7 @@ void Engine::Transform::saveState(nlohmann::json& config) {
 
 };
 std::shared_ptr<Engine::Component> Engine::Transform::create(const nlohmann::json& config){
-	std::shared_ptr<Engine::Component> m =	std::make_shared<Engine::Transform>("oo");
+	std::shared_ptr<Engine::Component> m =	std::make_shared<Engine::Transform>(config["Id"]);
 	return m;
 
 };

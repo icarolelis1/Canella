@@ -2,6 +2,7 @@
 
 
 Engine::Window::Window(){};
+
 void Engine::Window::initialize(nlohmann::json& config){
      glfwInit();
      int width = config["Width"];
@@ -32,3 +33,11 @@ void Engine::Window::initialize(nlohmann::json& config){
     glfwSetKeyCallback(m_window,key_btn_callBack);
 
 };
+int Engine::Window::shouldCloseWindow(){
+    return glfwWindowShouldClose(m_window);
+}
+
+Engine::Window::~Window(){
+    glfwDestroyWindow(m_window);
+}
+

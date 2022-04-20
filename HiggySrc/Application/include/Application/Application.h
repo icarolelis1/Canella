@@ -15,6 +15,8 @@ namespace Application{
         public:
             App();
             void initialize(nlohmann::json& config);
+            void run();
+            void close();
         private:
             //Application metadata;
             std::string appName;
@@ -23,6 +25,8 @@ namespace Application{
             RenderSystem::Render* render;
             Engine::Window window;
             Engine::Scenegraph* scenegraph;
+            int playing = 1;
+
 
     };
 

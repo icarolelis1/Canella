@@ -11,8 +11,10 @@ namespace Engine{
         public:
             Window();
             void initialize(nlohmann::json& config);
-        private:
+            ~Window();
             GLFWwindow *m_window;
+            int shouldCloseWindow();
+        private:
              Mouse * mouse;
             KeyBoard * keyboard;
 

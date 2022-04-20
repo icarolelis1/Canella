@@ -13,6 +13,7 @@ namespace Engine{
 struct Node{
     public:
         Node(std::shared_ptr<Engine::Entity>);  
+        Node();
         std::shared_ptr<Engine::Entity> entity;
          std::shared_ptr<Engine::Node> parent;
         std::list<std::shared_ptr<Node>>childs;

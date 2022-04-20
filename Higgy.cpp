@@ -13,7 +13,8 @@ int main()
 	//Create Application
 	Application::App Trotty;
 	Trotty.initialize(j);
-
+	Trotty.run();
+	Trotty.close();
 
 	return 0;
 }
