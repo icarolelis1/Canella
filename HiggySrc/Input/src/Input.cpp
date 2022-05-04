@@ -22,7 +22,7 @@ Engine::KeyBoard* Engine::KeyBoard::getKeyboard_Instance(){
     return Engine::KeyBoard::keyboard_instance;
 }
 
- void Engine::KeyBoard::key_callback(GLFWwindow * window,int key, int scancode,int action, int mods){};
+void Engine::KeyBoard::key_callback(GLFWwindow * window,int key, int scancode,int action, int mods){};
 
 void Engine::Mouse::setWindowHandler(GLFWwindow* windowHandler){
     Engine::Mouse::mouse_instace->window = windowHandler;

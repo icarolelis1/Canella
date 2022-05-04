@@ -3,6 +3,7 @@
 #
 
 cmake_minimum_required (VERSION 3.8)
+set (CMAKE_CXX_STANDARD 17)
 
 project ("Higgy")
 set(LIBS_DIR "./libs")
@@ -27,6 +28,7 @@ find_package(glm REQUIRED PATHS  ${LIBS_DIR}/glm/lib/cmake/glm)
 # Adicione a origem ao executável deste projeto.
 
 add_executable (Higgy Higgy.cpp)
+
 
 include_directories(Higgy PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/third_party/nlhoman 
                                     

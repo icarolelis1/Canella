@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include "Transform/Transform.h"
 #include <iostream>
+#include <mutex>
 namespace Engine{
 
     using ComponentContainerInstance = std::unordered_map<std::string, std::shared_ptr<Component>>; 
@@ -21,7 +22,7 @@ namespace Engine{
         void destroyComponents();
         void setActivated(bool b);
 		std::unordered_map<std::string, std::shared_ptr<Component>> components;
-
+        std::mutex componentsMutex;
 
     };
 

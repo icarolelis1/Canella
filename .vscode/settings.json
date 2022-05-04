@@ -82,6 +82,9 @@
         "cinttypes": "cpp",
         "condition_variable": "cpp",
         "mutex": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "queue": "cpp",
+        "stop_token": "cpp",
+        "*.rh": "cpp"
     }
 }

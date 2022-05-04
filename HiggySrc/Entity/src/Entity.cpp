@@ -41,6 +41,8 @@ void Engine::ComponentContainer::listComponents(){
 	}
 
 void Engine::ComponentContainer::addComponent(std::shared_ptr<Component>component, std::string name){
+	std::lock_guard<std::mutex>lock(componentsMutex);
+
 	if (components.count(name) > 0) {
 				name.append(std::to_string(components.count(name) + 1));
 			}

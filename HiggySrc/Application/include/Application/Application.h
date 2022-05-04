@@ -10,6 +10,10 @@
 #include "Window/Window.h"
 #include "Scenegraph/Scenegraph.h"
 #include <iostream>
+#include "Threadpool/Threadpool.h"
+
+
+
 namespace Application{
     class App{
         public:
@@ -17,6 +21,9 @@ namespace Application{
             void initialize(nlohmann::json& config);
             void run();
             void close();
+            ~App();
+        
+
         private:
             //Application metadata;
             std::string appName;
@@ -24,7 +31,8 @@ namespace Application{
             std::string graphicsAPI;
             RenderSystem::Render* render;
             Engine::Window window;
-            Engine::Scenegraph* scenegraph;
+            std::unique_ptr<Engine::Scenegraph> scenegraph;
+            std::unique_ptr<Engine::Threadpool> threadPool;
             int playing = 1;
 
 

@@ -6,7 +6,7 @@ int main()
 {
 
 	//Load Config File (PASS THE RIGHT FOLDER)
-	std::fstream f("../../../config/config.json");
+	std::fstream f("C://Users//icaro//OneDrive//Documentos//IcaroDev//Higgy//config//config.json");
 	nlohmann::json j;
 	f>>j;
 

@@ -1,39 +1,40 @@
-#include  "Application/Application.h"
+#include "Application/Application.h"
 
-Application::App::App(){};       
-void Application::App::initialize(nlohmann::json& config){
-    
-    appName = config["App"]["Name"];
-    AppVersion =  config["App"]["AppVersion"];
-    graphicsAPI =  config["App"]["Api"];
-    std::cout<<"\nBuilding App: " <<config["App"]["Name"]<<std::endl;
-    std::cout<<"  AppVersion : " <<config["App"]["AppVersion"]<<std::endl;
-    std::cout<<config["Window"]["Title"]<<std::endl;
+Application::App::App(){};
+void Application::App::initialize(nlohmann::json &config)
+{
 
-    //Initialize Window
+    // Initialize Window
     window.initialize(config["Window"]);
-    //Initialize Rebder
-    render = RenderSystem::Render::createRender(config);
-    //Scenegraph
-    scenegraph = new Engine::Scenegraph(config["Scenegraph"]["Entities"]);
+    // Initialize Rebder
+    render = RenderSystem::Render::createRender(config["Render"]);
 
-    Engine::SEntity e = scenegraph->findById("E1")->entity;
-    e->listComponents();
+    // Scenegraph
+    scenegraph = std::make_unique<Engine::Scenegraph>(config["Scenegraph"]["Entities"]);
 
+}
+void Application::App::run()
+{
+    while (playing)
+    {
 
-}   
-void Application::App::run(){
-    while(playing){
-        playing = !window.shouldCloseWindow();
-        //Poll Events
+        playing = ~window.shouldCloseWindow();
+        // Poll Events
         glfwPollEvents();
 
-        //Run Engine Stuff
-
+        // Run Engine Stuff
+        if (Engine::KeyBoard::keyboard_instance->getKeyPressed(GLFW_KEY_ESCAPE))
+        {
+            break;
+        };
     }
-
-    close();
 }
-void Application::App::close(){
 
+void Application::App::close()
+{
+}
+
+Application::App::~App()
+{
+    close();
 }

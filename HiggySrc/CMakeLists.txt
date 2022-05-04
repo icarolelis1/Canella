@@ -1,17 +1,29 @@
 cmake_minimum_required (VERSION 3.8)
 
-add_library(Render Render/src/Render.cpp
-            Device/src/Device.cpp 
+add_library(
+            Render 
+            RenderBackend/VulkanBackend/Instance/src/Instance.cpp
+            RenderBackend/VulkanBackend/Device/src/Device.cpp
+            RenderBackend/VulkanBackend/Swapchain/src/Swapchain.cpp
+            RenderBackend/VulkanBackend/VulkanRender/src/VulkanRender.cpp
+
+            Render/src/Render.cpp
             Stb/stb.h  
-
-
 )
 
-target_include_directories(Render PUBLIC Render/include
-                            Image/include
-                            Device/include
+target_include_directories(
+                            Render PUBLIC 
                             Stb/
+                            RenderBackend/VulkanBackend/Instance/include
+                            RenderBackend/VulkanBackend/Device/include
+                            RenderBackend/VulkanBackend/Swapchain/include
+                            RenderBackend/VulkanBackend/Swapchain/include
+                            RenderBackend/VulkanBackend/VulkanRender/include
+                            RenderBackend/RenderWrapper
+
+                            Render/include
                             ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/stb 
+
 
 )
 
@@ -34,6 +46,7 @@ target_include_directories(Engine PUBLIC Window/include
                                          Scenegraph/include
                                          defaultComponents/Transform/include
                                          ComponentRegistry/include
+                                         Threadpool/include
 
 
 )

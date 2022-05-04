@@ -2,10 +2,7 @@
 
 Engine::ComponentRegistry::ComponentRegistry(){
     //Register Transform
-
-
 };
-
 
  Engine::ComponentRegistry& Engine::ComponentRegistry::getInstance(){
     static ComponentRegistry componentRegistry;
@@ -19,3 +16,4 @@ void Engine::ComponentRegistry::initializeRegistry(){
 void Engine::ComponentRegistry::registerComponent(const std::string& type,functionCreation createFunc ){
     registry[type] = createFunc;
 }
+

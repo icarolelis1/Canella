@@ -15,6 +15,8 @@ namespace Engine{
                 std::map<const std::string,functionCreation> registry;
 
             private:
+                ComponentRegistry(const ComponentRegistry& other) = delete;
+                ComponentRegistry& operator=(ComponentRegistry const&) = delete;
                 ComponentRegistry();
 
         };

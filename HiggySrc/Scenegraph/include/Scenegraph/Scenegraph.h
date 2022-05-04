@@ -9,6 +9,7 @@
 #include <thread>
 #include <condition_variable>
 #include "ComponentRegistry/ComponentRegistry.h"
+#include "Threadpool/Threadpool.h"
 namespace Engine{
 struct Node{
     public:
@@ -17,6 +18,7 @@ struct Node{
         std::shared_ptr<Engine::Entity> entity;
          std::shared_ptr<Engine::Node> parent;
         std::list<std::shared_ptr<Node>>childs;
+        std::mutex childsMutex;
 };
 
 class Scenegraph{
@@ -28,11 +30,12 @@ class Scenegraph{
         void updateSceneGraph(std::shared_ptr<Engine::Node> node);
         void saveState(std::shared_ptr<Node> root, std::fstream& saveFile);
         std::shared_ptr<Engine::Node>  findById(const std::string & id);
+        std::unique_ptr<Engine::Threadpool> threadpool;
 	private:
         std::mutex root_mutex;
         std::shared_ptr<Node> root;
         std::shared_ptr<Engine::Node> findById(std::shared_ptr<Engine::Node> node,const std::string& id);
-
+        std::mutex entityMutex;
 };
 
 
