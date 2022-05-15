@@ -1,11 +1,11 @@
-﻿# CMakeList.txt: projeto de CMake para Higgy, incluir origem e definir
+﻿# CMakeList.txt: projeto de CMake para Canela, incluir origem e definir
 # lógica específica a um projeto aqui.
 #
 
 cmake_minimum_required (VERSION 3.8)
 set (CMAKE_CXX_STANDARD 17)
 
-project ("Higgy")
+project ("Canella")
 set(LIBS_DIR "./libs")
 #Vulkan
 find_package(Vulkan REQUIRED)
@@ -13,9 +13,11 @@ add_definitions(-DCMAKE_EXPORT_COMPILE_COMMANDS=ON)
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 SET(OS_LIBS_DIR ${LIBS_DIR}/linux)
+add_definitions( -DLINUX=1 )
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 IF (WIN32)
+add_definitions( -DWIN32=1 )
 # Linux specific code
 SET(OS_LIBS_DIR ${LIBS_DIR}/win)
 SET(OS_LIBS opengl32 Shlwapi)
@@ -27,18 +29,18 @@ find_package(glfw3 REQUIRED PATHS  ${OS_LIBS_DIR}/glfw/lib/cmake/glfw3)
 find_package(glm REQUIRED PATHS  ${LIBS_DIR}/glm/lib/cmake/glm) 
 # Adicione a origem ao executável deste projeto.
 
-add_executable (Higgy Higgy.cpp)
+add_executable (${PROJECT_NAME} main.cpp)
 
 
-include_directories(Higgy PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/third_party/nlhoman 
+include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/third_party/nlhoman 
                                     
                                     ${OS_LIBS_DIR}/glfw/include
                                     ${LIBS_DIR}/glm/include
                                     ${Vulkan_INCLUDE_DIRS} )
 
-add_subdirectory(HiggySrc)
+add_subdirectory(src)
 
-target_link_libraries(Higgy PRIVATE 
+target_link_libraries(${PROJECT_NAME} PRIVATE 
 glfw
 
 Vulkan::Vulkan Application )
