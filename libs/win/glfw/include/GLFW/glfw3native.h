@@ -28,6 +28,7 @@
 
 #ifndef _glfw3_native_h_
 #define _glfw3_native_h_
+#define GLFW_EXPOSE_NATIVE_WIN32
 
 #ifdef __cplusplus
 extern "C" {
@@ -124,7 +125,7 @@ extern "C" {
 /*************************************************************************
  * Functions
  *************************************************************************/
-
+#
 #if defined(GLFW_EXPOSE_NATIVE_WIN32)
 /*! @brief Returns the adapter device name of the specified monitor.
  *

@@ -12,7 +12,7 @@
 #include <json.hpp>
 using Vector3 = glm::vec3;
 
-namespace Engine{
+namespace Canella{
     struct Quaternion {
 		float w;
 		glm::vec3 axis;
@@ -56,7 +56,7 @@ class Transform :public Component{
         void saveState(nlohmann::json& config) ;
 
 		//Function to be added in the componentRegistry
-		static std::shared_ptr<Engine::Component> create(const nlohmann::json& config);
+		static std::shared_ptr<Canella::Component> create(const nlohmann::json& config);
         
 
 	private:

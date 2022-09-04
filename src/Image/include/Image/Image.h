@@ -1,4 +1,4 @@
-namespace Higgy{
+namespace Canella{
     class Image{
 
     };

@@ -1,19 +1,19 @@
 #include <ComponentRegistry/ComponentRegistry.h>
 
-Engine::ComponentRegistry::ComponentRegistry(){
+Canella::ComponentRegistry::ComponentRegistry(){
     //Register Transform
 };
 
- Engine::ComponentRegistry& Engine::ComponentRegistry::getInstance(){
+ Canella::ComponentRegistry& Canella::ComponentRegistry::getInstance(){
     static ComponentRegistry componentRegistry;
     return componentRegistry;
 };
 
-void Engine::ComponentRegistry::initializeRegistry(){
-        registerComponent("TRANSFORM",Engine::Transform::create);
+void Canella::ComponentRegistry::initializeRegistry(){
+        registerComponent("TRANSFORM",Canella::Transform::create);
 }
 
-void Engine::ComponentRegistry::registerComponent(const std::string& type,functionCreation createFunc ){
+void Canella::ComponentRegistry::registerComponent(const std::string& type,functionCreation createFunc ){
     registry[type] = createFunc;
 }
 

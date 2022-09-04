@@ -1,28 +1,45 @@
 #pragma once
 #ifndef WINDOW
 #define WINDOW
-#include <GLFW/glfw3.h>
-#include <json.hpp>
-#include "Input/Input.h"
 #include <iostream>
+#include "Input/Input.h"
+
+#include <vulkan/vulkan.h>
+#include <json.hpp>
 
 
-namespace Engine
+#define VK_USE_PLATFORM_WIN32_KHR
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
+
+
+#include "Windowing.h"
+
+namespace Canella
 {
-    class Window
+    class GlfwWindow : public Windowing
     {
-
+    
     public:
-        Window();
-        void initialize(nlohmann::json &config);
-        ~Window();
-        GLFWwindow *m_window;
+
+        GlfwWindow() = default;
+        ~GlfwWindow();
+        GLFWwindow* getHandle();
+        void initialize(nlohmann::json& config);
+        GLFWwindow* m_window;
         int shouldCloseWindow();
-      
+        
+        Extent& getExtent();
+        void getSurface(VkInstance instance, VkSurfaceKHR* surface);
+        void update();
 
     private:
-        Mouse *mouse;
-        KeyBoard *keyboard;
+
+        Mouse mouse;
+        KeyBoard keyboard;
+
     };
 }
 

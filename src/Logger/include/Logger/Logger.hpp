@@ -55,7 +55,7 @@
 #define BOLDWHITE "\033[1m\033[37m"   /* Bold White */
 #endif
 
-namespace Engine
+namespace Canella
 {
     class Logger
     {
@@ -85,6 +85,8 @@ namespace Engine
                 printf("[Trace]\t");
                 printf(message, args...);
                 printf("\n");
+                SetConsoleTextAttribute(h, FOREGROUND_WHITE);
+
             }
         };
 
@@ -100,6 +102,8 @@ namespace Engine
                 printf("[Info]\t");
                 printf(message, args...);
                 printf("\n");
+                SetConsoleTextAttribute(h, FOREGROUND_WHITE);
+
             }
         };
 
@@ -115,6 +119,8 @@ namespace Engine
                 printf("[Error]\t");
                 printf(message, args...);
                 printf("\n");
+                SetConsoleTextAttribute(h, FOREGROUND_WHITE);
+
             }
         };
 
@@ -130,6 +136,8 @@ namespace Engine
                 printf("[Debug]\t");
                 printf(message, args...);
                 printf("\n");
+                SetConsoleTextAttribute(h, FOREGROUND_WHITE);
+
             }
         };
 
@@ -145,6 +153,8 @@ namespace Engine
                 printf("[Warn]\t");
                 printf(message, args...);
                 printf("\n");
+                SetConsoleTextAttribute(h, FOREGROUND_WHITE);
+
             }
         };
 

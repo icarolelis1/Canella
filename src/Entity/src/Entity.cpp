@@ -2,13 +2,13 @@
 
 
 //ComponentContainer Definitions
-std::shared_ptr<Engine::Component> Engine::ComponentContainer::getComponent(std::string id){
+std::shared_ptr<Canella::Component> Canella::ComponentContainer::getComponent(std::string id){
     if(components.find(id)!= components.end())			
         return components[id];
     return nullptr;
 };
 
-std::shared_ptr<Engine::Component> Engine::ComponentContainer::getComponent(Engine::COMPONENT_TYPE type){
+std::shared_ptr<Canella::Component> Canella::ComponentContainer::getComponent(Canella::COMPONENT_TYPE type){
     std::unordered_map<std::string, std::shared_ptr<Component> >::iterator it;
 	it = components.begin();
 	while (it != components.end()) {
@@ -23,7 +23,7 @@ std::shared_ptr<Engine::Component> Engine::ComponentContainer::getComponent(Engi
     return nullptr;
 }
 
-void Engine::ComponentContainer::setActivated(bool b){
+void Canella::ComponentContainer::setActivated(bool b){
     std::unordered_map<std::string, std::shared_ptr<Component> >::iterator it;
 		it = components.begin();
 		while (it != components.end()) {	
@@ -31,7 +31,7 @@ void Engine::ComponentContainer::setActivated(bool b){
 			it++;
 		}
 }
-void Engine::ComponentContainer::listComponents(){
+void Canella::ComponentContainer::listComponents(){
  	std::unordered_map<std::string, std::shared_ptr<Component> >::iterator it = components.begin();;
 	while (it != components.end()) {
 		std::cout << it->first << std::endl;
@@ -40,7 +40,7 @@ void Engine::ComponentContainer::listComponents(){
 
 	}
 
-void Engine::ComponentContainer::addComponent(std::shared_ptr<Component>component, std::string name){
+void Canella::ComponentContainer::addComponent(std::shared_ptr<Component>component, std::string name){
 	std::lock_guard<std::mutex>lock(componentsMutex);
 
 	if (components.count(name) > 0) {
@@ -52,28 +52,28 @@ void Engine::ComponentContainer::addComponent(std::shared_ptr<Component>componen
 //Entity Definitions
 
 
-void Engine::Entity::listComponents() {
+void Canella::Entity::listComponents() {
 	componentsContainer.listComponents();
 }
 
-Engine::Entity::Entity(const std::string _id ):id(_id){
+Canella::Entity::Entity(const std::string _id ):id(_id){
 	std::string transformId = _id + "_Transform";
-	transform = std::make_shared<Engine::Transform>(transformId);
+	transform = std::make_shared<Canella::Transform>(transformId);
 	componentsContainer.addComponent(transform,transform->getId());
 };
-void Engine::Entity::attachComponent(std::shared_ptr<Engine::Component> component)
+void Canella::Entity::attachComponent(std::shared_ptr<Canella::Component> component)
 {
 	componentsContainer.addComponent(component,component->getId());
 }
 
-std::shared_ptr<Engine::Component> Engine::Entity::getComponent(std::string name)
+std::shared_ptr<Canella::Component> Canella::Entity::getComponent(std::string name)
 {
 	
 	return componentsContainer.getComponent(name);
 
 }
 
-std::shared_ptr<Engine::Component> Engine::Entity::getComponent(Engine::COMPONENT_TYPE componentType)
+std::shared_ptr<Canella::Component> Canella::Entity::getComponent(Canella::COMPONENT_TYPE componentType)
 {
 	
 	if (componentsContainer.getComponent(componentType)!= NULL) {
@@ -83,9 +83,9 @@ std::shared_ptr<Engine::Component> Engine::Entity::getComponent(Engine::COMPONEN
 	else return nullptr;
 }
 //Iterate throug all component and display an ImGui Inpsector.
-void Engine::Entity::displayOnUi(){
+void Canella::Entity::displayOnUi(){
 
-	std::unordered_map<std::string, std::shared_ptr<Engine::Component>>::iterator it = componentsContainer.components.begin();
+	std::unordered_map<std::string, std::shared_ptr<Canella::Component>>::iterator it = componentsContainer.components.begin();
 
 
 	while (it != componentsContainer.components.end()) {
@@ -102,12 +102,12 @@ void Engine::Entity::displayOnUi(){
 
 	}
 }
-void Engine::Entity::setActivated(bool b){
+void Canella::Entity::setActivated(bool b){
     activated = b;
     if(!activated){
         componentsContainer.setActivated(activated);
     }
 }
-void Engine::Entity::setEnableComponents(bool b){
+void Canella::Entity::setEnableComponents(bool b){
     componentsContainer.setActivated(activated);
 }

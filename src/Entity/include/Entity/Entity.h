@@ -8,14 +8,14 @@
 #include "Transform/Transform.h"
 #include <iostream>
 #include <mutex>
-namespace Engine{
+namespace Canella {
 
     using ComponentContainerInstance = std::unordered_map<std::string, std::shared_ptr<Component>>; 
     struct ComponentContainer{
         std::shared_ptr<Component> getComponent(std::string id);
-        std::shared_ptr<Component> getComponent(Engine::COMPONENT_TYPE type);
+        std::shared_ptr<Component> getComponent(Canella::COMPONENT_TYPE type);
         void listComponents() ;
-        void addComponent(std::shared_ptr<Engine::Component>,const std::string name);
+        void addComponent(std::shared_ptr<Canella::Component>,const std::string name);
         bool checkIfExists(const std::string name) const;
         void displayComponentsInpesctor(); //Display on ImGui Interface
         ComponentContainerInstance getAllComponents()const;
@@ -35,12 +35,12 @@ namespace Engine{
             void saveState(nlohmann::json& config) const ;
             void listComponents()  ;
             void displayOnUi();
-            void attachComponent(std::shared_ptr<Engine::Component> component);
-	        std::shared_ptr<Engine::Component> getComponent(std::string id);
-		    std::shared_ptr<Engine::Component> getComponent(Engine::COMPONENT_TYPE componentType);
+            void attachComponent(std::shared_ptr<Canella::Component> component);
+	        std::shared_ptr<Canella::Component> getComponent(std::string id);
+		    std::shared_ptr<Canella::Component> getComponent(Canella::COMPONENT_TYPE componentType);
 		    std::shared_ptr<Entity> getSharedPointer();
             void setEnableComponents(bool b);
-           std::shared_ptr<Engine::Transform> transform;
+           std::shared_ptr<Canella::Transform> transform;
             const std::string id;
 
         private:
@@ -49,7 +49,7 @@ namespace Engine{
 
     };
 
-    using SEntity = std::shared_ptr<Engine::Entity>;
+    using SEntity = std::shared_ptr<Canella::Entity>;
 }
 
 

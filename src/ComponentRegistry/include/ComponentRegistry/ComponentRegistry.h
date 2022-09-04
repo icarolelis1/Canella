@@ -5,8 +5,9 @@
 #include <map>
 #include <memory>
 #include <string>
-namespace Engine{
-        using functionCreation = std::function<std::shared_ptr<Engine::Component>(const nlohmann::json& id)>;
+
+namespace Canella {
+        using functionCreation = std::function<std::shared_ptr<Canella::Component>(const nlohmann::json& id)>;
         class ComponentRegistry{
             public:
                 static ComponentRegistry& getInstance();

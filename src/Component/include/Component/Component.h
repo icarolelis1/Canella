@@ -3,8 +3,9 @@
 #define COMPONENT
 #include <string>
 #include <memory>
-#include <json.hpp>
-namespace Engine{
+#include <json.hpp>\
+
+namespace Canella {
 
 enum class COMPONENT_TYPE
 	{
@@ -25,7 +26,7 @@ enum class COMPONENT_TYPE
             virtual void saveState(nlohmann::json& config) =0 ;
             virtual void interfaceUI();
             COMPONENT_TYPE getComponentType();
-            void setComponentType(Engine::COMPONENT_TYPE type);
+            void setComponentType(Canella::COMPONENT_TYPE type);
             bool isComponentAlive() const;
             void setActivated(bool b);
             void setId(std::string id);

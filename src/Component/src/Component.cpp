@@ -1,14 +1,13 @@
 #include "Component/Component.h"
 
+Canella::Component::Component(const std::string _id):id(_id){};
 
-Engine::Component::Component(const std::string _id):id(_id){};
-
-void Engine::Component::onStart(){};
-void Engine::Component::onUpdate(float dt){};
-bool Engine::Component::isComponentAlive()const {return isActivated;};
-void Engine::Component::setActivated(bool b){isActivated=b;};
-Engine::COMPONENT_TYPE Engine::Component::getComponentType(){return componentType;};
-void Engine::Component::interfaceUI(){};
-const std::string Engine::Component::getId(){return id;};
-void Engine::Component::setComponentType(Engine::COMPONENT_TYPE _type){componentType =_type; };
-void Engine::Component::onAwake(){};
+void Canella::Component::onStart(){};
+void Canella::Component::onUpdate(float dt){};
+bool Canella::Component::isComponentAlive()const {return isActivated;};
+void Canella::Component::setActivated(bool b){isActivated=b;};
+Canella::COMPONENT_TYPE Canella::Component::getComponentType(){return componentType;};
+void Canella::Component::interfaceUI(){};
+const std::string Canella::Component::getId(){return id;};
+void Canella::Component::setComponentType(Canella::COMPONENT_TYPE _type){componentType =_type; };
+void Canella::Component::onAwake(){};

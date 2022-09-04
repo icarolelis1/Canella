@@ -1,40 +1,33 @@
 ﻿#include <iostream>
-#include <json.hpp>
 #include <fstream>
+#include <json.hpp>
 #include "Application/Application.h"
-#include "Eventsystem/Eventsystem.h"
 #include "Logger/Logger.hpp"
-Engine::Logger::Priority Engine::Logger::log_priority = Engine::Logger::Priority::Critial_LOG;
-std::mutex Engine::Logger::logger_mutex;
-#define WIN32
+
+Canella::Logger::Priority Canella::Logger::log_priority = Canella::Logger::Priority::Error_LOG;
+std::mutex Canella::Logger::logger_mutex;
+#define GLFW_INCLUDE_VULKAN
+#define  GLFW_EXPOSE_NATIVE_WIN32
 int main()
 {
-
-	// Engine::Event_Handler<int, char *> ev([](int i, char *k)
-	// 									  { Engine::Logger::Info("Show %d %s", i, k); });
-	// Engine::Event<int, char *> myevent;
-	// myevent += (ev);
-	// myevent-=  (ev);
-	// myevent.call(1, "2");
-	// myevent.call(1, "2");
-	// myevent.call(1, "2");
-
-	// Engine::Logger::Info("INFO");
-	// Engine::Logger::Debug("DEBUG");
-	// Engine::Logger::Error("ERROR");
-	// Engine::Logger::Warn("WARN");
-	// Engine::Logger::Trace("TRACE");
+	 Canella::Logger::Info("INFO");
+	 Canella::Logger::Debug("DEBUG");
+	 Canella::Logger::Error("ERROR");
+	 Canella::Logger::Warn("WARN");
+	 Canella::Logger::Trace("TRACE");
 
 	// Load Config File (PASS THE RIGHT FOLDER)
-	std::fstream f("C://Users//icaro//OneDrive//Documentos//IcaroDev//Canella//config//config.json");
+
+	std::fstream f("C:\\Users\\icaro\\OneDrive\\Documentos\\IcaroDev\\Canella\\config\\config.json");
+	f;
 	nlohmann::json j;
 	f >> j;
 
 	// Create Application
-    Application::App Trotty;
-    Trotty.initialize(j);
-    Trotty.run();
-    Trotty.close();
+    Application::App myApp;
+    myApp.initialize(j);
+    myApp.run();
+    myApp.close();
 
 	return 0;
 }

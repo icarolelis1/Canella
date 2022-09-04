@@ -1,24 +1,23 @@
 #include "Scenegraph/Scenegraph.h"
 
-Engine::Node::Node(std::shared_ptr<Engine::Entity> e_) { this->entity = std::move(e_); }
+Canella::Node::Node(std::shared_ptr<Canella::Entity> e_) { this->entity = std::move(e_); }
 
-Engine::Node::Node(){};
+Canella::Node::Node(){};
 
-Engine::Scenegraph::Scenegraph(const nlohmann::json &config)
+Canella::Scenegraph::Scenegraph(const nlohmann::json &config)
 {
 	// Initiaize Component Registry
 	ComponentRegistry& r = ComponentRegistry::getInstance();
 	r.initializeRegistry();
 
-
 	// Build the Entire SceneGraph
-	std::shared_ptr<Engine::Entity> e1 = std::make_shared<Engine::Entity>("Root");
+	std::shared_ptr<Canella::Entity> e1 = std::make_shared<Canella::Entity>("Root");
 	root = std::make_shared<Node>(e1);
 
 	for (const nlohmann::json& json : config)
 	{
-			std::shared_ptr<Engine::Entity> entity = std::make_shared<Engine::Entity>(json["Id"]);
-			std::shared_ptr<Engine::Node> node = std::make_shared<Engine::Node>(std::move(entity));
+			std::shared_ptr<Canella::Entity> entity = std::make_shared<Canella::Entity>(json["Id"]);
+			std::shared_ptr<Canella::Node> node = std::make_shared<Canella::Node>(std::move(entity));
 
 			if (json["Parent"] == "Root")
 			{
@@ -26,7 +25,7 @@ Engine::Scenegraph::Scenegraph(const nlohmann::json &config)
 			}
 			else
 			{
-				std::shared_ptr<Engine::Node> father = findById(json["Parent"]);
+				std::shared_ptr<Canella::Node> father = findById(json["Parent"]);
 				if (father->entity)
 				{
 					addNode(father, node);
@@ -47,25 +46,25 @@ Engine::Scenegraph::Scenegraph(const nlohmann::json &config)
 			};	
 	}
 }
-void Engine::Scenegraph::addNode(std::shared_ptr<Engine::Node> entity)
+void Canella::Scenegraph::addNode(std::shared_ptr<Canella::Node> entity)
 {
 	std::lock_guard<std::mutex>lock(entity->childsMutex);
 	root->childs.emplace_back(entity);
 	entity->parent = root;
 }
 
-void Engine::Scenegraph::addNode(std::shared_ptr<Engine::Node> p1, std::shared_ptr<Node> p2)
+void Canella::Scenegraph::addNode(std::shared_ptr<Canella::Node> p1, std::shared_ptr<Node> p2)
 {
 	std::lock_guard<std::mutex>lock(p1->childsMutex);
 	p1->childs.emplace_back(p2);
 	p2->parent = p1;
 }
 
-std::shared_ptr<Engine::Node> Engine::Scenegraph::findById(const std::string &id)
+std::shared_ptr<Canella::Node> Canella::Scenegraph::findById(const std::string &id)
 {
 	return findById(root, id);
 }
-std::shared_ptr<Engine::Node> Engine::Scenegraph::findById(std::shared_ptr<Engine::Node> node, const std::string &id)
+std::shared_ptr<Canella::Node> Canella::Scenegraph::findById(std::shared_ptr<Canella::Node> node, const std::string &id)
 {
 	std::lock_guard<std::mutex>lock(node->childsMutex);
 	if(node->entity->id == id){
@@ -73,17 +72,17 @@ std::shared_ptr<Engine::Node> Engine::Scenegraph::findById(std::shared_ptr<Engin
 	};
 	std::list<std::shared_ptr<Node>>::iterator it = node->childs.begin();
 	while(it!= node->childs.end()){
-		std::shared_ptr<Engine::Node> n = std::move(findById(*it,id));
+		std::shared_ptr<Canella::Node> n = std::move(findById(*it,id));
 		if(n->entity){
 			return n;
 		}
 		it++;
 	};
-	return std::make_shared<Engine::Node>();
+	return std::make_shared<Canella::Node>();
 
 };
 
-void Engine::Scenegraph::updateSceneGraph(std::shared_ptr<Engine::Node> node)
+void Canella::Scenegraph::updateSceneGraph(std::shared_ptr<Canella::Node> node)
 {
 
 	if (node->parent)

@@ -1,60 +1,60 @@
 #include "Transform/Transform.h"
 
-void Engine::Transform::start()
+void Canella::Transform::start()
 {
 	calculateRotationQuaternion(glm::vec3(1, 0, 0), 0.0f);
 }
 
-void Engine::Transform::update(float timeStep)
+void Canella::Transform::update(float timeStep)
 {
 }
 
-void Engine::Transform::awake()
+void Canella::Transform::awake()
 {
 }
 
-Engine::Transform::Transform(std::string id ) :Component(id)
+Canella::Transform::Transform(std::string id ) :Component(id)
 {
-	setComponentType(Engine::COMPONENT_TYPE::TRANSFORM);
+	setComponentType(Canella::COMPONENT_TYPE::TRANSFORM);
 }
 
-glm::mat4& Engine::Transform::getModelMatrix()
+glm::mat4& Canella::Transform::getModelMatrix()
 {
 	return model;
 }
 
-glm::vec3& Engine::Transform::getPosition()
+glm::vec3& Canella::Transform::getPosition()
 {
 	return position;
 }
 
-glm::vec3& Engine::Transform::getScale()
+glm::vec3& Canella::Transform::getScale()
 {
 	return scale;
 }
 
-glm::vec3 Engine::Transform::getRotation()
+glm::vec3 Canella::Transform::getRotation()
 {
 	return  rotation;
 }
 
-void Engine::Transform::setPosition(glm::vec3 p)
+void Canella::Transform::setPosition(glm::vec3 p)
 {
 	position = p;
 
 }
-void Engine::Transform::setRotation(glm::vec3 r)
+void Canella::Transform::setRotation(glm::vec3 r)
 {
 	rotation = r;
 }
 
-void Engine::Transform::setRotation(float x, float y, float z)
+void Canella::Transform::setRotation(float x, float y, float z)
 {
 	rotation = glm::vec3(x, y, z);
 
 }
 
-void Engine::Transform::rotateMix(glm::quat q1, glm::quat q2, float dt)
+void Canella::Transform::rotateMix(glm::quat q1, glm::quat q2, float dt)
 {
 	glm::quat q = glm::mix(q1, q2, dt);
 
@@ -62,18 +62,18 @@ void Engine::Transform::rotateMix(glm::quat q1, glm::quat q2, float dt)
 
 }
 
-void Engine::Transform::setPosition(float x,float y , float z)
+void Canella::Transform::setPosition(float x,float y , float z)
 {
 	position = glm::vec3(x,y,z);
 }
 
-void Engine::Transform::setScale(glm::vec3 p)
+void Canella::Transform::setScale(glm::vec3 p)
 {
 	scale = p;
 }
 
 
-glm::quat Engine::Transform::calculateRotationQuaternion(glm::vec3 axis, float angle)
+glm::quat Canella::Transform::calculateRotationQuaternion(glm::vec3 axis, float angle)
 {
 	glm::quat quat = glm::quat(0.0, position.x, position.y, position.z);
 
@@ -89,17 +89,17 @@ glm::quat Engine::Transform::calculateRotationQuaternion(glm::vec3 axis, float a
 }
 
 
-void Engine::Transform::increasePos(float x, float y, float z)
+void Canella::Transform::increasePos(float x, float y, float z)
 {
 	position += glm::vec3(x, y, z);
 }
 
-void Engine::Transform::increasePos(glm::vec3 p)
+void Canella::Transform::increasePos(glm::vec3 p)
 {
 	position += p;
 }
 
-void Engine::Transform::updateModelMatrix(Transform& parent)
+void Canella::Transform::updateModelMatrix(Transform& parent)
 {/*
 	glm::quat internalQuat = glm::quat(0.0, position.x, position.y, position.z);
 	glm::quat rotationQuaternion = glm::quat(glm::normalize(rotation));
@@ -119,7 +119,7 @@ void Engine::Transform::updateModelMatrix(Transform& parent)
 
 }
 
-void Engine::Transform::updateModelMatrix()
+void Canella::Transform::updateModelMatrix()
 {
 	glm::mat4 identity(1.0f);
 	rotMatrix = glm::toMat4(glm::normalize(rotQuaternion));
@@ -133,7 +133,7 @@ void Engine::Transform::updateModelMatrix()
 	
 }
 
-void Engine::Transform::rotate(glm::vec3 axis, float angle)
+void Canella::Transform::rotate(glm::vec3 axis, float angle)
 {
 	axis = glm::normalize(axis);
 	glm::quat quat = glm::quat(0.0,position.x,position.y,position.z);
@@ -149,26 +149,26 @@ void Engine::Transform::rotate(glm::vec3 axis, float angle)
 
 }
 
-// void Engine::Transform::buildUi()
+// void Canella::Transform::buildUi()
 // {
 // 	ImGui::InputFloat3("Position", glm::value_ptr(this->position));
 // 	ImGui::InputFloat3("Rotation", glm::value_ptr(this->rotation));
 // 	ImGui::InputFloat3("Scale", glm::value_ptr(this->scale));
 // }
 
-void Engine::Transform::shouldUpdateRotations(bool b)
+void Canella::Transform::shouldUpdateRotations(bool b)
 {
 	shouldUpdateQuaternion = b;;
 }
-void Engine::Transform::loadState(nlohmann::json& config){
+void Canella::Transform::loadState(nlohmann::json& config){
 
 };
 
-void Engine::Transform::saveState(nlohmann::json& config) {
+void Canella::Transform::saveState(nlohmann::json& config) {
 
 };
-std::shared_ptr<Engine::Component> Engine::Transform::create(const nlohmann::json& config){
-	std::shared_ptr<Engine::Component> m =	std::make_shared<Engine::Transform>(config["Id"]);
+std::shared_ptr<Canella::Component> Canella::Transform::create(const nlohmann::json& config){
+	std::shared_ptr<Canella::Component> m =	std::make_shared<Canella::Transform>(config["Id"]);
 	return m;
 
 };

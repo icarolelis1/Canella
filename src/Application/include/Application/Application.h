@@ -17,7 +17,7 @@
 namespace Application{
     class App{
         public:
-            App();
+            App() = default;
             void initialize(nlohmann::json& config);
             void run();
             void close();
@@ -26,14 +26,10 @@ namespace Application{
 
         private:
             //Application metadata;
-            std::string appName;
-            std::string AppVersion;
-            std::string graphicsAPI;
-            RenderSystem::Render* render;
-            Engine::Window window;
-            std::unique_ptr<Engine::Scenegraph> scenegraph;
-            std::unique_ptr<Engine::Threadpool> threadPool;
-            int playing = 1;
+            bool playing = true;
+            std::unique_ptr<Canella::Render> render;
+            Canella::GlfwWindow window;
+            std::unique_ptr<Canella::Scenegraph> scenegraph;
 
 
     };
