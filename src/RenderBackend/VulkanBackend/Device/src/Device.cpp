@@ -7,7 +7,7 @@ namespace Canella
 	{
 		namespace VulkanBackend
 		{
-			Device::Device() {};
+			Device::Device(){};
 
 			void Device::choosePhysicalDevice(Instance instance, Surface surface)
 			{
@@ -30,7 +30,7 @@ namespace Canella
 				int bestScore = 0;
 				VkPhysicalDevice bestDevice = NULL;
 
-				for (const auto& device : devices)
+				for (const auto &device : devices)
 				{
 
 					VkPhysicalDeviceProperties physicalDeviceProps;
@@ -92,7 +92,7 @@ namespace Canella
 
 				std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
 
-				for (const auto& extension : extensions)
+				for (const auto &extension : extensions)
 				{
 					requiredExtensions.erase(extension.extensionName);
 				}
@@ -156,12 +156,11 @@ namespace Canella
 				VkBool32 foundPresent = false;
 
 				// If we can't find unique index for each queue, we use the back index
-	
+
 				std::vector<uint32_t> graphicsSupportedQueues;
 				std::vector<uint32_t> transferSupportedQueues;
 				std::vector<uint32_t> computeSupportedQueues;
 				std::vector<uint32_t> presentSupportedQueues;
-
 
 				auto unique_queues = [](uint32_t graphics, uint32_t transfer, uint32_t compute, uint32_t present) {
 				};
@@ -171,8 +170,6 @@ namespace Canella
 					score -= 100;
 				}
 
-				
-
 				for (uint32_t i = 0; i < queueFamilyProperties.size(); i++)
 				{
 
@@ -180,20 +177,16 @@ namespace Canella
 					{
 						graphicsSupportedQueues.push_back(i);
 						foundGraphics = 1;
-				
 					}
 					if (getQueuFamilieIndex(queueFamilyProperties[i], VK_QUEUE_COMPUTE_BIT))
 					{
 						computeSupportedQueues.push_back(i);
 						foundCompute = 1;
-				
-
 					}
 					if (getQueuFamilieIndex(queueFamilyProperties[i], VK_QUEUE_TRANSFER_BIT))
 					{
 						transferSupportedQueues.push_back(i);
 						foundTransfer = 1;
-			
 					}
 
 					if (!foundPresent)
@@ -201,17 +194,21 @@ namespace Canella
 						vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &foundPresent);
 						presentSupportedQueues.push_back(i);
 						foundPresent = 1;
-			
 					}
 				}
-		
+
 				std::vector<uint32_t> usedQueues;
 
-				if (graphicsSupportedQueues.size() > 0) usedQueues.push_back(graphicsSupportedQueues[0]);
-				auto getUniqueQueueIndex = [](std::vector<uint32_t>& usedQueues, std::vector<uint32_t> supportQueues) {
-					for (auto i : usedQueues) {
-						for (auto j : supportQueues) {
-							if (i != j) {
+				if (graphicsSupportedQueues.size() > 0)
+					usedQueues.push_back(graphicsSupportedQueues[0]);
+				auto getUniqueQueueIndex = [](std::vector<uint32_t> &usedQueues, std::vector<uint32_t> supportQueues)
+				{
+					for (auto i : usedQueues)
+					{
+						for (auto j : supportQueues)
+						{
+							if (i != j)
+							{
 								usedQueues.push_back(j);
 								return j;
 							}
@@ -305,7 +302,7 @@ namespace Canella
 			void Device::createLogicalDevice()
 			{
 				std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-				std::set<uint32_t> uniqueFamilies = { queueFamilies.graphics.value(), queueFamilies.present.value(), queueFamilies.transfer.value(), queueFamilies.compute.value() };
+				std::set<uint32_t> uniqueFamilies = {queueFamilies.graphics.value(), queueFamilies.present.value(), queueFamilies.transfer.value(), queueFamilies.compute.value()};
 
 				for (uint32_t queueFamily : uniqueFamilies)
 				{
@@ -358,8 +355,7 @@ namespace Canella
 			QueueSharingMode Device::getQueueSharingMode()
 			{
 				uint32_t indexCount = 1;
-	
-					
+
 				QueueSharingMode queueSharing;
 				if (queueFamilies.graphics.value() != queueFamilies.present.value())
 				{
@@ -367,7 +363,7 @@ namespace Canella
 					queueSharing.sharingMode = VK_SHARING_MODE_CONCURRENT;
 					queueSharing.queueFamiliyIndexCount = 2;
 					std::vector<uint32_t> queueF(2);
-					queueF = { queueFamilies.graphics.value(), queueFamilies.present.value() };
+					queueF = {queueFamilies.graphics.value(), queueFamilies.present.value()};
 					queueSharing.queueFamilies = queueF.data();
 					return queueSharing;
 				}
@@ -386,21 +382,21 @@ namespace Canella
 			{
 				destroyDevice();
 			}
-			VkDevice& Device::getLogicalDevice()
+			VkDevice &Device::getLogicalDevice()
 			{
 				return logicalDevice;
 			}
-			VkDevice* Device::getLogicalDevicePtr()
+			VkDevice *Device::getLogicalDevicePtr()
 			{
 				return &logicalDevice;
 			}
 
-			VkPhysicalDevice& Device::getPhysicalDevice()
+			VkPhysicalDevice &Device::getPhysicalDevice()
 			{
 				return physicalDevice;
 			}
 
-			VkPhysicalDevice* Device::getPhysicalDevicePtr()
+			VkPhysicalDevice *Device::getPhysicalDevicePtr()
 			{
 				return &physicalDevice;
 			}
@@ -410,6 +406,27 @@ namespace Canella
 				createLogicalDevice();
 
 				return true;
+			}
+
+			uint32_t Device::getGraphicsQueueIndex() const
+			{
+				return queueFamilies.graphics.value() ;
+			}
+			uint32_t Device::getTransferQueueIndex() const
+			{
+				return queueFamilies.transfer.value();
+			}
+			uint32_t Device::getComputeQueueIndex()const 
+			{
+				return queueFamilies.compute.value();
+			}
+			uint32_t Device::getPresentQueueIndex()const
+			{
+				return queueFamilies.present.value();
+			}
+
+			const VkAllocationCallbacks* Device::getAllocator(){
+				return nullptr;
 			}
 		}
 	}

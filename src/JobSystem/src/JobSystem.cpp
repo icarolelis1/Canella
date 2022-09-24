@@ -1,18 +1,43 @@
 #include "JobSystem/JobSystem.h"
 #include "Logger/Logger.hpp"
+
+#include <typeinfo>
+#include <functional>
+#include <memory.h>
 namespace Canella
 {
     namespace JobSystem
     {
 
+        void schedule_by_copy(const CanellaJob job);
+
+        CanellaJob::CanellaJob(HJob detail) : job_detail(detail){};
+        CanellaJob::CanellaJob(HJobGroup &groupDetail) : jobgroup_detail(groupDetail){};
+
+        CanellaJob::CanellaJob(const CanellaJob &other)
+        {
+            this->jobgroup_detail = other.jobgroup_detail;
+            this->job_detail = other.job_detail;
+        }
+
+        CanellaJob::CanellaJob(){};
+        void CanellaJob::await()
+        {
+            // Block the thread untill the job is completed
+            while (!job_detail->completed)
+            {
+            }
+        }
+
         class JobSystemManager
         {
             uint16_t numThreads = 0;
-            Canella::ThreadQueue<Job> jobQueue;
+            Canella::ThreadQueue<CanellaJob> jobQueue;
             std::vector<std::thread> threads;
             std::condition_variable cv;
             std::mutex wake_mutex;
             std::atomic_bool done;
+
             /**
              * @brief Construct a new Job System Manager object
              *
@@ -41,10 +66,12 @@ namespace Canella
             {
                 while (!done)
                 {
-                    Job job;
-                    if (jobQueue.try_pop(job))
+                    CanellaJob canellaJob;
+                    if (jobQueue.try_pop(canellaJob))
                     {
-                        job();
+
+                        canellaJob.job_detail->execute();
+                        canellaJob.job_detail->onComplete();
 
                         finished_jobs.fetch_add(1);
                     }
@@ -68,7 +95,7 @@ namespace Canella
              *
              * @param job the job to be submited
              */
-            void submit(const Job &job)
+            void submit(const CanellaJob &job)
             {
                 // Incremenmt the number of jobs to process
                 current_jobs += 1;
@@ -119,37 +146,51 @@ namespace Canella
              * @param jobs jobs to be executed
              */
 
-            void dispatch(uint16_t jobCount, uint16_t groupSize, const JobGroup &jobs)
+            void dispatch(uint16_t jobCount, uint16_t groupSize,CanellaJob job)
             {
 
                 uint32_t groupCount = (jobCount + groupSize - 1) / groupSize;
 
-                current_jobs += groupCount;
-
                 for (uint32_t groupIndex = 0; groupIndex < groupCount; ++groupIndex)
                 {
-
-                    auto &jobGroup = [jobCount, groupSize, jobs, groupIndex]()
+                    const uint32_t offset = groupIndex * groupSize;
+                    uint32_t groupJobEnd;
+                    if (offset + groupSize < jobCount)
+                        groupJobEnd = offset + groupSize;
+                    else
                     {
-                        const uint32_t offset = groupIndex * groupSize;
+                        groupJobEnd = jobCount;
+                    }
+
+                    struct WorkBatch : JobDetail
+                    {
+                        uint32_t groupIndex;
+                        uint32_t offset;
                         uint32_t groupJobEnd;
-                        if (offset + groupSize < jobCount)
-                            groupJobEnd = offset + groupSize;
-                        else
+                        CanellaJob group;
+                        WorkBatch(uint32_t _groupIndex, uint32_t _offset, uint32_t _groupJobEnd, CanellaJob _jobGroup) : groupIndex(_groupIndex), offset(_offset), groupJobEnd(_groupJobEnd), group(_jobGroup){};
+                        void execute()
                         {
-                            groupJobEnd = jobCount;
-                        }
+                            for (uint32_t i = offset; i < groupJobEnd; ++i)
+                            {
+                                try
+                                {
+                                    group.jobgroup_detail->execute(i);
+                                }
 
-                        JobDispatchArgs args;
-                        args.groupIndex = groupIndex;
-
-                        for (uint32_t i = offset; i < groupJobEnd; ++i)
-                        {
-                            jobs(args);
+                                catch (...)
+                                {
+                                    Logger::Error("Excepetion");
+                                }
+                            }
                         }
                     };
-                    submit(jobGroup);
-                };
+                    WorkBatch batch(groupIndex, offset, groupJobEnd, job);
+                    HJob batch_pointer = std::make_shared<WorkBatch>(batch);
+                    CanellaJob wrap_job;
+                    wrap_job.job_detail = batch_pointer;
+                    schedule(std::move(wrap_job));
+                }
             }
         };
 
@@ -164,7 +205,17 @@ namespace Canella
             JobSystemManager::instance().wait();
         }
 
-        void execute(const Job &job)
+        /**
+         * @brief schedules a job to be executed
+         *
+         * @param job the job to be executed
+         */
+        void schedule(const CanellaJob &job)
+        {
+            JobSystemManager::instance().submit(job);
+        }
+
+        void schedule_by_copy(CanellaJob job)
         {
             JobSystemManager::instance().submit(job);
         }
@@ -172,6 +223,11 @@ namespace Canella
         void stop()
         {
             JobSystemManager::instance().stop();
+        }
+
+        void dispatch(uint16_t jobCount, uint16_t groupSize, CanellaJob jobGroup)
+        {
+            JobSystemManager::instance().dispatch(jobCount, groupSize, jobGroup);
         }
 
     }

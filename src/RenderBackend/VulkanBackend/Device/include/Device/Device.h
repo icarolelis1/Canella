@@ -4,6 +4,7 @@
 #include "Logger/Logger.hpp"
 
 #include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #include <optional>
 #include <vector>
 #include <iostream>
@@ -12,7 +13,8 @@
 #include <string>
 #include <optional>
 #include <functional>
-namespace Canella {
+namespace Canella
+{
     namespace RenderSystem
     {
         namespace VulkanBackend
@@ -28,7 +30,7 @@ namespace Canella {
 
                 VkSharingMode sharingMode;
                 uint32_t queueFamiliyIndexCount;
-                const uint32_t* queueFamilies;
+                const uint32_t *queueFamilies;
             };
             struct QueueFamilyIndices
             {
@@ -55,7 +57,7 @@ namespace Canella {
                         Canella::Logger::Error("There is no Graphics Queue Suitable");
                         return false;
                     }
-                    Canella::Logger::Info("The Graphics Queue is at Index : %d" , graphics.value() );
+                    Canella::Logger::Info("The Graphics Queue is at Index : %d", graphics.value());
                     return true;
                 }
 
@@ -96,8 +98,8 @@ namespace Canella {
                 }
             };
 
-            const std::vector<const char*> deviceExtensions = {
-                VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+            const std::vector<const char *> deviceExtensions = {
+                VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
             using Surface = VkSurfaceKHR;
             class Device
@@ -123,18 +125,26 @@ namespace Canella {
                 bool querySwapChainProperties(VkPhysicalDevice device, Surface surface);
                 void createLogicalDevice();
                 size_t getMinimumBufferAligment();
+
             public:
                 Device();
                 void destroyDevice();
 
                 QueueSharingMode getQueueSharingMode();
-                VkDevice& getLogicalDevice();
-                VkDevice* getLogicalDevicePtr();
+                VkDevice &getLogicalDevice();
+                VkDevice *getLogicalDevicePtr();
 
-                VkPhysicalDevice& getPhysicalDevice();
-                VkPhysicalDevice* getPhysicalDevicePtr();
+                VkPhysicalDevice &getPhysicalDevice();
+                VkPhysicalDevice *getPhysicalDevicePtr();
 
                 bool prepareDevice(VkSurfaceKHR surface, Instance instance);
+
+                uint32_t getGraphicsQueueIndex() const;
+                uint32_t getTransferQueueIndex() const;
+                uint32_t getComputeQueueIndex()  const;
+                uint32_t getPresentQueueIndex()  const;
+
+                const VkAllocationCallbacks* getAllocator();
 
                 ~Device();
             };

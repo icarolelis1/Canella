@@ -8,16 +8,11 @@
 
 namespace Canella{
     
-    struct RenderConfig
-    {
-        const char* API = "VULKAN";
-    };
-        
+  
     class Render{
         public:
             Render() = default;
             Render(nlohmann::json& json);
-            Render(RenderConfig& config);
 
             virtual void initialize(Windowing* window) = 0;
 
@@ -25,10 +20,8 @@ namespace Canella{
 
             virtual void update(float time) = 0;
 
-            RenderConfig& getConfig();
 
-        protected:
-            RenderConfig config;
+
     };
 }
 #endif

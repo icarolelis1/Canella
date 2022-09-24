@@ -3,9 +3,11 @@
 #define VULKAN_RENDER
 #include "Device/Device.h"
 #include "Render/Render.h"
-#include <Windowing.h>
 #include "Swapchain/Swapchain.h"
+#include "Windowing.h"
+#include "RenderpassManager/RenderpassManager.h"
 
+#include <memory.h>
 namespace Canella {
 	namespace RenderSystem
 	{
@@ -20,12 +22,12 @@ namespace Canella {
 				Surface surface;
 				void initVulkanInstance();
 				Instance* instance;
-
+				std::unique_ptr<RenderpassManager> renderpassManager;
 			public:
 
 				void initialize(Windowing* window);
 				void render();
-				VulkanRender(nlohmann::json& config);
+				VulkanRender(nlohmann::json& config,Windowing* window);
 				void update(float time);
 
 				~VulkanRender();

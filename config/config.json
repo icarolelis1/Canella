@@ -1,11 +1,12 @@
 {
   "App": {
-    "Name": "dsadsadasd",
+    "Name": "CanellaBase",
     "AppVersion": "1.0",
     "Api": "Vulkan"
   },
   "Render": {
-      "Api":"VULKAN"
+      "Api":"VULKAN",
+      "RenderPath" : "C:/Users/icaro/OneDrive/Documentos/IcaroDev/Canella/config/render_path/basic.json"
   },
     "Scenegraph":{
         "Entities":[
@@ -23,7 +24,7 @@
     "Window":{
         "Width":1920,
         "Height":1080,
-        "Title":"Warm"
+        "Title":"Canella Engine"
 
     }
     

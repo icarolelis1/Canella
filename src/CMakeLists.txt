@@ -4,11 +4,15 @@ add_library(
     Render
     RenderBackend/VulkanBackend/Instance/src/Instance.cpp
     RenderBackend/VulkanBackend/Device/src/Device.cpp
+    RenderBackend/VulkanBackend/Commandpool/src/Commandpool.cpp
     RenderBackend/VulkanBackend/Swapchain/src/Swapchain.cpp
     RenderBackend/VulkanBackend/Image/src/Image.cpp
     RenderBackend/VulkanBackend/VulkanRender/src/VulkanRender.cpp
     RenderBackend/VulkanBackend/RenderAttachment/src/RenderAttachment.cpp
-
+    RenderBackend/VulkanBackend/RenderpassManager/src/RenderpassManager.cpp
+    RenderBackend/VulkanBackend/Renderpass/src/Renderpass.cpp
+    RenderBackend/VulkanBackend/Frame/src/Frame.cpp
+    RenderBackend/VulkanBackend/CanellaUtility/src/CanellaUtility.cpp
     Render/src/Render.cpp
     Stb/stb.h
 )
@@ -19,10 +23,15 @@ target_include_directories(
     RenderBackend/VulkanBackend/Instance/include
     RenderBackend/VulkanBackend/Device/include
     RenderBackend/VulkanBackend/Swapchain/include
+    RenderBackend/VulkanBackend/Commandpool/include
     RenderBackend/VulkanBackend/Image/include
-    RenderBackend/VulkanBackend/Swapchain/include
     RenderBackend/VulkanBackend/VulkanRender/include
     RenderBackend/VulkanBackend/RenderAttachment/include
+    RenderBackend/VulkanBackend/RenderpassManager/include
+    RenderBackend/VulkanBackend/Frame/include
+    RenderBackend/VulkanBackend/Renderpass/include
+    RenderBackend/VulkanBackend/CanellaUtility/include
+
 
     Window/include
     Logger/include
