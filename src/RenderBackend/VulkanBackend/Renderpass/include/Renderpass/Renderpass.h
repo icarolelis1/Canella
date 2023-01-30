@@ -31,7 +31,7 @@ namespace Canella
                 Subpass subpass;
 
             public:
-                RenderPass(Device *device, const char *key, VkExtent2D extent, std::vector<RenderAttachment> &attachments);
+                RenderPass(Device *device, const char *key, VkExtent2D extent, std::vector<RenderAttachment> &attachments, std::vector<Subpass> &subpasses);
 
                 /**
                  * @brief internally begins the renderpass

@@ -15,6 +15,8 @@ namespace Canella
             VkAttachmentLoadOp convert_from_string_loadOp(const char *loadOp);
             VkAttachmentStoreOp convert_from_string_storeOp(const char *storeOp);
             VkImageLayout convert_from_string_image_layout(const char *layout);
+            VkPipelineStageFlagBits convert_from_string_pipeline_stage(const char* stage);
+            VkAccessFlagBits convert_from_string_access_mask(const char* mask);
         }
     }
 }

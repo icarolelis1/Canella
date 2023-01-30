@@ -6,7 +6,7 @@ namespace Canella
     {
         namespace VulkanBackend
         {
-            RenderPass::RenderPass(Device *_device, const char *_key, VkExtent2D _extent, std::vector<RenderAttachment> &_attachemnts) : device(_device), extent(_extent), key(_key)
+            RenderPass::RenderPass(Device *_device, const char *_key, VkExtent2D _extent, std::vector<RenderAttachment> &_attachemnts,std::vector<Subpass> &subpasses) : device(_device), extent(_extent), key(_key)
             {
 
                 std::vector<VkAttachmentDescription> descriptions;

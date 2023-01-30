@@ -20,14 +20,16 @@ namespace Canella
     {
         namespace VulkanBackend
         {
+            using Renderpasses = std::unordered_map<const char *, RenderPass>;
+
             class RenderpassManager
             {
 
-                
-                struct RenderpassDescription {
+                struct RenderpassDescription
+                {
                     uint32_t number_of_attachemnts = 0;
-                    uint32_t number_of_subpasses = 0; 
-                    std::vector<RenderAttachment> attachements;  
+                    uint32_t number_of_subpasses = 0;
+                    std::vector<RenderAttachment> attachements;
                     std::vector<Subpass> subpasses;
                 };
 
@@ -35,21 +37,23 @@ namespace Canella
                 {
                     uint32_t number_of_passes;
                     std::vector<RenderpassDescription> renderpasses_descriptions;
-                }RenderpassManagerDescription;
+                } RenderpassManagerDescription;
 
-                void loadRenderPassManager(RenderpassManagerDescription &managerdescription);
+                void loadRenderPassManager(const char *key, VkExtent2D extent, RenderpassManagerDescription &managerdescription);
+                Device * device;
 
             public:
-                /**
-                 * @brief Construct a new Renderpass Manager object
-                 *
-                 * @param device
-                 * @param render_path
-                 */
+            /**
+             * @brief Construct a new Renderpass Manager object
+             * 
+             * @param device 
+             * @param swapchain 
+             * @param render_path 
+             */
                 RenderpassManager(Device *device, Swapchain *swapchain, const char *render_path);
+                Renderpasses renderpasses;
             };
 
-            using Renderpasses = std::unordered_map<const char *, std::shared_ptr<RenderpassManager>>;
         }
     }
 }

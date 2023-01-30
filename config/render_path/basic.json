@@ -4,13 +4,18 @@
         "Renderpass": [
             {
                 "Description": "basic color output",
+                "Key": "basic",
                 "index": 0,
                 "Format": 44,
+                "Extent": {
+                    "Width": 1920,
+                    "Height": 1080
+                },
                 "Subpasses_count": 1,
                 "Attachment_count": 1,
                 "Attachments_descriptions": {
                     "0": {
-                        "Format": 44,
+                        "Format": "VK_FORMAT_B8G8R8A8_UNORM",
                         "Samples": "VK_SAMPLE_COUNT_1_BIT",
                         "LoadOp": "VK_ATTACHMENT_LOAD_OP_DONT_CARE",
                         "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE",
@@ -22,16 +27,19 @@
                 },
                 "Subpasses_descriptions": {
                     "Subpasses_count": 1,
-                    "PipelineBindPoint": "VK_PIPELINE_BIND_POINT_GRAPHICS",
-                    "pipelineBindPoint": "VK_PIPELINE_BIND_POINT_GRAPHICS",
-                    "ColorAttachmentCount": 1,
-                    "ColorAttachemntIndex": 0,
-                    "SrcSubpass": "VK_SUBPASS_EXTERNAL",
-                    "DstSubpass": 0,
-                    "SrcStageMask": "VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT",
-                    "DstStageMask": "VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT",
-                    "SrcAccessMask": "VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT",
-                    "DstAccessMask": "VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT"
+                    "0": {
+                        "PipelineBindPoint": "VK_PIPELINE_BIND_POINT_GRAPHICS",
+                        "ColorAttachmentCount": 1,
+                        "ColorAttachemntIndex": [
+                            0
+                        ],
+                        "SrcSubpass": "VK_SUBPASS_EXTERNAL",
+                        "DstSubpass": 0,
+                        "SrcStageMask": "VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT",
+                        "DstStageMask": "VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT",
+                        "SrcAccessMask": "VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT",
+                        "DstAccessMask": "VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT"
+                    }
                 }
             }
         ]
