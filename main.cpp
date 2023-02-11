@@ -10,24 +10,21 @@ std::mutex Canella::Logger::logger_mutex;
 #define  GLFW_EXPOSE_NATIVE_WIN32
 int main()
 {
-	 Canella::Logger::Info("INFO");
-	 Canella::Logger::Debug("DEBUG");
-	 Canella::Logger::Error("ERROR");
-	 Canella::Logger::Warn("WARN");
-	 Canella::Logger::Trace("TRACE");
+	Canella::Logger::Info("INFO");
+	Canella::Logger::Debug("DEBUG");
+	Canella::Logger::Error("ERROR");
+	Canella::Logger::Warn("WARN");
+	Canella::Logger::Trace("TRACE");
 
-	// Load Config File (PASS THE RIGHT FOLDER)
-
-	std::fstream f("C:\\Users\\icaro\\OneDrive\\Documentos\\IcaroDev\\Canella\\config\\config.json");
-	f;
+	std::fstream f("E:\\IcaroDev\\Orange\\config\\config.json");
 	nlohmann::json j;
 	f >> j;
 
 	// Create Application
-    Application::App myApp;
-    myApp.initialize(j);
-    myApp.run();
-    myApp.close();
+	Application::App myApp;
+	myApp.initialize(j);
+	myApp.run();
+	myApp.close();
 
 	return 0;
 }
