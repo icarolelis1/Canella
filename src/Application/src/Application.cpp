@@ -7,13 +7,12 @@
 
 using namespace Canella;
 
-void Application::App::initialize(nlohmann::json &config)
+void Application::App::initialize(nlohmann::json& config)
 {
 
 	Canella::JobSystem::initialize();
 	window.initialize(config["Window"]);
 	render = std::make_unique<Canella::RenderSystem::VulkanBackend::VulkanRender>(config["Render"], &window);
-
 	Canella::Logger::Info("Application initialized");
 }
 

@@ -18,6 +18,7 @@ namespace Canella
 
                 std::vector<VkSubpassDependency> dependencies;
                 std::vector<VkSubpassDescription> description;
+
             };
             class RenderPass
             {
@@ -28,7 +29,7 @@ namespace Canella
                 VkExtent2D extent;
                 std::vector<VkClearValue> clearValues;
                 std::vector<RenderAttachment> attachments;
-                Subpass subpass;
+                std::vector<Subpass> subpasses;
 
             public:
                 RenderPass(Device *device, const char *key, VkExtent2D extent, std::vector<RenderAttachment> &attachments, std::vector<Subpass> &subpasses);

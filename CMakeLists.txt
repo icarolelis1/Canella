@@ -1,8 +1,4 @@
-﻿# CMakeList.txt: projeto de CMake para Canela, incluir origem e definir
-# lógica específica a um projeto aqui.
-#
-
-cmake_minimum_required (VERSION 3.8)
+﻿cmake_minimum_required (VERSION 3.8)
 set (CMAKE_CXX_STANDARD 17)
 
 project ("Canella")
@@ -10,36 +6,19 @@ set(LIBS_DIR "./libs")
 
 # VULKAN AND GLFW FOLDER
 IF(WIN32)
-set(VULKAN_SDK_PATH C:/VulkanSDK/1.3.216.0)
 SET(GLFW_PATH C:/glfw)
 endif()
 
 add_definitions(-DCMAKE_EXPORT_COMPILE_COMMANDS=ON)
 
-if (DEFINED VULKAN_SDK_PATH)
-
-  set(VULKAN_INCLUDE_DIRS "${VULKAN_SDK_PATH}/Include") # 1.1 Make sure this include path is correct
-  set(VULKAN_LIBRARIES "${VULKAN_SDK_PATH}/Lib") # 1.3 Make sure lib path is correct
-  set(VULKAN_FOUND "True")
-  message(STATUS "Found Vulkan at ${VULKAN_SDK_PATH}/Include")
-
-else()
-
-  find_package(Vulkan REQUIRED) # throws error if could not find Vulkan
-  message(STATUS "Found Vulkan: $ENV{VULKAN_SDK}")
-
-endif()
+find_package(Vulkan REQUIRED) # throws error if could not find Vulkan
+message(STATUS "Found Package Vulkan: $ENV{VULKAN_SDK}")
 
 if (NOT VULKAN_FOUND)
 	message(FATAL_ERROR "Could not find Vulkan library!")
-
 else()
-
 	message(STATUS "Using vulkan lib at: ${Vulkan_LIBRARIES}")
-  
 endif()
-
-
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 SET(OS_LIBS_DIR ${LIBS_DIR}/linux)
@@ -79,13 +58,13 @@ find_package(glm REQUIRED PATHS  ${LIBS_DIR}/glm/lib/cmake/glm)
 
 add_executable (${PROJECT_NAME} main.cpp)
 
-target_link_directories(${PROJECT_NAME} PRIVATE  ${VULKAN_LIBRARIES} ${GLFW_LIB} )
+target_link_directories(${PROJECT_NAME} PUBLIC $ENV{VULKAN_SDK}/Lib ${GLFW_LIB} )
 
-include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/nlhoman 
-                                    
+include_directories(${PROJECT_NAME} PUBLIC 
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/nlhoman 
                                     ${GLFW_INCLUDE_DIRS}
                                     ${LIBS_DIR}/glm/include
-                                    ${VULKAN_INCLUDE_DIRS} 
+                                    $ENV{VULKAN_SDK}/Include
                                     ${LIBS_DIR}/interface
 )
 
@@ -93,7 +72,7 @@ add_subdirectory(src)
 
 IF(WIN32)
 
-            target_link_libraries(${PROJECT_NAME} PUBLIC 
+            target_link_libraries(${PROJECT_NAME} PRIVATE 
             glfw3
             Application
             vulkan-1  )
@@ -102,9 +81,7 @@ ELSEIF(UNIX)
             target_link_libraries(${PROJECT_NAME} PRIVATE 
             ${GLFW_LIB}
             Application
-            ${Vulkan_LIBRARIES} )
+            vulkan-1 )
 
 endif()
 
-
-# TODO: Adicione testes e instale destinos, se necessário.

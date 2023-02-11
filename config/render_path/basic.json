@@ -3,6 +3,8 @@
         "Number_of_passes": 1,
         "Renderpass": [
             {
+                "Attachment_count": 1,
+                "Subpasses_count": 1,
                 "Description": "basic color output",
                 "Key": "basic",
                 "index": 0,
@@ -11,8 +13,6 @@
                     "Width": 1920,
                     "Height": 1080
                 },
-                "Subpasses_count": 1,
-                "Attachment_count": 1,
                 "Attachments_descriptions": {
                     "0": {
                         "Format": "VK_FORMAT_B8G8R8A8_UNORM",

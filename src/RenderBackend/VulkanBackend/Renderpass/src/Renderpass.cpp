@@ -6,11 +6,18 @@ namespace Canella
     {
         namespace VulkanBackend
         {
-            RenderPass::RenderPass(Device *_device, const char *_key, VkExtent2D _extent, std::vector<RenderAttachment> &_attachemnts,std::vector<Subpass> &subpasses) : device(_device), extent(_extent), key(_key)
+            RenderPass::RenderPass(Device *_device, 
+                const char *_key, 
+                VkExtent2D _extent, 
+                std::vector<RenderAttachment> &_attachemnts,
+                std::vector<Subpass> &_subpasses) :
+                device(_device), 
+                extent(_extent), 
+                key(_key),
+                attachments(_attachemnts),
+                subpasses(_subpasses)
             {
-
                 std::vector<VkAttachmentDescription> descriptions;
-
                 for (auto &d : attachments)
                     descriptions.push_back(d.description);
 
@@ -18,13 +25,14 @@ namespace Canella
                 renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
                 renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
                 renderPassInfo.pAttachments = descriptions.data();
-                renderPassInfo.subpassCount = static_cast<uint32_t>(subpass.description.size());
-                renderPassInfo.pSubpasses = subpass.description.data();
-                renderPassInfo.dependencyCount = static_cast<uint32_t>(subpass.dependencies.size());
-                ;
-                renderPassInfo.pDependencies = subpass.dependencies.data();
-
-                if (vkCreateRenderPass(device->getLogicalDevice(), &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS)
+                renderPassInfo.subpassCount = static_cast<uint32_t>(subpasses.size());
+                renderPassInfo.pSubpasses = subpasses[0].description.data();
+                renderPassInfo.subpassCount = subpasses[0].description.size();
+                renderPassInfo.dependencyCount = static_cast<uint32_t>(subpasses[0].dependencies.size());
+                renderPassInfo.pDependencies = subpasses[0].dependencies.data();
+                renderPassInfo.flags = 0;
+                renderPassInfo.pNext = VK_NULL_HANDLE;
+                if (vkCreateRenderPass(device->getLogicalDevice(), &renderPassInfo, device->getAllocator(), &renderPass) != VK_SUCCESS)
                 {
                     Canella::Logger::Error("failed to create render pass!");
                 }
@@ -45,6 +53,7 @@ namespace Canella
 
                 vkCmdBeginRenderPass(commandBuffer, &info, contents);
             }
+            
             RenderPass::~RenderPass()
             {
                 vkDestroyRenderPass(device->getLogicalDevice(), renderPass, device->getAllocator());

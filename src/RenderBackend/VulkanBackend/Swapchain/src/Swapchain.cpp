@@ -62,7 +62,6 @@ namespace Canella {
 
 				if (capabilities.currentExtent.width != UINT32_MAX) {
 					return capabilities.currentExtent;
-
 				}
 				else {
 					int w, h;
