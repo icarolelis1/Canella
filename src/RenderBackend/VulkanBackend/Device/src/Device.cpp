@@ -7,7 +7,7 @@ namespace Canella
 	{
 		namespace VulkanBackend
 		{
-			Device::Device(){};
+			Device::Device() {};
 
 			void Device::choosePhysicalDevice(Instance instance, Surface surface)
 			{
@@ -30,11 +30,13 @@ namespace Canella
 				int bestScore = 0;
 				VkPhysicalDevice bestDevice = NULL;
 
-				for (const auto &device : devices)
+				for (const auto& device : devices)
 				{
 
 					VkPhysicalDeviceProperties physicalDeviceProps;
 					VkPhysicalDeviceFeatures features;
+ 					VkPhysicalDeviceDescriptorIndexingFeatures indexing_features{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES, nullptr };
+					VkPhysicalDeviceFeatures2 features2{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,&indexing_features };
 					VkPhysicalDeviceMemoryProperties props;
 
 					// Query physical device properties
@@ -42,6 +44,9 @@ namespace Canella
 					vkGetPhysicalDeviceMemoryProperties(device, &props);
 					vkGetPhysicalDeviceFeatures(device, &features);
 
+					vkGetPhysicalDeviceFeatures2(device, &features2);
+					bindless_suported = indexing_features.descriptorBindingPartiallyBound && indexing_features.runtimeDescriptorArray;
+					if (!bindless_suported)currentScore = 0;
 					currentScore = scorePhysicalDevice(device, features, props, surface);
 					// currentScore >=100. means that the device have all the minimum demanded capabilities
 					if (currentScore >= 100.)
@@ -60,7 +65,6 @@ namespace Canella
 
 				if (!findSuitableGPU)
 				{
-
 					Canella::Logger::Error("Failed to find a  Graphics Card that suits the requirements");
 					return;
 				}
@@ -74,11 +78,21 @@ namespace Canella
 					vkGetPhysicalDeviceMemoryProperties(physicalDevice, &vk_MemoryProperties);
 					vkGetPhysicalDeviceFeatures(physicalDevice, &vk_PhysicalDevicefeatures);
 
-					Canella::Logger::Info("Device %c ", vk_physicalDeviceProperties.deviceName);
+					if (bindless_suported) {
+						VkPhysicalDeviceDescriptorIndexingFeatures indexing_features{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES, nullptr };
+						
+						vk_PhysicalDevicefeatures2 = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,&indexing_features};
+						vkGetPhysicalDeviceFeatures2(physicalDevice,
+							&vk_PhysicalDevicefeatures2);
+						vk_PhysicalDevicefeatures2.pNext = &indexing_features;
+					}
+
 
 					physicalDevice = bestDevice;
 					msaaSamples = getMaxUsableSampleCount();
 					Canella::Logger::Info("MaxSamples Count %d ", msaaSamples);
+					Canella::Logger::Info("Device %c ", vk_physicalDeviceProperties.deviceName);
+
 				}
 			}
 
@@ -92,7 +106,7 @@ namespace Canella
 
 				std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
 
-				for (const auto &extension : extensions)
+				for (const auto& extension : extensions)
 				{
 					requiredExtensions.erase(extension.extensionName);
 				}
@@ -201,7 +215,7 @@ namespace Canella
 
 				if (graphicsSupportedQueues.size() > 0)
 					usedQueues.push_back(graphicsSupportedQueues[0]);
-				auto getUniqueQueueIndex = [](std::vector<uint32_t> &usedQueues, std::vector<uint32_t> supportQueues)
+				auto getUniqueQueueIndex = [](std::vector<uint32_t>& usedQueues, std::vector<uint32_t> supportQueues)
 				{
 					for (auto i : usedQueues)
 					{
@@ -302,7 +316,7 @@ namespace Canella
 			void Device::createLogicalDevice()
 			{
 				std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-				std::set<uint32_t> uniqueFamilies = {queueFamilies.graphics.value(), queueFamilies.present.value(), queueFamilies.transfer.value(), queueFamilies.compute.value()};
+				std::set<uint32_t> uniqueFamilies = { queueFamilies.graphics.value(), queueFamilies.present.value(), queueFamilies.transfer.value(), queueFamilies.compute.value() };
 
 				for (uint32_t queueFamily : uniqueFamilies)
 				{
@@ -328,7 +342,7 @@ namespace Canella
 				deviceInfo.ppEnabledExtensionNames = deviceExtensions.data();
 				deviceInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
 				deviceInfo.ppEnabledLayerNames = validationLayers.data();
-
+				//deviceInfo.pNext
 				VkResult result = vkCreateDevice(physicalDevice, &deviceInfo, nullptr, &logicalDevice);
 
 				if (result != VK_SUCCESS)
@@ -363,7 +377,7 @@ namespace Canella
 					queueSharing.sharingMode = VK_SHARING_MODE_CONCURRENT;
 					queueSharing.queueFamiliyIndexCount = 2;
 					std::vector<uint32_t> queueF(2);
-					queueF = {queueFamilies.graphics.value(), queueFamilies.present.value()};
+					queueF = { queueFamilies.graphics.value(), queueFamilies.present.value() };
 					queueSharing.queueFamilies = queueF.data();
 					return queueSharing;
 				}
@@ -382,21 +396,21 @@ namespace Canella
 			{
 				destroyDevice();
 			}
-			VkDevice &Device::getLogicalDevice()
+			VkDevice& Device::getLogicalDevice()
 			{
 				return logicalDevice;
 			}
-			VkDevice *Device::getLogicalDevicePtr()
+			VkDevice* Device::getLogicalDevicePtr()
 			{
 				return &logicalDevice;
 			}
 
-			VkPhysicalDevice &Device::getPhysicalDevice()
+			VkPhysicalDevice& Device::getPhysicalDevice()
 			{
 				return physicalDevice;
 			}
 
-			VkPhysicalDevice *Device::getPhysicalDevicePtr()
+			VkPhysicalDevice* Device::getPhysicalDevicePtr()
 			{
 				return &physicalDevice;
 			}
@@ -410,13 +424,13 @@ namespace Canella
 
 			uint32_t Device::getGraphicsQueueIndex() const
 			{
-				return queueFamilies.graphics.value() ;
+				return queueFamilies.graphics.value();
 			}
 			uint32_t Device::getTransferQueueIndex() const
 			{
 				return queueFamilies.transfer.value();
 			}
-			uint32_t Device::getComputeQueueIndex()const 
+			uint32_t Device::getComputeQueueIndex()const
 			{
 				return queueFamilies.compute.value();
 			}
@@ -425,7 +439,7 @@ namespace Canella
 				return queueFamilies.present.value();
 			}
 
-			const VkAllocationCallbacks* Device::getAllocator(){
+			const VkAllocationCallbacks* Device::getAllocator() {
 				return nullptr;
 			}
 		}

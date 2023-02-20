@@ -25,6 +25,7 @@ SET(OS_LIBS_DIR ${LIBS_DIR}/linux)
 add_definitions( -DLINUX=1 )
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
+
 IF (WIN32)
 add_definitions( -DWIN32=1 )
 # Linux specific code

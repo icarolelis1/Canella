@@ -18,7 +18,7 @@ namespace Canella
                 VkSemaphore renderFinishedSemaphore;
                 Device * device;
             public:
-                Frame(Device* device);
+                Frame(Device* device,Commandpool * commandPool);
                 ~Frame();
             };
         }

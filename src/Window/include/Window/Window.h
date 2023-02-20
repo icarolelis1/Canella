@@ -7,7 +7,6 @@
 #include <vulkan/vulkan.h>
 #include <json.hpp>
 
-
 #define VK_USE_PLATFORM_WIN32_KHR
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -30,7 +29,6 @@ namespace Canella
         void initialize(nlohmann::json& config);
         GLFWwindow* m_window;
         int shouldCloseWindow();
-        
         Extent& getExtent();
         void getSurface(VkInstance instance, VkSurfaceKHR* surface);
         void update();

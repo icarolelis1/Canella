@@ -30,16 +30,28 @@ VulkanRender::VulkanRender(nlohmann::json &configJson, Windowing *window)
 {
 
 	initVulkanInstance();
-
 	static_cast<GlfwWindow *>(window)->getSurface(instance->handle, &surface);
 	Extent extent = static_cast<GlfwWindow *>(window)->getExtent();
 	device.prepareDevice(surface, *instance);
 	swapChain.prepareSwapchain(extent.width, extent.height, device, surface, VK_FORMAT_B8G8R8A8_UNORM, static_cast<GlfwWindow *>(window)->getHandle(), device.getQueueSharingMode());
-
 	renderpassManager = std::make_unique<RenderpassManager>(&device,&swapChain, configJson["RenderPath"].get<std::string>().c_str());
+	initDescriptorPool();
 	Canella::Logger::Info("Vulkan Renderer initialized\n");
+	
+}
 
-	Canella::Logger::Debug("Render created");
+void Canella::RenderSystem::VulkanBackend::VulkanRender::initDescriptorPool()
+{
+	bindless.build(device);
+}
+void VulkanRender::initPipelines()
+{
+
+    //PipelineLayout pipelineLayout = PipelineLayout(device,)
+	//cachedPipelines["BASIC"] = new Pipeline(device,);
+}
+
+void VulkanRender::loadFrames(std::array<Frame, 2> &rames) {
 }
 
 VulkanRender::~VulkanRender()

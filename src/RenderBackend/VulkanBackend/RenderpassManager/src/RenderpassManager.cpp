@@ -86,8 +86,6 @@ namespace Canella
 							description.colorAttachmentCount = subpassDescriptionJson["ColorAttachmentCount"].get<std::uint32_t>();
 							description.inputAttachmentCount = 0;
 							description.preserveAttachmentCount = 0;
-			
-							
 							description.pColorAttachments = &render_attachments_descriptions[subpassDescriptionJson["ColorAttachemntIndex"][0].get<std::uint32_t>()].reference;
 							description.flags = 0;
 							subpass.description[x] = description;

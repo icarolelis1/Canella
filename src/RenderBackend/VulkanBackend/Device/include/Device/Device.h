@@ -114,6 +114,8 @@ namespace Canella
                 VkPhysicalDeviceProperties vk_physicalDeviceProperties;
                 VkPhysicalDeviceMemoryProperties vk_MemoryProperties;
                 VkPhysicalDeviceFeatures vk_PhysicalDevicefeatures;
+                VkPhysicalDeviceFeatures2 vk_PhysicalDevicefeatures2;
+                bool bindless_suported;
 
                 VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;
 
