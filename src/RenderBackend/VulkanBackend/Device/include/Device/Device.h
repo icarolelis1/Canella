@@ -142,6 +142,7 @@ namespace Canella
                 bool prepareDevice(VkSurfaceKHR surface, Instance instance);
 
                 uint32_t getGraphicsQueueIndex() const;
+                VkQueue getGraphicsQueueHandle() const;
                 uint32_t getTransferQueueIndex() const;
                 uint32_t getComputeQueueIndex()  const;
                 uint32_t getPresentQueueIndex()  const;

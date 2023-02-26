@@ -11,32 +11,38 @@
 #include "Pipeline/Pipeline.h"
 #include "Frame/Frame.h"
 #include <memory.h>
-namespace Canella {
+namespace Canella
+{
 	namespace RenderSystem
 	{
 		namespace VulkanBackend
 		{
 			using Surface = VkSurfaceKHR;
 
-			class VulkanRender : public Canella::Render {
+			class VulkanRender : public Canella::Render
+			{
 
 				Device device;
 				Swapchain swapChain;
 				Surface surface;
-				Instance* instance;
+				Instance *instance;
 				std::unique_ptr<RenderpassManager> renderpassManager;
-				Commandpool* commandPool;
-				Descriptorpool bindless;
-
+				Descriptorpool descriptorPool;
+				std::vector<FrameData> frames;
 				void initDescriptorPool();
 				void initPipelines();
 				void initVulkanInstance();
-				void loadFrames(std::array<Frame,2>&);
+				void loadFrames();
+				void cachePipelines();
+				void recordCommandIndex(VkCommandBuffer& commandBuffer,uint32_t currentIndex);
+				unsigned int current_frame = 0;
+				std::vector<VkDescriptorSet> global_descriptors;
+
 			public:
-				void initialize(Windowing* window);
+				void initialize(Windowing *window);
 				void render();
-				
-				VulkanRender(nlohmann::json& config,Windowing* window);
+
+				VulkanRender(nlohmann::json &config, Windowing *window);
 				void update(float time);
 
 				~VulkanRender();

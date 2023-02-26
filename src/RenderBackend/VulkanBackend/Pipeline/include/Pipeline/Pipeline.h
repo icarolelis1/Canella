@@ -3,11 +3,20 @@
 #include "Device/Device.h"
 #include <vector>
 #include <memory>
+#include <glm/mat4x4.hpp>
+#include <glm/vec4.hpp>
 namespace Canella {
 	namespace RenderSystem
 	{
 		namespace VulkanBackend
 		{
+			
+			struct ViewProjection{
+				glm::mat4 viewProjection;
+				glm::mat4 model;
+				glm::vec4 eyePos;
+			};
+
 			enum class ATRIBUTES
 			{
 				NONE,
@@ -27,7 +36,7 @@ namespace Canella {
 				UNIFORM_DYNAMIC
 			};
 
-			struct ShaderResource {
+			struct ShaderBindingResource {
 				ShaderResourceType type;
 				uint32_t binding;
 				uint32_t size;
@@ -160,7 +169,9 @@ namespace Canella {
 				FRAGMENT_SHADER,
 				VERTEX_SHADER,
 				GEOMETRY_SHADER,
-				COMPUTE_SHADER
+				COMPUTE_SHADER,
+				MESH_SHADER,
+				TASK_SHADER
 			};
 
 			class Shader {
@@ -181,16 +192,15 @@ namespace Canella {
 			class DescriptorSetLayout {
 
 			public:
-				DescriptorSetLayout(Device* _device, const std::vector<ShaderResource> _resources, const char* description = "GenericSet");
+				void build(Device* _device, const std::vector<ShaderBindingResource> _resources, const char* description = "GenericSet");
 				std::vector< VkDescriptorSetLayoutBinding> getBindings() const;
 				VkDescriptorSetLayout& getDescriptorLayoutHandle();
-				~DescriptorSetLayout();
+				void destroy(Device*);
 
 			private:
 
 				VkDescriptorSetLayout vk_descriptorSetLayout;
 				VkDescriptorType getDescriptorType(ShaderResourceType type);
-				Device* device;
 				std::vector< VkDescriptorSetLayoutBinding> bindings;
 
 			};

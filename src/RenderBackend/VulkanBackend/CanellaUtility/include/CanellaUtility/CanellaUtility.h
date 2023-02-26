@@ -3,22 +3,24 @@
 #define CANELLA_UTILITY
 #include <vector>
 #include <vulkan/vulkan.h>
-
+#include "Pipeline/Pipeline.h"
 namespace Canella
 {
 	namespace RenderSystem
 	{
 		namespace VulkanBackend
 		{
-			VkFormat convert_from_string_format(const char* image_format);
-			VkSampleCountFlagBits convert_from_string_sample_count(const char* samples);
-			VkAttachmentLoadOp convert_from_string_loadOp(const char* loadOp);
-			VkAttachmentStoreOp convert_from_string_storeOp(const char* storeOp);
-			VkImageLayout convert_from_string_image_layout(const char* layout);
-			VkPipelineStageFlagBits convert_from_string_pipeline_stage(const char* stage);
-			VkAccessFlagBits convert_from_string_access_mask(const char* mask);
+			VkFormat convert_from_string_format(const char *image_format);
+			VkSampleCountFlagBits convert_from_string_sample_count(const char *samples);
+			VkAttachmentLoadOp convert_from_string_loadOp(const char *loadOp);
+			VkAttachmentStoreOp convert_from_string_storeOp(const char *storeOp);
+			VkImageLayout convert_from_string_image_layout(const char *layout);
+			VkPipelineStageFlagBits convert_from_string_pipeline_stage(const char *stage);
+			VkAccessFlagBits convert_from_string_access_mask(const char *mask);
+			ShaderResourceType coonvert_from_string_shader_resource_type(const char *type);
 
-			namespace initializers {
+			namespace initializers
+			{
 
 				inline VkMemoryAllocateInfo memoryAllocateInfo()
 				{
@@ -213,7 +215,7 @@ namespace Canella
 
 				inline VkDescriptorPoolCreateInfo descriptorPoolCreateInfo(
 					uint32_t poolSizeCount,
-					VkDescriptorPoolSize* pPoolSizes,
+					VkDescriptorPoolSize *pPoolSizes,
 					uint32_t maxSets)
 				{
 					VkDescriptorPoolCreateInfo descriptorPoolInfo{};
@@ -225,7 +227,7 @@ namespace Canella
 				}
 
 				inline VkDescriptorPoolCreateInfo descriptorPoolCreateInfo(
-					const std::vector<VkDescriptorPoolSize>& poolSizes,
+					const std::vector<VkDescriptorPoolSize> &poolSizes,
 					uint32_t maxSets)
 				{
 					VkDescriptorPoolCreateInfo descriptorPoolInfo{};
@@ -261,7 +263,7 @@ namespace Canella
 				}
 
 				inline VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo(
-					const VkDescriptorSetLayoutBinding* pBindings,
+					const VkDescriptorSetLayoutBinding *pBindings,
 					uint32_t bindingCount)
 				{
 					VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo{};
@@ -272,7 +274,7 @@ namespace Canella
 				}
 
 				inline VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo(
-					const std::vector<VkDescriptorSetLayoutBinding>& bindings)
+					const std::vector<VkDescriptorSetLayoutBinding> &bindings)
 				{
 					VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo{};
 					descriptorSetLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
@@ -281,9 +283,8 @@ namespace Canella
 					return descriptorSetLayoutCreateInfo;
 				}
 
-
 				inline VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo(
-					const VkDescriptorSetLayout* pSetLayouts,
+					const VkDescriptorSetLayout *pSetLayouts,
 					uint32_t setLayoutCount = 1)
 				{
 					VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo{};
@@ -304,7 +305,7 @@ namespace Canella
 
 				inline VkDescriptorSetAllocateInfo descriptorSetAllocateInfo(
 					VkDescriptorPool descriptorPool,
-					const VkDescriptorSetLayout* pSetLayouts,
+					const VkDescriptorSetLayout *pSetLayouts,
 					uint32_t descriptorSetCount)
 				{
 					VkDescriptorSetAllocateInfo descriptorSetAllocateInfo{};
@@ -328,7 +329,7 @@ namespace Canella
 					VkDescriptorSet dstSet,
 					VkDescriptorType type,
 					uint32_t binding,
-					VkDescriptorBufferInfo* bufferInfo,
+					VkDescriptorBufferInfo *bufferInfo,
 					uint32_t descriptorCount = 1)
 				{
 					VkWriteDescriptorSet writeDescriptorSet{};
@@ -345,7 +346,7 @@ namespace Canella
 					VkDescriptorSet dstSet,
 					VkDescriptorType type,
 					uint32_t binding,
-					VkDescriptorImageInfo* imageInfo,
+					VkDescriptorImageInfo *imageInfo,
 					uint32_t descriptorCount = 1)
 				{
 					VkWriteDescriptorSet writeDescriptorSet{};
@@ -432,7 +433,7 @@ namespace Canella
 				}
 
 				inline VkPipelineColorBlendStateCreateInfo pipelineColorBlendStateCreateInfo(
-					uint32_t attachmentCount, const VkPipelineColorBlendAttachmentState* pAttachments)
+					uint32_t attachmentCount, const VkPipelineColorBlendAttachmentState *pAttachments)
 				{
 					VkPipelineColorBlendStateCreateInfo pipelineColorBlendStateCreateInfo{};
 					pipelineColorBlendStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
@@ -482,7 +483,7 @@ namespace Canella
 				}
 
 				inline VkPipelineDynamicStateCreateInfo pipelineDynamicStateCreateInfo(
-					const VkDynamicState* pDynamicStates,
+					const VkDynamicState *pDynamicStates,
 					uint32_t dynamicStateCount,
 					VkPipelineDynamicStateCreateFlags flags = 0)
 				{
@@ -495,7 +496,7 @@ namespace Canella
 				}
 
 				inline VkPipelineDynamicStateCreateInfo pipelineDynamicStateCreateInfo(
-					const std::vector<VkDynamicState>& pDynamicStates,
+					const std::vector<VkDynamicState> &pDynamicStates,
 					VkPipelineDynamicStateCreateFlags flags = 0)
 				{
 					VkPipelineDynamicStateCreateInfo pipelineDynamicStateCreateInfo{};
@@ -577,7 +578,7 @@ namespace Canella
 					return specializationMapEntry;
 				}
 
-				inline VkSpecializationInfo specializationInfo(uint32_t mapEntryCount, const VkSpecializationMapEntry* mapEntries, size_t dataSize, const void* data)
+				inline VkSpecializationInfo specializationInfo(uint32_t mapEntryCount, const VkSpecializationMapEntry *mapEntries, size_t dataSize, const void *data)
 				{
 					VkSpecializationInfo specializationInfo{};
 					specializationInfo.mapEntryCount = mapEntryCount;

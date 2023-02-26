@@ -9,7 +9,7 @@
 #include <json.hpp>
 #include <unordered_map>
 #include <memory>
-
+#include <string>
 /**
  * @brief holds all the renderpasses used by the application
  *
@@ -20,7 +20,7 @@ namespace Canella
     {
         namespace VulkanBackend
         {
-            using Renderpasses = std::unordered_map<const char *, RenderPass*>;
+            using Renderpasses = std::unordered_map<std::string, RenderPass *>;
 
             class RenderpassManager
             {
@@ -39,16 +39,16 @@ namespace Canella
                     std::vector<RenderpassDescription> renderpasses_descriptions;
                 } RenderpassManagerDescription;
 
-                void loadRenderPassManager(const char *key, VkExtent2D extent, RenderpassManagerDescription& managerdescription);
-                Device * device;
+                void loadRenderPassManager(std::string, Swapchain* swapchain, VkExtent2D extent, RenderpassManagerDescription& managerdescriptio);
+                Device *device;
 
             public:
-            /**
-             * @brief Construct a new Renderpass Manager object
-             * @param device 
-             * @param swapchain 
-             * @param render_path 
-             */
+                /**
+                 * @brief Construct a new Renderpass Manager object
+                 * @param device
+                 * @param swapchain
+                 * @param render_path
+                 */
                 RenderpassManager(Device *device, Swapchain *swapchain, const char *render_path);
                 Renderpasses renderpasses;
             };

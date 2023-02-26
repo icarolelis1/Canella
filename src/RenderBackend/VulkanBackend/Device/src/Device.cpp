@@ -442,6 +442,10 @@ namespace Canella
 			const VkAllocationCallbacks* Device::getAllocator() {
 				return nullptr;
 			}
+
+			VkQueue Device::getGraphicsQueueHandle() const{
+				return graphicsQueue;
+			}
 		}
 	}
 }

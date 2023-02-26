@@ -2,7 +2,8 @@
 #define DESCRIPTOR_POOl
 #include "Device/Device.h"
 #include "vulkan/vulkan.h"
-
+#include <Pipeline/Pipeline.h>
+#include <vector>
 namespace Canella
 {
     namespace RenderSystem
@@ -26,6 +27,8 @@ namespace Canella
 
             public:
                 void build(Device &device);
+
+                void AllocateDescriptorSet(Device& device,DescriptorSetLayout& layout,std::vector<VkDescriptorSet>& sets);
             };
 
         }

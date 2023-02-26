@@ -10,8 +10,8 @@
 #include "Component/Component.h"
 #include <memory>
 #include <json.hpp>
-using Vector3 = glm::vec3;
 
+using Vector3 = glm::vec3;
 namespace Canella{
     struct Quaternion {
 		float w;
@@ -43,7 +43,6 @@ class Transform :public Component{
 		void setRotation(glm::vec3 r);
 		void setRotation(float x, float y, float z);
 		void rotateMix(glm::quat q1, glm::quat q2, float dt);
-		glm::quat calculateRotationQuaternion(glm::vec3 axis, float angle);
 		void updateInternalQuaternions();
 		void increasePos(float x, float y, float z);
 		void increasePos(glm::vec3 p);
@@ -57,6 +56,7 @@ class Transform :public Component{
 
 		//Function to be added in the componentRegistry
 		static std::shared_ptr<Canella::Component> create(const nlohmann::json& config);
+		glm::quat calculateRotationQuaternion(glm::vec3 axis, float angle);
         
 
 	private:
@@ -66,10 +66,9 @@ class Transform :public Component{
 		glm::vec3 position;
 		glm::vec3 rotation;
 		bool shouldUpdateQuaternion;
-
-		glm::quat rotQuaternion;
 		float angle = 0;
 		float rotAngle;
+		glm::quat rotQuaternion;
     };
 };
 

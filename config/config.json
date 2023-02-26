@@ -8,24 +8,23 @@
     "Api": "VULKAN",
     "RenderPath": "E:\\IcaroDev\\Orange\\config\\render_path\\basic.json"
   },
-    "Scenegraph":{
-        "Entities":[
-            {
-                    "Parent":"Root",
-                    "Id":"E1",
-                    "Components":[
-                  
-                    ]
-            }
-            
+  "Scenegraph": {
+    "Entities": [
+      {
+        "Parent": "Root",
+        "Id": "MainCamera",
+        "Components": [
+          {
+            "type": "CameraController",
+            "Id" : "CameraController"
+          }
         ]
-        
-    },
-    "Window":{
-        "Width":1920,
-        "Height":1080,
-        "Title":"Canella Engine"
-
-    }
-    
+      }
+    ]
+  },
+  "Window": {
+    "Width": 1080,
+    "Height": 1080,
+    "Title": "Canella Engine"
+  }
 }

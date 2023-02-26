@@ -2,6 +2,8 @@
 #ifndef RENDER_PASS
 
 #include "Device/Device.h"
+#include "Swapchain/Swapchain.h"
+#include <vector>
 namespace Canella
 {
     namespace RenderSystem
@@ -18,21 +20,28 @@ namespace Canella
 
                 std::vector<VkSubpassDependency> dependencies;
                 std::vector<VkSubpassDescription> description;
-
             };
             class RenderPass
             {
 
                 Device *device;
-                VkRenderPass renderPass;
-                const char *key; // String identifier for this renderpass
+                VkRenderPass vk_renderpass;
+                std::string key; // String identifier for this renderpass
                 VkExtent2D extent;
-                std::vector<VkClearValue> clearValues;
                 std::vector<RenderAttachment> attachments;
                 std::vector<Subpass> subpasses;
 
+
             public:
-                RenderPass(Device *device, const char *key, VkExtent2D extent, std::vector<RenderAttachment> &attachments, std::vector<Subpass> &subpasses);
+                std::vector<VkFramebuffer> vk_framebuffers;
+                RenderPass(Device *device, 
+                    std::string key,
+                    Swapchain* swapchain, 
+                    VkExtent2D extent, 
+                    std::vector<RenderAttachment> &attachments, 
+                    std::vector<Subpass> &subpasses);
+
+                void createFrameBuffer(Swapchain* swapchain);
 
                 /**
                  * @brief internally begins the renderpass
@@ -41,7 +50,11 @@ namespace Canella
                  * @param frameBuffer vulkan framebuffer associated with this renderpass
                  * @param contents
                  */
-                void beginRenderPass(VkCommandBuffer &commandBuffer, VkFramebuffer &frameBuffer, VkSubpassContents contents = VK_SUBPASS_CONTENTS_INLINE);
+                void beginRenderPass(
+                    VkCommandBuffer &commandBuffer,
+                    std::vector<VkClearValue> clearValue,
+                    uint32_t imageIndex,
+                    VkSubpassContents contents = VK_SUBPASS_CONTENTS_INLINE);
 
                 /**
                  * @brief calls endRenderpass

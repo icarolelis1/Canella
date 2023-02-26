@@ -7,7 +7,7 @@ namespace Canella
     {
         namespace VulkanBackend
         {
-            Commandpool::Commandpool(Device *_device, POOL_TYPE type, VkCommandPoolCreateFlags flags) : device(_device)
+            void Commandpool::build(Device *device, POOL_TYPE type, VkCommandPoolCreateFlags flags)
             {
                 VkCommandPoolCreateInfo createInfo{};
                 createInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -20,17 +20,19 @@ namespace Canella
                     createInfo.queueFamilyIndex = device->getTransferQueueIndex();
                 createInfo.flags = flags;
                 VkResult result = vkCreateCommandPool(device->getLogicalDevice(), &createInfo, nullptr, &pool);
+                if (result == VK_SUCCESS)
+                    Logger::Debug("Successfully Created CommandPool");
             }
 
-            VkCommandBuffer Commandpool::requestCommandBuffer(VkCommandBufferLevel level) const
+            VkCommandBuffer Commandpool::requestCommandBuffer(Device *device, VkCommandBufferLevel level) const
             {
                 VkCommandBuffer buffer;
-                allocateCommandBuffer(buffer, level);
+                allocateCommandBuffer(device, buffer, level);
 
                 return buffer;
             }
 
-            void Commandpool::allocateCommandBuffer(VkCommandBuffer &buffer, VkCommandBufferLevel level) const
+            void Commandpool::allocateCommandBuffer(Device *device, VkCommandBuffer &buffer, VkCommandBufferLevel level) const
             {
                 VkCommandBufferAllocateInfo allocInfo{};
                 allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -51,13 +53,15 @@ namespace Canella
                 {
                     beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
                 };
+           
+                vkBeginCommandBuffer(buffer, &beginInfo);
             }
             void Commandpool::endCommandBuffer(VkCommandBuffer &buffer)
             {
                 vkEndCommandBuffer(buffer);
             }
 
-            Commandpool::~Commandpool()
+            void Commandpool::destroy(Device *device)
             {
                 vkDestroyCommandPool(device->getLogicalDevice(), pool, device->getAllocator());
             }

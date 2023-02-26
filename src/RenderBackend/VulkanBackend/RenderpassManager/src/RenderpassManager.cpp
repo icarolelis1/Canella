@@ -93,10 +93,10 @@ namespace Canella
 							dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
 							dependency.dstSubpass = 0;
 							dependency.srcStageMask = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-							dependency.dstStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+							dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 
 							dependency.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-							dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+							dependency.dstAccessMask =   VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 							subpass.dependencies.push_back(dependency);
 							Canella::Logger::Info("testing stuff");
 						}
@@ -109,13 +109,13 @@ namespace Canella
 					VkExtent2D extent;
 					extent.width = renderpassJson["Extent"]["Width"].get<std::uint32_t>();
 					extent.height = renderpassJson["Extent"]["Height"].get<std::uint32_t>();
-
-					loadRenderPassManager(renderpassJson["Key"].get<std::string>().c_str(), extent, std::move(renderpassManagerDescription));
+					auto key = renderpassJson["Key"].get<std::string>();
+					loadRenderPassManager(key, swapchain, extent, renderpassManagerDescription);
 				}
 			}
-			void RenderpassManager::loadRenderPassManager(const char *key, VkExtent2D extent, RenderpassManagerDescription &managerdescription)
+			void RenderpassManager::loadRenderPassManager(std::string key,Swapchain* swapchain, VkExtent2D extent, RenderpassManagerDescription &managerdescription)
 			{
-				renderpasses[key] = new RenderPass(device, key, extent, managerdescription.renderpasses_descriptions[0].attachements, managerdescription.renderpasses_descriptions[0].subpasses);
+				renderpasses[key] = new RenderPass(device, key, swapchain, extent, managerdescription.renderpasses_descriptions[0].attachements, managerdescription.renderpasses_descriptions[0].subpasses);
 			}
 		}
 	}

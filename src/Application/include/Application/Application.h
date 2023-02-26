@@ -29,7 +29,7 @@ namespace Application{
             bool playing = true;
             std::unique_ptr<Canella::Render> render;
             Canella::GlfwWindow window;
-            std::unique_ptr<Canella::Scenegraph> scenegraph;
+            Canella::Scenegraph scenegraph;
 
 
     };

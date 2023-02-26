@@ -3,13 +3,13 @@
 
 using namespace Canella::RenderSystem::VulkanBackend;
 
-Pipeline::Pipeline(Device* _device,
-	PipelineLayout _pipelienLayout, 
-	std::unique_ptr<Shader> _vertexShader, 
-	std::unique_ptr<Shader> _fragmentShader, 
-	PipelineProperties& info, 
-	uint32_t bindingCount)
-	:vertexShader(std::move(_vertexShader)), fragmentShader(std::move(_fragmentShader)), device(_device), pipelineLayout(std::move(_pipelienLayout))
+Pipeline::Pipeline(Device *_device,
+				   PipelineLayout _pipelienLayout,
+				   std::unique_ptr<Shader> _vertexShader,
+				   std::unique_ptr<Shader> _fragmentShader,
+				   PipelineProperties &info,
+				   uint32_t bindingCount)
+	: vertexShader(std::move(_vertexShader)), fragmentShader(std::move(_fragmentShader)), device(_device), pipelineLayout(std::move(_pipelienLayout))
 {
 	VertexLayout vertexLayout(info.atributes, info.vertexOffsets, info.vertexBindingCount);
 
@@ -17,24 +17,27 @@ Pipeline::Pipeline(Device* _device,
 	VkPipelineInputAssemblyStateCreateInfo inputAssemblyState = initializers::pipelineInputAssemblyStateCreateInfo(info.topology, 0, VK_FALSE);
 	VkPipelineRasterizationStateCreateInfo rasterizationState = initializers::pipelineRasterizationStateCreateInfo(info.polygonMode, info.cullMode, info.frontFaceClock);
 
-	if (info.depthBias) {
+	if (info.depthBias)
+	{
 
 		rasterizationState.depthBiasEnable = 1;
 		rasterizationState.depthBiasConstantFactor = 4.0f;
 		rasterizationState.depthBiasSlopeFactor = 1.50f;
-
 	}
 
-	VkPipelineColorBlendAttachmentState* colorBlends = new VkPipelineColorBlendAttachmentState[info.colorAttachmentsCount];
+	VkPipelineColorBlendAttachmentState *colorBlends = new VkPipelineColorBlendAttachmentState[info.colorAttachmentsCount];
 	VkPipelineColorBlendAttachmentState blendAttachmentState;
 
-	for (unsigned int i = 0; i < info.colorAttachmentsCount; i++) {
+	for (unsigned int i = 0; i < info.colorAttachmentsCount; i++)
+	{
 
-		if (!info.alphablending) {
+		if (!info.alphablending)
+		{
 			blendAttachmentState = initializers::pipelineColorBlendAttachmentState(0xf, VK_FALSE);
 		}
 
-		else {
+		else
+		{
 			// Premulitplied alpha
 			blendAttachmentState.blendEnable = VK_TRUE;
 			blendAttachmentState.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
@@ -51,52 +54,48 @@ Pipeline::Pipeline(Device* _device,
 	VkPipelineColorBlendStateCreateInfo colorBlendState = initializers::pipelineColorBlendStateCreateInfo(info.colorAttachmentsCount, colorBlends);
 	VkPipelineDepthStencilStateCreateInfo depthStencilState = initializers::pipelineDepthStencilStateCreateInfo(info.dephTest, VK_TRUE, VK_COMPARE_OP_LESS_OR_EQUAL);
 
-	if (info.alphablending) {
+	if (info.alphablending)
+	{
 
 		depthStencilState.depthWriteEnable = VK_FALSE;
-
 	}
 
 	VkPipelineViewportStateCreateInfo viewportState = initializers::pipelineViewportStateCreateInfo(1, 1, VK_DYNAMIC_STATE_VIEWPORT);
 	VkPipelineMultisampleStateCreateInfo multisampleState = initializers::pipelineMultisampleStateCreateInfo(info.samples);
-	std::vector<VkDynamicState> dynamicStateEnables = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
+	std::vector<VkDynamicState> dynamicStateEnables = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
 	VkPipelineDynamicStateCreateInfo dynamicState = initializers::pipelineDynamicStateCreateInfo(dynamicStateEnables);
 
-	//Vertex input state
-	std::vector< VkVertexInputBindingDescription> bds;
+	// Vertex input state
+	std::vector<VkVertexInputBindingDescription> bds;
 
 	VkPipelineVertexInputStateCreateInfo vertexInputState{};
 	std::vector<VkVertexInputAttributeDescription> atribDescription;
 
-	for (unsigned int i = 0; i < info.vertexBindingCount; i++) {
-
+	for (unsigned int i = 0; i < info.vertexBindingCount; i++)
+	{
 
 		VkVertexInputBindingDescription bindingDescription = vertexLayout.getBinding(static_cast<uint32_t>(i));
 		bds.push_back(bindingDescription);
 		vertexLayout.getAttributeDescription(static_cast<uint32_t>(i), atribDescription);
-
-
 	}
 	vertexInputState.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 	vertexInputState.vertexAttributeDescriptionCount = static_cast<uint32_t>(atribDescription.size());
 	vertexInputState.pVertexAttributeDescriptions = atribDescription.data();
 
-	if (info.vertexBindingCount != 0) {
+	if (info.vertexBindingCount != 0)
+	{
 		vertexInputState.pVertexBindingDescriptions = bds.data();
 		vertexInputState.vertexBindingDescriptionCount = static_cast<uint32_t>(bds.size());
 	}
 
-	else {
+	else
 		vertexInputState.vertexBindingDescriptionCount = 0;
-
-	}
-
 
 	std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
 
 	shaderStages.resize(2);
 
-	shaderStages = { vertexShader->getShaderStageInfo() ,fragmentShader->getShaderStageInfo() };
+	shaderStages = {vertexShader->getShaderStageInfo(), fragmentShader->getShaderStageInfo()};
 
 	VkGraphicsPipelineCreateInfo pipelineCI{};
 	pipelineCI.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -120,16 +119,16 @@ Pipeline::Pipeline(Device* _device,
 	pipelineCI.pVertexInputState = &vertexInputState;
 	pipelineCI.subpass = info.subpass;
 	VkResult r = vkCreateGraphicsPipelines(device->getLogicalDevice(), vk_cache, 1, &pipelineCI, device->getAllocator(), &vk_pipeline);
-	if (r == VK_SUCCESS)std::cout << "Successfully created pipeline\n";
+	if (r == VK_SUCCESS)
+		std::cout << "Successfully created pipeline\n";
 
 	vertexShader->destroyModule();
 	fragmentShader->destroyModule();
 
 	delete[] colorBlends;
-
 }
 
-VkPipeline& Pipeline::getPipelineHandle()
+VkPipeline &Pipeline::getPipelineHandle()
 {
 	return vk_pipeline;
 }
@@ -142,12 +141,10 @@ PipelineLayout Pipeline::getPipelineLayoutHandle()
 Pipeline::~Pipeline()
 {
 	vkDestroyPipeline(device->getLogicalDevice(), vk_pipeline, device->getAllocator());
-
 }
 
-Shader::Shader(Device* _device, SHADER_TYPE _type, const std::vector<char> _code) : device(_device), type(_type), code(_code)
+Shader::Shader(Device *_device, SHADER_TYPE _type, const std::vector<char> _code) : device(_device), type(_type), code(_code)
 {
-
 }
 
 VkPipelineShaderStageCreateInfo Shader::getShaderStageInfo()
@@ -155,7 +152,7 @@ VkPipelineShaderStageCreateInfo Shader::getShaderStageInfo()
 	VkShaderModuleCreateInfo createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 	createInfo.codeSize = code.size();
-	createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
+	createInfo.pCode = reinterpret_cast<const uint32_t *>(code.data());
 
 	VkResult result = vkCreateShaderModule(device->getLogicalDevice(), &createInfo, device->getAllocator(), &vk_shaderModule);
 
@@ -165,15 +162,11 @@ VkPipelineShaderStageCreateInfo Shader::getShaderStageInfo()
 	if (type == SHADER_TYPE::VERTEX_SHADER)
 		stageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
 
-	else if (type == SHADER_TYPE::FRAGMENT_SHADER) {
-
+	else if (type == SHADER_TYPE::FRAGMENT_SHADER)
 		stageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-	}
 
-	else if (type == SHADER_TYPE::COMPUTE_SHADER) {
-
+	else if (type == SHADER_TYPE::COMPUTE_SHADER)
 		stageCreateInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
-	}
 
 	stageCreateInfo.module = vk_shaderModule;
 	stageCreateInfo.pName = "main";
@@ -186,26 +179,21 @@ void Shader::destroyModule()
 	vkDestroyShaderModule(device->getLogicalDevice(), vk_shaderModule, nullptr);
 }
 
-DescriptorSetLayout::DescriptorSetLayout(Device* _device, const std::vector<ShaderResource> _resources, const char* description) :device(_device)
+void DescriptorSetLayout::build(Device *device, const std::vector<ShaderBindingResource> _resources, const char *description)
 {
 
-	for (auto& resource : _resources) {
-
-
+	for (auto &resource : _resources)
+	{
 		auto type = DescriptorSetLayout::getDescriptorType(resource.type);
-
 		VkDescriptorSetLayoutBinding layout_binding{};
-
 		layout_binding.binding = resource.binding;
 		layout_binding.descriptorCount = 1;
 		layout_binding.descriptorType = type;
 		layout_binding.stageFlags = static_cast<VkShaderStageFlags>(resource.stages);
-
 		bindings.push_back(layout_binding);
-
 	}
 
-	VkDescriptorSetLayoutCreateInfo create_info{ VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO };
+	VkDescriptorSetLayoutCreateInfo create_info{VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO};
 	create_info.bindingCount = static_cast<uint32_t>(bindings.size());
 	create_info.pBindings = bindings.data();
 
@@ -213,54 +201,54 @@ DescriptorSetLayout::DescriptorSetLayout(Device* _device, const std::vector<Shad
 
 	if (result != VK_SUCCESS)
 		Canella::Logger::Error("Failed to create DescriptorSetLayout\n");
-
 }
 
-std::vector<VkDescriptorSetLayoutBinding> DescriptorSetLayout::getBindings()const
-{
-	return (bindings);
-}
-
-
-VkDescriptorSetLayout& DescriptorSetLayout::getDescriptorLayoutHandle()
-{
-	return vk_descriptorSetLayout;
-}
-
-DescriptorSetLayout::~DescriptorSetLayout()
+void DescriptorSetLayout::destroy(Device *device)
 {
 	vkDestroyDescriptorSetLayout(device->getLogicalDevice(), vk_descriptorSetLayout, device->getAllocator());
 }
 
+std::vector<VkDescriptorSetLayoutBinding> DescriptorSetLayout::getBindings() const
+{
+	return (bindings);
+}
+
+VkDescriptorSetLayout &DescriptorSetLayout::getDescriptorLayoutHandle()
+{
+	return vk_descriptorSetLayout;
+}
+
 VkDescriptorType DescriptorSetLayout::getDescriptorType(ShaderResourceType type)
 {
-	switch (type) {
+	switch (type)
+	{
 
-	case  ShaderResourceType::UNIFORM_BUFFER:
-		return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; break;
-
+	case ShaderResourceType::UNIFORM_BUFFER:
+		return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		break;
 
 	case ShaderResourceType::IMAGE_SAMPLER:
-		return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER; break;
+		return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		break;
 
 	case ShaderResourceType::INPUT_ATTACHMENT:
-		return VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT; break;
+		return VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
+		break;
 
 	case ShaderResourceType::UNIFORM_DYNAMIC:
-		return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC; break;
-
-
-
+		return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+		break;
 	}
 }
 
-PipelineLayout::PipelineLayout(Device* _device, std::vector<DescriptorSetLayout> _descriptors, std::vector<VkPushConstantRange> _pushConstants)
-	:descriptors(std::move(_descriptors)), pushConstants(std::move(_pushConstants)), device(_device)
+PipelineLayout::PipelineLayout(Device *_device, std::vector<DescriptorSetLayout> _descriptors, std::vector<VkPushConstantRange> _pushConstants)
+	: descriptors(std::move(_descriptors)), pushConstants(std::move(_pushConstants)), device(_device)
 {
 
 	std::vector<VkDescriptorSetLayout> handles;
 
-	for (auto& descriptor : descriptors) {
+	for (auto &descriptor : descriptors)
+	{
 		handles.push_back(descriptor.getDescriptorLayoutHandle());
 	}
 
@@ -271,16 +259,15 @@ PipelineLayout::PipelineLayout(Device* _device, std::vector<DescriptorSetLayout>
 	if (handles.size() > 0)
 		pipelineLayoutCreateInfo.pSetLayouts = handles.data();
 
-	if (pushConstants.size() > 0) {
+	if (pushConstants.size() > 0)
+	{
 		pipelineLayoutCreateInfo.pushConstantRangeCount = static_cast<uint32_t>(pushConstants.size());
 		pipelineLayoutCreateInfo.pPushConstantRanges = pushConstants.data();
-
 	}
 	VkResult result = vkCreatePipelineLayout(device->getLogicalDevice(), &pipelineLayoutCreateInfo, device->getAllocator(), &vk_pipelineLayout);
 
 	if (result != VK_SUCCESS)
 		Canella::Logger::Error("Failed to create descriptorset layout\n");
-
 }
 
 VkPipelineLayout PipelineLayout::getHandle()
@@ -293,8 +280,8 @@ PipelineLayout::~PipelineLayout()
 	vkDestroyPipelineLayout(device->getLogicalDevice(), vk_pipelineLayout, device->getAllocator());
 }
 
-ComputePipeline::ComputePipeline(Device* _device, PipelineLayout _pipelienLayout, std::unique_ptr<Shader> _computeShader)
-	:device(_device), pipelineLayout(std::move(pipelineLayout)), computeShader(std::move(_computeShader))
+ComputePipeline::ComputePipeline(Device *_device, PipelineLayout _pipelienLayout, std::unique_ptr<Shader> _computeShader)
+	: device(_device), pipelineLayout(std::move(pipelineLayout)), computeShader(std::move(_computeShader))
 {
 	VkComputePipelineCreateInfo computePipelineCreateInfo{};
 	computePipelineCreateInfo.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
@@ -304,19 +291,17 @@ ComputePipeline::ComputePipeline(Device* _device, PipelineLayout _pipelienLayout
 	std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
 	shaderStages.resize(1);
 
-	shaderStages = { computeShader->getShaderStageInfo() };
+	shaderStages = {computeShader->getShaderStageInfo()};
 
 	computePipelineCreateInfo.stage = shaderStages[0];
 
-	if ((vkCreateComputePipelines(device->getLogicalDevice(), vk_cache, 1, &computePipelineCreateInfo, device->getAllocator(), &vk_pipeline) != VK_SUCCESS)) {
+	if ((vkCreateComputePipelines(device->getLogicalDevice(), vk_cache, 1, &computePipelineCreateInfo, device->getAllocator(), &vk_pipeline) != VK_SUCCESS))
+	{
 		std::cout << "Failed to create compute pipeline\n\n";
-
 	}
-
 }
 
 ComputePipeline::~ComputePipeline()
 {
 	vkDestroyPipeline(device->getLogicalDevice(), vk_pipeline, device->getAllocator());
-
 }

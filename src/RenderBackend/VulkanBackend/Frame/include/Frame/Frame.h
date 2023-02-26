@@ -3,23 +3,30 @@
 #define FRAME
 
 #include "Commandpool/Commandpool.h"
+#include "Device/Device.h"
+#include "Swapchain/Swapchain.h"
 namespace Canella
 {
     namespace RenderSystem
     {
         namespace VulkanBackend
         {
-            class Frame
+            class FrameData
             {
 
-                Commandpool* commandPool;
+                Device *device;
+
+            public:
+                Commandpool commandPool;
                 VkFence imageAvaibleFence;
+                VkCommandBuffer commandBuffer;
                 VkSemaphore imageAcquiredSemaphore;
                 VkSemaphore renderFinishedSemaphore;
-                Device * device;
-            public:
-                Frame(Device* device,Commandpool * commandPool);
-                ~Frame();
+                FrameData();
+                uint32_t beginCommand(Device &device, Swapchain *swapChain, VkCommandBufferUsageFlags usageFlags);
+                void finishCommand();
+                void build(Device *device);
+                void destroy();
             };
         }
     }

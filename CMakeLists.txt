@@ -1,12 +1,12 @@
-﻿cmake_minimum_required (VERSION 3.8)
-set (CMAKE_CXX_STANDARD 17)
+﻿cmake_minimum_required(VERSION 3.8)
+set(CMAKE_CXX_STANDARD 17)
 
-project ("Canella")
+project("Canella")
 set(LIBS_DIR "./libs")
 
 # VULKAN AND GLFW FOLDER
 IF(WIN32)
-SET(GLFW_PATH C:/glfw)
+  SET(GLFW_PATH C:/glfw)
 endif()
 
 add_definitions(-DCMAKE_EXPORT_COMPILE_COMMANDS=ON)
@@ -14,75 +14,89 @@ add_definitions(-DCMAKE_EXPORT_COMPILE_COMMANDS=ON)
 find_package(Vulkan REQUIRED) # throws error if could not find Vulkan
 message(STATUS "Found Package Vulkan: $ENV{VULKAN_SDK}")
 
-if (NOT VULKAN_FOUND)
-	message(FATAL_ERROR "Could not find Vulkan library!")
+if(NOT VULKAN_FOUND)
+  message(FATAL_ERROR "Could not find Vulkan library!")
 else()
-	message(STATUS "Using vulkan lib at: ${Vulkan_LIBRARIES}")
+  message(STATUS "Using vulkan lib at: ${Vulkan_LIBRARIES}")
 endif()
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-SET(OS_LIBS_DIR ${LIBS_DIR}/linux)
-add_definitions( -DLINUX=1 )
+  SET(OS_LIBS_DIR ${LIBS_DIR}/linux)
+  add_definitions(-DLINUX=1)
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
+IF(WIN32)
+  add_definitions(-DWIN32=1)
 
-IF (WIN32)
-add_definitions( -DWIN32=1 )
-# Linux specific code
-SET(OS_LIBS_DIR ${LIBS_DIR}/win)
+  # Linux specific code
+  SET(OS_LIBS_DIR ${LIBS_DIR}/win)
 ENDIF()
 
-#GLFW
-if (DEFINED GLFW_PATH)
+# GLFW
+if(DEFINED GLFW_PATH)
   message(STATUS "Using GLFW path specified in .env")
   set(GLFW_INCLUDE_DIRS "${GLFW_PATH}/include")
-  if (MSVC)
+
+  if(MSVC)
     set(GLFW_LIB "${GLFW_PATH}/lib-vc2022") #
-  elseif (CMAKE_GENERATOR STREQUAL "MinGW Makefiles")
+  elseif(CMAKE_GENERATOR STREQUAL "MinGW Makefiles")
     message(STATUS "USING MINGW")
-    set(GLFW_LIB "${GLFW_PATH}/lib-mingw-w64") # 
+    set(GLFW_LIB "${GLFW_PATH}/lib-mingw-w64") #
   endif()
 else()
   find_package(glfw3 3.3 REQUIRED)
   set(GLFW_LIB glfw)
   message(STATUS "Found GLFW")
 endif()
-if (NOT GLFW_LIB)
-	message(FATAL_ERROR "Could not find glfw library!")
+
+if(NOT GLFW_LIB)
+  message(FATAL_ERROR "Could not find glfw library!")
 else()
-	message(STATUS "Using glfw lib at: ${GLFW_LIB}")
+  message(STATUS "Using glfw lib at: ${GLFW_LIB}")
 endif()
 
+# GLM
+find_package(glm REQUIRED PATHS ${LIBS_DIR}/glm/lib/cmake/glm)
 
-#GLM
-find_package(glm REQUIRED PATHS  ${LIBS_DIR}/glm/lib/cmake/glm) 
+add_executable(${PROJECT_NAME} main.cpp)
 
-add_executable (${PROJECT_NAME} main.cpp)
+target_link_directories(${PROJECT_NAME} PUBLIC $ENV{VULKAN_SDK}/Lib ${GLFW_LIB})
 
-target_link_directories(${PROJECT_NAME} PUBLIC $ENV{VULKAN_SDK}/Lib ${GLFW_LIB} )
-
-include_directories(${PROJECT_NAME} PUBLIC 
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/nlhoman 
-                                    ${GLFW_INCLUDE_DIRS}
-                                    ${LIBS_DIR}/glm/include
-                                    $ENV{VULKAN_SDK}/Include
-                                    ${LIBS_DIR}/interface
+include_directories(${PROJECT_NAME} PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/nlhoman
+  ${GLFW_INCLUDE_DIRS}
+  ${LIBS_DIR}/glm/include
+  $ENV{VULKAN_SDK}/Include
+  ${LIBS_DIR}/interface
 )
 
 add_subdirectory(src)
 
 IF(WIN32)
-
-            target_link_libraries(${PROJECT_NAME} PRIVATE 
-            glfw3
-            Application
-            vulkan-1  )
+  target_link_libraries(${PROJECT_NAME} PRIVATE
+    glfw3
+    Application
+    vulkan-1)
 
 ELSEIF(UNIX)
-            target_link_libraries(${PROJECT_NAME} PRIVATE 
-            ${GLFW_LIB}
-            Application
-            vulkan-1 )
-
+  target_link_libraries(${PROJECT_NAME} PRIVATE
+    ${GLFW_LIB}
+    Application
+    vulkan-1)
 endif()
 
+set( ${CMAKE_CURRENT_SOURCE_DIR}/shaders)
+
+set(SHADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/shaders)
+file(GLOB SHADERS ${SHADER_DIR}/*.vert ${SHADER_DIR}/*.frag ${SHADER_DIR}/*.comp ${SHADER_DIR}/*.geom ${SHADER_DIR}/*.tesc ${SHADER_DIR}/*.tese ${SHADER_DIR}/*.mesh ${SHADER_DIR}/*.task ${SHADER_DIR}/*.rgen ${SHADER_DIR}/*.rchit ${SHADER_DIR}/*.rmiss)
+
+foreach(SHADER IN LISTS SHADERS)
+    get_filename_component(FILENAME ${SHADER} NAME)
+    add_custom_command(OUTPUT ${SHADER_DIR}/shaders/${FILENAME}.spv
+        COMMAND ${Vulkan_GLSLC_EXECUTABLE} ${SHADER} -o ${SHADER_DIR}/spirv/${FILENAME}.spv  --target-spv=spv1.4
+        DEPENDS ${SHADER}
+        COMMENT "Compiling ${FILENAME}")
+list(APPEND SPV_SHADERS ${SHADER_DIR}/shaders/${FILENAME}.spv)
+endForeach()
+
+add_custom_target(shaders ALL DEPENDS ${SPV_SHADERS})

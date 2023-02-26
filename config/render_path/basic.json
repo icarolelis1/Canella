@@ -10,7 +10,7 @@
                 "index": 0,
                 "Format": 44,
                 "Extent": {
-                    "Width": 1920,
+                    "Width": 1080,
                     "Height": 1080
                 },
                 "Attachments_descriptions": {
@@ -43,5 +43,24 @@
                 }
             }
         ]
+    },
+    "Pipeline": {
+        "Key" :"MeshShaderPipeline",
+        "Builtin":true,
+        "Shaders": [
+            {
+                "Type" : "Mesh",
+                "ResourcesCount" : 1,
+                "BindingResources" : [
+                    {
+                        "Key":"ViewProjection",
+                        "Stage" : "Mesh",
+                        "Type" : "UNIFORM_BUFFER"
+
+                    }
+                ]
+            }
+        ]
     }
+    
 }

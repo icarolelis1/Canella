@@ -11,10 +11,14 @@ add_library(
     RenderBackend/VulkanBackend/RenderAttachment/src/RenderAttachment.cpp
     RenderBackend/VulkanBackend/RenderpassManager/src/RenderpassManager.cpp
     RenderBackend/VulkanBackend/Renderpass/src/Renderpass.cpp
+    RenderBackend/VulkanBackend/Resources/src/Resources.cpp
     RenderBackend/VulkanBackend/Descriptorpool/src/Descriptorpool.cpp
+    RenderBackend/VulkanBackend/PipelineBuilder/src/PipelineBuilder.cpp
     RenderBackend/VulkanBackend/Frame/src/Frame.cpp
     RenderBackend/VulkanBackend/CanellaUtility/src/CanellaUtility.cpp
     RenderBackend/VulkanBackend/Pipeline/src/Pipeline.cpp
+
+
     Render/src/Render.cpp
     Stb/stb.h
     SpirV/spirv_reflect.c
@@ -25,17 +29,21 @@ target_include_directories(
     Stb/
     RenderBackend/VulkanBackend/Instance/include
     RenderBackend/VulkanBackend/Device/include
-    RenderBackend/VulkanBackend/Swapchain/include
     RenderBackend/VulkanBackend/Commandpool/include
+    RenderBackend/VulkanBackend/Swapchain/include
     RenderBackend/VulkanBackend/Image/include
     RenderBackend/VulkanBackend/VulkanRender/include
     RenderBackend/VulkanBackend/RenderAttachment/include
     RenderBackend/VulkanBackend/RenderpassManager/include
-    RenderBackend/VulkanBackend/Frame/include
+    RenderBackend/VulkanBackend/Resources/include
     RenderBackend/VulkanBackend/Renderpass/include
+    RenderBackend/VulkanBackend/PipelineBuilder/include
+    RenderBackend/VulkanBackend/Frame/include
     RenderBackend/VulkanBackend/CanellaUtility/include
     RenderBackend/VulkanBackend/Pipeline/include
     RenderBackend/VulkanBackend/Descriptorpool/include
+
+
     SpirV/
 
     Window/include
@@ -52,6 +60,7 @@ add_library(Engine Window/src/Window.cpp
     Entity/src/Entity.cpp
     Scenegraph/src/Scenegraph.cpp
     defaultComponents/Transform/src/Transform.cpp
+    defaultComponents/CameraController/src/CameraController.cpp
     ComponentRegistry/src/ComponentRegistry.cpp
     Eventsystem/src/Eventsystem.cpp
     JobSystem/src/JobSystem.cpp
@@ -63,6 +72,7 @@ target_include_directories(
     Entity/include
     Scenegraph/include
     defaultComponents/Transform/include
+    defaultComponents/CameraController/include
     ComponentRegistry/include
     Threadpool/include
     Eventsystem/include
