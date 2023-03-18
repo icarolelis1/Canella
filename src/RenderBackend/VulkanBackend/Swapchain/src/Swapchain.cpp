@@ -34,7 +34,7 @@ namespace Canella
 				properties.extent = chooseImageExtent(properties.capabilities, window);
 				properties.presentMode = choosePresentationMode(propertiesQuery.presentationModes);
 
-				properties.minImageCount = properties.capabilities.minImageCount +1;
+				properties.minImageCount =  properties.capabilities.minImageCount +1;
 
 				if (properties.capabilities.maxImageCount > 0 && properties.minImageCount > properties.capabilities.maxImageCount)
 				{

@@ -42,12 +42,21 @@ namespace Canella
             {
                 if (mask == "VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT")
                     return VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+                return VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
             }
-            ShaderResourceType VulkanBackend::coonvert_from_string_shader_resource_type(const char *type)
+            ShaderResourceType VulkanBackend::convert_from_string_shader_resource_type(const char *type)
             {
                 if (type == "UNIFORM_BUFFER")
                     return ShaderResourceType::UNIFORM_BUFFER;
                 return ShaderResourceType::UNIFORM_BUFFER;
+            }
+
+            VkShaderStageFlags VulkanBackend::convert_from_string_shader_stage(const char *stage)
+            {
+                if (stage == "MESH_STAGE")
+                    return VK_PIPELINE_STAGE_MESH_SHADER_BIT_EXT;
+
+                return VK_PIPELINE_STAGE_MESH_SHADER_BIT_EXT;
             }
         };
     }

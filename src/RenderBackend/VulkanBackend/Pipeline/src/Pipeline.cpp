@@ -104,7 +104,6 @@ Pipeline::Pipeline(Device *_device,
 	pipelineCI.flags = 0;
 	pipelineCI.basePipelineIndex = -1;
 	pipelineCI.basePipelineHandle = VK_NULL_HANDLE;
-
 	pipelineCI.pInputAssemblyState = &inputAssemblyState;
 	pipelineCI.pRasterizationState = &rasterizationState;
 	pipelineCI.pColorBlendState = &colorBlendState;
@@ -113,12 +112,11 @@ Pipeline::Pipeline(Device *_device,
 	pipelineCI.pDepthStencilState = &depthStencilState;
 	pipelineCI.pDynamicState = &dynamicState;
 	pipelineCI.stageCount = 2;
-
 	pipelineCI.pStages = shaderStages.data();
-
 	pipelineCI.pVertexInputState = &vertexInputState;
 	pipelineCI.subpass = info.subpass;
 	VkResult r = vkCreateGraphicsPipelines(device->getLogicalDevice(), vk_cache, 1, &pipelineCI, device->getAllocator(), &vk_pipeline);
+
 	if (r == VK_SUCCESS)
 		std::cout << "Successfully created pipeline\n";
 
@@ -158,15 +156,16 @@ VkPipelineShaderStageCreateInfo Shader::getShaderStageInfo()
 
 	VkPipelineShaderStageCreateInfo stageCreateInfo = {};
 	stageCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-
 	if (type == SHADER_TYPE::VERTEX_SHADER)
 		stageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-
 	else if (type == SHADER_TYPE::FRAGMENT_SHADER)
 		stageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-
 	else if (type == SHADER_TYPE::COMPUTE_SHADER)
 		stageCreateInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
+	else if (type == SHADER_TYPE::MESH_SHADER)
+		stageCreateInfo.stage = VK_SHADER_STAGE_MESH_BIT_EXT;
+	else if (type == SHADER_TYPE::TASK_SHADER)
+		stageCreateInfo.stage = VK_SHADER_STAGE_TASK_BIT_EXT;
 
 	stageCreateInfo.module = vk_shaderModule;
 	stageCreateInfo.pName = "main";
@@ -201,6 +200,8 @@ void DescriptorSetLayout::build(Device *device, const std::vector<ShaderBindingR
 
 	if (result != VK_SUCCESS)
 		Canella::Logger::Error("Failed to create DescriptorSetLayout\n");
+	if(result == VK_SUCCESS)
+		Canella::Logger::Error("Successfully Created DescriptorSetLayout");
 }
 
 void DescriptorSetLayout::destroy(Device *device)
@@ -241,13 +242,12 @@ VkDescriptorType DescriptorSetLayout::getDescriptorType(ShaderResourceType type)
 	}
 }
 
-PipelineLayout::PipelineLayout(Device *_device, std::vector<DescriptorSetLayout> _descriptors, std::vector<VkPushConstantRange> _pushConstants)
-	: descriptors(std::move(_descriptors)), pushConstants(std::move(_pushConstants)), device(_device)
+void PipelineLayout::build(Device *_device, std::vector<DescriptorSetLayout> _descriptors, std::vector<VkPushConstantRange> _pushConstants)
 {
 
 	std::vector<VkDescriptorSetLayout> handles;
 
-	for (auto &descriptor : descriptors)
+	for (auto &descriptor : _descriptors)
 	{
 		handles.push_back(descriptor.getDescriptorLayoutHandle());
 	}
@@ -259,12 +259,12 @@ PipelineLayout::PipelineLayout(Device *_device, std::vector<DescriptorSetLayout>
 	if (handles.size() > 0)
 		pipelineLayoutCreateInfo.pSetLayouts = handles.data();
 
-	if (pushConstants.size() > 0)
+	if (_pushConstants.size() > 0)
 	{
 		pipelineLayoutCreateInfo.pushConstantRangeCount = static_cast<uint32_t>(pushConstants.size());
 		pipelineLayoutCreateInfo.pPushConstantRanges = pushConstants.data();
 	}
-	VkResult result = vkCreatePipelineLayout(device->getLogicalDevice(), &pipelineLayoutCreateInfo, device->getAllocator(), &vk_pipelineLayout);
+	VkResult result = vkCreatePipelineLayout(_device->getLogicalDevice(), &pipelineLayoutCreateInfo, device->getAllocator(), &vk_pipelineLayout);
 
 	if (result != VK_SUCCESS)
 		Canella::Logger::Error("Failed to create descriptorset layout\n");
@@ -275,7 +275,7 @@ VkPipelineLayout PipelineLayout::getHandle()
 	return vk_pipelineLayout;
 }
 
-PipelineLayout::~PipelineLayout()
+void PipelineLayout::destroy(Device * device)
 {
 	vkDestroyPipelineLayout(device->getLogicalDevice(), vk_pipelineLayout, device->getAllocator());
 }

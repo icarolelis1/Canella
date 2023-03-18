@@ -1,6 +1,7 @@
 #include "Instance/Instance.h"
 
-namespace Canella {
+namespace Canella
+{
     namespace RenderSystem
     {
         namespace VulkanBackend
@@ -27,6 +28,7 @@ namespace Canella {
 
                 return extensions;
             }
+
             void DebugLayers::setDebugerMessenger(VkDebugUtilsMessengerCreateInfoEXT& createInfo, VkInstance instance)
             {
                 populateDebugMessengerCreateInfo(createInfo);
@@ -36,14 +38,18 @@ namespace Canella {
                     std::cout << "    Failed to create DebugMessenger\n";
                 }
             }
+
             void DebugLayers::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
             {
                 createInfo = {};
                 createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-                createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-                createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+                createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
+                    VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+                createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+                    VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
                 createInfo.pfnUserCallback = debugCallback;
             }
+
             bool DebugLayers::checkLayerSupport()
             {
                 uint32_t layerCount = 0;
@@ -60,10 +66,8 @@ namespace Canella {
                 for (const char* layerName : validationLayers)
                 {
                     bool foundLayer = 0;
-
                     for (const auto& layerProperties : avaibleLayers)
                     {
-
                         if (strcmp(layerProperties.layerName, layerName) == 0)
                         {
                             foundLayer = 1;
@@ -85,6 +89,7 @@ namespace Canella {
 
                 return true;
             }
+
             void DebugLayers::destroy(VkInstance instance)
             {
                 DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
@@ -129,8 +134,6 @@ namespace Canella {
                     std::cout << "Failed to create instance\n";
                 }
             }
-
         }
-
     }
 }

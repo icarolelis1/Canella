@@ -25,6 +25,5 @@ int main()
 	myApp.initialize(j);
 	myApp.run();
 	myApp.close();
-	system("pause");
 	return 0;
 }

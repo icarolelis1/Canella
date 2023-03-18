@@ -43,24 +43,5 @@
                 }
             }
         ]
-    },
-    "Pipeline": {
-        "Key" :"MeshShaderPipeline",
-        "Builtin":true,
-        "Shaders": [
-            {
-                "Type" : "Mesh",
-                "ResourcesCount" : 1,
-                "BindingResources" : [
-                    {
-                        "Key":"ViewProjection",
-                        "Stage" : "Mesh",
-                        "Type" : "UNIFORM_BUFFER"
-
-                    }
-                ]
-            }
-        ]
     }
-    
 }

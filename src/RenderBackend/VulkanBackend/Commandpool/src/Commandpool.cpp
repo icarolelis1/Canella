@@ -18,7 +18,7 @@ namespace Canella
                     createInfo.queueFamilyIndex = device->getComputeQueueIndex();
                 else if (type == POOL_TYPE::TRANSFER)
                     createInfo.queueFamilyIndex = device->getTransferQueueIndex();
-                createInfo.flags = flags;
+               // createInfo.flags = flags;
                 VkResult result = vkCreateCommandPool(device->getLogicalDevice(), &createInfo, nullptr, &pool);
                 if (result == VK_SUCCESS)
                     Logger::Debug("Successfully Created CommandPool");
@@ -46,8 +46,9 @@ namespace Canella
                     Logger::Error("Failed to allocate CommandBuffer");
             }
 
-            void Commandpool::beginCommandBuffer(VkCommandBuffer &buffer, bool single_usage)
+            void Commandpool::beginCommandBuffer(Device* device,VkCommandBuffer &buffer, bool single_usage)const
             {
+                vkResetCommandPool(device->getLogicalDevice(),pool,VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT);
                 VkCommandBufferBeginInfo beginInfo{VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};
                 if (single_usage)
                 {
@@ -59,6 +60,7 @@ namespace Canella
             void Commandpool::endCommandBuffer(VkCommandBuffer &buffer)
             {
                 vkEndCommandBuffer(buffer);
+                
             }
 
             void Commandpool::destroy(Device *device)

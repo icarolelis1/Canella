@@ -17,6 +17,7 @@ add_library(
     RenderBackend/VulkanBackend/Frame/src/Frame.cpp
     RenderBackend/VulkanBackend/CanellaUtility/src/CanellaUtility.cpp
     RenderBackend/VulkanBackend/Pipeline/src/Pipeline.cpp
+    RenderBackend/VulkanBackend/DescriptorSet/src/DescriptorSet.cpp
 
 
     Render/src/Render.cpp
@@ -36,12 +37,13 @@ target_include_directories(
     RenderBackend/VulkanBackend/RenderAttachment/include
     RenderBackend/VulkanBackend/RenderpassManager/include
     RenderBackend/VulkanBackend/Resources/include
-    RenderBackend/VulkanBackend/Renderpass/include
     RenderBackend/VulkanBackend/PipelineBuilder/include
+    RenderBackend/VulkanBackend/Renderpass/include
     RenderBackend/VulkanBackend/Frame/include
     RenderBackend/VulkanBackend/CanellaUtility/include
     RenderBackend/VulkanBackend/Pipeline/include
     RenderBackend/VulkanBackend/Descriptorpool/include
+    RenderBackend/VulkanBackend/DescriptorSet/include
 
 
     SpirV/

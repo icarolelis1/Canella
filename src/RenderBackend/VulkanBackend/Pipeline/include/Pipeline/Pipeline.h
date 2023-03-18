@@ -208,9 +208,9 @@ namespace Canella {
 			class PipelineLayout {
 
 			public:
-				PipelineLayout(Device* _device, std::vector<DescriptorSetLayout> _descriptors, std::vector<VkPushConstantRange> _pushConstants);
+				void build(Device* _device, std::vector<DescriptorSetLayout> _descriptors, std::vector<VkPushConstantRange> _pushConstants);
 				VkPipelineLayout getHandle();
-				~PipelineLayout();
+				void destroy(Device * device);
 
 			private:
 				Device* device;

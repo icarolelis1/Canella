@@ -76,7 +76,7 @@ namespace Canella
                  * @param buffer
                  * @param single_usage Whether the command is single_usage or not (This can be used to get performance)
                  */
-                void beginCommandBuffer(VkCommandBuffer &buffer, bool single_usage = false);
+                void beginCommandBuffer(Device* device, VkCommandBuffer &buffer, bool single_usage = false) const;
 
                 /**
                  * @brief Calls vkEndCommandBuffer on the commandBuffer changing it's state to PENDING again
