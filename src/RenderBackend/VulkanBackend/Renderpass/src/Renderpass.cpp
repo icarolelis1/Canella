@@ -6,19 +6,19 @@ namespace Canella
     {
         namespace VulkanBackend
         {
-            RenderPass::RenderPass(Device *_device,
+            RenderPass::RenderPass(Device* _device,
                                    std::string _key,
                                    Swapchain* swapchain,
                                    VkExtent2D _extent,
-                                   std::vector<RenderAttachment> &_attachemnts,
-                                   std::vector<Subpass> &_subpasses) : device(_device),
+                                   std::vector<RenderAttachment>& _attachemnts,
+                                   std::vector<Subpass>& _subpasses) : device(_device),
                                                                        extent(_extent),
                                                                        key(_key),
                                                                        attachments(_attachemnts),
                                                                        subpasses(_subpasses)
             {
                 std::vector<VkAttachmentDescription> descriptions;
-                for (auto &d : attachments)
+                for (auto& d : attachments)
                     descriptions.push_back(d.description);
 
                 VkRenderPassCreateInfo renderPassInfo = {};
@@ -32,15 +32,23 @@ namespace Canella
                 renderPassInfo.pDependencies = subpasses[0].dependencies.data();
                 renderPassInfo.flags = 0;
                 renderPassInfo.pNext = VK_NULL_HANDLE;
-                if (vkCreateRenderPass(device->getLogicalDevice(), &renderPassInfo, device->getAllocator(), &vk_renderpass) != VK_SUCCESS)
+                if (vkCreateRenderPass(device->getLogicalDevice(), &renderPassInfo, device->getAllocator(),
+                                       &vk_renderpass) != VK_SUCCESS)
                 {
                     Canella::Logger::Error("failed to create render pass!");
                 }
                 createFrameBuffer(swapchain);
             };
 
-            void RenderPass::RenderPass::beginRenderPass(
-                VkCommandBuffer &commandBuffer,
+
+            VkRenderPass& RenderPass::get_vk_render_pass()
+            {
+                return vk_renderpass;
+            }
+
+
+            void RenderPass::beginRenderPass(
+                VkCommandBuffer& commandBuffer,
                 std::vector<VkClearValue> clearValues,
                 uint32_t imageIndex,
                 VkSubpassContents contents)
@@ -56,7 +64,7 @@ namespace Canella
                 vkCmdBeginRenderPass(commandBuffer, &info, contents);
             }
 
-            void RenderPass::createFrameBuffer(Swapchain *swapchain)
+            void RenderPass::createFrameBuffer(Swapchain* swapchain)
             {
                 auto targets = swapchain->getViews();
                 vk_framebuffers.resize(static_cast<uint32_t>(targets.size()));
@@ -71,7 +79,8 @@ namespace Canella
                     fbufCreateInfo.width = extent.width;
                     fbufCreateInfo.height = extent.height;
                     fbufCreateInfo.layers = 1;
-                    VkResult r = vkCreateFramebuffer(device->getLogicalDevice(), &fbufCreateInfo, device->getAllocator(), &vk_framebuffers[i]);
+                    VkResult r = vkCreateFramebuffer(device->getLogicalDevice(), &fbufCreateInfo,
+                                                     device->getAllocator(), &vk_framebuffers[i]);
                     i++;
                 }
             }
@@ -80,9 +89,10 @@ namespace Canella
             {
                 vkCmdEndRenderPass(commandBuffer);
             }
+
             RenderPass::~RenderPass()
             {
-                //               vkDestroyRenderPass(device->getLogicalDevice(), vk_renderpass, device->getAllocator());
+                vkDestroyRenderPass(device->getLogicalDevice(), vk_renderpass, device->getAllocator());
             }
         }
     }

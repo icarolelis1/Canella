@@ -16,7 +16,7 @@ int main()
 	Canella::Logger::Warn("WARN");
 	Canella::Logger::Trace("TRACE");
 
-	std::fstream f("E:\\IcaroDev\\Orange\\config\\config.json");
+	std::fstream f("config\\config.json");
 	nlohmann::json j;
 	f >> j;
 

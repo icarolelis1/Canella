@@ -15,7 +15,6 @@ namespace Canella{
             Render() = default;
             Render(nlohmann::json& json);
 
-            virtual void initialize(Windowing* window) = 0;
 
             virtual void render() = 0;
 

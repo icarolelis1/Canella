@@ -11,12 +11,12 @@ namespace Canella
                 debugMessenger = 0;
             }
 
-            const std::vector<const char*> getValidationLayers()
+            std::vector<const char*> getValidationLayers()
             {
                 return validationLayers;
             }
 
-            const std::vector<const char*> DebugLayers::getExtension(bool enableValidationLayers)
+            auto DebugLayers::getExtension(bool enableValidationLayers) -> const std::vector<const char*>
             {
                 uint32_t glfwExtensionsCount = 0;
                 const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionsCount);
@@ -113,6 +113,7 @@ namespace Canella
                 instanceInfo.pApplicationInfo = &appInfo;
                 // Require vulkan validation layers
                 auto extensions = debugger.getExtension(enableValidationLayers);
+                //extensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
                 instanceInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
                 instanceInfo.ppEnabledExtensionNames = extensions.data();
 

@@ -1,6 +1,7 @@
 #include "Device/Device.h"
 #include "Logger/Logger.hpp"
 
+//TODO CLEAN THIS FILE
 namespace Canella
 {
     namespace RenderSystem
@@ -35,12 +36,18 @@ namespace Canella
                 {
                     VkPhysicalDeviceProperties physicalDeviceProps;
                     VkPhysicalDeviceFeatures features;
+
+                    VkPhysicalDeviceMeshShaderFeaturesEXT mesh_shader_feature{};
+                    mesh_shader_feature.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_NV;
+                    mesh_shader_feature.meshShader = VK_TRUE;
+                    mesh_shader_feature.taskShader = VK_TRUE;
+
                     VkPhysicalDeviceDescriptorIndexingFeatures indexing_features{
-                        VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES, nullptr
+                        VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES, &mesh_shader_feature
                     };
 
                     VkPhysicalDeviceFeatures2 features2{
-                        VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2, &indexing_features
+                        VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2, &enabledMeshShaderFeatures
                     };
                     VkPhysicalDeviceMemoryProperties props;
 
@@ -50,9 +57,11 @@ namespace Canella
                     vkGetPhysicalDeviceFeatures(device, &features);
 
                     vkGetPhysicalDeviceFeatures2(device, &features2);
+
                     bindless_suported = indexing_features.descriptorBindingPartiallyBound && indexing_features.
                         runtimeDescriptorArray;
 
+                    mesh_shader_supported = mesh_shader_feature.taskShader && mesh_shader_feature.meshShader;
 
                     if (!bindless_suported)currentScore = 0;
                     currentScore = scorePhysicalDevice(device, features, props, surface);
@@ -73,34 +82,21 @@ namespace Canella
 
                 if (!findSuitableGPU)
                 {
-                    Canella::Logger::Error("Failed to find a  Graphics Card that suits the requirements");
+                    Logger::Error("Failed to find a  Graphics Card that suits the requirements");
                     return;
                 }
 
-                else
-                {
-                    physicalDevice = bestDevice;
-                    // Query physical device properties
-                    vkGetPhysicalDeviceProperties(physicalDevice, &vk_physicalDeviceProperties);
-                    vkGetPhysicalDeviceMemoryProperties(physicalDevice, &vk_MemoryProperties);
-                    vkGetPhysicalDeviceFeatures(physicalDevice, &vk_PhysicalDevicefeatures);
+                physicalDevice = bestDevice;
+                // Query physical device properties
+                vkGetPhysicalDeviceProperties(physicalDevice, &vk_physicalDeviceProperties);
+                vkGetPhysicalDeviceMemoryProperties(physicalDevice, &vk_MemoryProperties);
+                vkGetPhysicalDeviceFeatures(physicalDevice, &vk_PhysicalDevicefeatures);
 
-                    if (bindless_suported)
-                    {
-                        VkPhysicalDeviceDescriptorIndexingFeatures indexing_features{
-                            VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES, nullptr
-                        };
 
-                        vk_PhysicalDevicefeatures2 = {VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2, &indexing_features};
-                        vkGetPhysicalDeviceFeatures2(physicalDevice,
-                                                     &vk_PhysicalDevicefeatures2);
-                        vk_PhysicalDevicefeatures2.pNext = &indexing_features;
-                    }
-                    physicalDevice = bestDevice;
-                    msaaSamples = getMaxUsableSampleCount();
-                    Canella::Logger::Info("MaxSamples Count %d ", msaaSamples);
-                    Canella::Logger::Info("Device %c ", vk_physicalDeviceProperties.deviceName);
-                }
+                physicalDevice = bestDevice;
+                msaaSamples = getMaxUsableSampleCount();
+                Logger::Info("MaxSamples Count %d ", msaaSamples);
+                Logger::Info("Device %c ", vk_physicalDeviceProperties.deviceName);
             }
 
             bool Device::checkDeviceExtensions(VkPhysicalDevice device)
@@ -184,16 +180,13 @@ namespace Canella
                 std::vector<uint32_t> transferSupportedQueues;
                 std::vector<uint32_t> computeSupportedQueues;
                 std::vector<uint32_t> presentSupportedQueues;
-
+                //todo what is this??
                 auto unique_queues = [](uint32_t graphics, uint32_t transfer, uint32_t compute, uint32_t present)
                 {
                 };
 
                 if (!properties.deviceType & VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
-                {
                     score -= 100;
-                }
-
                 for (uint32_t i = 0; i < queueFamilyProperties.size(); i++)
                 {
                     if (getQueuFamilieIndex(queueFamilyProperties[i], VK_QUEUE_GRAPHICS_BIT))
@@ -305,9 +298,8 @@ namespace Canella
                 SwapchainQueryProperties properties;
                 uint32_t formatCount;
                 uint32_t presentModeCount;
-
                 // vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, *surface, &swapChainExt.capabilities);
-
+                
                 vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr);
                 properties.formats.resize(formatCount);
                 vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, properties.formats.data());
@@ -316,11 +308,19 @@ namespace Canella
                 properties.presentationModes.resize(presentModeCount);
                 vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount,
                                                           properties.presentationModes.data());
+                return  !properties.formats.empty() && !properties.presentationModes.empty();;
+            }
 
-                bool isSuitableSwapChain = false;
-                isSuitableSwapChain = !properties.formats.empty() && !properties.presentationModes.empty();
+            void Device::enableMeshShaderExtension()
+            {
+                enabledMeshShaderFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_NV;
+                enabledMeshShaderFeatures.meshShader = VK_TRUE;
+                enabledMeshShaderFeatures.taskShader = VK_TRUE;
+                enabledMeshShaderFeatures.pNext = nullptr;
 
-                return isSuitableSwapChain;
+                deviceExtensions.push_back(VK_EXT_MESH_SHADER_EXTENSION_NAME);
+                deviceExtensions.push_back(VK_KHR_SPIRV_1_4_EXTENSION_NAME);
+                deviceExtensions.push_back(VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME);
             }
 
             void Device::createLogicalDevice()
@@ -342,30 +342,40 @@ namespace Canella
                     queueCreateInfos.push_back(QcreateInfo);
                 }
 
+                deviceExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
                 VkPhysicalDeviceFeatures features{};
                 features.samplerAnisotropy = VK_TRUE;
                 features.fillModeNonSolid = VK_TRUE;
+                if (bindless_suported)
+                    indexing_features.sType =
+                        VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;
+
+                if (mesh_shader_supported)
+                    enableMeshShaderExtension();
+
+                vk_PhysicalDevicefeatures2 = {VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
+                    &enabledMeshShaderFeatures};
 
                 VkDeviceCreateInfo deviceInfo = {};
                 deviceInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
                 deviceInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
                 deviceInfo.pQueueCreateInfos = queueCreateInfos.data();
-                deviceInfo.pEnabledFeatures = &features;
+                deviceInfo.pEnabledFeatures = nullptr;
                 deviceInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
                 deviceInfo.ppEnabledExtensionNames = deviceExtensions.data();
                 deviceInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
                 deviceInfo.ppEnabledLayerNames = validationLayers.data();
-                //deviceInfo.pNext
+                deviceInfo.pNext = &vk_PhysicalDevicefeatures2;
+
+
                 VkResult result = vkCreateDevice(physicalDevice, &deviceInfo, nullptr, &logicalDevice);
 
                 if (result != VK_SUCCESS)
-                {
-                    Canella::Logger::Error("Failed to find a suitable device");
-                }
+                    Logger::Error("Failed to find a suitable device");
 
                 if (result == VK_SUCCESS)
                 {
-                    Canella::Logger::Debug("Successfully created a logical device");
+                    Logger::Debug("Successfully created a logical device");
                     queueFamilies.isComplete();
                 }
                 vkGetDeviceQueue(logicalDevice, queueFamilies.graphics.value(), 0, &graphicsQueue);
@@ -403,7 +413,7 @@ namespace Canella
             void Device::destroyDevice()
             {
                 vkDestroyDevice(logicalDevice, nullptr);
-                Canella::Logger::Debug("SuccessFully destroyed Device");
+                Logger::Debug("SuccessFully destroyed Device");
             }
 
             Device::~Device()

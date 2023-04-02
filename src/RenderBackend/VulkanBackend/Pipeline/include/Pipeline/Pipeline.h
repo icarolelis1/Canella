@@ -48,6 +48,7 @@ namespace Canella {
 			public:
 				std::vector<std::vector<ATRIBUTES>> atributes;
 				VertexLayout(std::vector<std::vector<ATRIBUTES> >atribs_, std::vector<uint32_t>  vertexOffsets, uint32_t vertexBindingCount = 1) :numberOfBindings(vertexBindingCount) {
+					//todo ??
 					atributes.resize(vertexBindingCount);
 					atributes = (atribs_);
 				}
@@ -154,7 +155,7 @@ namespace Canella {
 				VkShaderModule vertShaderModule;
 				VkShaderModule fragShaderModule;
 				VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT;
-				uint32_t vertexBindingCount = 1;
+				uint32_t vertexBindingCount = 0;
 				uint32_t colorAttachmentsCount = 1;
 				uint32_t pushConstanteCount = 0;
 				const char* fragmentShaderPath;
@@ -177,11 +178,22 @@ namespace Canella {
 			class Shader {
 
 			public:
-
 				Shader(Device* _device, SHADER_TYPE _type, const std::vector<char> _code);
 				VkPipelineShaderStageCreateInfo getShaderStageInfo();
 				void destroyModule();
-
+				static  SHADER_TYPE convert_from_string_shader_type(const char* type)
+				{
+					{
+						if (strcmp( type,"Mesh") == 0)
+							return SHADER_TYPE::MESH_SHADER;
+						if (strcmp(type , "Fragment")==0)
+							return SHADER_TYPE::FRAGMENT_SHADER;
+						if (strcmp(type,"Task") ==0)
+							return SHADER_TYPE::TASK_SHADER;
+						return SHADER_TYPE::VERTEX_SHADER;
+					}
+				}
+		
 			private:
 				const std::vector<char> code;
 				Device* device;
@@ -192,13 +204,12 @@ namespace Canella {
 			class DescriptorSetLayout {
 
 			public:
-				void build(Device* _device, const std::vector<ShaderBindingResource> _resources, const char* description = "GenericSet");
+				DescriptorSetLayout(Device* _device, const std::vector<ShaderBindingResource> _resources, const char* description = "GenericSet");
 				std::vector< VkDescriptorSetLayoutBinding> getBindings() const;
 				VkDescriptorSetLayout& getDescriptorLayoutHandle();
 				void destroy(Device*);
 
 			private:
-
 				VkDescriptorSetLayout vk_descriptorSetLayout;
 				VkDescriptorType getDescriptorType(ShaderResourceType type);
 				std::vector< VkDescriptorSetLayoutBinding> bindings;
@@ -208,12 +219,13 @@ namespace Canella {
 			class PipelineLayout {
 
 			public:
-				void build(Device* _device, std::vector<DescriptorSetLayout> _descriptors, std::vector<VkPushConstantRange> _pushConstants);
+				PipelineLayout(Device* _device,
+					std::vector<std::shared_ptr<DescriptorSetLayout>> _descriptors,
+					std::vector<VkPushConstantRange> _pushConstants);
 				VkPipelineLayout getHandle();
 				void destroy(Device * device);
 
 			private:
-				Device* device;
 				std::vector<DescriptorSetLayout> descriptors;
 				std::vector<VkPushConstantRange> pushConstants;
 				VkPipelineLayout vk_pipelineLayout;
@@ -223,16 +235,12 @@ namespace Canella {
 			class Pipeline {
 
 			public:
-
-				Pipeline(Device* _device, PipelineLayout _pipelienLayout, std::unique_ptr<Shader> _vertexShader, std::unique_ptr<Shader> _fragmentShader, PipelineProperties& info, uint32_t bindingCount = 1);
+				Pipeline(Device* _device, PipelineLayout _pipelienLayout, std::vector<Shader> shaders, PipelineProperties& info, uint32_t bindingCount =0);
 				VkPipeline& getPipelineHandle();
 				PipelineLayout getPipelineLayoutHandle();
 				const char* id;
 				~Pipeline();
-			private:
-				std::unique_ptr<Shader> vertexShader;
-				std::unique_ptr<Shader> fragmentShader;
-
+			private:	
 				Device* device;
 				VkPipeline vk_pipeline;
 				VkPipelineCache vk_cache;

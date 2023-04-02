@@ -13,6 +13,7 @@
 #include <string>
 #include <optional>
 #include <functional>
+#include <vector>
 namespace Canella
 {
     namespace RenderSystem
@@ -27,7 +28,6 @@ namespace Canella
             };
             struct QueueSharingMode
             {
-
                 VkSharingMode sharingMode;
                 uint32_t queueFamiliyIndexCount;
                 const uint32_t *queueFamilies;
@@ -93,17 +93,15 @@ namespace Canella
                         return false;
                     }
                     Canella::Logger::Info("The Present Queue is at Index : %d", present.value());
-
                     return true;
                 }
             };
-
-            const std::vector<const char *> deviceExtensions = {
-                VK_KHR_SWAPCHAIN_EXTENSION_NAME};
-
+            
             using Surface = VkSurfaceKHR;
             class Device
             {
+                bool bindless_suported;
+                bool mesh_shader_supported;
                 VkDevice logicalDevice;
                 VkPhysicalDevice physicalDevice;
                 VkQueue graphicsQueue;
@@ -115,41 +113,35 @@ namespace Canella
                 VkPhysicalDeviceMemoryProperties vk_MemoryProperties;
                 VkPhysicalDeviceFeatures vk_PhysicalDevicefeatures;
                 VkPhysicalDeviceFeatures2 vk_PhysicalDevicefeatures2;
-                bool bindless_suported;
-
                 VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;
-
                 void choosePhysicalDevice(Instance instance, Surface surface);
                 bool checkDeviceExtensions(VkPhysicalDevice device);
                 VkSampleCountFlagBits getMaxUsableSampleCount();
                 int scorePhysicalDevice(VkPhysicalDevice device, VkPhysicalDeviceFeatures features, VkPhysicalDeviceMemoryProperties memProperties, Surface surface);
                 bool getQueuFamilieIndex(VkQueueFamilyProperties props, VkQueueFlagBits queueFlags);
                 bool querySwapChainProperties(VkPhysicalDevice device, Surface surface);
+                void enableMeshShaderExtension();
                 void createLogicalDevice();
                 size_t getMinimumBufferAligment();
-
+                std::vector<const char*> deviceExtensions;
+                VkPhysicalDeviceDescriptorIndexingFeatures indexing_features{};
+                VkPhysicalDeviceMeshShaderFeaturesEXT enabledMeshShaderFeatures{};
             public:
                 Device();
-                void destroyDevice();
-
                 QueueSharingMode getQueueSharingMode();
                 VkDevice &getLogicalDevice();
                 VkDevice *getLogicalDevicePtr();
-
                 VkPhysicalDevice &getPhysicalDevice();
                 VkPhysicalDevice *getPhysicalDevicePtr();
-
                 bool prepareDevice(VkSurfaceKHR surface, Instance instance);
-
                 uint32_t getGraphicsQueueIndex() const;
                 VkQueue getGraphicsQueueHandle() const;
                 uint32_t getTransferQueueIndex() const;
                 uint32_t getComputeQueueIndex()  const;
                 uint32_t getPresentQueueIndex()  const;
-
                 const VkAllocationCallbacks* getAllocator();
-
                 ~Device();
+                void destroyDevice();
             };
         }
     }

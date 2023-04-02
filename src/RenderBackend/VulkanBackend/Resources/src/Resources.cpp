@@ -54,6 +54,6 @@ uint32_t Canella::RenderSystem::VulkanBackend::Buffer::findMemoryType(Device *de
         {
             return i;
         }
-        return 0;
     }
+    return 0;
 }

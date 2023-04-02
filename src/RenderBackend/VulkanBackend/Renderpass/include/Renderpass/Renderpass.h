@@ -44,6 +44,11 @@ namespace Canella
                 void createFrameBuffer(Swapchain* swapchain);
 
                 /**
+                 * @brief return VkRenderpass object
+                 */
+                
+                VkRenderPass& get_vk_render_pass();
+                /**
                  * @brief internally begins the renderpass
                  *
                  * @param commandBuffer the command to be recorded with beginrenderpass
