@@ -9,6 +9,7 @@
 #include "Windowing.h"
 #include "RenderpassManager/RenderpassManager.h"
 #include "Pipeline/Pipeline.h"
+#include "DescriptorSet/DescriptorSet.h"
 #include "Frame/Frame.h"
 #include "PipelineBuilder/PipelineBuilder.h"
 #include <memory.h>
@@ -38,28 +39,29 @@ namespace Canella
 				DescriptorSetLayouts cachedDescriptorSetLayouts;
 				PipelineLayouts cachedPipelineLayouts;
 				Pipelines cachedPipelines;
-				unsigned int current_frame = 0;
 				std::vector<VkDescriptorSet> global_descriptors;
 				std::vector<Buffer> global_buffers;
 				Descriptorpool descriptorPool;
 				std::vector<FrameData> frames;
+				unsigned int current_frame = 0;
 				
 				void init_descriptor_pool();
 				void initPipelines();
 				void initVulkanInstance();
 				void setup_frames();
 				void cache_pipelines(const char* pipelines);
-				void cacheDescriptorSetLayout(nlohmann::json pipelineData, std::vector<std::shared_ptr<DescriptorSetLayout>>
-					&descriptor_set_layouts, const int i);
-				void cacheDescriptorSetLayouts(nlohmann::json pipelineData, std::vector<VkPushConstantRange>& pushConstants);
+				void cacheDescriptorSetLayouts(nlohmann::json& pipelineData, std::vector<VkPushConstantRange>& pushConstants);
 				void record_command_index(VkCommandBuffer& commandBuffer,uint32_t currentIndex);
-				void writeBuffers();
+				void allocateGlobalUsageBuffers();
 				void destroyDescriptorSetLayouts();
+				void writeGlobalDescriptorsets();
 				void destroyPipelineLayouts();
-
+				void allocateGlobalDescriptorsets();
+				void writeDescriptorSets();
 			public:
 				void render();
 				VulkanRender(nlohmann::json &config, Windowing *window);
+				void assignMainCamera();
 				void update(float time);
 				~VulkanRender();
 			};

@@ -1,14 +1,16 @@
 #include "Descriptorpool/Descriptorpool.h"
 
+#include <json.hpp>
+
 using namespace Canella::RenderSystem::VulkanBackend;
 
-void Canella::RenderSystem::VulkanBackend::Descriptorpool::buildDescriptorPool(Device& device)
+void Descriptorpool::buildDescriptorPool(Device& device)
 {
     buildGlobalDescriptorPool(device);
     buildBindlessDescriptorPool(device);
 }
 
-void Canella::RenderSystem::VulkanBackend::Descriptorpool::buildGlobalDescriptorPool(Device& device)
+void Descriptorpool::buildGlobalDescriptorPool(Device& device)
 {
     static const uint32_t k_global_pool_elements = 128;
     VkDescriptorPoolSize pool_sizes[] =
@@ -35,10 +37,10 @@ void Canella::RenderSystem::VulkanBackend::Descriptorpool::buildGlobalDescriptor
 
     if ((vkCreateDescriptorPool(device.getLogicalDevice(), &pool_info, device.getAllocator(), &vk_global_descriptorpool)
         != VK_SUCCESS))
-        Canella::Logger::Error("Failed to create global DescriptorPool");
+        Logger::Error("Failed to create global DescriptorPool");
 }
 
-void Canella::RenderSystem::VulkanBackend::Descriptorpool::buildBindlessDescriptorPool(Device& device)
+void Descriptorpool::buildBindlessDescriptorPool(Device& device)
 {
     VkDescriptorPoolSize pool_sizes_bindless[] =
     {
@@ -61,10 +63,10 @@ void Canella::RenderSystem::VulkanBackend::Descriptorpool::buildBindlessDescript
     VkResult result = vkCreateDescriptorPool(device.getLogicalDevice(), &create_info, device.getAllocator(),
                                              &vk_bindless_descriptorpool);
     if (result != VK_SUCCESS)
-        Canella::Logger::Error("failed to create bindless DescriptorPool");
+        Logger::Error("failed to create bindless DescriptorPool");
 }
 
-void Canella::RenderSystem::VulkanBackend::Descriptorpool::buildDescriptorSetLayout(Device& device)
+void Descriptorpool::buildDescriptorSetLayout(Device& device)
 {
     const uint32_t pool_count = 2;
     VkDescriptorSetLayoutBinding vk_binding[2];
@@ -106,18 +108,17 @@ void Canella::RenderSystem::VulkanBackend::Descriptorpool::buildDescriptorSetLay
     vkAllocateDescriptorSets(device.getLogicalDevice(), &alloc_info, &vk_bindless_descriptor_set);
 }
 
-void Descriptorpool::AllocateDescriptorSet(Device& device, DescriptorSetLayout& layout,
-                                           std::vector<VkDescriptorSet>& sets)
+void Descriptorpool::AllocateDescriptorSet(Device& device, std::shared_ptr<DescriptorSetLayout> layout,
+                                           VkDescriptorSet& set)
 {
     VkDescriptorSetAllocateInfo allocInfo{VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO};
     allocInfo.descriptorPool = vk_global_descriptorpool;
-    allocInfo.descriptorSetCount = 1;
-    allocInfo.pSetLayouts = &layout.getDescriptorLayoutHandle();
-    auto result = vkAllocateDescriptorSets(device.getLogicalDevice(), &allocInfo, sets.data());
+    allocInfo.descriptorSetCount =1;
+    allocInfo.pSetLayouts = &layout->getDescriptorLayoutHandle();
+    auto result = vkAllocateDescriptorSets(device.getLogicalDevice(), &allocInfo, &set);
     if (result != VK_SUCCESS)
-        Canella::Logger::Debug("Failed to Allocated DescriptorSet");
-
-    Canella::Logger::Debug("Allocated DescriptorSet");
+        Logger::Debug("Failed to Allocated DescriptorSet");
+    Logger::Debug("Allocated DescriptorSet");
 }
 
 void Descriptorpool::build(Device& device)

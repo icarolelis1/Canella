@@ -24,6 +24,8 @@ namespace Canella
 
             VkAttachmentStoreOp convert_from_string_storeOp(const char* storeOp)
             {
+                if(strcmp(storeOp,"VK_ATTACHMENT_STORE_OP_STORE") == 0)
+                    return VK_ATTACHMENT_STORE_OP_STORE;
                 return VK_ATTACHMENT_STORE_OP_DONT_CARE;
             }
 
@@ -57,7 +59,7 @@ namespace Canella
 
             VkShaderStageFlags VulkanBackend::convert_from_string_shader_stage(const char* stage)
             {
-                if (strcmp(stage,"MESH_STAGE"))
+                if (strcmp(stage,"MESH_STAGE") == 0)
                     return VK_PIPELINE_STAGE_MESH_SHADER_BIT_EXT;
 
                 return VK_PIPELINE_STAGE_MESH_SHADER_BIT_EXT;

@@ -27,8 +27,8 @@ namespace Canella
 
             public:
                 void build(Device &device);
-
-                void AllocateDescriptorSet(Device& device,DescriptorSetLayout& layout,std::vector<VkDescriptorSet>& sets);
+                void AllocateDescriptorSet(Device& device,std::shared_ptr<DescriptorSetLayout> layout,
+                    VkDescriptorSet& set);
             };
 
         }

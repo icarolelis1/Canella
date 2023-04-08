@@ -1,5 +1,7 @@
 #include "Instance/Instance.h"
 
+#include <Logger/Logger.hpp>
+
 namespace Canella
 {
     namespace RenderSystem
@@ -22,10 +24,7 @@ namespace Canella
                 const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionsCount);
                 std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionsCount);
                 if (enableValidationLayers)
-                {
                     extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME); // DISPLAY WARNING\ERROR MESSAGES
-                }
-
                 return extensions;
             }
 
@@ -34,9 +33,7 @@ namespace Canella
                 populateDebugMessengerCreateInfo(createInfo);
 
                 if (CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger) != VK_SUCCESS)
-                {
-                    std::cout << "    Failed to create DebugMessenger\n";
-                }
+                    Logger::Error("Failed to create DebugMessenger");
             }
 
             void DebugLayers::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
@@ -67,23 +64,18 @@ namespace Canella
                 {
                     bool foundLayer = 0;
                     for (const auto& layerProperties : avaibleLayers)
-                    {
                         if (strcmp(layerProperties.layerName, layerName) == 0)
                         {
                             foundLayer = 1;
                             break;
                         }
-                    }
-
                     if (foundLayer == 0)
-                    {
                         anyMyssingLayer = 1;
-                    }
                 }
 
                 if (anyMyssingLayer)
                 {
-                    std::cout << "    LAYER NOT SUPPORTED \n";
+                    Logger::Debug("LAYER NOT SUPPORTED");
                     return false;
                 }
 

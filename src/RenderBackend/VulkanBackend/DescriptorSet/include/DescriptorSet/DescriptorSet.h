@@ -8,22 +8,11 @@ namespace Canella::RenderSystem::VulkanBackend
     class DescriptorSet
     {
     public:
-        DescriptorSet(const Device* _device);
-        DescriptorSet(const DescriptorSet& other);
-
-        void updateDescriptorset(std::vector<VkDescriptorBufferInfo>& bufferInfos,
+        static void updateDescriptorset(Device* device, VkDescriptorSet& descriptorset,std::vector<VkDescriptorBufferInfo>& bufferInfos,
                                  std::vector<VkDescriptorImageInfo>& imageInfos, bool dynamicUbo = 0);
         void updateDescriptorset(int startIndex, std::vector<VkDescriptorImageInfo>& imageInfos,
                                  bool isInputAttachment = 0);
-
-
-        VkDescriptorSet& getDescriptorSetHandle();
-
     private:
-        Device* device;
-
-
-        VkDescriptorSet vk_descriptorset;
     };
 }
 

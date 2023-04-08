@@ -12,9 +12,9 @@ namespace Canella {
 		{
 			
 			struct ViewProjection{
-				glm::mat4 viewProjection;
+				glm::mat4 projection;
 				glm::mat4 model;
-				glm::vec4 eyePos;
+				glm::mat4 view;
 			};
 
 			enum class ATRIBUTES

@@ -18,9 +18,8 @@ namespace Canella
                 vkEnumeratePhysicalDevices(instance.handle, &deviceCount, nullptr);
 
                 if (deviceCount == 0)
-                {
-                    Canella::Logger::Error("Failed to find a proper Graphics Card");
-                };
+                    Logger::Error("Failed to find a proper Graphics Card");
+                
 
                 std::vector<VkPhysicalDevice> devices(deviceCount);
                 vkEnumeratePhysicalDevices(instance.handle, &deviceCount, devices.data());

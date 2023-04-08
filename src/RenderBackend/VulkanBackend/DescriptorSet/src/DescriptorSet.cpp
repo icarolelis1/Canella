@@ -2,21 +2,17 @@
 
 using namespace Canella::RenderSystem::VulkanBackend;
 
-void DescriptorSet::updateDescriptorset(int startIndex, std::vector<VkDescriptorImageInfo>& imageInfos,
-                                        bool isInputAttachment)
-{
-}
 
-void DescriptorSet::updateDescriptorset(std::vector<VkDescriptorBufferInfo>& bufferInfos,
-                                        std::vector<VkDescriptorImageInfo>& imageInfos, bool dynamicUbo)
+void DescriptorSet::updateDescriptorset(Device* device,
+                                        VkDescriptorSet& descriptorset,
+                                        std::vector<VkDescriptorBufferInfo>& bufferInfos,
+                                        std::vector<VkDescriptorImageInfo>& imageInfos,
+                                        bool dynamicUbo)
 {
     std::vector<VkWriteDescriptorSet> writes;
     uint32_t i = 0;
-
-    //write buffers, then images.
-    for (auto& bufferInfo : bufferInfos)
+    for (auto& buffer_info : bufferInfos)
     {
-        //Write only one descriptor per time;
         VkWriteDescriptorSet w{};
         w.descriptorCount = 1;
         w.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -25,12 +21,12 @@ void DescriptorSet::updateDescriptorset(std::vector<VkDescriptorBufferInfo>& buf
             w.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
         w.dstBinding = i;
         i++;
-        w.pBufferInfo = &bufferInfo;
-        w.dstSet = vk_descriptorset;
+        w.pBufferInfo = &buffer_info;
+        w.dstSet = descriptorset;
         writes.push_back(w);
     }
 
-    for (auto& imageInfo : imageInfos)
+    for (auto& image_info : imageInfos)
     {
         //Write only one descriptor per time;
         VkWriteDescriptorSet w{};
@@ -38,12 +34,11 @@ void DescriptorSet::updateDescriptorset(std::vector<VkDescriptorBufferInfo>& buf
         w.descriptorCount = 1;
         w.dstBinding = i;
         i++;
-        w.pImageInfo = &imageInfo;
+        w.pImageInfo = &image_info;
         w.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        w.dstSet = vk_descriptorset;
-
+        w.dstSet = descriptorset;
         writes.push_back(w);
     }
-
-    vkUpdateDescriptorSets(device->getLogicalDevice(), static_cast<uint32_t>(writes.size()), writes.data(), 0,NULL);
+    vkUpdateDescriptorSets(device->getLogicalDevice(), static_cast<uint32_t>(writes.size()),
+                           writes.data(), 0,NULL);
 }

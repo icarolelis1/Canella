@@ -59,7 +59,7 @@ namespace Canella
                 info.renderArea.extent.width = extent.width;
                 info.renderArea.extent.height = extent.height;
                 info.clearValueCount = static_cast<uint32_t>(clearValues.size());
-                info.pClearValues = &clearValues[0];
+                info.pClearValues = clearValues.data();
                 info.renderPass = vk_renderpass;
                 vkCmdBeginRenderPass(commandBuffer, &info, contents);
             }

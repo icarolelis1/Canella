@@ -53,7 +53,7 @@ namespace Canella
 						nlohmann::json& bindings = resources["BindingResources"][i];
 						ShaderBindingResource bindingResource{};
 						bindingResource.type = convert_from_string_shader_resource_type(bindings["Type"].get<std::string>().c_str());
-						bindingResource.stages = convert_from_string_shader_stage(bindings["Stage"].get<std::string>().c_str());
+						bindingResource.stages = VK_SHADER_STAGE_MESH_BIT_EXT;
 						bindingResource.size = sizeof(ViewProjection);
 						bindingResource.binding = bindings["Binding"].get<std::uint32_t>();
 						bindingResources[i] = bindingResource;
@@ -109,7 +109,6 @@ namespace Canella
 					DescriptorSetLayouts& cachedDescriptorLayouts,
 					PipelineLayouts& cachedPipelineLayouts)
 				{
-					assert(device != nullptr);
 					const auto descriptorSetLayoutCount = pipelineData["PipelineData"]["DescriptorSetLayoutCounts"].get<std::int32_t>();
 					std::vector<std::shared_ptr<DescriptorSetLayout>> descriptor_set_layouts(descriptorSetLayoutCount);
 

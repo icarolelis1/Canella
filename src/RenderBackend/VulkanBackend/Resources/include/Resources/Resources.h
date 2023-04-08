@@ -11,18 +11,21 @@ namespace Canella
             class Buffer
             {
             public:
-                void allocateBuffer(Device *_device, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
+                Buffer(Device *_device, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
                 template <typename T>
                 void udpate(T &object);
                 bool isMapped();
                 VkBuffer &getBufferHandle();
                 VkDeviceMemory &getMemoryHandle();
-                void destroy(Device &device);
+                void destroy(Device &device) const;
 
             private:
+                bool mapped = false;
                 uint32_t findMemoryType(Device *device, uint32_t typeFilter, VkMemoryPropertyFlags properties);
                 VkBuffer vk_buffer;
                 VkDeviceMemory vk_deviceMemory;
+                Device* device;
+                void* mapPointer;
             };
             template <typename T>
             inline void Buffer::udpate(T &object)
