@@ -11,50 +11,40 @@ std::shared_ptr<Canella::Component> Canella::ComponentContainer::getComponent(st
 
 std::shared_ptr<Canella::Component> Canella::ComponentContainer::getComponent(Canella::COMPONENT_TYPE type)
 {
-	std::unordered_map<std::string, std::shared_ptr<Component>>::iterator it;
-	it = components.begin();
+	auto it = components.begin();
 	while (it != components.end())
-	{
-
 		if (it->second->getComponentType() == type)
-		{
 			return it->second;
-		}
-		it++;
-	}
-
+		++it;
 	return nullptr;
 }
 
 void Canella::ComponentContainer::update(float dt)
 {
-	std::unordered_map<std::string, std::shared_ptr<Component>>::iterator it;
-	it = components.begin();
+	auto it = components.begin();
 	while (it != components.end())
 	{
 		it->second->onUpdate(dt);
-		it++;
+		++it;
 	}
 }
 
 void Canella::ComponentContainer::setActivated(bool b)
 {
-	std::unordered_map<std::string, std::shared_ptr<Component>>::iterator it;
-	it = components.begin();
+	auto it = components.begin();
 	while (it != components.end())
 	{
 		it->second->setActivated(b);
-		it++;
+		++it;
 	}
 }
 void Canella::ComponentContainer::listComponents()
 {
-	std::unordered_map<std::string, std::shared_ptr<Component>>::iterator it = components.begin();
-	;
+	auto it = components.begin();
 	while (it != components.end())
 	{
 		std::cout << it->first << std::endl;
-		it++;
+		++it;
 	}
 }
 
@@ -68,8 +58,6 @@ void Canella::ComponentContainer::addComponent(std::shared_ptr<Component> compon
 	}
 	components[name] = std::move(component);
 }
-
-// Entity Definitions
 
 void Canella::Entity::listComponents()
 {
@@ -100,30 +88,13 @@ std::shared_ptr<Canella::Component> Canella::Entity::getComponent(std::string na
 
 std::shared_ptr<Canella::Component> Canella::Entity::getComponent(Canella::COMPONENT_TYPE componentType)
 {
-
-	if (componentsContainer.getComponent(componentType) != NULL)
-	{
+	if (componentsContainer.getComponent(componentType) != nullptr)
 		return componentsContainer.getComponent(componentType);
-	}
-
-	else
-		return nullptr;
+	return nullptr;
 }
-// Iterate throug all component and display an ImGui Inpsector.
+
 void Canella::Entity::displayOnUi()
 {
-	std::unordered_map<std::string, std::shared_ptr<Canella::Component>>::iterator it = componentsContainer.components.begin();
-	while (it != componentsContainer.components.end())
-	{
-
-		// if (ImGui::TreeNode(it->second->getId().c_str())) {
-		// 	ImGui::PushID(it->second->getId().c_str());
-		// 	it->second->buildUi();
-		// 	ImGui::PopID();
-		// 	ImGui::TreePop();
-		// }
-		it++;
-	}
 }
 void Canella::Entity::setActivated(bool b)
 {

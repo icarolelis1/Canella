@@ -20,8 +20,9 @@
       {
         "Key": "MeshShaderPipeline",
         "PushConstantRangesCount" : 0,
-        "NumerOfDescriptorSets": 0,
+        "NumerOfDescriptorSets": 1,
         "Renderpass": "basic",
+        "VertexAttributeCount" : 0,
         "PipelineLayoutDescriptors": ["ViewProjection"],
         "Builtin": true,
         "ShaderCount":3,
@@ -39,7 +40,7 @@
           {
             "Type": "Fragment",
             "ResourcesCount": 0,
-            "Source":"Shaders\\spirv\\frag.frag.spv"
+            "Source":"Shaders\\spirv\\fragment.frag.spv"
           }
         ]
       }

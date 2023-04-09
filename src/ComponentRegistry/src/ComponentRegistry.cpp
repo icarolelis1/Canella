@@ -1,14 +1,17 @@
 #include <ComponentRegistry/ComponentRegistry.h>
+
+#include <utility>
 #include "Transform/Transform.h"
 #include "CameraController/CameraController.h"
-Canella::ComponentRegistry::ComponentRegistry(){
-    // Register Transform
-};
+/**
+ * \brief 
+ */
+Canella::ComponentRegistry::ComponentRegistry(){};
 
 Canella::ComponentRegistry &Canella::ComponentRegistry::getInstance()
 {
-    static ComponentRegistry componentRegistry;
-    return componentRegistry;
+    static ComponentRegistry component_registry;
+    return component_registry;
 };
 
 void Canella::ComponentRegistry::initializeRegistry()
@@ -17,7 +20,7 @@ void Canella::ComponentRegistry::initializeRegistry()
     registerComponent("CameraController", Canella::CameraController::create);
 }
 
-void Canella::ComponentRegistry::registerComponent(const std::string &type, functionCreation createFunc)
+void Canella::ComponentRegistry::registerComponent(const std::string &id, functionCreation create_func)
 {
-    registry[type] = createFunc;
+    registry[id] = std::move(create_func);
 }

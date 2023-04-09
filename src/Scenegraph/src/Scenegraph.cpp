@@ -57,7 +57,7 @@ void Canella::Scenegraph::addNode(std::shared_ptr<Canella::Node> entity)
 
 void Canella::Scenegraph::addNode(std::shared_ptr<Canella::Node> p1, std::shared_ptr<Node> p2)
 {
-	std::lock_guard<std::mutex> lock(p1->childsMutex);
+	std::lock_guard lock(p1->childsMutex);
 	p1->childs.emplace_back(p2);
 	p2->parent = p1;
 }
@@ -68,20 +68,18 @@ std::shared_ptr<Canella::Node> Canella::Scenegraph::findById(const std::uint32_t
 }
 std::shared_ptr<Canella::Node> Canella::Scenegraph::findById(std::shared_ptr<Canella::Node> node, const std::uint32_t &id)
 {
-	std::lock_guard<std::mutex> lock(node->childsMutex);
+	std::lock_guard lock(node->childsMutex);
 	if (node->entity->id == id)
-	{
 		return node;
-	};
-	std::list<std::shared_ptr<Node>>::iterator it = node->childs.begin();
+	
+	auto it = node->childs.begin();
 	while (it != node->childs.end())
 	{
-		std::shared_ptr<Canella::Node> n = std::move(findById(*it, id));
+		std::shared_ptr<Canella::Node> n;
+		n = std::move(findById(*it, id));
 		if (n->entity)
-		{
 			return n;
-		}
-		it++;
+		++it;
 	};
 	return std::make_shared<Canella::Node>();
 };
@@ -89,26 +87,24 @@ std::shared_ptr<Canella::Node> Canella::Scenegraph::findById(std::shared_ptr<Can
 void Canella::Scenegraph::udpate(std::shared_ptr<Canella::Node> node, float dt)
 {
 	node->entity->update(dt);
-	std::list<std::shared_ptr<Node>>::iterator it = node->childs.begin();
+	auto it = node->childs.begin();
 	while (it != node->childs.end())
 	{
 		udpate(*it, dt);
-		it++;
+		++it;
 	};
 }
 
-void Canella::Scenegraph::updateSceneGraph(std::shared_ptr<Canella::Node> node)
+void Canella::Scenegraph::updateSceneGraph(const std::shared_ptr<Canella::Node> node)
 {
-
 	if (node->parent)
-		node->entity->transform->updateModelMatrix(*node->parent->entity->transform.get());
-
+		node->entity->transform->updateModelMatrix(*node->parent->entity->transform);
 	else
 		node->entity->transform->updateModelMatrix();
-	std::list<std::shared_ptr<Node>>::iterator it = node->childs.begin();
+	auto it = node->childs.begin();
 	while (it != node->childs.end())
 	{
 		updateSceneGraph(*it);
-		it++;
+		++it;
 	}
 }

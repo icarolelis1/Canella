@@ -1,10 +1,15 @@
 #include "Component/Component.h"
 
-Canella::Component::Component(const std::string _id):id(_id){};
+/**
+ * \brief 
+ * \param _id
+ */
+Canella::Component::Component(const std::string _id): isActivated(true), id(_id), componentType()
+{};
 
 void Canella::Component::onStart(){};
 void Canella::Component::onUpdate(float dt){};
-bool Canella::Component::isComponentAlive()const {return isActivated;};
+bool Canella::Component::isComponentAlive() const {return isActivated;};
 void Canella::Component::setActivated(bool b){isActivated=b;};
 Canella::COMPONENT_TYPE Canella::Component::getComponentType(){return componentType;};
 void Canella::Component::interfaceUI(){};

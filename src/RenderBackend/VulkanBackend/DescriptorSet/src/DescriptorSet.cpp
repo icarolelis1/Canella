@@ -25,7 +25,6 @@ void DescriptorSet::updateDescriptorset(Device* device,
         w.dstSet = descriptorset;
         writes.push_back(w);
     }
-
     for (auto& image_info : imageInfos)
     {
         //Write only one descriptor per time;
@@ -40,5 +39,6 @@ void DescriptorSet::updateDescriptorset(Device* device,
         writes.push_back(w);
     }
     vkUpdateDescriptorSets(device->getLogicalDevice(), static_cast<uint32_t>(writes.size()),
-                           writes.data(), 0,NULL);
+                           writes.data(), 0, nullptr);
 }
+

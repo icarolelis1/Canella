@@ -72,14 +72,13 @@ void Canella::Transform::setScale(glm::vec3 p)
 	scale = p;
 }
 
-
 glm::quat Canella::Transform::calculateRotationQuaternion(glm::vec3 axis, float angle)
 {
 	glm::quat quat = glm::quat(0.0, position.x, position.y, position.z);
 
-	glm::vec3 p = glm::vec3(glm::sin(angle / 2.)) * glm::normalize(axis);
+	glm::vec3 p = glm::vec3(glm::sin(angle / 2.0f)) * glm::normalize(axis);
 
-	glm::quat q2 = glm::quat(glm::cos(angle / 2.0), p.x, p.y, p.z);
+	glm::quat q2 = glm::quat(glm::cos(angle / 2.0f), p.x, p.y, p.z);
 
 	glm::quat t = q2 * quat * glm::inverse(q2);
 
@@ -137,15 +136,10 @@ void Canella::Transform::rotate(glm::vec3 axis, float angle)
 {
 	axis = glm::normalize(axis);
 	glm::quat quat = glm::quat(0.0,position.x,position.y,position.z);
-
 	glm::vec3 p = glm::vec3(glm::sin(glm::radians(angle / 2.))) * (axis);
-
 	glm::quat q2 =glm::normalize(glm::quat(glm::cos(glm::radians(angle / 2.0)), p.x, p.y, p.z));
-
 	glm::quat t =  q2 * quat * glm::conjugate(q2);
-
 	rotQuaternion *= (t);
-
 
 }
 

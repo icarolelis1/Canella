@@ -38,10 +38,10 @@ namespace Canella {
 		GLFWwindow* window;
 
 	private:
-		float x;
-		float y;
-		float lastX;
-		float lastY;
+		double x;
+		double y;
+		double lastX;
+		double lastY;
 		bool initialized = false;
 	};
 }

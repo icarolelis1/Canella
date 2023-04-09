@@ -6,8 +6,8 @@
   },
   "Render": {
     "Api": "VULKAN",
-    "RenderPath": "E:\\IcaroDev\\Orange\\config\\render_path\\basic.json",
-    "Pipelines": "E:\\IcaroDev\\Orange\\config\\render_path\\pipelines.json"
+    "RenderPath": "config\\render_path\\basic.json",
+    "Pipelines": "config\\render_path\\pipelines.json"
   },
   "Scenegraph": {
     "Entities": [
