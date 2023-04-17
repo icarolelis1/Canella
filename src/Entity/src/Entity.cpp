@@ -2,14 +2,14 @@
 uint32_t Canella::Entity::GLOBAL_ENTITY_IDS = 0;
 
 // ComponentContainer Definitions
-std::shared_ptr<Canella::Component> Canella::ComponentContainer::getComponent(std::string id)
+std::shared_ptr<Canella::Component> Canella::ComponentContainer::getComponent(const std::string id)
 {
 	if (components.find(id) != components.end())
 		return components[id];
 	return nullptr;
 };
 
-std::shared_ptr<Canella::Component> Canella::ComponentContainer::getComponent(Canella::COMPONENT_TYPE type)
+std::shared_ptr<Canella::Component> Canella::ComponentContainer::getComponent(const COMPONENT_TYPE type)
 {
 	auto it = components.begin();
 	while (it != components.end())
@@ -19,7 +19,7 @@ std::shared_ptr<Canella::Component> Canella::ComponentContainer::getComponent(Ca
 	return nullptr;
 }
 
-void Canella::ComponentContainer::update(float dt)
+void Canella::ComponentContainer::update(const float dt)
 {
 	auto it = components.begin();
 	while (it != components.end())
@@ -29,7 +29,7 @@ void Canella::ComponentContainer::update(float dt)
 	}
 }
 
-void Canella::ComponentContainer::setActivated(bool b)
+void Canella::ComponentContainer::setActivated(const bool b)
 {
 	auto it = components.begin();
 	while (it != components.end())
@@ -70,39 +70,42 @@ Canella::Entity::Entity() : id(GLOBAL_ENTITY_IDS)
 	transform = std::make_shared<Canella::Transform>(transformId);
 	componentsContainer.addComponent(transform, transform->getId());
 };
-void Canella::Entity::attachComponent(std::shared_ptr<Canella::Component> component)
+
+Canella::Entity::Entity(const Entity& other)
+{
+	id = other.id;
+	this->transform = other.transform;
+}
+
+void Canella::Entity::attachComponent(const std::shared_ptr<Component> component)
 {
 	componentsContainer.addComponent(component, component->getId());
 }
 
-void Canella::Entity::update(float dt)
+void Canella::Entity::update(const float dt)
 {
 	componentsContainer.update(dt);
 }
 
-std::shared_ptr<Canella::Component> Canella::Entity::getComponent(std::string name)
+std::shared_ptr<Canella::Component> Canella::Entity::getComponent(const std::string name)
 {
 
 	return componentsContainer.getComponent(name);
 }
 
-std::shared_ptr<Canella::Component> Canella::Entity::getComponent(Canella::COMPONENT_TYPE componentType)
+std::shared_ptr<Canella::Component> Canella::Entity::getComponent(const Canella::COMPONENT_TYPE componentType)
 {
 	if (componentsContainer.getComponent(componentType) != nullptr)
 		return componentsContainer.getComponent(componentType);
 	return nullptr;
 }
 
-void Canella::Entity::displayOnUi()
-{
-}
-void Canella::Entity::setActivated(bool b)
+
+void Canella::Entity::setActivated(const bool b)
 {
 	activated = b;
 	if (!activated)
-	{
 		componentsContainer.setActivated(activated);
-	}
 }
 void Canella::Entity::setEnableComponents(bool b)
 {

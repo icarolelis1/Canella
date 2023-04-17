@@ -7,6 +7,7 @@ void Canella::Transform::start()
 
 void Canella::Transform::update(float timeStep)
 {
+	Canella::Logger::Info("udpating");
 }
 
 void Canella::Transform::awake()
@@ -161,8 +162,8 @@ void Canella::Transform::loadState(nlohmann::json& config){
 void Canella::Transform::saveState(nlohmann::json& config) {
 
 };
-std::shared_ptr<Canella::Component> Canella::Transform::create(const nlohmann::json& config){
-	std::shared_ptr<Canella::Component> m =	std::make_shared<Canella::Transform>(config["Id"]);
+std::shared_ptr<Canella::Component> Canella::Transform::create(){
+	std::shared_ptr<Component> m =	std::make_shared<Transform>("0");
 	return m;
 
 };

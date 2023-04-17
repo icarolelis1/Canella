@@ -22,7 +22,7 @@ namespace Canella
         void loadState(nlohmann::json &config);
         void saveState(nlohmann::json &config);
 
-        static std::shared_ptr<Canella::Component> create(const nlohmann::json &config);
+        static std::shared_ptr<Canella::Component> create();
     private:
         void resetCamera();
         float velocity = .04f;

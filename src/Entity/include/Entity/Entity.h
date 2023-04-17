@@ -32,8 +32,9 @@ namespace Canella
     {
     public:
         Entity();
+        Entity(const Entity& other);
         bool isActivated() const;
-        void setActivated(bool b);
+        void setActivated(const bool b);
         void loadState(nlohmann::json &config);
         void saveState(nlohmann::json &config) const;
         void update(float dt);
@@ -45,7 +46,7 @@ namespace Canella
         std::shared_ptr<Entity> getSharedPointer();
         void setEnableComponents(bool b);
         std::shared_ptr<Canella::Transform> transform;
-        const std::uint32_t id;
+        std::uint32_t id;
         static uint32_t GLOBAL_ENTITY_IDS;
 
     private:

@@ -1,14 +1,18 @@
 #include "Application/Application.h"
+
+#include <ComponentRegistry/ComponentRegistry.h>
+
 #include "VulkanRender/VulkanRender.h"
 #include "JobSystem/JobSystem.h"
 
 using namespace Canella;
 void Application::App::initialize(nlohmann::json& config)
 {
-	Canella::JobSystem::initialize();
+	ComponentRegistry::getInstance().initializeRegistry();
+	JobSystem::initialize();
 	window.initialize(config["Window"]);
 	render = std::make_unique<RenderSystem::VulkanBackend::VulkanRender>(config["Render"], &window);
-	scenegraph.build(config["Scenegraph"]);
+	//scenegraph.build(config["Scenegraph"]);
 }
 
 void Application::App::run()
@@ -17,9 +21,8 @@ void Application::App::run()
 	{
 		playing = ~window.shouldCloseWindow();
 		glfwPollEvents();
-		scenegraph.udpate(scenegraph.root,0.f);
-		render->update((float)glfwGetTime());
-
+		
+		render->update(static_cast<float>(glfwGetTime()));
 		if (KeyBoard::getKeyBoard().getKeyPressed(GLFW_KEY_ESCAPE))
 			break;
 	}

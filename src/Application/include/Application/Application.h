@@ -8,7 +8,6 @@
 #include "Render/Render.h"
 #include "Component/Component.h"
 #include "Window/Window.h"
-#include "Scenegraph/Scenegraph.h"
 #include <iostream>
 #include "Threadpool/Threadpool.h"
 #include "Logger/Logger.hpp"
@@ -29,7 +28,6 @@ namespace Application{
             bool playing = true;
             std::unique_ptr<Canella::Render> render;
             Canella::GlfwWindow window;
-            Canella::Scenegraph scenegraph;
 
 
     };

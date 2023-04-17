@@ -56,14 +56,19 @@ target_include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/stb
 )
 
-add_library(Engine Window/src/Window.cpp
+add_library(
+    Engine 
+    Window/src/Window.cpp
     Component/src/Component.cpp
     Input/src/Input.cpp
     Entity/src/Entity.cpp
-    Scenegraph/src/Scenegraph.cpp
+    EntityManager/src/EntityManager.cpp
+    rEntity/src/Entity.cpp
+    Scene/src/Scene.cpp
     defaultComponents/Transform/src/Transform.cpp
     defaultComponents/CameraController/src/CameraController.cpp
     ComponentRegistry/src/ComponentRegistry.cpp
+    ComponentManager/src/ComponentManager.cpp
     Eventsystem/src/Eventsystem.cpp
     JobSystem/src/JobSystem.cpp
 )
@@ -72,10 +77,13 @@ target_include_directories(
     Engine PUBLIC Window/include
     Component/include
     Entity/include
-    Scenegraph/include
+    rEntity/include
+    EntityManager/include
+    Scene/include
     defaultComponents/Transform/include
     defaultComponents/CameraController/include
     ComponentRegistry/include
+    ComponentManager/include
     Threadpool/include
     Eventsystem/include
     Logger/include

@@ -1,13 +1,17 @@
 #include "CameraController/CameraController.h"
 #include "Window/Window.h"
-Canella::CameraController::CameraController(std::string _id) : Component(_id)
+/**
+ * \brief Camera Controller Component
+ * \param _id 
+ */
+Canella::CameraController::CameraController(std::string _id) : Component(_id), ROLL(0), euler(), position()
 {
     Logger::Info("Created CameraController");
 }
 
-std::shared_ptr<Canella::Component> Canella::CameraController::create(const nlohmann::json &config)
+std::shared_ptr<Canella::Component> Canella::CameraController::create()
 {
-    std::shared_ptr<Canella::Component> m = std::make_shared<Canella::CameraController>(config["Id"]);
+    std::shared_ptr<Component> m = std::make_shared<CameraController>("1");
     return m;
 };
 
@@ -41,24 +45,25 @@ void Canella::CameraController::updateDirections()
 void Canella::CameraController::onUpdate(float timeStep)
 {
 
-    if (Canella::KeyBoard::getKeyBoard().getKeyPressed(GLFW_KEY_W))
+    if (KeyBoard::getKeyBoard().getKeyPressed(GLFW_KEY_W))
         position += (euler.front * timeStep * velocity);
 
-    if (Canella::KeyBoard::getKeyBoard().getKeyPressed(GLFW_KEY_S))
+    if (KeyBoard::getKeyBoard().getKeyPressed(GLFW_KEY_S))
         position += (-euler.front * timeStep * velocity);
 
-    if (Canella::KeyBoard::getKeyBoard().getKeyPressed(GLFW_KEY_A))
+    if (KeyBoard::getKeyBoard().getKeyPressed(GLFW_KEY_A))
         YAW += (timeStep * velocity);
 
-    if (Canella::KeyBoard::getKeyBoard().getKeyPressed(GLFW_KEY_D))
+    if (KeyBoard::getKeyBoard().getKeyPressed(GLFW_KEY_D))
         YAW -= (timeStep * velocity);
 
-    if (Canella::KeyBoard::getKeyBoard().getKeyPressed(GLFW_KEY_R))
+    if (KeyBoard::getKeyBoard().getKeyPressed(GLFW_KEY_R))
         PITCH += (timeStep * velocity);
 
-    if (Canella::KeyBoard::getKeyBoard().getKeyPressed(GLFW_KEY_F))
+    if (KeyBoard::getKeyBoard().getKeyPressed(GLFW_KEY_F))
         PITCH -= (timeStep * velocity);
 
+    Logger::Info("Updating");
     // if (Window::keyboard.getKeyPressed(GLFW_KEY_SPACE))
     // {
     //     transform->increasePos(-camera->eulerDirections.up * timeStep * velocity / 5.0f);

@@ -1,12 +1,11 @@
 #include <ComponentRegistry/ComponentRegistry.h>
-
-#include <utility>
 #include "Transform/Transform.h"
 #include "CameraController/CameraController.h"
+#include <utility>
 /**
- * \brief 
+ * \brief Registers create method for all components
  */
-Canella::ComponentRegistry::ComponentRegistry(){};
+Canella::ComponentRegistry::ComponentRegistry() = default;;
 
 Canella::ComponentRegistry &Canella::ComponentRegistry::getInstance()
 {
@@ -24,3 +23,22 @@ void Canella::ComponentRegistry::registerComponent(const std::string &id, functi
 {
     registry[id] = std::move(create_func);
 }
+/**
+ * \brief Creates a new Component and attach to Entity
+ * \param entity entity associated with the component
+ * \param componentIdentifier String identifier of the Component Type
+ * \return a shared_pointer to the created component
+ */
+
+/*Canella::RefComponent Canella::ComponentRegistry::attachComponent(Entity entity, std::string componentIdentifier)
+{
+    assert(components_map[componentIdentifier].find(entity) == components_map[componentIdentifier].end());
+    components_map[componentIdentifier][entity] = registry[componentIdentifier]();
+    return components_map[componentIdentifier][entity];
+}
+
+void Canella::ComponentRegistry::deleteComponent(Entity entity, std::string componentIdentifier)
+{
+    assert(components_map[componentIdentifier].find(entity) == components_map[componentIdentifier].end());
+    components_map[componentIdentifier].erase(entity);
+}*/

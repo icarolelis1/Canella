@@ -58,9 +58,9 @@ endif()
 # GLM
 find_package(glm REQUIRED PATHS ${LIBS_DIR}/glm/lib/cmake/glm)
 
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME}  main.cpp)
 
-target_link_directories(${PROJECT_NAME} PUBLIC $ENV{VULKAN_SDK}/Lib ${GLFW_LIB})
+target_link_directories(${PROJECT_NAME} PUBLIC $ENV{VULKAN_SDK}/Lib ${GLFW_LIB}  ${OS_LIBS_DIR}/assimp/lib/)
 
 include_directories(${PROJECT_NAME} PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/nlhoman
@@ -68,6 +68,7 @@ include_directories(${PROJECT_NAME} PUBLIC
   ${LIBS_DIR}/glm/include
   $ENV{VULKAN_SDK}/Include
   ${LIBS_DIR}/interface
+  ${OS_LIBS_DIR}/assimp/include
 )
 
 add_subdirectory(src)
@@ -76,7 +77,10 @@ IF(WIN32)
   target_link_libraries(${PROJECT_NAME} PRIVATE
     glfw3
     Application
-    vulkan-1)
+    vulkan-1
+    assimp-vc143-mtd
+    )
+    message(STATUS "cu de sua mae :L ${OS_LIBS_DIR}/assimp/lib/")
 
 ELSEIF(UNIX)
   target_link_libraries(${PROJECT_NAME} PRIVATE

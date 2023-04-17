@@ -12,8 +12,9 @@
 #include <json.hpp>
 
 using Vector3 = glm::vec3;
-namespace Canella{
-    struct Quaternion {
+namespace Canella
+{
+	struct Quaternion {
 		float w;
 		glm::vec3 axis;
 	};
@@ -23,6 +24,16 @@ namespace Canella{
 		glm::vec3 right;
 		glm::vec3 up;
 
+	};
+
+	struct TransformData
+	{
+		glm::vec3 scale;
+		glm::vec3 position;
+		glm::vec3 rotation;
+		glm::quat quaternion;
+		glm::mat4 model;
+		TransformData* parent;
 	};
 
 class Transform :public Component{
@@ -55,7 +66,7 @@ class Transform :public Component{
         void saveState(nlohmann::json& config) ;
 
 		//Function to be added in the componentRegistry
-		static std::shared_ptr<Canella::Component> create(const nlohmann::json& config);
+		static std::shared_ptr<Canella::Component> create();
 		glm::quat calculateRotationQuaternion(glm::vec3 axis, float angle);
         
 
