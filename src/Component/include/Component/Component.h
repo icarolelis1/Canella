@@ -1,10 +1,12 @@
 #pragma once
 #ifndef COMPONENT
 #define COMPONENT
+#include "ComponentBase.h"
 #include "Logger/Logger.hpp"
 #include <string>
 #include <memory>
 #include <json.hpp>
+
 namespace Canella
 {
 
@@ -16,7 +18,7 @@ namespace Canella
         TRANSFORM
     };
 
-    class Component
+    class Component : public ComponentBase
     {
     public:
         Component(const std::string ComponentID);

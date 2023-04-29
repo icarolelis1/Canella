@@ -9,15 +9,13 @@
     "RenderPath": "config\\render_path\\basic.json",
     "Pipelines": "config\\render_path\\pipelines.json"
   },
-  "Scenegraph": {
+  "Scene": {
     "Entities": [
       {
         "Parent": "Root",
-        "Id": "MainCamera",
         "Components": [
           {
-            "type": "CameraController",
-            "Id" : "CameraController"
+            "type": "CameraController"
           }
         ]
       }

@@ -1,11 +1,15 @@
 #include "EntityManager/EntityManager.h"
 #include <Entity/Entity.h>
 
+std::random_device rand_dev;
+std::mt19937 generator(rand_dev());
+std::vector<Canella::Entity> Canella::EntityManager::entities ={};
 
-CanellaRefactor::Entity Canella::EntityManager::createEntity(){
+Canella::Entity Canella::EntityManager::createEntity(){
     std::uniform_int_distribution<int>  distr(1, INT_MAX);
-    auto id = distr(generator);
-    entities.push_back(CanellaRefactor::Entity(id));
+    const auto id = distr(generator);
+    entities.emplace_back();
+    entities.back().id = id;
     return entities.back();
 }
 

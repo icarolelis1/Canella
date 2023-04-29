@@ -89,7 +89,12 @@
         "csignal": "cpp",
         "numbers": "cpp",
         "semaphore": "cpp",
-        "span": "cpp"
+        "span": "cpp",
+        "any": "cpp",
+        "bitset": "cpp",
+        "regex": "cpp",
+        "stack": "cpp",
+        "variant": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

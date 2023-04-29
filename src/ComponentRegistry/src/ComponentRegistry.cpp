@@ -1,7 +1,5 @@
 #include <ComponentRegistry/ComponentRegistry.h>
-#include "Transform/Transform.h"
-#include "CameraController/CameraController.h"
-#include <utility>
+
 /**
  * \brief Registers create method for all components
  */
@@ -26,19 +24,19 @@ void Canella::ComponentRegistry::registerComponent(const std::string &id, functi
 /**
  * \brief Creates a new Component and attach to Entity
  * \param entity entity associated with the component
- * \param componentIdentifier String identifier of the Component Type
+ * \param component_identifier String identifier of the Component Type
  * \return a shared_pointer to the created component
  */
 
-/*Canella::RefComponent Canella::ComponentRegistry::attachComponent(Entity entity, std::string componentIdentifier)
+Canella::RefComponent Canella::ComponentRegistry::attachComponent(Entity entity, std::string component_identifier)
 {
-    assert(components_map[componentIdentifier].find(entity) == components_map[componentIdentifier].end());
-    components_map[componentIdentifier][entity] = registry[componentIdentifier]();
-    return components_map[componentIdentifier][entity];
+    assert(components_map[component_identifier].find(entity.id) == components_map[component_identifier].end());
+    components_map[component_identifier][entity.id] = registry[component_identifier]();
+    return components_map[component_identifier][entity.id];
 }
 
 void Canella::ComponentRegistry::deleteComponent(Entity entity, std::string componentIdentifier)
 {
-    assert(components_map[componentIdentifier].find(entity) == components_map[componentIdentifier].end());
-    components_map[componentIdentifier].erase(entity);
-}*/
+    assert(components_map[componentIdentifier].find(entity.id) == components_map[componentIdentifier].end());
+    components_map[componentIdentifier].erase(entity.id);
+}

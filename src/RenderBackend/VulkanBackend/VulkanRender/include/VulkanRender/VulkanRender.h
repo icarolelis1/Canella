@@ -18,6 +18,10 @@
 #include "Logger/Logger.hpp"
 #include "Window/Window.h"
 #include "vulkan/vulkan_core.h"
+#include "EntityBase.h"
+#include "ComponentBase.h"
+#include <unordered_map>
+
 namespace Canella
 {
 	namespace RenderSystem
@@ -27,7 +31,7 @@ namespace Canella
 	
 			using Surface = VkSurfaceKHR;
 
-			class VulkanRender : public Canella::Render
+			class VulkanRender : public Render
 			{
 				PFN_vkCmdDrawMeshTasksEXT vkCmdDrawMeshTasksEXT;
 
@@ -60,9 +64,11 @@ namespace Canella
 				void writeDescriptorSets();
 			public:
 				void render();
-				VulkanRender(nlohmann::json &config, Windowing *window);
+				VulkanRender(nlohmann::json& config, Windowing* window, 
+					std::unordered_map<uint32_t,std::shared_ptr<ComponentBase>> &drawables);
 				void assignMainCamera();
 				void update(float time);
+				std::unordered_map<uint32_t,std::shared_ptr<ComponentBase>> drawables;
 				~VulkanRender();
 			};
 

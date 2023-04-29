@@ -4,10 +4,7 @@
 
 void Canella::GlfwWindow::initialize(nlohmann::json &config)
 {
-
 	glfwInit();
-
-
 	if (!glfwVulkanSupported()) {
 		Canella::Logger::Error("Glfw doesnt support vulkan");
 		return;

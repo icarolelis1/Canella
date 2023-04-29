@@ -1,8 +1,6 @@
 #include "VulkanRender/VulkanRender.h"
-
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
-
 
 using namespace Canella::RenderSystem::VulkanBackend;
 
@@ -11,9 +9,12 @@ using namespace Canella::RenderSystem::VulkanBackend;
  * \param config 
  * \param window 
  */
-VulkanRender::VulkanRender(nlohmann::json& config, Windowing* window)
+VulkanRender::VulkanRender(nlohmann::json& config, Windowing* window, 
+    std::unordered_map<uint32_t, std::shared_ptr<ComponentBase>> &_drawables)
 {
+
     initVulkanInstance();
+    //drawables = std::move(_drawables);
     dynamic_cast<GlfwWindow*>(window)->getSurface(instance->handle, &surface);
     const auto [width, height] = dynamic_cast<GlfwWindow*>(window)->getExtent();
     device.prepareDevice(surface, *instance);
@@ -206,7 +207,6 @@ void VulkanRender::allocateGlobalDescriptorsets()
 VulkanRender::~VulkanRender()
 {
     free(instance);
-
     for (auto& frame : frames)
         frame.destroy();
 

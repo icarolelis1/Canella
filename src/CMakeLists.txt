@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.8)
 
 add_library(
     Render
+    Stb/stb.h
     RenderBackend/VulkanBackend/Instance/src/Instance.cpp
     RenderBackend/VulkanBackend/Device/src/Device.cpp
     RenderBackend/VulkanBackend/Commandpool/src/Commandpool.cpp
@@ -21,13 +22,12 @@ add_library(
 
 
     Render/src/Render.cpp
-    Stb/stb.h
     SpirV/spirv_reflect.c
 )
 
 target_include_directories(
     Render PUBLIC
-    Stb/
+    
     RenderBackend/VulkanBackend/Instance/include
     RenderBackend/VulkanBackend/Device/include
     RenderBackend/VulkanBackend/Commandpool/include
@@ -51,7 +51,6 @@ target_include_directories(
     Window/include
     Logger/include
     Input/include
-
     Render/include
     ${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/stb
 )
@@ -63,12 +62,11 @@ add_library(
     Input/src/Input.cpp
     Entity/src/Entity.cpp
     EntityManager/src/EntityManager.cpp
-    rEntity/src/Entity.cpp
     Scene/src/Scene.cpp
     defaultComponents/Transform/src/Transform.cpp
     defaultComponents/CameraController/src/CameraController.cpp
     ComponentRegistry/src/ComponentRegistry.cpp
-    ComponentManager/src/ComponentManager.cpp
+    Components/src/Components.cpp
     Eventsystem/src/Eventsystem.cpp
     JobSystem/src/JobSystem.cpp
 )
@@ -77,13 +75,12 @@ target_include_directories(
     Engine PUBLIC Window/include
     Component/include
     Entity/include
-    rEntity/include
     EntityManager/include
     Scene/include
     defaultComponents/Transform/include
     defaultComponents/CameraController/include
+    Components/include
     ComponentRegistry/include
-    ComponentManager/include
     Threadpool/include
     Eventsystem/include
     Logger/include
@@ -92,9 +89,8 @@ target_include_directories(
     Containers/include
 )
 
-add_library(Application Application/src/Application.cpp
-)
+add_library(Application Application/src/Application.cpp)
 
-target_link_libraries(Application PUBLIC Engine Render)
+target_link_libraries(Application PUBLIC Render Engine)
 
 target_include_directories(Application PUBLIC Application/include)
