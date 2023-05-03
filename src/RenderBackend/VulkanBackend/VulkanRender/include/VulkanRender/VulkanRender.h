@@ -64,11 +64,9 @@ namespace Canella
 				void writeDescriptorSets();
 			public:
 				void render();
-				VulkanRender(nlohmann::json& config, Windowing* window, 
-					std::unordered_map<uint32_t,std::shared_ptr<ComponentBase>> &drawables);
+				VulkanRender(nlohmann::json& config, Windowing* window);
 				void assignMainCamera();
 				void update(float time);
-				std::unordered_map<uint32_t,std::shared_ptr<ComponentBase>> drawables;
 				~VulkanRender();
 			};
 

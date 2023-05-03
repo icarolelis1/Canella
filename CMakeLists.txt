@@ -64,6 +64,7 @@ target_link_directories(${PROJECT_NAME} PUBLIC $ENV{VULKAN_SDK}/Lib ${GLFW_LIB} 
 
 include_directories(${PROJECT_NAME} PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/nlhoman
+  ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/entt
   ${GLFW_INCLUDE_DIRS}
   ${LIBS_DIR}/glm/include
   $ENV{VULKAN_SDK}/Include
@@ -76,16 +77,15 @@ add_subdirectory(src)
 IF(WIN32)
   target_link_libraries(${PROJECT_NAME} PRIVATE
     glfw3
-    Application
+    Engine
     vulkan-1
     assimp-vc143-mtd
     )
-    message(STATUS "cu de sua mae :L ${OS_LIBS_DIR}/assimp/lib/")
 
 ELSEIF(UNIX)
   target_link_libraries(${PROJECT_NAME} PRIVATE
     ${GLFW_LIB}
-    Application
+    Engine
     vulkan-1)
 endif()
 
@@ -103,16 +103,11 @@ foreach(SHADER IN LISTS SHADERS)
 list(APPEND SPV_SHADERS ${SHADER_DIR}/shaders/${FILENAME}.spv)
 endForeach()
 
-add_custom_target(copy_config ALL
+add_custom_target(copy_resources ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${PROJECT_SOURCE_DIR}/config
-    ${PROJECT_BINARY_DIR}/config
+    ${PROJECT_SOURCE_DIR}/resources
+    ${PROJECT_BINARY_DIR}/resources
     COMMENT "Copying config file to build directory") 
 
-  add_custom_target(copy_shaders ALL
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${PROJECT_SOURCE_DIR}/shaders
-    ${PROJECT_BINARY_DIR}/shaders
-    COMMENT "Copying shaders to build directory")
 
 add_custom_target(shaders ALL DEPENDS ${SPV_SHADERS})

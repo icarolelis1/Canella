@@ -27,7 +27,6 @@ add_library(
 
 target_include_directories(
     Render PUBLIC
-    
     RenderBackend/VulkanBackend/Instance/include
     RenderBackend/VulkanBackend/Device/include
     RenderBackend/VulkanBackend/Commandpool/include
@@ -44,10 +43,7 @@ target_include_directories(
     RenderBackend/VulkanBackend/Pipeline/include
     RenderBackend/VulkanBackend/Descriptorpool/include
     RenderBackend/VulkanBackend/DescriptorSet/include
-
-
     SpirV/
-
     Window/include
     Logger/include
     Input/include
@@ -56,31 +52,15 @@ target_include_directories(
 )
 
 add_library(
-    Engine 
+    Systems 
     Window/src/Window.cpp
-    Component/src/Component.cpp
     Input/src/Input.cpp
-    Entity/src/Entity.cpp
-    EntityManager/src/EntityManager.cpp
-    Scene/src/Scene.cpp
-    defaultComponents/Transform/src/Transform.cpp
-    defaultComponents/CameraController/src/CameraController.cpp
-    ComponentRegistry/src/ComponentRegistry.cpp
-    Components/src/Components.cpp
     Eventsystem/src/Eventsystem.cpp
     JobSystem/src/JobSystem.cpp
 )
 
 target_include_directories(
-    Engine PUBLIC Window/include
-    Component/include
-    Entity/include
-    EntityManager/include
-    Scene/include
-    defaultComponents/Transform/include
-    defaultComponents/CameraController/include
-    Components/include
-    ComponentRegistry/include
+    Systems PUBLIC Window/include
     Threadpool/include
     Eventsystem/include
     Logger/include
@@ -89,8 +69,22 @@ target_include_directories(
     Containers/include
 )
 
-add_library(Application Application/src/Application.cpp)
+add_library(
+Engine 
+Application/src/Application.cpp     
+Components/src/Components.cpp
+Scene/src/Scene.cpp
+Entity/src/Entity.cpp
+Serializer/src/Serializer.cpp
+)
 
-target_link_libraries(Application PUBLIC Render Engine)
+target_link_libraries(Engine PUBLIC Render Systems)
 
-target_include_directories(Application PUBLIC Application/include)
+target_include_directories(Engine PUBLIC 
+Entity/include
+Application/include    
+Components/include
+Scene/include
+Serializer/include
+
+)

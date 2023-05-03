@@ -1,20 +1,29 @@
 #include "Application/Application.h"
-#include <unordered_map>
+#include "Components/Components.h"
 using namespace Canella;
 
 void Application::App::initialize(nlohmann::json& config)
 {
-    ComponentRegistry::getInstance().initializeRegistry();
     JobSystem::initialize();
+    //Setup Project Folder
+    SetupProjectFolder(config);
+    //init windowing
     window.initialize(config["Window"]);
-    scene.build(config["Scene"]);
-	ComponentRegistry &registry = ComponentRegistry::getInstance();
-    auto drawables = registry.components_map["Mesh"];
-    render = std::make_unique<RenderSystem::VulkanBackend::VulkanRender>(
-        config["Render"],
-        &window, 
-        registry.components_map["Mesh"]);
-    
+    //load scene
+    scene = std::make_shared<Scene>();
+    //serialize scene
+    serializer.Serialize(scene, config["Scenes"]);
+    //init render
+    render = std::make_unique<RenderSystem::VulkanBackend::VulkanRender>(config["Render"],&window);
+}
+
+/**
+ * \brief 
+ * \param data 
+ */
+void Application::App::SetupProjectFolder(nlohmann::json& data)
+{
+    assetsFolder = data["Assets"].get<std::string>();
 }
 
 void Application::App::run()
@@ -26,7 +35,10 @@ void Application::App::run()
         render->render();
         render->update(static_cast<float>(glfwGetTime()));
         if (KeyBoard::getKeyBoard().getKeyPressed(GLFW_KEY_ESCAPE))
+        {
+            serializer.Deserialize(scene);
             break;
+        }
     }
 }
 

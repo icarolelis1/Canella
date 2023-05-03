@@ -16,7 +16,7 @@ int main()
 	Canella::Logger::Warn("WARN");
 	Canella::Logger::Trace("TRACE");
 
-	std::fstream f("config\\config.json");
+	std::fstream f("resources\\config\\config.json");
 	nlohmann::json j;
 	f >> j;
 

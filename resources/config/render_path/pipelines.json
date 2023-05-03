@@ -1,0 +1,49 @@
+﻿{
+  "PipelineData": {
+    "DescriptorSetLayoutCounts":1,
+    "PipelinesCount":1,
+    "DescriptorSetLayouts": [
+      {
+        "Key": "ViewProjection",
+        "ResourceCount": 1,
+        "BindingResources": [
+          {
+            "Key": "ViewProjection",
+            "Stage": "MESH_STAGE",
+            "Type": "UNIFORM_BUFFER",
+            "Binding": 0
+          }
+        ]
+      }
+    ],
+    "Pipelines": [
+      {
+        "Key": "MeshShaderPipeline",
+        "PushConstantRangesCount" : 0,
+        "NumerOfDescriptorSets": 1,
+        "Renderpass": "basic",
+        "VertexAttributeCount" : 0,
+        "PipelineLayoutDescriptors": ["ViewProjection"],
+        "Builtin": true,
+        "ShaderCount":3,
+        "Shaders": [
+          {
+            "Type": "Mesh",
+            "ResourcesCount": 1,
+            "Source":"resources\\Shaders\\spirv\\mesh.mesh.spv"
+          },
+          {
+            "Type": "Task",
+            "ResourcesCount": 0,
+            "Source":"resources\\Shaders\\spirv\\task.task.spv"
+          },
+          {
+            "Type": "Fragment",
+            "ResourcesCount": 0,
+            "Source":"resources\\Shaders\\spirv\\fragment.frag.spv"
+          }
+        ]
+      }
+    ]
+  }
+}

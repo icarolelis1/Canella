@@ -1,105 +1,52 @@
 #include "Scene/Scene.h"
+#include "Entity.h"
+/**
+ * \brief brief Create a new Entity in this scene
+ * \return The Entity created
+ */
+Canella::Entity Canella::Scene::CreateEntity()
+{
+    entt::entity entt_entity = m_registry.create();
+    Entity entity{entt_entity, this->shared_from_this()};
+    m_EntityLibrary[entt_entity] = entity;
+    return m_EntityLibrary[entt_entity];
+}
 
 /**
  * \brief Builds the components for each entity in the config File
- * \param Component Registry
- * \param json Data Serialized for each component
  * \param entity entity the component is associated to
+ * \param components_data Data Serialized for each component
  */
 
-Canella::Node::Node(Entity e_): parent(nullptr)
+/*void Canella::Scene::LoadComponents(
+    const entt::entity entity,
+    nlohmann::json &components_data)
 {
-	this->entity = e_;
+    component_registry.RegisterSerialization();
+
+    for (auto component_data : components_data)
+    {
+        const auto type = component_data["type"].get<std::string>();
+        const auto component_creation = component_registry.create_method(type);
+        component_creation(component_data, m_registry, entity);
+    }
 }
 
-Canella::Node::Node(const Node& e)
+void Canella::Scene::Load(const std::string &applicationFolder)
 {
-	this->entity = e.entity;
-};
-
-bool Canella::Node::operator==(const Node& n)
-{
-	return entity.id == n.entity.id;
+    const auto project_path = std::filesystem::absolute(applicationFolder);
+    for (const auto &file : std::filesystem::directory_iterator(project_path))
+    {
+        std::string file_name = file.path().filename().string();
+        std::string extension = file.path().extension().string();
+        if (file_name == "scene.json")
+            LoadEntitiesFromDisk(applicationFolder + "\\"+file_name);
+    }
 }
 
-void Canella::Scene::buildComponents(
-	ComponentRegistry &componentRegistry,
-	const nlohmann::json &json,
-	Entity entity)
+void Canella::Scene::LoadEntitiesFromDisk(const std::string& filePath)
 {
-	 for (const auto &j : json["Components"])
-	 {
-	 	if (componentRegistry.registry.find(j["type"]) != componentRegistry.registry.end())
-	 		// Create and attach the component described in the json file
-	 		ComponentRegistry::getInstance().attachComponent(entity,  j["type"]);
-	 	else
-	 		Logger::Info("\t Component Not Registered");
-	 }
+
+    Serializer::Serialize(this->this->shared_from_this(),filePath)
 }
-
-void Canella::Scene::build(const nlohmann::json &config)
-{
-	// Initiaize Component Registry
-	ComponentRegistry &r = ComponentRegistry::getInstance();
-
-	// Build the Entire SceneGraph
-	const auto e1 = Entity();
-	root.entity = e1;
-
-	for (const nlohmann::json &json : config["Entities"])
-	{
-		auto entity = entities.createEntity();
-		Node node;
-		node.entity = entity;
-
-		if (json["Parent"] == "Root")
-			addNode(node);
-		else
-		{
-			//const auto father = findById(json["Parent"]);
-			// if (father->entity)
-			// {
-			// 	addNode(father, node);
-			// }
-		}
-		// Build Components
-		buildComponents(r, json, entity);
-	}
-}
-void Canella::Scene::addNode(Node entity)
-{
-	std::lock_guard<std::mutex> lock(entity.childsMutex);
-	root.childs.push_back(entity);
-	entity.parent = &root;
-}
-
-void Canella::Scene::addNode(Node p1, Node p2)
-{
-	std::lock_guard lock(p1.childsMutex);
-	p1.childs.push_back(p2);
-	//p2.parent.entity = p1.entity;
-}
-
-/*
-Canella::Node Canella::Scene::findById(const std::uint32_t &id)
-{
-	return findById(root, id);
-}
-Canella::Node Canella::Scene::findById(Canella::Node node, const std::uint32_t &id)
-{
-	std::lock_guard lock(node.childsMutex);
-	if (node->entity->id == id)
-		return node;
-
-	auto it = node->childs.begin();
-	while (it != node->childs.end())
-	{
-		if (auto n = std::move(findById(*it, id)); n->entity)
-			return n;
-		++it;
-	};
-	return std::make_shared<Canella::Node>();
-};
 */
-
-

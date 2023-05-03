@@ -1,8 +1,6 @@
 #pragma once
 #ifndef JOB_SYSTEM
 #define JOB_SYSTEM
-#include "Canella/ThreadQueue.hpp"
-
 #include <functional>
 #include <condition_variable>
 #include <thread>

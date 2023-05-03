@@ -9,6 +9,7 @@
 #include <vector>
 #include <iostream>
 #include <Logger/Logger.hpp>
+
 namespace Canella {
 
     class join_threads

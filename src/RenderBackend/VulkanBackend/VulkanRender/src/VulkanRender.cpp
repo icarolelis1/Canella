@@ -9,8 +9,7 @@ using namespace Canella::RenderSystem::VulkanBackend;
  * \param config 
  * \param window 
  */
-VulkanRender::VulkanRender(nlohmann::json& config, Windowing* window, 
-    std::unordered_map<uint32_t, std::shared_ptr<ComponentBase>> &_drawables)
+VulkanRender::VulkanRender(nlohmann::json& config, Windowing* window)
 {
 
     initVulkanInstance();

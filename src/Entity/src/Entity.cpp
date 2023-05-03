@@ -1,10 +1,2 @@
-#include <Entity/Entity.h>
+#include "Entity.h"
 
-/**
- * \brief Basic Entity
- */
-
-Canella::Entity::Entity(const Entity& other)
-{
-	id = other.id;
-}

@@ -1,6 +1,6 @@
 #include "JobSystem/JobSystem.h"
 #include "Logger/Logger.hpp"
-
+#include "Canella/ThreadQueue.hpp"
 #include <typeinfo>
 #include <functional>
 #include <memory.h>

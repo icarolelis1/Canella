@@ -1,13 +1,12 @@
 #pragma once
 #ifndef APPLICATION
 #define APPLICATION
-#include "Entity/Entity.h"
+#include "Entity.h"
+#include "Serializer/Serializer.h"
 #include "Render/Render.h"
-#include "Component/Component.h"
 #include "Window/Window.h"
 #include "Threadpool/Threadpool.h"
 #include "Logger/Logger.hpp"
-#include "ComponentRegistry/ComponentRegistry.h"
 #include "VulkanRender/VulkanRender.h"
 #include "JobSystem/JobSystem.h"
 #include "Scene/Scene.h"
@@ -15,25 +14,26 @@
 #include <json.hpp>
 #include <iostream>
 #include <string>
-
 namespace Application
 {
     class App
     {
+
     public:
         App() = default;
-
         void initialize(nlohmann::json &config);
         void run();
         void close();
         ~App();
-
+        std::string& assetsFolder;
     private:
-        // Application metadata;
+        void SetupProjectFolder(nlohmann::json& data);
+        entt::registry registry;
         bool playing = true;
         std::unique_ptr<Canella::Render> render;
-        Canella::Scene scene;
+        std::shared_ptr<Canella::Scene> scene;
         Canella::GlfwWindow window;
+        Canella::Serializer serializer;
     };
 
 }
