@@ -53,6 +53,8 @@ namespace Canella
                 std::vector<VkImageView> &getViews();
                 VkFormat getSwapchainFormat();
                 VkExtent2D getExtent();
+                VkViewport get_view_port();
+                VkRect2D get_rect2d();
                 uint32_t getNumberOfImages();
                 VkFormat getFormat();
                 VkSwapchainKHR &getSwapChainHandle();

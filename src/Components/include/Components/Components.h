@@ -29,6 +29,7 @@ namespace Canella
         glm::vec3 position;
         glm::vec3 rotation;
         glm::vec3 scale;
+        glm::mat4 modelMatrix;
         TransformComponent(const TransformComponent&)=default;
         TransformComponent() = default;
         
@@ -40,8 +41,10 @@ namespace Canella
         glm::vec3 position;
         glm::mat4 projection;
         glm::vec3 target;
+        float fovy;
         float zNear;
         float zFar;
+        glm::mat4 viewProjection;
     };
 
     struct CameraControllerComponent
@@ -67,8 +70,6 @@ namespace Canella
     void DeserializeTransform(nlohmann::json& data,TransformComponent&);
     void DeserializeCamera(nlohmann::json& data,CameraComponent&);
     void DeserializeMeshAsset(nlohmann::json& data,MeshAssetComponent&);
-    
-    
 }
 
 #endif

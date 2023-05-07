@@ -6,34 +6,29 @@ namespace Canella
 	{
 		namespace VulkanBackend
 		{
-
-			FrameData::FrameData() : commandPool()
-			{
-			}
-
 			/**
 			 * @brief
 			 * FrameData object corresponds to a swapchain image
 			 * Each FrameData has a collection of syncronization primitives that allow
 			 * Record overlapping between frames and a set of commandspools
-			 * @param _device
+			 * @param device
 			 */
 			void FrameData::build(Device *device)
 			{
 				this->device = device;
-				VkSemaphoreCreateInfo semaphInfo{};
-				semaphInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+				VkSemaphoreCreateInfo semaph_info{};
+				semaph_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
-				VkFenceCreateInfo fenceInfo{};
-				fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-				fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+				VkFenceCreateInfo fence_info{};
+				fence_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+				fence_info.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-				if (vkCreateSemaphore(device->getLogicalDevice(), &semaphInfo, nullptr, &imageAcquiredSemaphore) != VK_SUCCESS ||
-					vkCreateSemaphore(device->getLogicalDevice(), &semaphInfo, nullptr, &renderFinishedSemaphore) != VK_SUCCESS ||
-					vkCreateFence(device->getLogicalDevice(), &fenceInfo, nullptr, &imageAvaibleFence))
+				if (vkCreateSemaphore(device->getLogicalDevice(), &semaph_info, nullptr, &imageAcquiredSemaphore) != VK_SUCCESS ||
+					vkCreateSemaphore(device->getLogicalDevice(), &semaph_info, nullptr, &renderFinishedSemaphore) != VK_SUCCESS ||
+					vkCreateFence(device->getLogicalDevice(), &fence_info, nullptr, &imageAvaibleFence))
 				{
 
-					Logger::Error("Failed to create syncronization objects for given frame");
+					Logger::Error("Failed to create synchronization objects for given frame");
 				}
 				else
 				{
@@ -44,7 +39,14 @@ namespace Canella
 				commandBuffer = commandPool.requestCommandBuffer(device, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
 			}
 
-			uint32_t FrameData::beginCommand(Device& device,Swapchain* swapChain, VkCommandBufferUsageFlags usageFlags)
+			/**
+			 * \brief 
+			 * \param device 
+			 * \param swapChain 
+			 * \param usageFlags 
+			 * \return 
+			 */
+			uint32_t FrameData::begin_command(Device& device,Swapchain* swapChain, VkCommandBufferUsageFlags usageFlags)
 			{
 				return 0;
 			}

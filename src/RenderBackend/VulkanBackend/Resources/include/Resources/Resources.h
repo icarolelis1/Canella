@@ -1,7 +1,8 @@
 #ifndef VK_RESOURCES
 #define VK_RESOURCES
-#include "Device/Device.h"
+#include <Meshoptimizer/meshoptimizer.h>
 
+#include "Device/Device.h"
 namespace Canella
 {
     namespace RenderSystem
@@ -21,12 +22,13 @@ namespace Canella
 
             private:
                 bool mapped = false;
-                uint32_t findMemoryType(Device *device, uint32_t typeFilter, VkMemoryPropertyFlags properties);
+                uint32_t find_memory_type(Device *device, uint32_t typeFilter, VkMemoryPropertyFlags properties);
                 VkBuffer vk_buffer;
                 VkDeviceMemory vk_deviceMemory;
                 Device* device;
                 void* mapPointer;
             };
+            
             template <typename T>
             inline void Buffer::udpate(T &object)
             {
@@ -37,8 +39,23 @@ namespace Canella
                 memcpy(mapPointer, &object, sizeof(object));
                 mapped = true;
             }
-        }
 
+            void copy_buffer_to(VkCommandBuffer command_buffer,Buffer& src,Buffer& dst,VkDeviceSize device_size,VkQueue queue);
+            
+            class DescriptorSet;
+            struct MeshletGPUResources
+            {
+                Buffer buffer;
+                std::vector<DescriptorSet> descriptorsets;
+                std::vector<meshopt_Bounds> meshopt_bounds;
+                
+                MeshletGPUResources(Device *_device,
+                    VkDeviceSize size,
+                    VkBufferUsageFlags usage,
+                    VkMemoryPropertyFlags properties);
+            };
+
+        }
     } // namespace name
 
 }

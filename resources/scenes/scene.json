@@ -15,7 +15,7 @@
           {
             "type" : "MeshAsset",
             "Static":true,
-            "Source" : "test.obj"
+            "Source" : "model_test/scene.gltf"
           },
           {
             "type": "Camera",

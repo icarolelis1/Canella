@@ -91,7 +91,7 @@ endif()
 
 set( ${CMAKE_CURRENT_SOURCE_DIR}/shaders)
 
-set(SHADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/shaders)
+set(SHADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resources/shaders)
 file(GLOB SHADERS ${SHADER_DIR}/*.vert ${SHADER_DIR}/*.frag ${SHADER_DIR}/*.comp ${SHADER_DIR}/*.geom ${SHADER_DIR}/*.tesc ${SHADER_DIR}/*.tese ${SHADER_DIR}/*.mesh ${SHADER_DIR}/*.task ${SHADER_DIR}/*.rgen ${SHADER_DIR}/*.rchit ${SHADER_DIR}/*.rmiss)
 
 foreach(SHADER IN LISTS SHADERS)

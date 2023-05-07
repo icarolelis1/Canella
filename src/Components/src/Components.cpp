@@ -4,7 +4,7 @@ void Canella::SerializeTransform(nlohmann::json& data,entt::registry& registry,e
 {
     registry.emplace<TransformComponent>(entity);
     const auto view = registry.view<TransformComponent>();
-    auto & [position, rotation, scale] = view.get<TransformComponent>(entity);
+    auto & [position, rotation, scale,model_matrix] = view.get<TransformComponent>(entity);
     position.x = data["Position"]["x"].get<float>();
     position.y = data["Position"]["y"].get<float>();
     position.z = data["Position"]["z"].get<float>();

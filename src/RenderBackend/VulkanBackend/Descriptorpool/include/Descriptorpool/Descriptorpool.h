@@ -20,14 +20,14 @@ namespace Canella
                 VkDescriptorSetLayout vk_bindless_layout;
                 VkDescriptorSet vk_bindless_descriptor_set;
 
-                void buildDescriptorPool(Device &device);
-                void buildGlobalDescriptorPool(Device &device);
-                void buildBindlessDescriptorPool(Device &device);
-                void buildDescriptorSetLayout(Device &device);
+                void build_descriptor_pool(Device &device);
+                void build_global_descriptor_pool(Device &device);
+                void build_bindless_descriptor_pool(Device &device);
+                void build_descriptor_set_layout(Device &device);
 
             public:
                 void build(Device &device);
-                void AllocateDescriptorSet(Device& device,std::shared_ptr<DescriptorSetLayout> layout,
+                void allocate_descriptor_set(Device& device,std::shared_ptr<DescriptorSetLayout> layout,
                     VkDescriptorSet& set);
             };
 

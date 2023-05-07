@@ -7,7 +7,7 @@
 Canella::Entity Canella::Scene::CreateEntity()
 {
     entt::entity entt_entity = m_registry.create();
-    Entity entity{entt_entity, this->shared_from_this()};
+    Entity entity{entt_entity, this->shared_from_this() };
     m_EntityLibrary[entt_entity] = entity;
     return m_EntityLibrary[entt_entity];
 }

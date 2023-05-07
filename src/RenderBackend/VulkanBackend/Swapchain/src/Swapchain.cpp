@@ -66,6 +66,28 @@ namespace Canella
 				return properties.extent;
 			}
 
+			/**
+			 * \brief Gets a VkViewport with dimensions of swapchain framebuffer
+			 * \return VkViewport with dimensions of swapchain framebuffer
+			 */
+			VkViewport Swapchain::get_view_port()
+			{
+				VkViewport vk_viewport{};
+				vk_viewport.width = properties.extent.width;
+				vk_viewport.height = properties.extent.height;
+				vk_viewport.maxDepth = 1;
+				return vk_viewport;
+			}
+
+			VkRect2D Swapchain::get_rect2d()
+			{
+				VkRect2D rect;
+				rect.extent.width = properties.extent.width;
+				rect.extent.height = properties.extent.height;
+				rect.offset = {0, 0};
+				return rect;
+			}
+
 			VkSwapchainKHR &Swapchain::getSwapChainHandle()
 			{
 				return properties.vk_swapChain;

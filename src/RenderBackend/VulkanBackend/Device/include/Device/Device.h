@@ -133,13 +133,14 @@ namespace Canella
                 VkDevice *getLogicalDevicePtr();
                 VkPhysicalDevice &getPhysicalDevice();
                 VkPhysicalDevice *getPhysicalDevicePtr();
-                bool prepareDevice(VkSurfaceKHR surface, Instance instance);
                 uint32_t getGraphicsQueueIndex() const;
                 VkQueue getGraphicsQueueHandle() const;
-                uint32_t getTransferQueueIndex() const;
-                uint32_t getComputeQueueIndex()  const;
+                VkQueue  getTransferQueueHandle() const;
                 uint32_t getPresentQueueIndex()  const;
                 const VkAllocationCallbacks* getAllocator();
+                uint32_t getTransferQueueIndex() const;
+                uint32_t getComputeQueueIndex() const;
+                bool prepareDevice(VkSurfaceKHR surface, Instance instance);
                 ~Device();
                 void destroyDevice();
             };

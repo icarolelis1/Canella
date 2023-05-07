@@ -13,20 +13,20 @@ namespace Canella
         {
             class FrameData
             {
-
-                Device *device;
-
             public:
+                FrameData() = default;
+                uint32_t begin_command(Device &device, Swapchain *swapChain, VkCommandBufferUsageFlags usageFlags);
+                void finishCommand();
+                void build(Device *device);
+                void destroy();
+                
                 Commandpool commandPool;
                 VkFence imageAvaibleFence;
                 VkCommandBuffer commandBuffer;
                 VkSemaphore imageAcquiredSemaphore;
                 VkSemaphore renderFinishedSemaphore;
-                FrameData();
-                uint32_t beginCommand(Device &device, Swapchain *swapChain, VkCommandBufferUsageFlags usageFlags);
-                void finishCommand();
-                void build(Device *device);
-                void destroy();
+            private:
+                Device *device;
             };
         }
     }

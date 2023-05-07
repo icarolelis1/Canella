@@ -1,7 +1,7 @@
 ﻿#include <iostream>
 #include <fstream>
 #include <json.hpp>
-#include "Application/Application.h"
+#include "Project/Project.h"
 #include "Logger/Logger.hpp"
 
 Canella::Logger::Priority Canella::Logger::log_priority = Canella::Logger::Priority::Error_LOG;
@@ -21,8 +21,8 @@ int main()
 	f >> j;
 
 	// Create Application
-	Application::App myApp;
-	myApp.initialize(j);
+	Canella::Project myApp;
+	myApp.load(j);
 	myApp.run();
 	myApp.close();
 	return 0;

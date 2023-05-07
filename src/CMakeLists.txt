@@ -48,6 +48,8 @@ target_include_directories(
     Logger/include
     Input/include
     Render/include
+    Meshoptimizer 
+     Meshoptimizer/include
     ${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/stb
 )
 
@@ -60,7 +62,8 @@ add_library(
 )
 
 target_include_directories(
-    Systems PUBLIC Window/include
+    Systems 
+    PUBLIC Window/include
     Threadpool/include
     Eventsystem/include
     Logger/include
@@ -69,22 +72,36 @@ target_include_directories(
     Containers/include
 )
 
+file (GLOB MESHOPT_SRC
+    "Meshoptimizer/src/*.cpp"
+)
+add_library(
+   Meshoptimizer
+   ${MESHOPT_SRC}
+
+)
+
+target_include_directories(Meshoptimizer 
+PUBLIC Meshoptimizer/include)
+target_link_libraries(Render PUBLIC Meshoptimizer)
+
 add_library(
 Engine 
-Application/src/Application.cpp     
+Project/src/Project.cpp     
 Components/src/Components.cpp
 Scene/src/Scene.cpp
 Entity/src/Entity.cpp
+Systems/src/Systems.cpp
 Serializer/src/Serializer.cpp
+)
+target_include_directories(Engine PUBLIC 
+Entity/include
+Project/include    
+Components/include
+Systems/include
+Scene/include
+Serializer/include
 )
 
 target_link_libraries(Engine PUBLIC Render Systems)
 
-target_include_directories(Engine PUBLIC 
-Entity/include
-Application/include    
-Components/include
-Scene/include
-Serializer/include
-
-)

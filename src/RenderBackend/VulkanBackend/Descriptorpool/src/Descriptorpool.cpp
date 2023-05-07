@@ -4,16 +4,16 @@
 
 using namespace Canella::RenderSystem::VulkanBackend;
 
-void Descriptorpool::buildDescriptorPool(Device& device)
+void Descriptorpool::build_descriptor_pool(Device& device)
 {
-    buildGlobalDescriptorPool(device);
-    buildBindlessDescriptorPool(device);
+    build_global_descriptor_pool(device);
+    build_bindless_descriptor_pool(device);
 }
 
-void Descriptorpool::buildGlobalDescriptorPool(Device& device)
+void Descriptorpool::build_global_descriptor_pool(Device& device)
 {
-    static const uint32_t k_global_pool_elements = 128;
-    VkDescriptorPoolSize pool_sizes[] =
+    static constexpr uint32_t k_global_pool_elements = 128;
+    constexpr VkDescriptorPoolSize pool_sizes[] =
     {
         {VK_DESCRIPTOR_TYPE_SAMPLER, k_global_pool_elements},
         {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, k_global_pool_elements},
@@ -31,8 +31,8 @@ void Descriptorpool::buildGlobalDescriptorPool(Device& device)
     VkDescriptorPoolCreateInfo pool_info = {};
     pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
-    pool_info.maxSets = k_global_pool_elements * static_cast<uint32_t>(sizeof(pool_sizes) / sizeof(pool_sizes[0]));
-    pool_info.poolSizeCount = static_cast<uint32_t>(sizeof(pool_sizes) / sizeof(pool_sizes[0]));
+    pool_info.maxSets = k_global_pool_elements * static_cast<uint32_t>(std::size(pool_sizes));
+    pool_info.poolSizeCount = static_cast<uint32_t>(std::size(pool_sizes));
     pool_info.pPoolSizes = pool_sizes;
 
     if ((vkCreateDescriptorPool(device.getLogicalDevice(), &pool_info, device.getAllocator(), &vk_global_descriptorpool)
@@ -40,9 +40,9 @@ void Descriptorpool::buildGlobalDescriptorPool(Device& device)
         Logger::Error("Failed to create global DescriptorPool");
 }
 
-void Descriptorpool::buildBindlessDescriptorPool(Device& device)
+void Descriptorpool::build_bindless_descriptor_pool(Device& device)
 {
-    VkDescriptorPoolSize pool_sizes_bindless[] =
+    const VkDescriptorPoolSize pool_sizes_bindless[] =
     {
         {
             VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
@@ -53,22 +53,21 @@ void Descriptorpool::buildBindlessDescriptorPool(Device& device)
             k_max_bindless_resources
         },
     };
-    const uint32_t pool_count = sizeof(pool_sizes_bindless) / sizeof(pool_sizes_bindless[0]);
+    constexpr uint32_t pool_count = std::size(pool_sizes_bindless);
 
     VkDescriptorPoolCreateInfo create_info{VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO};
     create_info.flags = VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT;
     create_info.maxSets = k_max_bindless_resources * static_cast<uint32_t>(pool_count);
     create_info.poolSizeCount = static_cast<uint32_t>(pool_count);
     create_info.pPoolSizes = pool_sizes_bindless;
-    VkResult result = vkCreateDescriptorPool(device.getLogicalDevice(), &create_info, device.getAllocator(),
-                                             &vk_bindless_descriptorpool);
-    if (result != VK_SUCCESS)
+    if (const VkResult result = vkCreateDescriptorPool(device.getLogicalDevice(), &create_info, device.getAllocator(),
+                                                       &vk_bindless_descriptorpool); result != VK_SUCCESS)
         Logger::Error("failed to create bindless DescriptorPool");
 }
 
-void Descriptorpool::buildDescriptorSetLayout(Device& device)
+void Descriptorpool::build_descriptor_set_layout(Device& device)
 {
-    const uint32_t pool_count = 2;
+    constexpr uint32_t pool_count = 2;
     VkDescriptorSetLayoutBinding vk_binding[2];
     VkDescriptorSetLayoutBinding& image_sampler_binding = vk_binding[0];
     image_sampler_binding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -108,20 +107,25 @@ void Descriptorpool::buildDescriptorSetLayout(Device& device)
     vkAllocateDescriptorSets(device.getLogicalDevice(), &alloc_info, &vk_bindless_descriptor_set);
 }
 
-void Descriptorpool::AllocateDescriptorSet(Device& device, std::shared_ptr<DescriptorSetLayout> layout,
+/**
+ * \brief 
+ * \param device Vulkan Device
+ * \param layout DescriptorSetLayout a wrapper arround VkDescriptorsetLayout
+ * \param set VkDescriptorSet Object to allocate
+ */
+void Descriptorpool::allocate_descriptor_set(Device& device, std::shared_ptr<DescriptorSetLayout> layout,
                                            VkDescriptorSet& set)
 {
     VkDescriptorSetAllocateInfo allocInfo{VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO};
     allocInfo.descriptorPool = vk_global_descriptorpool;
     allocInfo.descriptorSetCount =1;
     allocInfo.pSetLayouts = &layout->getDescriptorLayoutHandle();
-    auto result = vkAllocateDescriptorSets(device.getLogicalDevice(), &allocInfo, &set);
-    if (result != VK_SUCCESS)
+    if (const auto result = vkAllocateDescriptorSets(device.getLogicalDevice(), &allocInfo, &set); result != VK_SUCCESS)
         Logger::Debug("Failed to Allocated DescriptorSet");
     Logger::Debug("Allocated DescriptorSet");
 }
 
 void Descriptorpool::build(Device& device)
 {
-    buildDescriptorPool(device);
+    build_descriptor_pool(device);
 }

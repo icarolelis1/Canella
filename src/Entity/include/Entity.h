@@ -26,7 +26,7 @@ namespace Canella
         template<typename T>
         T& GetComponent()
         {
-            assert(!HasComponent<T>());
+            assert(HasComponent<T>());
             assert(!m_Scene.expired());
             auto scene = m_Scene.lock();
             return scene->m_registry.get<T>(handle);
@@ -37,7 +37,7 @@ namespace Canella
         {
             assert(HasComponent<T>());
             auto scene = m_Scene.lock();
-            assert(!m_Scene.expired());
+            assert(m_Scene.expired());
             scene->m_registry.remove<T>(handle);
         }
 

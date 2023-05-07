@@ -309,6 +309,11 @@ namespace Canella
                                                           properties.presentationModes.data());
                 return  !properties.formats.empty() && !properties.presentationModes.empty();;
             }
+            
+            const VkAllocationCallbacks* Device::getAllocator()
+            {
+                return nullptr;
+            }
 
             void Device::enableMeshShaderExtension()
             {
@@ -444,7 +449,6 @@ namespace Canella
             {
                 choosePhysicalDevice(instance, surface);
                 createLogicalDevice();
-
                 return true;
             }
 
@@ -468,14 +472,15 @@ namespace Canella
                 return queueFamilies.present.value();
             }
 
-            const VkAllocationCallbacks* Device::getAllocator()
-            {
-                return nullptr;
-            }
 
             VkQueue Device::getGraphicsQueueHandle() const
             {
                 return graphicsQueue;
+            }
+
+            VkQueue Device::getTransferQueueHandle() const
+            {
+                return transferQueue;
             }
         }
     }

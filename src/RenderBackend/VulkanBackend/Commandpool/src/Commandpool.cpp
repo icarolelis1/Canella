@@ -19,8 +19,7 @@ namespace Canella
                 else if (type == POOL_TYPE::TRANSFER)
                     createInfo.queueFamilyIndex = device->getTransferQueueIndex();
                // createInfo.flags = flags;
-                VkResult result = vkCreateCommandPool(device->getLogicalDevice(), &createInfo, nullptr, &pool);
-                if (result == VK_SUCCESS)
+                if (const VkResult result = vkCreateCommandPool(device->getLogicalDevice(), &createInfo, nullptr, &pool); result == VK_SUCCESS)
                     Logger::Debug("Successfully Created CommandPool");
             }
 

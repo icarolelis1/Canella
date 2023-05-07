@@ -47,27 +47,32 @@ namespace Canella
 				std::vector<Buffer> global_buffers;
 				Descriptorpool descriptorPool;
 				std::vector<FrameData> frames;
+				Commandpool transfer_pool;
 				unsigned int current_frame = 0;
+				Drawables m_drawables;
 				
 				void init_descriptor_pool();
-				void initPipelines();
-				void initVulkanInstance();
+				//void initPipelines();
+				void init_vulkan_instance();
 				void setup_frames();
 				void cache_pipelines(const char* pipelines);
 				void cacheDescriptorSetLayouts(nlohmann::json& pipelineData, std::vector<VkPushConstantRange>& pushConstants);
-				void record_command_index(VkCommandBuffer& commandBuffer,uint32_t currentIndex);
-				void allocateGlobalUsageBuffers();
-				void destroyDescriptorSetLayouts();
-				void writeGlobalDescriptorsets();
-				void destroyPipelineLayouts();
-				void allocateGlobalDescriptorsets();
+				void record_command_index(VkCommandBuffer& commandBuffer, glm::mat4&
+					viewProjection,uint32_t index);
+				void allocate_global_usage_buffers();
+				void destroy_descriptor_set_layouts();
+				void write_global_descriptorsets();
+				void destroy_pipeline_layouts();
+				void allocate_global_descriptorsets();
 				void writeDescriptorSets();
+				void create_meshlets_buffers();
+				std::vector<MeshletGPUResources> meshlet_gpu_resources;				
 			public:
-				void render();
+				void enqueue_drawables(Drawables&);
 				VulkanRender(nlohmann::json& config, Windowing* window);
-				void assignMainCamera();
-				void update(float time);
 				~VulkanRender();
+				void update(float time);
+				void render(glm::mat4& viewProjection);
 			};
 
 		}
