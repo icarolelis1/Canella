@@ -47,7 +47,13 @@ namespace Canella
 				return isSuitableSwapChain;
 			}
 
-			void Swapchain::prepareSwapchain(uint32_t WIDTH, uint32_t HEIGHT, Device &device, VkSurfaceKHR surface, ImageFormat desiredFormat, GLFWwindow *window, QueueSharingMode &queueSharingMode)
+			void Swapchain::prepare_swapchain(uint32_t WIDTH,
+                                              uint32_t HEIGHT,
+                                              Device &device,
+                                              VkSurfaceKHR surface,
+                                              ImageFormat desiredFormat,
+                                              GLFWwindow *window,
+                                              QueueSharingMode queueSharingMode)
 			{
 				width = WIDTH;
 				height = HEIGHT;

@@ -29,7 +29,7 @@ namespace Canella
         void initialize(nlohmann::json& config);
         GLFWwindow* m_window;
         int shouldCloseWindow();
-        Extent& getExtent();
+        Extent getExtent();
         void getSurface(VkInstance instance, VkSurfaceKHR* surface);
         void update();
 

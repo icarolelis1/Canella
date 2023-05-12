@@ -4,6 +4,8 @@
 #include <typeinfo>
 #include <functional>
 #include <memory.h>
+#include <atomic>
+
 namespace Canella
 {
     namespace JobSystem

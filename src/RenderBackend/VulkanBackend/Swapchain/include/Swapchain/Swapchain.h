@@ -47,7 +47,15 @@ namespace Canella
             public:
                 Swapchain();
                 Swapchain(const Swapchain &other) = delete;
-                void prepareSwapchain(uint32_t WIDTH, uint32_t HEIGHT, Device &device, VkSurfaceKHR surface, VkFormat desiredFormat, GLFWwindow *window, QueueSharingMode &queueSharingMode);
+
+                void prepare_swapchain(uint32_t WIDTH,
+                                       uint32_t HEIGHT,
+                                       Device &device,
+                                       VkSurfaceKHR surface,
+                                       ImageFormat desiredFormat,
+                                       GLFWwindow *window,
+                                       QueueSharingMode queueSharingMode);
+
                 void destroySwapchain(Device &device);
                 std::vector<VkImage> getImages();
                 std::vector<VkImageView> &getViews();

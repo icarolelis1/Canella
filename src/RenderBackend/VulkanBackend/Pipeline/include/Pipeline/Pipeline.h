@@ -31,6 +31,7 @@ namespace Canella {
 				IMAGE_SAMPLER,
 				UNIFORM_BUFFER,
 				PUSH_CONSTANT,
+				STORAGE_BUFFER,
 				INPUT_ATTACHMENT,
 				IMAGE_STORAGE,
 				UNIFORM_DYNAMIC
@@ -184,7 +185,7 @@ namespace Canella {
 				static  SHADER_TYPE convert_from_string_shader_type(const char* type)
 				{
 					{
-						if (strcmp( type,"Mesh") == 0)
+						if (strcmp( type,"ModelMesh") == 0)
 							return SHADER_TYPE::MESH_SHADER;
 						if (strcmp(type , "Fragment")==0)
 							return SHADER_TYPE::FRAGMENT_SHADER;
@@ -214,7 +215,8 @@ namespace Canella {
 				VkDescriptorType getDescriptorType(ShaderResourceType type);
 				std::vector< VkDescriptorSetLayoutBinding> bindings;
 
-			};
+                void foo(const std::vector<ShaderBindingResource> &_resources);
+            };
 
 			class PipelineLayout {
 

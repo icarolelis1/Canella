@@ -7,9 +7,9 @@
 using namespace Canella::RenderSystem::VulkanBackend;
 
 /**
- * \brief 
- * \param config 
- * \param window 
+ * \brief Creates the VulkanRender
+ * \param config configuration file for the render
+ * \param window window that's going to be rendered into
  */
 VulkanRender::VulkanRender(nlohmann::json& config, Windowing* window) {
     init_vulkan_instance();
@@ -19,13 +19,13 @@ VulkanRender::VulkanRender(nlohmann::json& config, Windowing* window) {
 
     device.prepareDevice(surface, *instance);
 
-    swapChain.prepareSwapchain(width,
-                               height,
-                               device,
-                               surface,
-                               VK_FORMAT_B8G8R8A8_UNORM,
-                               dynamic_cast<GlfwWindow*>(window)->getHandle(),
-                               device.getQueueSharingMode());
+    swapChain.prepare_swapchain(width,
+                                height,
+                                device,
+                                surface,
+                                VK_FORMAT_B8G8R8A8_UNORM,
+                                dynamic_cast<GlfwWindow *>(window)->getHandle(),
+                                device.getQueueSharingMode());
 
     renderpassManager = std::make_unique<RenderpassManager>(&device, &swapChain,
                                                             config["RenderPath"].get<std::string>().c_str());
@@ -37,9 +37,7 @@ VulkanRender::VulkanRender(nlohmann::json& config, Windowing* window) {
     allocate_global_descriptorsets();
     write_global_descriptorsets();
 
-    vkCmdDrawMeshTasksEXT = reinterpret_cast<PFN_vkCmdDrawMeshTasksEXT>(
-        vkGetDeviceProcAddr(device.getLogicalDevice(),
-                            "vkCmdDrawMeshTasksEXT"));
+    vkCmdDrawMeshTasksEXT = reinterpret_cast<PFN_vkCmdDrawMeshTasksEXT>(vkGetDeviceProcAddr(device.getLogicalDevice(),"vkCmdDrawMeshTasksEXT"));
     
     transfer_pool.build(&device,
                         POOL_TYPE::TRANSFER,
@@ -100,10 +98,23 @@ void VulkanRender::create_meshlets_buffers()
 
             // Maps the data to the storage buffer
             meshlet_resource.descriptorsets.resize(swapChain.getNumberOfImages());
-            for (auto i = 0; i < swapChain.getNumberOfImages(); ++i)
+            for (auto& descriptorset : meshlet_resource.descriptorsets)
+                descriptorPool.allocate_descriptor_set(
+                    device, cachedDescriptorSetLayouts["Meshlets"],
+                    descriptorset);
+
+            auto i = 0;
+            for (auto& descriptorset : meshlet_resource.descriptorsets)
             {
-                DescriptorSet& descriptor_set = meshlet_resource.descriptorsets[i];
-                // TODO: Add code to initialize descriptor sets
+                std::vector<VkDescriptorBufferInfo> buffer_infos;
+                std::vector<VkDescriptorImageInfo> image_infos;
+                buffer_infos.resize(1);
+                buffer_infos[0].buffer = meshlet_resource.buffer.getBufferHandle();
+                buffer_infos[0].offset = static_cast<uint32_t>(0);
+                buffer_infos[0].range = sizeof(meshopt_Meshlet);
+                DescriptorSet::update_descriptorset(&device, meshlet_resource.descriptorsets[i], buffer_infos,
+                                                    image_infos);
+                i++;
             }
         }
     }
@@ -199,8 +210,8 @@ void VulkanRender::cache_pipelines(const char* pipelines)
     f_stream >> pipeline_data;
     std::vector<VkPushConstantRange> pushConstants;
     // cacheDescriptorSetLayouts(pipeline_data,pushConstants);
-    PipelineBuilder::cachePipelineData(&device, pipeline_data, cachedDescriptorSetLayouts,
-                                       cachedPipelineLayouts, renderpassManager->renderpasses, cachedPipelines);
+    PipelineBuilder::cache_pipeline_data(&device, pipeline_data, cachedDescriptorSetLayouts,
+                                         cachedPipelineLayouts, renderpassManager->renderpasses, cachedPipelines);
 }
 
 void VulkanRender::allocate_global_usage_buffers()
@@ -222,7 +233,7 @@ void VulkanRender::write_global_descriptorsets()
         buffer_infos[0].buffer = buffer.getBufferHandle();
         buffer_infos[0].offset = static_cast<uint32_t>(0);
         buffer_infos[0].range = sizeof(ViewProjection);
-        DescriptorSet::updateDescriptorset(&device, global_descriptors[i], buffer_infos, image_infos);
+        DescriptorSet::update_descriptorset(&device, global_descriptors[i], buffer_infos, image_infos);
         i++;
     }
 }
@@ -243,11 +254,12 @@ void VulkanRender::record_command_index(VkCommandBuffer& commandBuffer,
     vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
     vkCmdSetScissor(commandBuffer, 0, 1, &rect_2d);
     
+    VkDescriptorSet descritpros[2] = { global_descriptors[index],meshlet_gpu_resources[0].descriptorsets[index] };
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
                             cachedPipelineLayouts["MeshShaderPipeline"]->getHandle(),
                             0,
-                            1,
-                            &global_descriptors[index],
+                            2,
+                            &descritpros[0],
                             0,
                             nullptr);
     
@@ -255,6 +267,7 @@ void VulkanRender::record_command_index(VkCommandBuffer& commandBuffer,
                       cachedPipelines["MeshShaderPipeline"]->getPipelineHandle());
     vkCmdDrawMeshTasksEXT(commandBuffer, 1, 1, 1);
     renderpassManager->renderpasses["basic"]->endRenderPass(commandBuffer);
+
     frames[index].commandPool.endCommandBuffer(commandBuffer);
 }
 
@@ -296,4 +309,8 @@ void VulkanRender::destroy_descriptor_set_layouts()
     const auto it = cachedPipelineLayouts.begin();
     while (it != cachedPipelineLayouts.end())
         it->second->destroy(&device);
+}
+
+Canella::Drawables &VulkanRender::get_drawables() {
+    return m_drawables;
 }

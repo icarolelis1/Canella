@@ -27,7 +27,7 @@ void Canella::GlfwWindow::initialize(nlohmann::json &config)
 
 	auto f = [](GLFWwindow *window, double xpos, double ypos)
 	{
-		static_cast<GlfwWindow *>(glfwGetWindowUserPointer(window))->mouse.MouseCallback(window, xpos, ypos);
+        static_cast<GlfwWindow *>(glfwGetWindowUserPointer(window))->mouse.mouse_callback(window, xpos, ypos);
 	};
 	auto mouse_btn_callBack = [](GLFWwindow *window, int x, int y, int z)
 	{
@@ -51,7 +51,7 @@ Canella::GlfwWindow::~GlfwWindow()
 	glfwDestroyWindow(m_window);
 }
 
-Extent &Canella::GlfwWindow::getExtent()
+Extent Canella::GlfwWindow::getExtent()
 {
 	int w, h;
 	glfwGetFramebufferSize(m_window, &w, &h);
@@ -76,3 +76,4 @@ GLFWwindow *Canella::GlfwWindow::getHandle()
 {
 	return m_window;
 }
+

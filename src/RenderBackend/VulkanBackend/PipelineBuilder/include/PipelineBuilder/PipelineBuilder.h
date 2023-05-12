@@ -29,7 +29,7 @@ namespace Canella
 				 * @param pipeline_layouts map structure for caching PipelineLayouts
 				 * @param pipelines map structure for caching Pipelines
 				 */
-				static void cachePipelineData(
+				static void cache_pipeline_data(
 					Device* device,
 					nlohmann::json& pipelineData,
 					DescriptorSetLayouts& descriptor_set_layouts,
@@ -53,8 +53,8 @@ namespace Canella
 						nlohmann::json& bindings = resources["BindingResources"][i];
 						ShaderBindingResource bindingResource{};
 						bindingResource.type = convert_from_string_shader_resource_type(bindings["Type"].get<std::string>().c_str());
-						bindingResource.stages = VK_SHADER_STAGE_MESH_BIT_EXT;
-						bindingResource.size = sizeof(ViewProjection);
+						bindingResource.stages = read_shader_stage_from_json(bindings["Stage"]);
+						bindingResource.size = get_size_of_structure(bindings["Type"].get<std::string>().c_str());
 						bindingResource.binding = bindings["Binding"].get<std::uint32_t>();
 						bindingResources[i] = bindingResource;
 					}
@@ -161,9 +161,9 @@ namespace Canella
 						nlohmann::json pipeline = pipelines_json[i];
 						auto key = pipeline["Key"].get<std::string>();
 						auto number_of_descriptorset_layouts = pipeline["NumerOfDescriptorSets"].get<std::int32_t>();
-						std::vector<std::shared_ptr<DescriptorSetLayout>> descriptor_set_layouts(number_of_descriptorset_layouts);
+ 						std::vector<std::shared_ptr<DescriptorSetLayout>> descriptor_set_layouts(number_of_descriptorset_layouts);
 						for (auto j = 0; j < number_of_descriptorset_layouts; j++)
-							descriptor_set_layouts[i] = 
+							descriptor_set_layouts[j] = 
 								cachedDescriptorSetLayouts[pipeline["PipelineLayoutDescriptors"][j].get<std::string>()];
 						cachedPipelineLayouts[key] = std::make_shared<PipelineLayout>(device,
 							std::move(descriptor_set_layouts), pushConstants);

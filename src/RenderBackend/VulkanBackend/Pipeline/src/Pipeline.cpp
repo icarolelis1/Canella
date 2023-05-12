@@ -198,16 +198,7 @@ void Shader::destroyModule()
 DescriptorSetLayout::DescriptorSetLayout(Device* device, const std::vector<ShaderBindingResource> _resources,
                                          const char* description)
 {
-    for (auto& resource : _resources)
-    {
-        auto type = DescriptorSetLayout::getDescriptorType(resource.type);
-        VkDescriptorSetLayoutBinding layout_binding{};
-        layout_binding.binding = resource.binding;
-        layout_binding.descriptorCount = 1;
-        layout_binding.descriptorType = type;
-        layout_binding.stageFlags = static_cast<VkShaderStageFlags>(resource.stages);
-        bindings.push_back(layout_binding);
-    }
+    foo(_resources);
 
     VkDescriptorSetLayoutCreateInfo create_info{VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO};
     create_info.bindingCount = static_cast<uint32_t>(bindings.size());
@@ -220,6 +211,19 @@ DescriptorSetLayout::DescriptorSetLayout(Device* device, const std::vector<Shade
         Canella::Logger::Error("Failed to create DescriptorSetLayout\n");
     if (result == VK_SUCCESS)
         Canella::Logger::Error("Successfully Created DescriptorSetLayout");
+}
+
+void DescriptorSetLayout::foo(const std::vector<ShaderBindingResource> &_resources) {
+    for (auto& resource : _resources)
+    {
+        auto type = getDescriptorType(resource.type);
+        VkDescriptorSetLayoutBinding layout_binding{};
+        layout_binding.binding = resource.binding;
+        layout_binding.descriptorCount = 1;
+        layout_binding.descriptorType = type;
+        layout_binding.stageFlags = static_cast<VkShaderStageFlags>(resource.stages);
+        bindings.push_back(layout_binding);
+    }
 }
 
 void DescriptorSetLayout::destroy(Device* device)
@@ -252,7 +256,9 @@ VkDescriptorType DescriptorSetLayout::getDescriptorType(ShaderResourceType type)
     case ShaderResourceType::INPUT_ATTACHMENT:
         return VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
         break;
-
+    case ShaderResourceType::STORAGE_BUFFER:
+        return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+        break;
     default:
         return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
         break;

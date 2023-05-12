@@ -12,6 +12,7 @@ namespace Canella
     {
     public:
         Entity() = default;
+        ~Entity() = default;
         Entity(entt::entity entity,std::weak_ptr<Scene> scene) : m_Scene(scene),handle(entity){}
 
         template<typename T,typename... Args>

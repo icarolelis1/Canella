@@ -56,24 +56,22 @@ namespace Canella
 				void init_vulkan_instance();
 				void setup_frames();
 				void cache_pipelines(const char* pipelines);
-				void cacheDescriptorSetLayouts(nlohmann::json& pipelineData, std::vector<VkPushConstantRange>& pushConstants);
-				void record_command_index(VkCommandBuffer& commandBuffer, glm::mat4&
-					viewProjection,uint32_t index);
+				void record_command_index(VkCommandBuffer& commandBuffer, glm::mat4&viewProjection,uint32_t index);
 				void allocate_global_usage_buffers();
 				void destroy_descriptor_set_layouts();
 				void write_global_descriptorsets();
 				void destroy_pipeline_layouts();
 				void allocate_global_descriptorsets();
-				void writeDescriptorSets();
 				void create_meshlets_buffers();
 				std::vector<MeshletGPUResources> meshlet_gpu_resources;				
 			public:
-				void enqueue_drawables(Drawables&);
+				void enqueue_drawables(Drawables&) override;
 				VulkanRender(nlohmann::json& config, Windowing* window);
 				~VulkanRender();
-				void update(float time);
-				void render(glm::mat4& viewProjection);
-			};
+				void update(float time) override;
+				void render(glm::mat4& viewProjection) override;
+                Drawables &get_drawables() override;
+            };
 
 		}
 	}

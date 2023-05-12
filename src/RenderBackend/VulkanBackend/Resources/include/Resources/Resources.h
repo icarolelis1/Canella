@@ -1,15 +1,22 @@
 #ifndef VK_RESOURCES
 #define VK_RESOURCES
 #include <Meshoptimizer/meshoptimizer.h>
-
 #include "Device/Device.h"
+
+
 namespace Canella
 {
     namespace RenderSystem
     {
         namespace VulkanBackend
         {
-            class Buffer
+
+            class Resource{
+            public :
+                uint32_t id;
+            };
+
+            class Buffer : public Resource
             {
             public:
                 Buffer(Device *_device, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
@@ -46,7 +53,7 @@ namespace Canella
             struct MeshletGPUResources
             {
                 Buffer buffer;
-                std::vector<DescriptorSet> descriptorsets;
+                std::vector<VkDescriptorSet> descriptorsets;
                 std::vector<meshopt_Bounds> meshopt_bounds;
                 
                 MeshletGPUResources(Device *_device,

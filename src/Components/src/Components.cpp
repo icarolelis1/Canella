@@ -17,9 +17,9 @@ void Canella::SerializeCamera(nlohmann::json& data,entt::registry& registry,entt
 
 void Canella::SerializeMeshAsset(nlohmann::json& data,entt::registry& registry,entt::entity entity)
 {
-    registry.emplace<MeshAssetComponent>(entity);
-    const auto view = registry.view<MeshAssetComponent>();
-    auto& [mesh, source,isStatic] =  view.get<MeshAssetComponent>(entity);
+    registry.emplace<ModelAssetComponent>(entity);
+    const auto view = registry.view<ModelAssetComponent>();
+    auto& [mesh, source,isStatic] =  view.get<ModelAssetComponent>(entity);
     source = data["Source"].get<std::string>();
     isStatic = data["Static"].get<bool>();
 }
@@ -37,7 +37,7 @@ void Canella::DeserializeCamera(nlohmann::json& data,CameraComponent& camera_com
     data["type"] = "Camera";
 }
 
-void Canella::DeserializeMeshAsset(nlohmann::json& data,MeshAssetComponent& mesh_asset_component)
+void Canella::DeserializeMeshAsset(nlohmann::json& data,ModelAssetComponent& mesh_asset_component)
 {
     data["type"] = "MeshAsset";
 }

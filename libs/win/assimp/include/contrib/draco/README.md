@@ -10,7 +10,7 @@ News
 Attention GStatic users: the Draco team strongly recommends using the versioned
 URLs for accessing Draco GStatic content. If you are using the URLs that include
 the `v1/decoders` substring within the URL, edge caching and GStatic propagation
-delays can result in transient errors that can be difficult to diagnose when
+delays can result in transients errors that can be difficult to diagnose when
 new Draco releases are launched. To avoid the issue pin your sites to a
 versioned release.
 
@@ -362,13 +362,13 @@ buffer.Init(data.data(), data.size());
 const draco::EncodedGeometryType geom_type =
     draco::GetEncodedGeometryType(&buffer);
 if (geom_type == draco::TRIANGULAR_MESH) {
-  unique_ptr<draco::Mesh> mesh = draco::DecodeMeshFromBuffer(&buffer);
+  unique_ptr<draco::ModelMesh> mesh = draco::DecodeMeshFromBuffer(&buffer);
 } else if (geom_type == draco::POINT_CLOUD) {
   unique_ptr<draco::PointCloud> pc = draco::DecodePointCloudFromBuffer(&buffer);
 }
 ~~~~~
 
-Please see [src/draco/mesh/mesh.h](src/draco/mesh/mesh.h) for the full `Mesh` class interface and
+Please see [src/draco/mesh/mesh.h](src/draco/mesh/mesh.h) for the full `ModelMesh` class interface and
 [src/draco/point_cloud/point_cloud.h](src/draco/point_cloud/point_cloud.h) for the full `PointCloud` class interface.
 
 
@@ -379,7 +379,7 @@ API can be used to compress mesh and point cloud. In order to use the encoder,
 you need to first create an instance of `DracoEncoderModule`. Then use this
 instance to create `MeshBuilder` and `Encoder` objects. `MeshBuilder` is used
 to construct a mesh from geometry data that could be later compressed by
-`Encoder`. First create a mesh object using `new encoderModule.Mesh()` . Then,
+`Encoder`. First create a mesh object using `new encoderModule.ModelMesh()` . Then,
 use `AddFacesToMesh()` to add indices to the mesh and use
 `AddFloatAttributeToMesh()` to add attribute data to the mesh, e.g. position,
 normal, color and texture coordinates. After a mesh is constructed, you could
@@ -395,7 +395,7 @@ const mesh = {
 const encoderModule = DracoEncoderModule();
 const encoder = new encoderModule.Encoder();
 const meshBuilder = new encoderModule.MeshBuilder();
-const dracoMesh = new encoderModule.Mesh();
+const dracoMesh = new encoderModule.ModelMesh();
 
 const numFaces = mesh.indices.length / 3;
 const numPoints = mesh.vertices.length;
@@ -443,7 +443,7 @@ instance is then used to create `DecoderBuffer` and `Decoder` objects. Set
 the encoded data in the `DecoderBuffer`. Then call `GetEncodedGeometryType()`
 to identify the type of geometry, e.g. mesh or point cloud. Then call either
 `DecodeBufferToMesh()` or `DecodeBufferToPointCloud()`, which will return
-a Mesh object or a point cloud. For example:
+a ModelMesh object or a point cloud. For example:
 
 ~~~~~ js
 // Create the Draco decoder.
@@ -459,7 +459,7 @@ const geometryType = decoder.GetEncodedGeometryType(buffer);
 let outputGeometry;
 let status;
 if (geometryType == decoderModule.TRIANGULAR_MESH) {
-  outputGeometry = new decoderModule.Mesh();
+  outputGeometry = new decoderModule.ModelMesh();
   status = decoder.DecodeBufferToMesh(buffer, outputGeometry);
 } else {
   outputGeometry = new decoderModule.PointCloud();

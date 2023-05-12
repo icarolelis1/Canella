@@ -1,6 +1,7 @@
 #include "CanellaUtility/CanellaUtility.h"
 #include <vector>
-
+#include <numeric>
+#include <Meshoptimizer/meshoptimizer.h>
 namespace Canella
 {
     namespace RenderSystem
@@ -24,16 +25,16 @@ namespace Canella
 
             VkAttachmentStoreOp convert_from_string_storeOp(const char* storeOp)
             {
-                if(strcmp(storeOp,"VK_ATTACHMENT_STORE_OP_STORE") == 0)
+                if (strcmp(storeOp, "VK_ATTACHMENT_STORE_OP_STORE") == 0)
                     return VK_ATTACHMENT_STORE_OP_STORE;
                 return VK_ATTACHMENT_STORE_OP_DONT_CARE;
             }
 
             VkImageLayout convert_from_string_image_layout(const char* layout)
             {
-                if (strcmp(layout,"VK_IMAGE_LAYOUT_PRESENT_SRC_KHR") == 0)
+                if (strcmp(layout, "VK_IMAGE_LAYOUT_PRESENT_SRC_KHR") == 0)
                     return VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-                if (strcmp(layout,"VK_IMAGE_LAYOUT_UNDEFINED") == 0)
+                if (strcmp(layout, "VK_IMAGE_LAYOUT_UNDEFINED") == 0)
                     return VK_IMAGE_LAYOUT_UNDEFINED;
                 return VK_IMAGE_LAYOUT_UNDEFINED;
             }
@@ -45,25 +46,52 @@ namespace Canella
 
             VkAccessFlagBits convert_from_string_access_mask(const char* mask)
             {
-                if (strcmp(mask,"VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT") == 0)
+                if (strcmp(mask, "VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT") == 0)
                     return VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
                 return VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
             }
 
-            ShaderResourceType VulkanBackend::convert_from_string_shader_resource_type(const char* type)
+            ShaderResourceType convert_from_string_shader_resource_type(const char* type)
             {
-                if (strcmp(type,"UNIFORM_BUFFER") == 0)
+                if (strcmp(type, "UNIFORM_BUFFER") == 0)
                     return ShaderResourceType::UNIFORM_BUFFER;
-                return ShaderResourceType::UNIFORM_BUFFER;
+                if (strcmp(type, "STORAGE_BUFFER") == 0)
+                    return ShaderResourceType::STORAGE_BUFFER;
+                return ShaderResourceType::STORAGE_BUFFER;
+
             }
 
-            VkShaderStageFlags VulkanBackend::convert_from_string_shader_stage(const char* stage)
+            VkShaderStageFlagBits convert_from_string_shader_stage(const char* stage)
             {
-                if (strcmp(stage,"MESH_STAGE") == 0)
-                    return VK_PIPELINE_STAGE_MESH_SHADER_BIT_EXT;
 
-                return VK_PIPELINE_STAGE_MESH_SHADER_BIT_EXT;
+                if (strcmp(stage, "MESH_STAGE") == 0)
+                    return VK_SHADER_STAGE_MESH_BIT_EXT;
+                else if (strcmp(stage, "TASK_STAGE") == 0)
+                    return VK_SHADER_STAGE_TASK_BIT_EXT;
+                return VK_SHADER_STAGE_MESH_BIT_EXT;
             }
-        };
-    }
+
+            VkShaderStageFlags read_shader_stage_from_json(nlohmann::json stages_json) {
+                std::vector<VkShaderStageFlagBits> shader_stages;
+                std::vector<std::string>stages = stages_json.get<std::vector<std::string>>();
+                for (auto& stage : stages)
+                    shader_stages.push_back(convert_from_string_shader_stage(stage.c_str()));
+
+                VkShaderStageFlagBits stages_mask = shader_stages[0];
+            
+                //Todo implement this. I have no idea how to do this lol
+                if (shader_stages.size() > 1)
+                    return VK_SHADER_STAGE_TASK_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT;
+                return stages_mask;
+            }
+            size_t get_size_of_structure(const char* structure)
+            {
+                if(strcmp(structure,"ViewProjection"))
+                    return sizeof(ViewProjection);
+                if (strcmp(structure, "Meshlet"))
+                    return sizeof(meshopt_Meshlet);
+                return sizeof(meshopt_Meshlet);
+            }
+        }
+    };
 }

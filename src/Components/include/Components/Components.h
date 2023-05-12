@@ -56,12 +56,12 @@ namespace Canella
         CameraComponent* camera_component;
     };
 
-    struct MeshAssetComponent
+    struct ModelAssetComponent
     {
-        Mesh mesh;
+        ModelMesh mesh;
         std::string source;
         bool isStatic = false;
-        MeshAssetComponent() = default;
+        ModelAssetComponent() = default;
     };
 
     void SerializeTransform(nlohmann::json& data,entt::registry& registry,entt::entity entity);
@@ -69,7 +69,7 @@ namespace Canella
     void SerializeMeshAsset(nlohmann::json& data,entt::registry& registry,entt::entity entity);
     void DeserializeTransform(nlohmann::json& data,TransformComponent&);
     void DeserializeCamera(nlohmann::json& data,CameraComponent&);
-    void DeserializeMeshAsset(nlohmann::json& data,MeshAssetComponent&);
+    void DeserializeMeshAsset(nlohmann::json& data,ModelAssetComponent&);
 }
 
 #endif

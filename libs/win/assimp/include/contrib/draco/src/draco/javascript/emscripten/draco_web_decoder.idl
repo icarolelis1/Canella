@@ -102,8 +102,8 @@ interface PointCloud {
 };
 
 [Prefix="draco::"]
-interface Mesh : PointCloud {
-  void Mesh();
+interface ModelMesh : PointCloud {
+  void ModelMesh();
   long num_faces();
 
   // From PointCloud
@@ -204,7 +204,7 @@ interface Decoder {
 
   [Const] Status DecodeArrayToMesh([Const] byte[] data,
                                    unsigned long data_size,
-                                   Mesh out_mesh);
+                                   ModelMesh out_mesh);
 
   long GetAttributeId([Ref, Const] PointCloud pc,
                       draco_GeometryAttribute_Type type);
@@ -221,14 +221,14 @@ interface Decoder {
   [Const] Metadata GetAttributeMetadata([Ref, Const] PointCloud pc,
                                         long att_id);
 
-  boolean GetFaceFromMesh([Ref, Const] Mesh m, long face_id,
+  boolean GetFaceFromMesh([Ref, Const] ModelMesh m, long face_id,
                           DracoInt32Array out_values);
-  long GetTriangleStripsFromMesh([Ref, Const] Mesh m,
+  long GetTriangleStripsFromMesh([Ref, Const] ModelMesh m,
                                  DracoInt32Array strip_values);
 
-  boolean GetTrianglesUInt16Array([Ref, Const] Mesh m,
+  boolean GetTrianglesUInt16Array([Ref, Const] ModelMesh m,
                                   long out_size, VoidPtr out_values);
-  boolean GetTrianglesUInt32Array([Ref, Const] Mesh m,
+  boolean GetTrianglesUInt32Array([Ref, Const] ModelMesh m,
                                   long out_size, VoidPtr out_values);
 
   boolean GetAttributeFloat([Ref, Const] PointAttribute pa,
@@ -279,5 +279,5 @@ interface Decoder {
   [Const] Status DecodeBufferToPointCloud(DecoderBuffer in_buffer,
                                           PointCloud out_point_cloud);
   // Deprecated: UseDecodeArrayToMesh instead.
-  [Const] Status DecodeBufferToMesh(DecoderBuffer in_buffer, Mesh out_mesh);
+  [Const] Status DecodeBufferToMesh(DecoderBuffer in_buffer, ModelMesh out_mesh);
 };

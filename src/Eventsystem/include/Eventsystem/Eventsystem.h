@@ -30,7 +30,7 @@ namespace Engine
         Event_Handler(const Event_Handler &&other)
         {
             m_handler = std::move(other.m_handler);
-            m_hander.id = other.handler_id;
+            m_handler.id = other.handler_id;
         }
 
         unsigned id() const
@@ -58,7 +58,6 @@ namespace Engine
         {
             std::lock_guard<std::mutex> lock(event_mutex);
             collection.push_back(handler);
-            int;
         }
         void operator+=(const event_handler_type &handler)
         {

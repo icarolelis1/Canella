@@ -10,7 +10,7 @@ _**Contents**_
     * [Third Party Libraries](#third-party-libraries)
     * [Javascript Encoder/Decoder](#javascript-encoderdecoder)
     * [WebAssembly Decoder](#webassembly-decoder)
-    * [WebAssembly Mesh Only Decoder](#webassembly-mesh-only-decoder)
+    * [WebAssembly ModelMesh Only Decoder](#webassembly-mesh-only-decoder)
     * [WebAssembly Point Cloud Only Decoder](#webassembly-point-cloud-only-decoder)
     * [iOS Builds](#ios-builds)
   * [Android Studio Project Integration](#android-studio-project-integration)
@@ -225,7 +225,7 @@ $ java -jar closure.jar --compilation_level SIMPLE --js draco_decoder.js --js_ou
 
 ~~~~~
 
-WebAssembly Mesh Only Decoder
+WebAssembly ModelMesh Only Decoder
 -----------------------------
 
 ~~~~~ bash

@@ -49,8 +49,8 @@ interface PointCloud {
 };
 
 [Prefix="draco::"]
-interface Mesh : PointCloud {
-  void Mesh();
+interface ModelMesh : PointCloud {
+  void ModelMesh();
   long num_faces();
 
   // From PointCloud
@@ -120,18 +120,18 @@ interface PointCloudBuilder {
 interface MeshBuilder : PointCloudBuilder {
   void MeshBuilder();
 
-  boolean AddFacesToMesh(Mesh mesh, long num_faces, [Const] long[] faces);
+  boolean AddFacesToMesh(ModelMesh mesh, long num_faces, [Const] long[] faces);
 
   // Deprecated.
-  long AddFloatAttributeToMesh(Mesh mesh, draco_GeometryAttribute_Type type,
+  long AddFloatAttributeToMesh(ModelMesh mesh, draco_GeometryAttribute_Type type,
                                long num_vertices, long num_components,
                                [Const] float[] att_values);
   // Deprecated.
-  long AddInt32AttributeToMesh(Mesh mesh, draco_GeometryAttribute_Type type,
+  long AddInt32AttributeToMesh(ModelMesh mesh, draco_GeometryAttribute_Type type,
                                long num_vertices, long num_components,
                                [Const] long[] att_values);
   // Deprecated.
-  boolean AddMetadataToMesh(Mesh mesh, [Const] Metadata metadata);
+  boolean AddMetadataToMesh(ModelMesh mesh, [Const] Metadata metadata);
 
   // From PointCloudBuilder
   long AddFloatAttribute(PointCloud pc, draco_GeometryAttribute_Type type,
@@ -174,7 +174,7 @@ interface Encoder {
   void SetSpeedOptions(long encoding_speed, long decoding_speed);
   void SetTrackEncodedProperties(boolean flag);
 
-  long EncodeMeshToDracoBuffer(Mesh mesh,
+  long EncodeMeshToDracoBuffer(ModelMesh mesh,
                                DracoInt8Array encoded_data);
   long EncodePointCloudToDracoBuffer(PointCloud pc, boolean deduplicate_values,
                                      DracoInt8Array encoded_data);

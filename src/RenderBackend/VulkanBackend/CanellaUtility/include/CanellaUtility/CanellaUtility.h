@@ -5,6 +5,8 @@
 #include <vulkan/vulkan.h>
 #include "Pipeline/Pipeline.h"
 #include <fstream>
+#include "json.hpp"
+
 namespace Canella
 {
 	namespace RenderSystem
@@ -19,8 +21,10 @@ namespace Canella
 			VkPipelineStageFlagBits convert_from_string_pipeline_stage(const char *stage);
 			VkAccessFlagBits convert_from_string_access_mask(const char *mask);
 			ShaderResourceType convert_from_string_shader_resource_type(const char *type);
-			VkShaderStageFlags convert_from_string_shader_stage(const char* stage);
-			
+			VkShaderStageFlagBits convert_from_string_shader_stage(const char* stage);
+			VkShaderStageFlags read_shader_stage_from_json(nlohmann::json descriptorsets);
+			size_t get_size_of_structure(const char* structure);
+
 			inline std::vector<char> readFile(const std::string& filename) {
 				std::fstream file(filename, std::ios::ate | std::ios::binary);
 				if (!file.is_open()) {

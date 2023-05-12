@@ -3,11 +3,11 @@
 using namespace Canella::RenderSystem::VulkanBackend;
 
 
-void DescriptorSet::updateDescriptorset(Device* device,
-                                        VkDescriptorSet& descriptorset,
-                                        std::vector<VkDescriptorBufferInfo>& bufferInfos,
-                                        std::vector<VkDescriptorImageInfo>& imageInfos,
-                                        bool dynamicUbo)
+void DescriptorSet::update_descriptorset(Device* device,
+                                         VkDescriptorSet& descriptorset,
+                                         std::vector<VkDescriptorBufferInfo>& bufferInfos,
+                                         std::vector<VkDescriptorImageInfo>& imageInfos,
+                                         bool dynamicUbo)
 {
     std::vector<VkWriteDescriptorSet> writes;
     uint32_t i = 0;

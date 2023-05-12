@@ -34,7 +34,7 @@ Canella::Mouse &Canella::Mouse::getMouse()
 	return mouse;
 }
 
-void Canella::Mouse::MouseCallback(GLFWwindow *window, double xpos, double ypos)
+void Canella::Mouse::mouse_callback(GLFWwindow *window, double xpos, double ypos)
 {
 
 	if (!initialized)
@@ -62,7 +62,7 @@ Canella::CursorPos Canella::Mouse::getCursorPos()
 	return p;
 }
 
-bool Canella::Mouse::getMouseACtionStatus(int button, int action)
+bool Canella::Mouse::get_mouse_action_status(int button, int action) const
 {
 	return (glfwGetMouseButton(window, button) == action);
 }

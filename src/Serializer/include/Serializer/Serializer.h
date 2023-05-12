@@ -12,14 +12,15 @@ namespace Canella
     {
     public:
         Serializer() = default;
-        Serializer(const std::string& projectFolder);
+        explicit Serializer(const std::string& projectFolder);
         Serializer(const Serializer &other) = delete;
+        ~Serializer() = default;
         void Serialize(std::weak_ptr<Scene> scene,const std::string& projectPath);
         void Deserialize(std::weak_ptr<Scene> scene);
         
     private:
         void LoadEntities(std::shared_ptr<Scene> scene, const std::string& filepath);
-        void Canella::Serializer::LoadComponents(std::shared_ptr<Scene> scene,
+        void LoadComponents(std::shared_ptr<Scene> scene,
             const entt::entity entity,nlohmann::json &components_data);
         void DeserializeEntities(const std::shared_ptr<Canella::Scene> scene, const std::string& basic_string);
 

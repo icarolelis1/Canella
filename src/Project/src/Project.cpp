@@ -36,7 +36,7 @@ void Project::init_systems()
 {
     //Loads all the scenes in the scene before run time
     load_meshes_from_scene(assetsFolder,scene);
-    std::vector<Mesh> meshes;
+    std::vector<ModelMesh> meshes;
     get_meshes_on_scene(meshes,scene);
     render->enqueue_drawables(meshes);
     //Gets the reference for the main Camera
@@ -57,7 +57,7 @@ void Project::run()
     while (playing)
     {
         playing = ~window.shouldCloseWindow();
-        glfwPollEvents();
+        window.update();
         update_systems();
         render->render(main_camera.viewProjection);
         if (KeyBoard::getKeyBoard().getKeyPressed(GLFW_KEY_ESCAPE))

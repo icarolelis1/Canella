@@ -111,3 +111,8 @@ add_custom_target(copy_resources ALL
 
 
 add_custom_target(shaders ALL DEPENDS ${SPV_SHADERS})
+
+add_custom_command(TARGET ${PROJECT_NAME}  POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${PROJECT_SOURCE_DIR}/libs/dlls/assimp-vc143-mtd.dll"
+        ${PROJECT_BINARY_DIR})

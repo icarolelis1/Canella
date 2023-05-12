@@ -71,9 +71,9 @@ void Canella::Serializer::LoadComponents(
 }
 
 /**
- * \brief 
- * \param scene 
- * \param scene_data 
+ * \brief
+ * \param scene
+ * \param scene_data
  */
 void Canella::Serializer::DeserializeEntities(
     const std::shared_ptr<Scene> scene,
@@ -91,25 +91,25 @@ void Canella::Serializer::DeserializeEntities(
         entity["Components"] = nlohmann::json::array();
         nlohmann::json& components = entity["Components"];
         
-        auto view = scene->m_registry.view<TransformComponent,CameraComponent,MeshAssetComponent>();
-        if(iterator->second.HasComponent<CameraComponent>())
+        auto view = scene->m_registry.view<TransformComponent,CameraComponent,ModelAssetComponent>();
+        if(iterator->second->HasComponent<CameraComponent>())
         {
             nlohmann::json component;
             DeserializeCamera(component,view.get<CameraComponent>(iterator->first));
             components.push_back(component);
         }
 
-        if(iterator->second.HasComponent<TransformComponent>())
+        if(iterator->second->HasComponent<TransformComponent>())
         {
             nlohmann::json component;
             DeserializeTransform(component,view.get<TransformComponent>(iterator->first));
             components.push_back(component);
         }
 
-        if(iterator->second.HasComponent<MeshAssetComponent>())
+        if(iterator->second->HasComponent<ModelAssetComponent>())
         {
             nlohmann::json component;
-            DeserializeMeshAsset(component,view.get<MeshAssetComponent>(iterator->first));
+            DeserializeMeshAsset(component,view.get<ModelAssetComponent>(iterator->first));
             components.push_back(component);
         }
         
