@@ -185,7 +185,7 @@ namespace Canella {
 				static  SHADER_TYPE convert_from_string_shader_type(const char* type)
 				{
 					{
-						if (strcmp( type,"ModelMesh") == 0)
+						if (strcmp( type,"Mesh") == 0)
 							return SHADER_TYPE::MESH_SHADER;
 						if (strcmp(type , "Fragment")==0)
 							return SHADER_TYPE::FRAGMENT_SHADER;

@@ -34,9 +34,7 @@ void Canella::load_asset_mesh(ModelMesh& mesh, const ::std::string& assetsPath, 
         const aiMesh* assimp_mesh = assimpScene->mMeshes[i];
         auto& [positions,
             normal,
-            indices,
-            meshlets,
-            bounds
+            indices
         ] = mesh.meshes[i];
 
         for (unsigned int j = 0; j < assimp_mesh->mNumVertices; ++j)
@@ -49,29 +47,6 @@ void Canella::load_asset_mesh(ModelMesh& mesh, const ::std::string& assetsPath, 
             for (uint32_t face_index = 0; face_index < 3; face_index ++)
                 indices.push_back(assimp_mesh->mFaces[face].mIndices[face_index]);
 
-        const size_t max_meshlets = meshopt_buildMeshletsBound(indices.size(), max_vertices, max_triangles);
-        meshlets.resize(max_meshlets);
-        std::vector<unsigned int> meshlet_vertices(max_meshlets * max_vertices);
-        std::vector<unsigned char> meshlet_triangles(max_meshlets * max_triangles * 3);
-        const size_t meshlet_count = meshopt_buildMeshlets(meshlets.data(), meshlet_vertices.data(),
-                                                           meshlet_triangles.data(),
-                                                           indices.data(),
-                                                           indices.size(), &positions[0].x, positions.size(),
-                                                           sizeof(float) * 4, max_vertices, max_triangles, cone_weight);
-
-        const meshopt_Meshlet& last = meshlets[meshlet_count - 1];
-        meshlet_vertices.resize(last.vertex_offset + last.vertex_count);
-        meshlet_triangles.resize(last.triangle_offset + ((last.triangle_count * 3 + 3) & ~3));
-        meshlets.resize(meshlet_count);
-
-        for (const auto& m : meshlets)
-        {
-            bounds.emplace_back(meshopt_computeMeshletBounds(&meshlet_vertices[m.vertex_offset],
-                                                                 &meshlet_triangles[m.triangle_offset],
-                                                                 m.triangle_count, &positions[0].x,
-                                                                 meshlet_vertices.size(),
-                                                                 sizeof(float)*4));
-        }
     }
 }
 
@@ -108,6 +83,6 @@ void Canella::load_meshlet(Canella::Meshlet& canellaMeshlet, const Canella::Mesh
                                                          meshlet_vertices.size(),
                                                          sizeof(float)*4));
     }
-    canellaMeshlet.meshlets = std::move(meshlets);
-    canellaMeshlet.bounds = std::move(bounds);
+    canellaMeshlet.meshlets = meshlets;
+    canellaMeshlet.bounds = bounds;
 }

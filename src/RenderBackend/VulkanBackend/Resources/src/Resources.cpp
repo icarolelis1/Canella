@@ -1,6 +1,12 @@
 #include "Resources/Resources.h"
 #include "DescriptorSet/DescriptorSet.h"
 
+
+Canella::RenderSystem::VulkanBackend::GPUResource::GPUResource(
+        Canella::RenderSystem::VulkanBackend::ResourceType _type):type(_type) {
+
+}
+
 /**
  * \brief Wraps a Vulkan VkBuffer
  * \param device Vulkan device
@@ -8,9 +14,11 @@
  * \param usage Vulkan usage usage flags
  * \param properties Memory properties
  */
-Canella::RenderSystem::VulkanBackend::Buffer::Buffer(Device* device, VkDeviceSize size, VkBufferUsageFlags usage,
+Canella::RenderSystem::VulkanBackend::Buffer::Buffer(Device *device,
+                                                     VkDeviceSize size,
+                                                     VkBufferUsageFlags usage,
                                                      VkMemoryPropertyFlags properties)
-{
+                                                     :GPUResource(ResourceType::BufferResource) {
     this->device = device;
     VkBufferCreateInfo bufferInfo = {};
     bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -61,14 +69,6 @@ uint32_t Canella::RenderSystem::VulkanBackend::Buffer::find_memory_type(Device* 
     return 0;
 }
 
-Canella::RenderSystem::VulkanBackend::MeshletGPUResources::MeshletGPUResources(Device* _device,
-                                                                               VkDeviceSize size,
-                                                                               VkBufferUsageFlags usage,
-                                                                               VkMemoryPropertyFlags properties)
-    : buffer(_device, size, usage, properties)
-{
-}
-
 void Canella::RenderSystem::VulkanBackend::copy_buffer_to(
     VkCommandBuffer command_buffer,
     Buffer& src,
@@ -91,3 +91,32 @@ void Canella::RenderSystem::VulkanBackend::copy_buffer_to(
     vkQueueSubmit(queue, 1, &submit_info, VK_NULL_HANDLE);
     vkQueueWaitIdle(queue);
 }
+
+Canella::RenderSystem::VulkanBackend::ResourcesManager::~ResourcesManager() {
+    auto it = resource_cache.begin();
+    for(auto it = resource_cache.begin(); it != resource_cache.end();++it)
+        it->second.reset();
+}
+
+Canella::RenderSystem::VulkanBackend::ResourcesManager::ResourcesManager(Device * _device) : device(_device) {}
+
+Canella::RenderSystem::VulkanBackend::ResourceAccessor
+Canella::RenderSystem::VulkanBackend::ResourcesManager::create_buffer(VkDeviceSize size,
+                                                                      VkBufferUsageFlags usage,
+                                                                      VkMemoryPropertyFlags properties) {
+   auto unique_resource_id = uuid();
+   resource_cache[unique_resource_id] = std::make_shared<Buffer>(device,size,usage,properties);
+
+   return unique_resource_id;
+}
+
+Canella::RenderSystem::VulkanBackend::RefBuffer
+Canella::RenderSystem::VulkanBackend::ResourcesManager::get_buffer_cached(uint64_t uuid) {
+    auto cache_iterator = resource_cache.find(uuid);
+    assert(cache_iterator != resource_cache.end());
+    auto ref_buffer  = cache_iterator->second;
+    assert(ref_buffer->type == ResourceType::BufferResource);
+
+    return std::static_pointer_cast<Buffer>(ref_buffer);
+}
+

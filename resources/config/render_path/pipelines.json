@@ -1,6 +1,6 @@
 ﻿{
   "PipelineData": {
-    "DescriptorSetLayoutCounts":2,
+    "DescriptorSetLayoutCounts":1,
     "PipelinesCount":1,
     "DescriptorSetLayouts": [
       {

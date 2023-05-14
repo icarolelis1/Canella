@@ -3,4 +3,4 @@ Build/
 BUILD/
 .vs/
 .vscode/
-.cmake-build-debug
+.cmake-build-debug/

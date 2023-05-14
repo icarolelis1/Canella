@@ -33,7 +33,7 @@ namespace Canella
     void load_asset_mesh( ModelMesh& mesh, const::std::string& assetsPath, const std::string& source );
     void load_meshlet( Meshlet &, const Mesh & mesh );
     using Drawables = std::vector<ModelMesh>;
-    
+
     class Render
         {
         public:

@@ -35,19 +35,15 @@ namespace Canella
 			{
 				PFN_vkCmdDrawMeshTasksEXT vkCmdDrawMeshTasksEXT;
 
-				Device device;
 				Swapchain swapChain;
 				Surface surface;
 				Instance *instance;
-				std::unique_ptr<RenderpassManager> renderpassManager;
 				DescriptorSetLayouts cachedDescriptorSetLayouts;
 				PipelineLayouts cachedPipelineLayouts;
-				Pipelines cachedPipelines;
 				std::vector<VkDescriptorSet> global_descriptors;
 				std::vector<Buffer> global_buffers;
 				Descriptorpool descriptorPool;
 				std::vector<FrameData> frames;
-				Commandpool transfer_pool;
 				unsigned int current_frame = 0;
 				Drawables m_drawables;
 				
@@ -63,14 +59,21 @@ namespace Canella
 				void destroy_pipeline_layouts();
 				void allocate_global_descriptorsets();
 				void create_meshlets_buffers();
-				std::vector<MeshletGPUResources> meshlet_gpu_resources;				
 			public:
-				void enqueue_drawables(Drawables&) override;
+                ResourcesManager resources_manager;
+                Device device;
+                Commandpool transfer_pool;
+
+                void enqueue_drawables(Drawables&) override;
 				VulkanRender(nlohmann::json& config, Windowing* window);
 				~VulkanRender();
 				void update(float time) override;
 				void render(glm::mat4& viewProjection) override;
                 Drawables &get_drawables() override;
+
+                Pipelines cachedPipelines;
+                std::unique_ptr<RenderpassManager> renderpassManager;
+
             };
 
 		}

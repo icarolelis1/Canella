@@ -68,7 +68,7 @@ namespace Canella
                     return VK_SHADER_STAGE_MESH_BIT_EXT;
                 else if (strcmp(stage, "TASK_STAGE") == 0)
                     return VK_SHADER_STAGE_TASK_BIT_EXT;
-                return VK_SHADER_STAGE_MESH_BIT_EXT;
+                return VK_SHADER_STAGE_FRAGMENT_BIT;
             }
 
             VkShaderStageFlags read_shader_stage_from_json(nlohmann::json stages_json) {
@@ -81,7 +81,7 @@ namespace Canella
             
                 //Todo implement this. I have no idea how to do this lol
                 if (shader_stages.size() > 1)
-                    return VK_SHADER_STAGE_TASK_BIT_EXT | VK_SHADER_STAGE_TASK_BIT_EXT;
+                    return VK_SHADER_STAGE_TASK_BIT_EXT | VK_SHADER_STAGE_MESH_BIT_EXT;
                 return stages_mask;
             }
             size_t get_size_of_structure(const char* structure)
@@ -91,6 +91,10 @@ namespace Canella
                 if (strcmp(structure, "Meshlet"))
                     return sizeof(meshopt_Meshlet);
                 return sizeof(meshopt_Meshlet);
+            }
+
+            uint64_t uuid() {
+                return uniform_distribution(random_engine);
             }
         }
     };

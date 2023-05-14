@@ -102,15 +102,12 @@ foreach(SHADER IN LISTS SHADERS)
         COMMENT "Compiling ${FILENAME}")
 list(APPEND SPV_SHADERS ${SHADER_DIR}/shaders/${FILENAME}.spv)
 endForeach()
-
-add_custom_target(copy_resources ALL
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${PROJECT_SOURCE_DIR}/resources
-    ${PROJECT_BINARY_DIR}/resources
-    COMMENT "Copying config file to build directory") 
-
-
 add_custom_target(shaders ALL DEPENDS ${SPV_SHADERS})
+
+add_custom_command(TARGET ${PROJECT_NAME}  POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    ${PROJECT_SOURCE_DIR}/resources
+    ${PROJECT_BINARY_DIR}/resources)
 
 add_custom_command(TARGET ${PROJECT_NAME}  POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different

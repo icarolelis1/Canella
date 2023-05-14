@@ -11,7 +11,8 @@ using namespace Canella::RenderSystem::VulkanBackend;
  * \param config configuration file for the render
  * \param window window that's going to be rendered into
  */
-VulkanRender::VulkanRender(nlohmann::json& config, Windowing* window) {
+VulkanRender::VulkanRender(nlohmann::json& config, Windowing* window)
+    : resources_manager(&this->device) {
     init_vulkan_instance();
     //drawables = std::move(_drawables);
     dynamic_cast<GlfwWindow*>(window)->getSurface(instance->handle, &surface);
@@ -37,7 +38,8 @@ VulkanRender::VulkanRender(nlohmann::json& config, Windowing* window) {
     allocate_global_descriptorsets();
     write_global_descriptorsets();
 
-    vkCmdDrawMeshTasksEXT = reinterpret_cast<PFN_vkCmdDrawMeshTasksEXT>(vkGetDeviceProcAddr(device.getLogicalDevice(),"vkCmdDrawMeshTasksEXT"));
+    vkCmdDrawMeshTasksEXT = reinterpret_cast<PFN_vkCmdDrawMeshTasksEXT>(vkGetDeviceProcAddr(device.getLogicalDevice()
+                                                                                            ,"vkCmdDrawMeshTasksEXT"));
     
     transfer_pool.build(&device,
                         POOL_TYPE::TRANSFER,
@@ -63,6 +65,7 @@ void VulkanRender::enqueue_drawables(Drawables& drawables)
 
 void VulkanRender::create_meshlets_buffers()
 {
+    /*
     for (auto mesh : m_drawables)
     {
         for (auto mesh_data : mesh.meshes)
@@ -117,7 +120,7 @@ void VulkanRender::create_meshlets_buffers()
                 i++;
             }
         }
-    }
+    }*/
 }
 
 void VulkanRender::render(glm::mat4& _view_projection)

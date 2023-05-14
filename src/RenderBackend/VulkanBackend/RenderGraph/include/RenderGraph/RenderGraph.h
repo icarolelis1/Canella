@@ -9,7 +9,7 @@
 #include "json.hpp"
 
 namespace Canella {
-	namespace Rendersystem {
+	namespace RenderSystem {
 		namespace VulkanBackend {
             enum NodeType{
                 Compute,
@@ -18,8 +18,12 @@ namespace Canella {
             };
 
 			struct RenderNodeOutputs {
-                std::vector<RenderSystem::VulkanBackend::Resource> resources;
+                std::vector<RenderSystem::VulkanBackend::GPUResource> resources;
 			};
+
+            struct RenderEdge{
+
+            };
 
             using ResourceRef = std::shared_ptr<RenderNodeOutputs>;
             using ResourcesRef =  std::vector<ResourceRef>;
@@ -45,9 +49,9 @@ namespace Canella {
                 RenderNode(const RenderNode& other) = delete;
                 ~RenderNode();
 
-                virtual void execute(Canella::Render&) ;
+                virtual void execute(Canella::Render*) ;
                 //Give the node the resource loading logic
-                virtual void load_transient_resources(nlohmann::json&, Canella::Render&);
+                virtual void load_transient_resources(nlohmann::json&, Canella::Render*);
                 //Parse the json file with the configuration for each node
                 virtual void load_render_node(nlohmann::json&) ;
                 NodeType type;
@@ -55,9 +59,6 @@ namespace Canella {
                 ResourcesRef inputs;
                 ResourcesRef outputs;
                 ResourcesRef transients;
-
-                ResourceHandling custom_load_resources;
-                RenderNodeExecution execute_node;
 
                 std::shared_ptr<RenderNode> parent = nullptr;
                 std::vector<std::shared_ptr<RenderNode>> connected_nodes;

@@ -1,11 +1,12 @@
 #pragma once
 #ifndef CANELLA_UTILITY
 #define CANELLA_UTILITY
+#include "Pipeline/Pipeline.h"
+#include "json.hpp"
 #include <vector>
 #include <vulkan/vulkan.h>
-#include "Pipeline/Pipeline.h"
 #include <fstream>
-#include "json.hpp"
+#include <random>
 
 namespace Canella
 {
@@ -13,6 +14,13 @@ namespace Canella
 	{
 		namespace VulkanBackend
 		{
+
+            static std::random_device random_device;
+            static std::mt19937_64 random_engine(random_device());
+            static std::uniform_int_distribution<uint64_t> uniform_distribution;
+
+            uint64_t uuid();
+
 			VkFormat convert_from_string_format(const char *image_format);
 			VkSampleCountFlagBits convert_from_string_sample_count(const char *samples);
 			VkAttachmentLoadOp convert_from_string_loadOp(const char *loadOp);
