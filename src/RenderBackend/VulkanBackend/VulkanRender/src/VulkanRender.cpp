@@ -245,6 +245,7 @@ void VulkanRender::record_command_index(VkCommandBuffer& commandBuffer,
                                         glm::mat4& viewProjection,
                                         uint32_t index)
 {
+    /*
     std::vector<VkClearValue> clear_values = {};
     clear_values.resize(2);
     clear_values[0].color = {{1.0f, 1.0f, 1.f, 1.0f}};
@@ -271,7 +272,7 @@ void VulkanRender::record_command_index(VkCommandBuffer& commandBuffer,
     vkCmdDrawMeshTasksEXT(commandBuffer, 1, 1, 1);
     renderpassManager->renderpasses["basic"]->endRenderPass(commandBuffer);
 
-    frames[index].commandPool.endCommandBuffer(commandBuffer);
+    frames[index].commandPool.endCommandBuffer(commandBuffer);*/
 }
 
 void VulkanRender::allocate_global_descriptorsets()

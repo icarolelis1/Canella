@@ -3,11 +3,11 @@
 #define CANELLA_RENDER_GRAPH
 #include "Resources/Resources.h"
 #include "Render/Render.h"
+#include "Device/Device.h"
 #include <memory>
 #include <string>
 #include <vector>
 #include "json.hpp"
-
 namespace Canella {
 	namespace RenderSystem {
 		namespace VulkanBackend {
@@ -37,8 +37,6 @@ namespace Canella {
             */
 			class RenderNode {
             public:
-                using RenderNodeExecution [[maybe_unused]] = std::function<void(RenderNode*,Canella::Render&)>;
-                using ResourceHandling = std::function<void(RenderNode*)>;
 
                 RenderNode(NodeType nodeType,
                            const std::string& name,
@@ -49,7 +47,7 @@ namespace Canella {
                 RenderNode(const RenderNode& other) = delete;
                 ~RenderNode();
 
-                virtual void execute(Canella::Render*) ;
+                virtual void execute(Canella::Render*, VkCommandBuffer, int ) ;
                 //Give the node the resource loading logic
                 virtual void load_transient_resources(nlohmann::json&, Canella::Render*);
                 //Parse the json file with the configuration for each node

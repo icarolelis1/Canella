@@ -35,16 +35,12 @@ namespace Canella
 			{
 				PFN_vkCmdDrawMeshTasksEXT vkCmdDrawMeshTasksEXT;
 
-				Swapchain swapChain;
 				Surface surface;
 				Instance *instance;
 				DescriptorSetLayouts cachedDescriptorSetLayouts;
 				PipelineLayouts cachedPipelineLayouts;
-				std::vector<VkDescriptorSet> global_descriptors;
 				std::vector<Buffer> global_buffers;
 				Descriptorpool descriptorPool;
-				std::vector<FrameData> frames;
-				unsigned int current_frame = 0;
 				Drawables m_drawables;
 				
 				void init_descriptor_pool();
@@ -60,9 +56,13 @@ namespace Canella
 				void allocate_global_descriptorsets();
 				void create_meshlets_buffers();
 			public:
+                std::vector<FrameData> frames;
                 ResourcesManager resources_manager;
                 Device device;
                 Commandpool transfer_pool;
+                Swapchain swapChain;
+                std::vector<VkDescriptorSet> global_descriptors;
+                unsigned int current_frame = 0;
 
                 void enqueue_drawables(Drawables&) override;
 				VulkanRender(nlohmann::json& config, Windowing* window);

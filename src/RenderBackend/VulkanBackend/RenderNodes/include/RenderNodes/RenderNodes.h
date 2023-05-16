@@ -13,11 +13,8 @@ namespace Canella {
                                    const ResourcesRef &outputs, const ResourcesRef &transient);
 
                 void load_transient_resources(nlohmann::json&,Canella::Render *render) override;
-                void execute(Canella::Render *render) override;
-
+                void execute(Canella::Render *render,VkCommandBuffer,int) override;
                 void load_render_node(nlohmann::json &json) override;
-
-                void load_transient_resources(nlohmann::json &json, Canella::Render &render) override;
 
             private:
                 std::vector<ResourceAccessor> resource_accessors;

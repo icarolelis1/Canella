@@ -60,10 +60,15 @@ namespace Canella
                 mapped = true;
             }
 
-            void copy_buffer_to(VkCommandBuffer command_buffer,Buffer& src,Buffer& dst,VkDeviceSize device_size,VkQueue queue);
+            void copy_buffer_to(            VkCommandBuffer command_buffer,
+                                            Buffer& src,
+                                            Buffer& dst,
+                                            VkDeviceSize device_size,
+                                            VkQueue queue);
 
             using RefGPUResource = std::shared_ptr<GPUResource>;
             using RefBuffer = std::shared_ptr<Buffer>;
+            using RefDescriptorset = std::shared_ptr<DescriptorSet>;
 
             /**
             * \brief Manages vulkan resources
@@ -71,7 +76,7 @@ namespace Canella
             class ResourcesManager{
             private:
                 std::unordered_map<ResourceAccessor,RefGPUResource> resource_cache;
-                std::unordered_map<ResourceAccessor,DescriptorSet> descriptorset_cache;
+                std::unordered_map<ResourceAccessor,VkDescriptorSet> descriptorset_cache;
                 Device* device;
 
             public:
@@ -80,10 +85,13 @@ namespace Canella
                 ResourceAccessor create_buffer(VkDeviceSize size,
                                                VkBufferUsageFlags usage,
                                                VkMemoryPropertyFlags properties);
+
+                void allocate_resource(
+                                            ResourceAccessor,
+                                            std::vector<VkDescriptorBufferInfo>&,
+                                            std::vector<VkDescriptorImageInfo>&);
                 ~ResourcesManager();
             };
-
-
         }
     } // namespace name
 

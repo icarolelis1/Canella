@@ -21,7 +21,11 @@ Canella::RenderSystem::VulkanBackend::RenderNode::~RenderNode() {
 
 void Canella::RenderSystem::VulkanBackend::RenderNode::load_render_node(nlohmann::json &){}
 
-void Canella::RenderSystem::VulkanBackend::RenderNode::execute(Canella::Render* renderer) {}
+void Canella::RenderSystem::VulkanBackend::RenderNode::execute(Canella::Render *, VkCommandBuffer, int) {}
+
+void Canella::RenderSystem::VulkanBackend::RenderNode::load_transient_resources(nlohmann::json &, Canella::Render *) {
+
+}
 
 
 Canella::RenderSystem::VulkanBackend::RenderGraph::RenderGraph()

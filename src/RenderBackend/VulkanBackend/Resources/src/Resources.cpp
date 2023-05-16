@@ -120,3 +120,24 @@ Canella::RenderSystem::VulkanBackend::ResourcesManager::get_buffer_cached(uint64
     return std::static_pointer_cast<Buffer>(ref_buffer);
 }
 
+void Canella::RenderSystem::VulkanBackend::ResourcesManager::allocate_resource(
+        Canella::RenderSystem::VulkanBackend::ResourceAccessor accessor, std::vector<VkDescriptorBufferInfo> &,
+        std::vector<VkDescriptorImageInfo> &)
+{
+
+    VkDescriptorSet& descriptorset = descriptorset_cache[accessor];
+    std::vector<Buffer> buffers;
+    
+    auto j = 0;
+
+        std::vector<VkDescriptorBufferInfo> buffer_infos;
+        std::vector<VkDescriptorImageInfo> image_infos;
+        buffer_infos.resize(1);
+        buffer_infos[0].buffer = resource_cache[accessor];
+        buffer_infos[0].offset = static_cast<uint32_t>(0);
+        buffer_infos[0].range = sizeof(meshopt_Meshlet);
+        DescriptorSet::update_descriptorset(&device, descriptorset, buffer_infos,
+                                            image_infos);
+
+}
+

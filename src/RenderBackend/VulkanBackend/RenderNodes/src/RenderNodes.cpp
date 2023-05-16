@@ -12,11 +12,47 @@ Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::MeshletGBufferPass(
                                                                                           outputs,
                                                                                           transient) {}
 
-void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::execute(Canella::Render *render)
+void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::execute(
+                                                                        Canella::Render *render,
+                                                                        VkCommandBuffer command_buffer,
+                                                                        int index)
 {
+
     auto vulkan_renderer =(VulkanBackend::VulkanRender*)render;
+    auto& device = vulkan_renderer->device;
     auto& renderpasses = vulkan_renderer->renderpassManager->renderpasses;
     auto& pipelines = vulkan_renderer->cachedPipelines;
+    auto& frames = vulkan_renderer->frames;
+    auto& swapchain = vulkan_renderer->swapChain;
+    auto& global_descriptors = vulkan_renderer->global_descriptors;
+    auto current_frame = vulkan_renderer->current_frame;
+    std::vector<VkClearValue> clear_values = {};
+    clear_values.resize(2);
+    clear_values[0].color = {{1.0f, 1.0f, 1.f, 1.0f}};
+
+    frames[index].commandPool.beginCommandBuffer(&device, command_buffer, true);
+    const auto render_pass = renderpasses["basic"];
+    render_pass->beginRenderPass(command_buffer, clear_values, current_frame);
+    const VkViewport viewport = swapchain.get_view_port();
+    const VkRect2D rect_2d = swapchain.get_rect2d();
+    vkCmdSetViewport(command_buffer, 0, 1, &viewport);
+    vkCmdSetScissor(command_buffer, 0, 1, &rect_2d);
+
+    VkDescriptorSet descritpros[2] = { global_descriptors[index],meshlet_gpu_resources[0].descriptorsets[index] };
+    vkCmdBindDescriptorSets(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                            cachedPipelineLayouts["MeshShaderPipeline"]->getHandle(),
+                            0,
+                            2,
+                            &descritpros[0],
+                            0,
+                            nullptr);
+
+    vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                      cachedPipelines["MeshShaderPipeline"]->getPipelineHandle());
+    vkCmdDrawMeshTasksEXT(command_buffer, 1, 1, 1);
+    renderpasses["basic"]->endRenderPass(command_buffer);
+
+    frames[index].commandPool.endCommandBuffer(command_buffer);
 }
 
 void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::load_transient_resources(
@@ -61,6 +97,21 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::load_transient_re
                        *resource_manager.get_buffer_cached(resource_accessors[i]).get(),
                        size,
                        vulkan_renderer->device.getTransferQueueHandle());
+
+        auto j = 0;
+        for (auto& descriptorset : meshlet_resource.descriptorsets)
+        {
+            std::vector<VkDescriptorBufferInfo> buffer_infos;
+            std::vector<VkDescriptorImageInfo> image_infos;
+            buffer_infos.resize(1);
+            buffer_infos[0].buffer = meshlet_resource.buffer.getBufferHandle();
+            buffer_infos[0].offset = static_cast<uint32_t>(0);
+            buffer_infos[0].range = sizeof(meshopt_Meshlet);
+            DescriptorSet::update_descriptorset(&device, meshlet_resource.descriptorsets[i], buffer_infos,
+                                                image_infos);
+            j++;
+        }
+
         i++;
     }
 }
