@@ -2,6 +2,7 @@
 #include <vector>
 #include <numeric>
 #include <Meshoptimizer/meshoptimizer.h>
+
 namespace Canella
 {
     namespace RenderSystem

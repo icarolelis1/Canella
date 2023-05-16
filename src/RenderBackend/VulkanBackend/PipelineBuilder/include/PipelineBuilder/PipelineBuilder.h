@@ -54,7 +54,7 @@ namespace Canella
 						ShaderBindingResource bindingResource{};
 						bindingResource.type = convert_from_string_shader_resource_type(bindings["Type"].get<std::string>().c_str());
 						bindingResource.stages = read_shader_stage_from_json(bindings["Stage"]);
-						bindingResource.size = get_size_of_structure(bindings["Type"].get<std::string>().c_str());
+						//bindingResource.size = get_size_of_structure(bindings["Key"].get<std::string>().c_str());
 						bindingResource.binding = bindings["Binding"].get<std::uint32_t>();
 						bindingResources[i] = bindingResource;
 					}

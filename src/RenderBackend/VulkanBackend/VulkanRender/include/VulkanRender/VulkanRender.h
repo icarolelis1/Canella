@@ -1,7 +1,6 @@
 #pragma once
 #ifndef VULKAN_RENDER
 #define VULKAN_RENDER
-#include <unordered_map>
 #include "Device/Device.h"
 #include "Render/Render.h"
 #include "Swapchain/Swapchain.h"
@@ -12,15 +11,11 @@
 #include "DescriptorSet/DescriptorSet.h"
 #include "Frame/Frame.h"
 #include "PipelineBuilder/PipelineBuilder.h"
-#include <memory.h>
-#include <Resources/Resources.h>
-#include <vector>
+#include "Resources/Resources.h"
 #include "Logger/Logger.hpp"
 #include "Window/Window.h"
-#include "vulkan/vulkan_core.h"
-#include "EntityBase.h"
 #include "ComponentBase.h"
-#include <unordered_map>
+#include "RenderGraph/RenderGraph.h"
 
 namespace Canella
 {
@@ -38,11 +33,10 @@ namespace Canella
 				Surface surface;
 				Instance *instance;
 				DescriptorSetLayouts cachedDescriptorSetLayouts;
-				PipelineLayouts cachedPipelineLayouts;
-				std::vector<Buffer> global_buffers;
+				std::vector<std::shared_ptr<Buffer>> global_buffers;
 				Descriptorpool descriptorPool;
 				Drawables m_drawables;
-				
+				RenderGraph render_graph;
 				void init_descriptor_pool();
 				//void initPipelines();
 				void init_vulkan_instance();
@@ -63,6 +57,7 @@ namespace Canella
                 Swapchain swapChain;
                 std::vector<VkDescriptorSet> global_descriptors;
                 unsigned int current_frame = 0;
+                PipelineLayouts cachedPipelineLayouts;
 
                 void enqueue_drawables(Drawables&) override;
 				VulkanRender(nlohmann::json& config, Windowing* window);

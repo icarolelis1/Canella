@@ -3,7 +3,7 @@
 #include <Meshoptimizer/meshoptimizer.h>
 #include "Device/Device.h"
 #include <unordered_map>
-
+#include "Commandpool/Commandpool.h"
 namespace Canella
 {
     namespace RenderSystem
@@ -33,7 +33,8 @@ namespace Canella
                 void udpate(T &object);
                 VkBuffer &getBufferHandle();
                 VkDeviceMemory &getMemoryHandle();
-                void destroy(Device &device) const;
+
+                ~Buffer();
 
             private:
                 bool mapped = false;
@@ -68,7 +69,6 @@ namespace Canella
 
             using RefGPUResource = std::shared_ptr<GPUResource>;
             using RefBuffer = std::shared_ptr<Buffer>;
-            using RefDescriptorset = std::shared_ptr<DescriptorSet>;
 
             /**
             * \brief Manages vulkan resources
@@ -76,7 +76,6 @@ namespace Canella
             class ResourcesManager{
             private:
                 std::unordered_map<ResourceAccessor,RefGPUResource> resource_cache;
-                std::unordered_map<ResourceAccessor,VkDescriptorSet> descriptorset_cache;
                 Device* device;
 
             public:
@@ -85,12 +84,42 @@ namespace Canella
                 ResourceAccessor create_buffer(VkDeviceSize size,
                                                VkBufferUsageFlags usage,
                                                VkMemoryPropertyFlags properties);
-
-                void allocate_resource(
-                                            ResourceAccessor,
-                                            std::vector<VkDescriptorBufferInfo>&,
-                                            std::vector<VkDescriptorImageInfo>&);
                 ~ResourcesManager();
+
+                template<typename Blob>
+                uint64_t create_host_visible_buffer(VkDeviceSize size,
+                                                    VkBufferUsageFlags flags,
+                                                    VulkanBackend::Commandpool* transfer_pool,
+                                                    Blob& data)
+                {
+                    //staging buffer will be destroyed immediatly after transfer
+                    auto staging_buffer = Buffer(device,
+                                                 size,
+                                                 VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                                                 VK_MEMORY_PROPERTY_HOST_COHERENT_BIT |
+                                                 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+                    staging_buffer.udpate(data);
+
+                    ResourceAccessor id = create_buffer(size,
+                                                        flags,
+                                            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+                    const auto command = transfer_pool->requestCommandBuffer(
+                            device,
+                            VK_COMMAND_BUFFER_LEVEL_PRIMARY );
+                    copy_buffer_to(command,
+                                   staging_buffer,
+                                   *get_buffer_cached(id).get(),
+                                   size,
+                                   device->getTransferQueueHandle());
+                    return id;
+                }
+
+
+                uint64_t
+                write_descriptor_sets(VkDescriptorSet& descriptorset,
+                                      std::vector<VkDescriptorBufferInfo> &buffer_infos,
+                                      std::vector<VkDescriptorImageInfo> &image_infos);
             };
         }
     } // namespace name

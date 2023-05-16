@@ -20,7 +20,6 @@ namespace Canella
             static std::uniform_int_distribution<uint64_t> uniform_distribution;
 
             uint64_t uuid();
-
 			VkFormat convert_from_string_format(const char *image_format);
 			VkSampleCountFlagBits convert_from_string_sample_count(const char *samples);
 			VkAttachmentLoadOp convert_from_string_loadOp(const char *loadOp);

@@ -8,6 +8,10 @@
 #include <string>
 #include <vector>
 #include "json.hpp"
+
+/**
+ * THIS IS A HUGE TOPIC AND WILL INCREASE EXPONENTIALLY ON THE GO
+ */
 namespace Canella {
 	namespace RenderSystem {
 		namespace VulkanBackend {
@@ -25,8 +29,7 @@ namespace Canella {
 
             };
 
-            using ResourceRef = std::shared_ptr<RenderNodeOutputs>;
-            using ResourcesRef =  std::vector<ResourceRef>;
+            using ResourcesRef =  std::vector<RefGPUResource>;
             /**
             * \brief A individual work unit of the render graph
             * \param nodeType type of node
@@ -38,35 +41,38 @@ namespace Canella {
 			class RenderNode {
             public:
 
-                RenderNode(NodeType nodeType,
-                           const std::string& name,
-                           ResourcesRef inputs = std::vector<ResourceRef>(),
-                           ResourcesRef outputs = std::vector<ResourceRef>(),
-                           ResourcesRef transient = std::vector<ResourceRef>() );
-
+                RenderNode() = default;
+                RenderNode(const std::string&,NodeType);
                 RenderNode(const RenderNode& other) = delete;
-                ~RenderNode();
+                ~RenderNode() = default;
 
                 virtual void execute(Canella::Render*, VkCommandBuffer, int ) ;
                 //Give the node the resource loading logic
                 virtual void load_transient_resources(nlohmann::json&, Canella::Render*);
                 //Parse the json file with the configuration for each node
-                virtual void load_render_node(nlohmann::json&) ;
+                void load_render_node(const nlohmann::json &) ;
+                //write the outputs
+                virtual void write_outputs();
+                std::vector<std::weak_ptr<RenderNode>> descedent_nodes;
+
                 NodeType type;
             protected:
                 ResourcesRef inputs;
                 ResourcesRef outputs;
                 ResourcesRef transients;
 
+                bool begin_render_pass = false;
+                bool end_render_pass = false;
+
                 std::shared_ptr<RenderNode> parent = nullptr;
-                std::vector<std::shared_ptr<RenderNode>> connected_nodes;
 
                 //Name of the render node that produces the input for this node
-                const std::string procuder_name;
-				const std::string renderpass;
-				const std::string pipeline;
+                std::string procuder_name;
+                std::string renderpass_name;
+                std::string pipeline_name;
+                std::string pipeline_layout_name;
                 bool final_output = false;
-				const std::string name;
+                std::string name;
 			};
 
             using RefRenderNode =  std::shared_ptr<RenderNode>;
@@ -78,9 +84,14 @@ namespace Canella {
             public:
                 RenderGraph();
                 RenderGraph(const RenderGraph&other) = delete;
+                static NodeType convert_from_string(const std::string&);
+
                 ~RenderGraph() = default;
 
-                void load_render_graph(nlohmann::json&,Drawables& drawables);
+                void load_render_graph(const char* );
+                void execute(VkCommandBuffer,Canella::Render*,int);
+                void execute_descendent(const RefRenderNode&,VkCommandBuffer,Canella::Render*,int);
+                void load_render_node(const nlohmann::json&,const RefRenderNode&);
 
             private:
                 RefRenderNode start;

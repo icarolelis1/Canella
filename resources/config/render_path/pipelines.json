@@ -17,13 +17,25 @@
       },
       {
         "Key": "Meshlets",
-        "ResourceCount": 1,
+        "ResourceCount": 3,
         "BindingResources": [
           {
             "Key": "Meshlets",
             "Stage": [ "MESH_STAGE", "TASK_SHADER" ],
             "Type": "STORAGE_BUFFER",
             "Binding": 0
+          },
+          {
+            "Key": "Vertices",
+            "Stage": [ "MESH_STAGE", "TASK_SHADER" ],
+            "Type": "STORAGE_BUFFER",
+            "Binding": 1
+          },
+          {
+            "Key": "Indices",
+            "Stage": [ "MESH_STAGE", "TASK_SHADER" ],
+            "Type": "STORAGE_BUFFER",
+            "Binding": 2
           }
         ]
       }
@@ -36,6 +48,7 @@
         "Renderpass": "basic",
         "VertexAttributeCount" : 0,
         "PipelineLayoutDescriptors": [ "ViewProjection", "Meshlets" ],
+
         "Builtin": true,
         "ShaderCount":3,
         "Shaders": [

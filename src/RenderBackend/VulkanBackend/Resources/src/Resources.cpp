@@ -52,10 +52,10 @@ VkDeviceMemory& Canella::RenderSystem::VulkanBackend::Buffer::getMemoryHandle()
     return vk_deviceMemory;
 }
 
-void Canella::RenderSystem::VulkanBackend::Buffer::destroy(Device& device) const
+Canella::RenderSystem::VulkanBackend::Buffer::~Buffer()
 {
-    vkDestroyBuffer(device.getLogicalDevice(), vk_buffer, device.getAllocator());
-    vkFreeMemory(device.getLogicalDevice(), vk_deviceMemory, device.getAllocator());
+    vkDestroyBuffer(device->getLogicalDevice(), vk_buffer, device->getAllocator());
+    vkFreeMemory(device->getLogicalDevice(), vk_deviceMemory, device->getAllocator());
 }
 
 uint32_t Canella::RenderSystem::VulkanBackend::Buffer::find_memory_type(Device* device, uint32_t typeFilter,
@@ -120,24 +120,19 @@ Canella::RenderSystem::VulkanBackend::ResourcesManager::get_buffer_cached(uint64
     return std::static_pointer_cast<Buffer>(ref_buffer);
 }
 
-void Canella::RenderSystem::VulkanBackend::ResourcesManager::allocate_resource(
-        Canella::RenderSystem::VulkanBackend::ResourceAccessor accessor, std::vector<VkDescriptorBufferInfo> &,
-        std::vector<VkDescriptorImageInfo> &)
+uint64_t Canella::RenderSystem::VulkanBackend::ResourcesManager::write_descriptor_sets(
+        VkDescriptorSet& descriptorset,
+        std::vector<VkDescriptorBufferInfo> &buffer_infos,
+        std::vector<VkDescriptorImageInfo> &image_infos)
 {
+    auto unique_id = uuid();
 
-    VkDescriptorSet& descriptorset = descriptorset_cache[accessor];
-    std::vector<Buffer> buffers;
-    
-    auto j = 0;
+    DescriptorSet::update_descriptorset( device,
+                                         descriptorset,
+                                         buffer_infos,
+                                         image_infos);
 
-        std::vector<VkDescriptorBufferInfo> buffer_infos;
-        std::vector<VkDescriptorImageInfo> image_infos;
-        buffer_infos.resize(1);
-        buffer_infos[0].buffer = resource_cache[accessor];
-        buffer_infos[0].offset = static_cast<uint32_t>(0);
-        buffer_infos[0].range = sizeof(meshopt_Meshlet);
-        DescriptorSet::update_descriptorset(&device, descriptorset, buffer_infos,
-                                            image_infos);
-
+    return unique_id;
 }
+
 

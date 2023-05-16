@@ -8,16 +8,22 @@ namespace Canella {
         namespace VulkanBackend {
 
             struct MeshletGBufferPass :public RenderNode{
+                typedef struct DescriptorsPerImage{
+                    std::vector<VkDescriptorSet> descriptor_sets;
+                    std::vector<VkDescriptorSet> vertex_descriptorset;
+                    std::vector<VkDescriptorSet> indices_descriptorset;
+                };
 
-                MeshletGBufferPass(NodeType nodeType, const std::string &name, const ResourcesRef &inputs,
-                                   const ResourcesRef &outputs, const ResourcesRef &transient);
+                MeshletGBufferPass() = default;
 
                 void load_transient_resources(nlohmann::json&,Canella::Render *render) override;
                 void execute(Canella::Render *render,VkCommandBuffer,int) override;
-                void load_render_node(nlohmann::json &json) override;
-
+                void write_outputs() override;
             private:
-                std::vector<ResourceAccessor> resource_accessors;
+                std::vector<ResourceAccessor> resource_meshlet_buffers;
+                std::vector<ResourceAccessor> resource_vertices_buffers;
+                std::vector<ResourceAccessor> resource_indices_buffers;
+                std::vector<DescriptorsPerImage> descriptors;
                 std::vector<Canella::Meshlet> meshlets;
 
             };

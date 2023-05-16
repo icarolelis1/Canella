@@ -17,9 +17,6 @@ namespace Canella::RenderSystem::VulkanBackend
 
         virtual ~DescriptorSet() = default;
 
-        void update_descriptorset(int startIndex,
-                                  std::vector<VkDescriptorImageInfo>& imageInfos,
-                                  bool isInputAttachment = 0);
     private:
     };
 }
