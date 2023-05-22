@@ -1,5 +1,6 @@
 #include "RenderGraph/RenderGraph.h"
 #include "fstream"
+#include "RenderNodes/RenderNodes.h"
 
 void Canella::RenderSystem::VulkanBackend::RenderNode::load_render_node(const nlohmann::json& node_json)
 {
@@ -13,7 +14,7 @@ void Canella::RenderSystem::VulkanBackend::RenderNode::load_render_node(const nl
 
 void Canella::RenderSystem::VulkanBackend::RenderNode::execute(Canella::Render *, VkCommandBuffer, int) {}
 
-void Canella::RenderSystem::VulkanBackend::RenderNode::load_transient_resources(nlohmann::json &, Canella::Render *) {}
+void Canella::RenderSystem::VulkanBackend::RenderNode::load_transient_resources(Canella::Render *) {}
 
 void Canella::RenderSystem::VulkanBackend::RenderNode::write_outputs() {}
 
@@ -22,9 +23,7 @@ Canella::RenderSystem::VulkanBackend::RenderNode::RenderNode(const std::string &
                                                              :
                                                              name(node_name),
                                                              type(node_type)
-{
-
-}
+{}
 
 Canella::RenderSystem::VulkanBackend::RenderGraph::RenderGraph()
 {
@@ -32,7 +31,7 @@ Canella::RenderSystem::VulkanBackend::RenderGraph::RenderGraph()
 }
 
 void Canella::RenderSystem::VulkanBackend::RenderGraph::load_render_graph(
-        const char* render_graph_src)
+        const char* render_graph_src , Canella::Render*render)
 {
     // Read renderpath json
     std::fstream f(render_graph_src);
@@ -40,17 +39,18 @@ void Canella::RenderSystem::VulkanBackend::RenderGraph::load_render_graph(
     f >> render_graph_json;
 
    const auto& entry  = render_graph_json["RenderGraph"]["Entry"];
-    load_render_node(entry,start);
+    load_render_node(entry, start, render);
 }
 
 
-void Canella::RenderSystem::VulkanBackend::RenderGraph::load_render_node(const nlohmann::json & entry,
-                                                                         const RefRenderNode &ref_node)
+void Canella::RenderSystem::VulkanBackend::RenderGraph::load_render_node(const nlohmann::json &entry,
+                                                                         const RefRenderNode &ref_node,
+                                                                         Canella::Render *render)
 {
     //Load the renderGraph recursively from the json file.
     for(const auto& descendent : entry["Descendents"])
     {
-        auto render_node = std::make_shared<RenderNode>();
+        auto render_node = std::make_shared<MeshletGBufferPass>();
         //Deserialize the render_node data from the json file
         render_node->load_render_node(descendent);
         //add to the descendent vector
@@ -58,7 +58,6 @@ void Canella::RenderSystem::VulkanBackend::RenderGraph::load_render_node(const n
         //Repeate the process recursively looking into Descendents descendents.
        // load_render_node(entry["Descendents"]["Descendents"],render_node);
     }
-    int nb = 9;
 }
 
 
@@ -87,9 +86,23 @@ void Canella::RenderSystem::VulkanBackend::RenderGraph::execute_descendent(
 {
 
     for(const auto& descendent : node->descedent_nodes){
-        auto locked = descendent.lock();
-        if(!locked) continue;
-        locked->execute(render,command,image_index);
-        execute_descendent(locked,command,render,image_index);
+
+        descendent->execute(render,command,image_index);
+        execute_descendent(descendent,command,render,image_index);
+    }
+}
+
+void Canella::RenderSystem::VulkanBackend::RenderGraph::load_resources(Canella::Render * render)
+{
+    load_node_transient_resources(start,render);
+
+}
+
+void Canella::RenderSystem::VulkanBackend::RenderGraph::load_node_transient_resources(RefRenderNode node,
+                                                                                      Canella::Render* render)
+{
+    for(const auto& descendent : node->descedent_nodes){
+        descendent->load_transient_resources(render);
+        load_node_transient_resources(descendent,render);
     }
 }

@@ -7,12 +7,12 @@
            "Type" : "Render",
            "Name" : "MeshletGBuffer",
            "Renderpass" : "basic",
-           "Pipeline" : "Meshlets",
-           "PipelineLayout":"Meshlets",
+           "Pipeline" : "MeshShaderPipeline",
+           "PipelineLayout":"MeshShaderPipeline",
            "OutPutToSwapchain" : true,
            "BeginRenderPass" : true,
            "EndRenderPass" : true,
-           "Descendents" : []
+           "DescendentNodes" : []
          }
        ]
     }

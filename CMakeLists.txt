@@ -97,7 +97,7 @@ file(GLOB SHADERS ${SHADER_DIR}/*.vert ${SHADER_DIR}/*.frag ${SHADER_DIR}/*.comp
 foreach(SHADER IN LISTS SHADERS)
     get_filename_component(FILENAME ${SHADER} NAME)
     add_custom_command(OUTPUT ${SHADER_DIR}/shaders/${FILENAME}.spv
-        COMMAND ${Vulkan_GLSLC_EXECUTABLE} ${SHADER} -o ${SHADER_DIR}/spirv/${FILENAME}.spv  --target-spv=spv1.4
+        COMMAND "C:/VulkanSDK/1.3.246.1/Bin/glslc.exe" ${SHADER} -o ${SHADER_DIR}/spirv/${FILENAME}.spv  --target-spv=spv1.4
         DEPENDS ${SHADER}
         COMMENT "Compiling ${FILENAME}")
 list(APPEND SPV_SHADERS ${SHADER_DIR}/shaders/${FILENAME}.spv)
@@ -105,7 +105,7 @@ endForeach()
 add_custom_target(shaders ALL DEPENDS ${SPV_SHADERS})
 
 add_custom_command(TARGET ${PROJECT_NAME}  POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
     ${PROJECT_SOURCE_DIR}/resources
     ${PROJECT_BINARY_DIR}/resources)
 

@@ -10,12 +10,6 @@ std::mutex Canella::Logger::logger_mutex;
 #define  GLFW_EXPOSE_NATIVE_WIN32
 int main()
 {
-	Canella::Logger::Info("INFO");
-	Canella::Logger::Debug("DEBUG");
-	Canella::Logger::Error("ERROR");
-	Canella::Logger::Warn("WARN");
-	Canella::Logger::Trace("TRACE");
-
 	std::fstream f("resources\\config\\config.json");
 	nlohmann::json j;
 	f >> j;
@@ -25,5 +19,5 @@ int main()
 	myApp.load(j);
 	myApp.run();
 	myApp.close();
-	return 0;
+ 	return 0;
 }

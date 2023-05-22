@@ -101,11 +101,11 @@ namespace Canella
                 appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
                 appInfo.pEngineName = "Canella Render";
                 appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-                appInfo.apiVersion = VK_API_VERSION_1_3;
+                appInfo.apiVersion = VK_API_VERSION_1_2;
                 instanceInfo.pApplicationInfo = &appInfo;
                 // Require vulkan validation layers
                 auto extensions = debugger.getExtension(enableValidationLayers);
-                //extensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
+                extensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
                 instanceInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
                 instanceInfo.ppEnabledExtensionNames = extensions.data();
 
@@ -113,7 +113,7 @@ namespace Canella
                 VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
                 auto layers = validationLayers;
 
-                if (enableValidationLayers)
+                if (true)
                 {
                     // Layers
                     instanceInfo.enabledLayerCount = static_cast<uint32_t>(layers.size());

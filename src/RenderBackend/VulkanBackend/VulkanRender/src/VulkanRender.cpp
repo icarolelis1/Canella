@@ -37,10 +37,11 @@ VulkanRender::VulkanRender(nlohmann::json& config, Windowing* window)
     allocate_global_usage_buffers();
     allocate_global_descriptorsets();
     write_global_descriptorsets();
-    render_graph.load_render_graph(config["RenderGraph"].get<std::string>().c_str());
+    render_graph.load_render_graph(config["RenderGraph"].get<std::string>().c_str(),this);
 
-    vkCmdDrawMeshTasksEXT = reinterpret_cast<PFN_vkCmdDrawMeshTasksEXT>(vkGetDeviceProcAddr(device.getLogicalDevice()
-                                                                                            ,"vkCmdDrawMeshTasksEXT"));
+    vkCmdDrawMeshTasksEXT = reinterpret_cast<PFN_vkCmdDrawMeshTasksEXT>(vkGetDeviceProcAddr(
+            device.getLogicalDevice(),
+            "vkCmdDrawMeshTasksEXT"));
     
     transfer_pool.build(&device,
                         POOL_TYPE::TRANSFER,
@@ -61,6 +62,7 @@ void VulkanRender::init_vulkan_instance()
 void VulkanRender::enqueue_drawables(Drawables& drawables)
 {
     m_drawables = drawables;
+    render_graph.load_resources(this);
 }
 
 void VulkanRender::render(glm::mat4& _view_projection)
@@ -68,7 +70,7 @@ void VulkanRender::render(glm::mat4& _view_projection)
     FrameData& frame_data = frames[current_frame];
     vkWaitForFences(device.getLogicalDevice(), 1, &frame_data.imageAvaibleFence, VK_FALSE, UINT64_MAX);
     uint32_t next_image_index;
-    const auto eye_pos = glm::vec3(0.7, 0, -3);
+    const auto eye_pos = glm::vec3(0.0 , 0, -3);
 
     ViewProjection view_projection{};
     view_projection.model = glm::mat4(1.0f);
@@ -76,8 +78,12 @@ void VulkanRender::render(glm::mat4& _view_projection)
     view_projection.view = glm::lookAt(eye_pos, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 
     global_buffers[current_frame]->udpate(view_projection);
-    VkResult result = vkAcquireNextImageKHR(device.getLogicalDevice(), swapChain.getSwapChainHandle(), UINT64_MAX,
-                                            frame_data.imageAcquiredSemaphore, VK_NULL_HANDLE, &next_image_index);
+    VkResult result = vkAcquireNextImageKHR(device.getLogicalDevice(),
+                                            swapChain.getSwapChainHandle(),
+                                            UINT64_MAX,
+                                            frame_data.imageAcquiredSemaphore,
+                                            VK_NULL_HANDLE,
+                                            &next_image_index);
     if (result == VK_ERROR_OUT_OF_DATE_KHR)
     {
         // todo recreate
@@ -103,7 +109,6 @@ void VulkanRender::render(glm::mat4& _view_projection)
     const VkSemaphore signal_semaphores[] = {frame_data.renderFinishedSemaphore};
     submit_info.signalSemaphoreCount = 1;
     submit_info.pSignalSemaphores = signal_semaphores;
-
 
     vkQueueSubmit(device.getGraphicsQueueHandle(), 1, &submit_info, frame_data.imageAvaibleFence);
     VkPresentInfoKHR present_info = {};
@@ -152,7 +157,6 @@ void VulkanRender::cache_pipelines(const char* pipelines)
     nlohmann::json pipeline_data;
     f_stream >> pipeline_data;
     std::vector<VkPushConstantRange> pushConstants;
-    // cacheDescriptorSetLayouts(pipeline_data,pushConstants);
     PipelineBuilder::cache_pipeline_data(&device, pipeline_data, cachedDescriptorSetLayouts,
                                          cachedPipelineLayouts, renderpassManager->renderpasses, cachedPipelines);
 }
@@ -161,8 +165,10 @@ void VulkanRender::allocate_global_usage_buffers()
 {
     const auto number_of_images = swapChain.getNumberOfImages();
     for (auto i = 0; i < number_of_images; i++)
-        global_buffers.push_back(std::make_shared<Buffer>(&device, sizeof(ViewProjection), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-                                                          VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
+        global_buffers.push_back(std::make_shared<Buffer>(&device, sizeof(ViewProjection),
+                                                          VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                                                          VK_MEMORY_PROPERTY_HOST_COHERENT_BIT|
+                                                          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
 }
 
 void VulkanRender::write_global_descriptorsets()
@@ -176,7 +182,7 @@ void VulkanRender::write_global_descriptorsets()
         buffer_infos[0].buffer = buffer->getBufferHandle();
         buffer_infos[0].offset = static_cast<uint32_t>(0);
         buffer_infos[0].range = sizeof(ViewProjection);
-        DescriptorSet::update_descriptorset(&device, global_descriptors[i], buffer_infos, image_infos);
+        DescriptorSet::update_descriptorset(&device, global_descriptors[i], buffer_infos, image_infos, false);
         i++;
     }
 }
@@ -186,14 +192,8 @@ void VulkanRender::record_command_index(VkCommandBuffer& commandBuffer,
                                         uint32_t index)
 {
 
-    std::vector<VkClearValue> clear_values = {};
-    clear_values.resize(2);
-    clear_values[0].color = {{1.0f, 1.0f, 1.f, 1.0f}};
-
     frames[index].commandPool.beginCommandBuffer(&device, commandBuffer, true);
-
     render_graph.execute(commandBuffer,this,index);
-
     frames[index].commandPool.endCommandBuffer(commandBuffer);
 }
 
@@ -202,7 +202,8 @@ void VulkanRender::allocate_global_descriptorsets()
     global_descriptors.resize(swapChain.getNumberOfImages());
     for (auto& global_descriptor : global_descriptors)
         descriptorPool.allocate_descriptor_set(
-            device, cachedDescriptorSetLayouts["ViewProjection"],
+            device,
+            cachedDescriptorSetLayouts["ViewProjection"],
             global_descriptor);
 }
 

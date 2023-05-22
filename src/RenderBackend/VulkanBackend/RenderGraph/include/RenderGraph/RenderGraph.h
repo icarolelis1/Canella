@@ -48,12 +48,12 @@ namespace Canella {
 
                 virtual void execute(Canella::Render*, VkCommandBuffer, int ) ;
                 //Give the node the resource loading logic
-                virtual void load_transient_resources(nlohmann::json&, Canella::Render*);
+                virtual void load_transient_resources(Canella::Render*);
                 //Parse the json file with the configuration for each node
                 void load_render_node(const nlohmann::json &) ;
                 //write the outputs
                 virtual void write_outputs();
-                std::vector<std::weak_ptr<RenderNode>> descedent_nodes;
+                std::vector<std::shared_ptr<RenderNode>> descedent_nodes;
 
                 NodeType type;
             protected:
@@ -61,15 +61,15 @@ namespace Canella {
                 ResourcesRef outputs;
                 ResourcesRef transients;
 
-                bool begin_render_pass = false;
-                bool end_render_pass = false;
+                bool begin_render_pass = true;
+                bool end_render_pass = true;
 
                 std::shared_ptr<RenderNode> parent = nullptr;
 
                 //Name of the render node that produces the input for this node
                 std::string procuder_name;
-                std::string renderpass_name;
                 std::string pipeline_name;
+                std::string renderpass_name;
                 std::string pipeline_layout_name;
                 bool final_output = false;
                 std::string name;
@@ -88,10 +88,13 @@ namespace Canella {
 
                 ~RenderGraph() = default;
 
-                void load_render_graph(const char* );
+                void load_render_graph(const char*,Canella::Render*);
                 void execute(VkCommandBuffer,Canella::Render*,int);
                 void execute_descendent(const RefRenderNode&,VkCommandBuffer,Canella::Render*,int);
-                void load_render_node(const nlohmann::json&,const RefRenderNode&);
+                void load_render_node(const nlohmann::json &, const RefRenderNode &,
+                                      Canella::Render *render);
+                void load_resources(Canella::Render*);
+                void load_node_transient_resources(RefRenderNode ,Canella::Render*);
 
             private:
                 RefRenderNode start;

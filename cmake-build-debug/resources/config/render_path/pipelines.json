@@ -21,19 +21,19 @@
         "BindingResources": [
           {
             "Key": "Meshlets",
-            "Stage": [ "MESH_STAGE", "TASK_SHADER" ],
+            "Stage": [ "MESH_STAGE" ],
             "Type": "STORAGE_BUFFER",
             "Binding": 0
           },
           {
             "Key": "Vertices",
-            "Stage": [ "MESH_STAGE", "TASK_SHADER" ],
+            "Stage": [ "MESH_STAGE" ],
             "Type": "STORAGE_BUFFER",
             "Binding": 1
           },
           {
             "Key": "Indices",
-            "Stage": [ "MESH_STAGE", "TASK_SHADER" ],
+            "Stage": [ "MESH_STAGE" ],
             "Type": "STORAGE_BUFFER",
             "Binding": 2
           }

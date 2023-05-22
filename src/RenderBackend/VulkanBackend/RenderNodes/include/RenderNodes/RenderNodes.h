@@ -16,7 +16,7 @@ namespace Canella {
 
                 MeshletGBufferPass() = default;
 
-                void load_transient_resources(nlohmann::json&,Canella::Render *render) override;
+                void load_transient_resources(Canella::Render *render) override;
                 void execute(Canella::Render *render,VkCommandBuffer,int) override;
                 void write_outputs() override;
             private:

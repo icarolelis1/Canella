@@ -1,19 +1,22 @@
 /* Copyright (c) 2021, Sascha Willems
  *
  * SPDX-License-Identifier: MIT
- *
  */
-#version 460
+
+#version 450
+#extension GL_EXT_shader_16bit_storage: require
+#extension GL_EXT_shader_8bit_storage: require
 #extension GL_EXT_mesh_shader : require
 #extension GL_KHR_shader_subgroup_basic : enable
 #extension GL_KHR_shader_subgroup_ballot : require
+#extension GL_GOOGLE_include_directive: require
 
 
 #include "common.glsl"
 #define GPU_WARP_SIZE 32
 #define GPU_GROUP_SIZE GPU_WARP_SIZE
 #define CULL 1
-layout(local_size_x=GPU_GROUP_SIZE) in;
+layout(local_size_x = 1 ,local_size_y = 1 , local_size_z = 1 ) in;
 
 #define GPU_PRIMITIVES_PER_MESHLET GPU_GROUP_SIZE
 
@@ -30,39 +33,45 @@ layout (set = 0 ,binding = 0) uniform UBO
 	mat4 view;
 } ubo;
 
-layout(set = 1 ,binding = 0, std430) readonly buffer meshlets_data
+layout(set = 1 ,binding = 0)readonly  buffer Meshlets
 {
 	Meshlet meshlets[];
+};
+
+
+layout( set = 1 ,binding = 1) readonly buffer Vertices
+{
+	Vertex vertices[];
+};
+
+layout(set = 1 ,binding = 2) readonly  buffer Indices
+{
+	uint8_t indices[];
 };
 
 struct Task
 {
    uint meshletIndices[32];
 };
-
 taskPayloadSharedEXT Task OUT;
 
 
 void main()
 {
-  uint thread_index = gl_LocalInvocationID.x;
+   uint thread_index = gl_LocalInvocationID.x;
   uint group_index = gl_WorkGroupID.x;
 
-  // each group process one meshlet. group_index * 32  is the offset. e
-  uint meshlet_index = group_index * 32 * thread_index;
+   // each group process one meshlet. group_index * 32  is the offset. e
+   uint meshlet_index = group_index * 32 * thread_index;
+ 
+  bool accept = true;
 
-  //todo Culling here
-  // mat4 model = mesh_instances[push.mesh_id].model ;
-  // vec4 world_center = model * vec4(meshlets[meshlet_index].center,1);
-  // float scale = length(model[0]);
-  // float radius = meshlets[meshlet_index].radius * 1.1;
-  // vec3 cone_axis = mat3( model ) * vec3(int(meshlets[meshlet_index].cone_axis[0]) / 127.0, int(meshlets[meshlet_index].cone_axis[1]) / 127.0, int(meshlets[meshlet_index].cone_axis[2]) / 127.0);
-  // float cone_cutoff = int(meshlets[meshlet_index].cone_cutoff) / 127.0;
+  uvec4 voteMeshlets = subgroupBallot(accept);
+  uint  numMeshlets  = subgroupBallotBitCount(voteMeshlets);
 
-  bool accept = false;
-  OUT.meshletIndices[thread_index] = meshlet_index; 
-  if(gl_LocalInvocationID.x == 0){
-    EmitMeshTasksEXT(32, 1, 1);
-  }
+   OUT.meshletIndices[0] = 0; 
+   if(gl_LocalInvocationID.x == 0){
+      EmitMeshTasksEXT(2, 1, 1);
+    }
   
 }

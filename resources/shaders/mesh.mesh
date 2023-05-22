@@ -5,17 +5,22 @@
  */
 
 #version 450
+#extension GL_EXT_shader_16bit_storage: require
+#extension GL_EXT_shader_8bit_storage: require
 #extension GL_EXT_mesh_shader : require
-layout(local_size_x = 32, local_size_y = 1, local_size_z = 1) in;
-layout(triangles, max_vertices = 64, max_primitives = 124) out;
+#extension GL_GOOGLE_include_directive: require
+
+layout(local_size_x = 64, local_size_y = 1, local_size_z = 1) in;
+layout(triangles, max_vertices = 3, max_primitives = 1) out;
+
 
 #include "common.glsl"
 
 struct Task
-{
-    uint meshlets[32];
-};
-taskPayloadSharedEXT Task IN;
+ {
+     uint meshlets[32];
+ };
+ taskPayloadSharedEXT Task IN;
 
 
 layout (set = 0 ,binding = 0) uniform UBO 
@@ -25,47 +30,65 @@ layout (set = 0 ,binding = 0) uniform UBO
 	mat4 view;
 } ubo;
 
-layout(set = 1 ,binding = 0, std430) readonly buffer meshlets_data
+layout(std430,set = 1 ,binding = 0) readonly  buffer Meshlets
 {
 	Meshlet meshlets[];
 };
 
-layout(set = 1 ,binding = 1, std430) readonly buffer vertex_buffer
+layout(std430, set = 1 ,binding = 1) readonly  buffer Vertices
 {
-	vec3 vertices[];
+	Vertex vertices[];
 };
 
-layout(set = 1 ,binding = 2, std430) readonly buffer index_ssbo
+layout( set = 1 ,binding = 2) readonly buffer Indices
 {
 	uint indices[];
 };
 
+layout(location = 0) out VertexOutput
+{
+	vec4 color;
+} vertexOutput[];
+
+
+const vec4[3] positions = {
+	vec4( 0.0, -1.0, 0.0, 1.0),
+	vec4(-1.0,  1.0, 0.0, 1.0),
+	vec4( 1.0,  1.0, 0.0, 1.0)
+};
+
+vec4[3] colors = {
+	vec4(0.0, 1.0, 0.0, 1.0),
+	vec4(0.0, 0.0, 1.0, 1.0),
+	vec4(1.0, 0.0, 0.0, 1.0)
+};
 
 void main()
 {
-	uint ti = gl_LocalInvocationID.x;
-    uint mgi = gl_WorkGroupID.x;    
-    uint mi = mgi * 32 + ti;
 
+ uint ti = gl_LocalInvocationID.x;
+ uint mgi = gl_WorkGroupID.x;    
+ uint mi = mgi * 32 + ti;
+ Meshlet meshlet = meshlets[mgi];
 
-	Meshlet meshlet = meshlets[IN.meshlets[mgi]];
-	mat4 model = ubo.model;
-	if( ti < meshlet.vertex_count   )
-	{
-		uint vertex_indice = indices[meshlet.vertex_offset + ti];
-		gl_MeshVerticesEXT[ti].gl_Position = model*vec4(vertices[vertex_indice],1);
-	}
+ mat4 model = ubo.model;
+ mat4 mvp = ubo.projection* ubo.view * model;
 
-	if (ti < meshlet.primitive_count)
-	{
-		gl_PrimitiveTriangleIndicesEXT[ti] = uvec3(	indices[meshlet.primitive_offset  + 0],
-													indices[meshlet.primitive_offset  + 1],
-													indices[meshlet.primitive_offset  + 2]) ;
-	}
+  if( ti < meshlet.vertex_count   );
+  {
+  	uint vertex_indice = uint(indices[64 * mgi + ti]);
+  	gl_MeshVerticesEXT[ti].gl_Position = mvp *  vec4(vertices[vertex_indice].position.xyz,1);
+  }
+  if (ti < meshlet.triangle_count);
+  {
+  	gl_PrimitiveTriangleIndicesEXT[ti] = uvec3(	(indices[64 * mgi  + 0]),
+  												(indices[64 * mgi  + 1]),
+  												(indices[64 * mgi  + 2])) ;
+  }
 
-	 if(gl_LocalInvocationID.x == 0 )
-	 {
-	 	SetMeshOutputsEXT(meshlet.vertex_count, meshlet.primitive_count);
-	 }
+  if(gl_LocalInvocationID.x == 0 );
+  {
+  	SetMeshOutputsEXT(3, 1);
+  }
 }
 

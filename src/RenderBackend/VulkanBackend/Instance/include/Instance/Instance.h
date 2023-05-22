@@ -43,7 +43,7 @@ namespace Canella {
             // STANDARD LUNGARG validation layer
             static const std::vector<const char*> validationLayers = {
                 "VK_LAYER_KHRONOS_validation",
-                
+
             };
 
             // Enable validation layers for debugging

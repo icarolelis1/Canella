@@ -28,13 +28,10 @@ namespace Canella
 
 			class VulkanRender : public Render
 			{
-				PFN_vkCmdDrawMeshTasksEXT vkCmdDrawMeshTasksEXT;
 
 				Surface surface;
 				Instance *instance;
-				DescriptorSetLayouts cachedDescriptorSetLayouts;
 				std::vector<std::shared_ptr<Buffer>> global_buffers;
-				Descriptorpool descriptorPool;
 				Drawables m_drawables;
 				RenderGraph render_graph;
 				void init_descriptor_pool();
@@ -50,6 +47,10 @@ namespace Canella
 				void allocate_global_descriptorsets();
 				void create_meshlets_buffers();
 			public:
+                PFN_vkCmdDrawMeshTasksEXT vkCmdDrawMeshTasksEXT;
+                Descriptorpool descriptorPool;
+                DescriptorSetLayouts cachedDescriptorSetLayouts;
+
                 std::vector<FrameData> frames;
                 ResourcesManager resources_manager;
                 Device device;

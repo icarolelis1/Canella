@@ -95,7 +95,7 @@ namespace Canella
                 physicalDevice = bestDevice;
                 msaaSamples = getMaxUsableSampleCount();
                 Logger::Info("MaxSamples Count %d ", msaaSamples);
-                Logger::Info("Device %c ", vk_physicalDeviceProperties.deviceName);
+                Logger::Info("Device %s ", vk_physicalDeviceProperties.deviceName);
             }
 
             bool Device::checkDeviceExtensions(VkPhysicalDevice device)
@@ -360,6 +360,22 @@ namespace Canella
                 vk_PhysicalDevicefeatures2 = {VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
                     &enabledMeshShaderFeatures};
 
+                VkPhysicalDeviceVulkan11Features features11 = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES };
+                features11.storageBuffer16BitAccess = true;
+                features11.shaderDrawParameters = true;
+
+                VkPhysicalDeviceVulkan12Features features12 = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES };
+                features12.drawIndirectCount = true;
+                features12.storageBuffer8BitAccess = true;
+                features12.uniformAndStorageBuffer8BitAccess = true;
+                features12.shaderFloat16 = true;
+                features12.shaderInt8 = true;
+                features12.samplerFilterMinmax = true;
+                features12.scalarBlockLayout = true;
+
+                features11.pNext = &features12;
+                enabledMeshShaderFeatures.pNext  = &features11;
+
                 VkDeviceCreateInfo deviceInfo = {};
                 deviceInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
                 deviceInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
@@ -375,7 +391,7 @@ namespace Canella
                 VkResult result = vkCreateDevice(physicalDevice, &deviceInfo, nullptr, &logicalDevice);
 
                 if (result != VK_SUCCESS)
-                    Logger::Error("Failed to find a suitable device");
+                    Logger::Error("Failed god to find a suitable device");
 
                 if (result == VK_SUCCESS)
                 {

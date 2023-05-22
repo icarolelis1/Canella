@@ -3,11 +3,9 @@
 using namespace Canella::RenderSystem::VulkanBackend;
 
 
-void DescriptorSet::update_descriptorset(Device* device,
-                                         VkDescriptorSet& descriptorset,
-                                         std::vector<VkDescriptorBufferInfo>& bufferInfos,
-                                         std::vector<VkDescriptorImageInfo>& imageInfos,
-                                         bool dynamicUbo)
+void DescriptorSet::update_descriptorset(Device *device, VkDescriptorSet &descriptorset,
+                                         std::vector<VkDescriptorBufferInfo> &bufferInfos,
+                                         std::vector<VkDescriptorImageInfo> &imageInfos, bool dynamicUbo, bool storage)
 {
     std::vector<VkWriteDescriptorSet> writes;
     uint32_t i = 0;
@@ -16,9 +14,10 @@ void DescriptorSet::update_descriptorset(Device* device,
         VkWriteDescriptorSet w{};
         w.descriptorCount = 1;
         w.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        w.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        if (dynamicUbo)
-            w.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+        if(storage)
+            w.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+        else 
+            w.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         w.dstBinding = i;
         i++;
         w.pBufferInfo = &buffer_info;
@@ -38,6 +37,7 @@ void DescriptorSet::update_descriptorset(Device* device,
         w.dstSet = descriptorset;
         writes.push_back(w);
     }
+
     vkUpdateDescriptorSets(device->getLogicalDevice(), static_cast<uint32_t>(writes.size()),
                            writes.data(), 0, nullptr);
 }

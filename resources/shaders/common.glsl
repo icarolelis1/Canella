@@ -7,14 +7,18 @@ struct MeshDrawInstance{
 
 struct Meshlet
 {
- 	/* offsets within meshlet_vertices and meshlet_triangles arrays with meshlet data */
-	uint  vertex_offset;
-	uint  primitive_offset;
+ /* offsets within meshlet_vertices and meshlet_triangles arrays with meshlet data */
+	uint vertex_offset;
+	uint triangle_offset;
 
 	/* number of vertices and triangles used in the meshlet; data is stored in consecutive range defined by offset and count */
-	uint  vertex_count;
-	uint  primitive_count;
+ 	uint vertex_count;
+	uint triangle_count;
 };
 
+struct Vertex
+{
+	vec4 position;
+};
 
 #endif

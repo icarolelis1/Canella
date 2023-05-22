@@ -41,6 +41,15 @@ void Project::init_systems()
     render->enqueue_drawables(meshes);
     //Gets the reference for the main Camera
     main_camera = get_main_camera(scene);
+
+    for (auto &[entt_value, entity]: scene->m_EntityLibrary)
+        if (entity->HasComponent<ModelAssetComponent>())
+        {
+            auto& comp = entity->GetComponent<ModelAssetComponent>();
+            auto& m = comp.mesh.meshes;
+        }
+
+
 }
 
 void Project::update_systems()
@@ -53,9 +62,9 @@ void Project::update_systems()
  * \brief Enter the game loop
  */
 void Project::run()
-{    
-    while (playing)
-    {
+{
+    while (playing) {
+
         playing = ~window.shouldCloseWindow();
         window.update();
         update_systems();
@@ -65,6 +74,12 @@ void Project::run()
             // serializer.Deserialize(scene);
             break;
         }
+        for (auto &[entt_value, entity]: scene->m_EntityLibrary)
+            if (entity->HasComponent<ModelAssetComponent>())
+            {
+                auto& comp = entity->GetComponent<ModelAssetComponent>();
+                auto& m = comp.mesh.meshes;
+            }
     }
 }
 

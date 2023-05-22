@@ -16,10 +16,13 @@ namespace Canella
         std::vector<meshopt_Bounds> bounds;
     };
 
+    struct Vertex{
+        alignas(16)  glm::vec4 vertex;
+    };
     struct Mesh{
-        std::vector<glm::vec4> positions;
+        std::vector<Vertex> positions;
         std::vector<glm::vec4> normal;
-        std::vector<int8_t> indices;
+        std::vector<uint32_t> indices;
         Mesh() = default;
         Mesh(const Mesh& other) = default;
     };

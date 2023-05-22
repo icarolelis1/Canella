@@ -35,8 +35,10 @@ void Descriptorpool::build_global_descriptor_pool(Device& device)
     pool_info.poolSizeCount = static_cast<uint32_t>(std::size(pool_sizes));
     pool_info.pPoolSizes = pool_sizes;
 
-    if ((vkCreateDescriptorPool(device.getLogicalDevice(), &pool_info, device.getAllocator(), &vk_global_descriptorpool)
-        != VK_SUCCESS))
+    if ((vkCreateDescriptorPool(device.getLogicalDevice(),
+                                &pool_info,
+                                device.getAllocator(),
+                                &vk_global_descriptorpool) != VK_SUCCESS))
         Logger::Error("Failed to create global DescriptorPool");
 }
 
@@ -120,7 +122,11 @@ void Descriptorpool::allocate_descriptor_set(Device& device, std::shared_ptr<Des
     allocInfo.descriptorPool = vk_global_descriptorpool;
     allocInfo.descriptorSetCount =1;
     allocInfo.pSetLayouts = &layout->getDescriptorLayoutHandle();
-    if (const auto result = vkAllocateDescriptorSets(device.getLogicalDevice(), &allocInfo, &set); result != VK_SUCCESS)
+    if (const auto result = vkAllocateDescriptorSets(device.getLogicalDevice(),
+                                                            &allocInfo,
+                                                           &set);
+    result != VK_SUCCESS)
+
         Logger::Debug("Failed to Allocated DescriptorSet");
     Logger::Debug("Allocated DescriptorSet");
 }
