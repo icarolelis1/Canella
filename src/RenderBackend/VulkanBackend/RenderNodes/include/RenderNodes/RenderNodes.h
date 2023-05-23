@@ -21,6 +21,8 @@ namespace Canella {
                 void write_outputs() override;
             private:
                 std::vector<ResourceAccessor> resource_meshlet_buffers;
+                std::vector<ResourceAccessor> resource_meshlet_triangles;
+                std::vector<ResourceAccessor> resource_meshlet_vertices;
                 std::vector<ResourceAccessor> resource_vertices_buffers;
                 std::vector<ResourceAccessor> resource_indices_buffers;
                 std::vector<DescriptorsPerImage> descriptors;

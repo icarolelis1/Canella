@@ -23,7 +23,7 @@ void Canella::load_asset_mesh(ModelMesh& model, const ::std::string& assetsPath,
     if (!assimpScene || assimpScene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !assimpScene->mRootNode)
         Logger::Error(importer.GetErrorString());
 
-    model.meshes.resize(assimpScene->mNumMeshes);
+    model.meshes.resize(1);
 
     for (unsigned int i = 0; i < model.meshes.size(); ++i)
     {
@@ -97,4 +97,6 @@ void Canella::load_meshlet(Canella::Meshlet& canellaMeshlet, const Canella::Mesh
     }
     canellaMeshlet.meshlets = meshlets;
     canellaMeshlet.bounds = bounds;
+    canellaMeshlet.meshlet_triangles = meshlet_triangles;
+    canellaMeshlet.meshlet_vertices = meshlet_vertices;
 }

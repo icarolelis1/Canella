@@ -1,26 +1,14 @@
-/* Copyright (c) 2021, Sascha Willems
- *
- * SPDX-License-Identifier: MIT
- *
- */
-
 #version 450
 #extension GL_EXT_shader_16bit_storage: require
 #extension GL_EXT_shader_8bit_storage: require
 #extension GL_EXT_mesh_shader : require
 #extension GL_GOOGLE_include_directive: require
 
-layout(local_size_x = 64, local_size_y = 1, local_size_z = 1) in;
-layout(triangles, max_vertices = 3, max_primitives = 1) out;
+layout(local_size_x = 124, local_size_y = 1, local_size_z = 1) in;
+layout(triangles, max_vertices = 64, max_primitives = 124) out;
 
 
 #include "common.glsl"
-
-struct Task
- {
-     uint meshlets[32];
- };
- taskPayloadSharedEXT Task IN;
 
 
 layout (set = 0 ,binding = 0) uniform UBO 
@@ -40,9 +28,20 @@ layout(std430, set = 1 ,binding = 1) readonly  buffer Vertices
 	Vertex vertices[];
 };
 
+//NOT SURE IF I NEED THE ENTIRE MESH INDICES
 layout( set = 1 ,binding = 2) readonly buffer Indices
 {
 	uint indices[];
+};
+
+layout( set = 1 ,binding = 3) readonly buffer MeshletIndices
+{
+	uint8_t meshlet_indices[];
+};
+
+layout( set = 1 ,binding = 4) readonly buffer MeshletVertices
+{
+	uint meshlet_vertices[];
 };
 
 layout(location = 0) out VertexOutput
@@ -50,45 +49,36 @@ layout(location = 0) out VertexOutput
 	vec4 color;
 } vertexOutput[];
 
-
-const vec4[3] positions = {
-	vec4( 0.0, -1.0, 0.0, 1.0),
-	vec4(-1.0,  1.0, 0.0, 1.0),
-	vec4( 1.0,  1.0, 0.0, 1.0)
-};
-
-vec4[3] colors = {
-	vec4(0.0, 1.0, 0.0, 1.0),
-	vec4(0.0, 0.0, 1.0, 1.0),
-	vec4(1.0, 0.0, 0.0, 1.0)
-};
-
 void main()
 {
 
  uint ti = gl_LocalInvocationID.x;
  uint mgi = gl_WorkGroupID.x;    
- uint mi = mgi * 32 + ti;
  Meshlet meshlet = meshlets[mgi];
-
+ 
  mat4 model = ubo.model;
- mat4 mvp = ubo.projection* ubo.view * model;
+ mat4 mvp = ubo.projection* ubo.view;
 
-  if( ti < meshlet.vertex_count   );
-  {
-  	uint vertex_indice = uint(indices[64 * mgi + ti]);
-  	gl_MeshVerticesEXT[ti].gl_Position = mvp *  vec4(vertices[vertex_indice].position.xyz,1);
-  }
-  if (ti < meshlet.triangle_count);
-  {
-  	gl_PrimitiveTriangleIndicesEXT[ti] = uvec3(	(indices[64 * mgi  + 0]),
-  												(indices[64 * mgi  + 1]),
-  												(indices[64 * mgi  + 2])) ;
-  }
+if( ti < meshlet.vertex_count   )
+{
+  	uint vertex_indice = uint(meshlet_vertices[meshlet.vertex_offset + ti]);
+	vec3 fragPos = vec3(ubo.model * vec4(vertices[vertex_indice].position.xyz,1.0));
+  	gl_MeshVerticesEXT[ti].gl_Position = mvp * vec4(fragPos,1.0)  ;
+	
+}
 
-  if(gl_LocalInvocationID.x == 0 );
+if (ti < meshlet.triangle_count)
+{
+	 gl_PrimitiveTriangleIndicesEXT[ti] = uvec3(	
+	 											(uint(meshlet_indices[meshlet.triangle_offset + ti*3 + 0])), 
+	 											(uint(meshlet_indices[meshlet.triangle_offset + ti*3 + 1])),
+	 											(uint(meshlet_indices[meshlet.triangle_offset + ti*3 + 2])) 
+	 											);
+}
+
+ if(gl_LocalInvocationID.x == 0 )
   {
-  	SetMeshOutputsEXT(3, 1);
+  	SetMeshOutputsEXT(meshlet.vertex_count, meshlet.triangle_count);
   }
 }
 

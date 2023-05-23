@@ -17,7 +17,7 @@
       },
       {
         "Key": "Meshlets",
-        "ResourceCount": 3,
+        "ResourceCount": 5,
         "BindingResources": [
           {
             "Key": "Meshlets",
@@ -36,6 +36,18 @@
             "Stage": [ "MESH_STAGE" ],
             "Type": "STORAGE_BUFFER",
             "Binding": 2
+          },
+          {
+            "Key": "MeshletIndices",
+            "Stage": [ "MESH_STAGE" ],
+            "Type": "STORAGE_BUFFER",
+            "Binding": 3
+          },
+          {
+            "Key": "MeshletVerticees",
+            "Stage": [ "MESH_STAGE" ],
+            "Type": "STORAGE_BUFFER",
+            "Binding": 4
           }
         ]
       }

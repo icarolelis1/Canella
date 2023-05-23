@@ -76,7 +76,7 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::execute(
                                 0,
                                 nullptr);
 
-        vulkan_renderer->vkCmdDrawMeshTasksEXT(command_buffer, 2, 1, 1);
+        vulkan_renderer->vkCmdDrawMeshTasksEXT(command_buffer, meshlets[i].meshlets.size(), 1, 1);
     }
 
     if(end_render_pass)
@@ -102,7 +102,6 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::load_transient_re
     {
         for(const auto& mesh : drawable.meshes)
         {
-
             resource_vertices_buffers[i] = resource_manager.create_storage_buffer(
                     (sizeof(Vertex)
                     * mesh.positions.size()),
@@ -124,15 +123,32 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::load_transient_re
         i++;
     }
 
+    //this size refers to number of drawables in scene
     resource_meshlet_buffers.resize(meshlets.size());
+    resource_meshlet_triangles.resize(meshlets.size());
+    resource_meshlet_vertices.resize(meshlets.size());
     i = 0;
     for(auto& meshlet : meshlets){
         resource_meshlet_buffers[i] = resource_manager.create_storage_buffer(sizeof(meshlet.meshlets[0])
-                                                                             * meshlet.meshlets.size(),                                                                
+                                                                             * meshlet.meshlets.size(),
                                                                              VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
                                                                              | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
                                                                              &vulkan_renderer->transfer_pool,
                                                                              meshlet.meshlets.data());
+
+        resource_meshlet_vertices[i] = resource_manager.create_storage_buffer(sizeof(meshlet.meshlet_vertices[0])
+                                                                             * meshlet.meshlet_vertices.size(),
+                                                                             VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
+                                                                             | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+                                                                             &vulkan_renderer->transfer_pool,
+                                                                             meshlet.meshlet_vertices.data());
+
+        resource_meshlet_triangles[i] = resource_manager.create_storage_buffer(sizeof(meshlet.meshlet_triangles[0])
+                                                                              * meshlet.meshlet_triangles.size(),
+                                                                              VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
+                                                                              | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+                                                                              &vulkan_renderer->transfer_pool,
+                                                                              meshlet.meshlet_triangles.data());
 
         i++;
     }
@@ -150,13 +166,17 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::load_transient_re
 
             std::vector<VkDescriptorBufferInfo> buffer_infos;
             std::vector<VkDescriptorImageInfo> image_infos;
-            buffer_infos.resize(3);
+            buffer_infos.resize(5);
             RefBuffer meshlets_buffer =
                     resource_manager.get_buffer_cached(resource_meshlet_buffers[i]);
             RefBuffer vertices_buffer =
                     resource_manager.get_buffer_cached(resource_vertices_buffers[i]);
             RefBuffer indices_buffer =
                     resource_manager.get_buffer_cached(resource_indices_buffers[i]);
+            RefBuffer meshlet_tris =
+                    resource_manager.get_buffer_cached(resource_meshlet_triangles[i]);
+            RefBuffer meshlet_vertices =
+                    resource_manager.get_buffer_cached(resource_meshlet_vertices[i]);
 
             buffer_infos[0].buffer = meshlets_buffer->getBufferHandle();
             buffer_infos[0].offset = static_cast<uint32_t>(0);
@@ -170,14 +190,20 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::load_transient_re
             buffer_infos[2].offset = static_cast<uint32_t>(0);
             buffer_infos[2].range  = indices_buffer->size;
 
+            buffer_infos[3].buffer = meshlet_tris->getBufferHandle();
+            buffer_infos[3].offset = static_cast<uint32_t>(0);
+            buffer_infos[3].range  = meshlet_tris->size;
+
+            buffer_infos[4].buffer = meshlet_vertices->getBufferHandle();
+            buffer_infos[4].offset = static_cast<uint32_t>(0);
+            buffer_infos[4].range  = meshlet_vertices->size;
+
             resource_manager.write_descriptor_sets(descriptors[i].descriptor_sets[j],
                                                    buffer_infos,
                                                    image_infos,
                                                    true);
         }
     }
-
-    drawables;
 }
 
 void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::write_outputs() {

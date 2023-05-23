@@ -14,6 +14,8 @@ namespace Canella
     struct Meshlet{
         std::vector<meshopt_Meshlet> meshlets;
         std::vector<meshopt_Bounds> bounds;
+        std::vector<unsigned int> meshlet_vertices;
+        std::vector<unsigned char> meshlet_triangles ;
     };
 
     struct Vertex{
