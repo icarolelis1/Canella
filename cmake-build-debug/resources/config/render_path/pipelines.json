@@ -1,0 +1,86 @@
+﻿{
+  "PipelineData": {
+    "DescriptorSetLayoutCounts":2,
+    "PipelinesCount":1,
+    "DescriptorSetLayouts": [
+      {
+        "Key": "ViewProjection",
+        "ResourceCount": 1,
+        "BindingResources": [
+          {
+            "Key": "ViewProjection",
+            "Stage": [ "MESH_STAGE", "TASK_SHADER" ],
+            "Type": "UNIFORM_BUFFER",
+            "Binding": 0
+          }
+        ]
+      },
+      {
+        "Key": "Meshlets",
+        "ResourceCount": 5,
+        "BindingResources": [
+          {
+            "Key": "Meshlets",
+            "Stage": [ "MESH_STAGE" ],
+            "Type": "STORAGE_BUFFER",
+            "Binding": 0
+          },
+          {
+            "Key": "Vertices",
+            "Stage": [ "MESH_STAGE" ],
+            "Type": "STORAGE_BUFFER",
+            "Binding": 1
+          },
+          {
+            "Key": "Indices",
+            "Stage": [ "MESH_STAGE" ],
+            "Type": "STORAGE_BUFFER",
+            "Binding": 2
+          },
+          {
+            "Key": "MeshletIndices",
+            "Stage": [ "MESH_STAGE" ],
+            "Type": "STORAGE_BUFFER",
+            "Binding": 3
+          },
+          {
+            "Key": "MeshletVerticees",
+            "Stage": [ "MESH_STAGE" ],
+            "Type": "STORAGE_BUFFER",
+            "Binding": 4
+          }
+        ]
+      }
+    ],
+    "Pipelines": [
+      {
+        "Key": "MeshShaderPipeline",
+        "PushConstantRangesCount" : 0,
+        "NumerOfDescriptorSets": 2,
+        "Renderpass": "basic",
+        "VertexAttributeCount" : 0,
+        "PipelineLayoutDescriptors": [ "ViewProjection", "Meshlets" ],
+
+        "Builtin": true,
+        "ShaderCount":3,
+        "Shaders": [
+          {
+            "Type": "Mesh",
+            "ResourcesCount": 1,
+            "Source":"resources\\Shaders\\spirv\\mesh.mesh.spv"
+          },
+          {
+            "Type": "Task",
+            "ResourcesCount": 0,
+            "Source":"resources\\Shaders\\spirv\\task.task.spv"
+          },
+          {
+            "Type": "Fragment",
+            "ResourcesCount": 0,
+            "Source":"resources\\Shaders\\spirv\\fragment.frag.spv"
+          }
+        ]
+      }
+    ]
+  }
+}

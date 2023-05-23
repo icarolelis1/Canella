@@ -1,0 +1,20 @@
+{
+  "RenderGraph" : {
+    "Entry" : {
+      "Name" : "Root",
+       "Descendents": [
+         {
+           "Type" : "Render",
+           "Name" : "MeshletGBuffer",
+           "Renderpass" : "basic",
+           "Pipeline" : "MeshShaderPipeline",
+           "PipelineLayout":"MeshShaderPipeline",
+           "OutPutToSwapchain" : true,
+           "BeginRenderPass" : true,
+           "EndRenderPass" : true,
+           "DescendentNodes" : []
+         }
+       ]
+    }
+  }
+}
