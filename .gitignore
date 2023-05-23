@@ -1,6 +1,6 @@
 out/
 Build/
+.cmake-build-debug/
 BUILD/
 .vs/
 .vscode/
-.cmake-build-debug/
