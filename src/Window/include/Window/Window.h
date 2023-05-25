@@ -25,6 +25,7 @@ namespace Canella
 
         GlfwWindow() = default;
         ~GlfwWindow();
+        void set_title_data() override;
         GLFWwindow* getHandle();
         void initialize(nlohmann::json& config);
         GLFWwindow* m_window;
@@ -34,7 +35,7 @@ namespace Canella
         void update();
 
     private:
-
+        std::string title;
         Mouse mouse;
         KeyBoard keyboard;
 

@@ -33,13 +33,18 @@ namespace Canella
                     std::vector<Subpass> subpasses;
                 };
 
-                typedef struct _RenderpassManagerDescription
+                typedef struct RenderpassManagerDescription
                 {
                     uint32_t number_of_passes;
                     std::vector<RenderpassDescription> renderpasses_descriptions;
                 } RenderpassManagerDescription;
 
-                void loadRenderPassManager(std::string, Swapchain* swapchain, VkExtent2D extent, RenderpassManagerDescription& managerdescriptio);
+                void loadRenderPassManager(std::string,
+                                           Swapchain* swapchain,
+                                           VkExtent2D extent,
+                                           RenderpassManagerDescription& managerdescriptio);
+
+                VkFormat get_attachment_format(const char* format_str,Swapchain* swapchain);
                 Device *device;
 
             public:

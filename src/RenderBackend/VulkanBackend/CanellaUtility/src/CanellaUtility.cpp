@@ -9,6 +9,10 @@ namespace Canella
     {
         namespace VulkanBackend
         {
+            void VK_CHECK(VkResult result,const char* message){
+                if(result != VK_SUCCESS)
+                    Logger::Error("%s",message);
+            }
             VkFormat convert_from_string_format(const char* image_format)
             {
                 return VK_FORMAT_B8G8R8A8_UNORM;
@@ -37,6 +41,12 @@ namespace Canella
                     return VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
                 if (strcmp(layout, "VK_IMAGE_LAYOUT_UNDEFINED") == 0)
                     return VK_IMAGE_LAYOUT_UNDEFINED;
+                if(strcmp(layout,"VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL") == 0)
+                    return VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+                if(strcmp(layout,"VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL") == 0)
+                    return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+                if(strcmp(layout,"VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL") == 0)
+                    return VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
                 return VK_IMAGE_LAYOUT_UNDEFINED;
             }
 
@@ -97,6 +107,34 @@ namespace Canella
             uint64_t uuid() {
                 return uniform_distribution(random_engine);
             }
+
+            void create_render_query(RenderQueries &renderQueries, Device *device) {
+                VkQueryPoolCreateInfo info{};
+                info.sType = VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO;
+                info.queryType = VK_QUERY_TYPE_PIPELINE_STATISTICS;
+                info.pipelineStatistics =
+                        VK_QUERY_PIPELINE_STATISTIC_INPUT_ASSEMBLY_VERTICES_BIT |
+                        VK_QUERY_PIPELINE_STATISTIC_INPUT_ASSEMBLY_PRIMITIVES_BIT |
+                        VK_QUERY_PIPELINE_STATISTIC_VERTEX_SHADER_INVOCATIONS_BIT |
+                        VK_QUERY_PIPELINE_STATISTIC_CLIPPING_INVOCATIONS_BIT |
+                        VK_QUERY_PIPELINE_STATISTIC_CLIPPING_PRIMITIVES_BIT |
+                        VK_QUERY_PIPELINE_STATISTIC_FRAGMENT_SHADER_INVOCATIONS_BIT;
+                info.queryCount = 1;
+                renderQueries.statistics.resize(1);
+
+                VkQueryPoolCreateInfo timeInfo{};
+                timeInfo.sType = VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO;
+                timeInfo.queryType = VK_QUERY_TYPE_TIMESTAMP;
+                timeInfo.queryCount = 2;
+                renderQueries.time_stamps.resize(2);
+                VK_CHECK(vkCreateQueryPool(device->getLogicalDevice(),
+                                           &timeInfo,
+                                           device->getAllocator(),
+                                           & renderQueries.timestamp_pool),
+                         "Failed to create timestamp pool");
+            }
+
+
         }
     };
 }

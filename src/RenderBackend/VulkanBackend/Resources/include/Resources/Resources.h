@@ -63,18 +63,41 @@ namespace Canella
                 Device* device;
             private:
                 bool mapped = false;
-                uint32_t find_memory_type(Device *device, uint32_t typeFilter, VkMemoryPropertyFlags properties);
                 VkBuffer vk_buffer;
 
             };
             using RefGPUResource = std::shared_ptr<GPUResource>;
             using RefBuffer = std::shared_ptr<Buffer>;
-
             void copy_buffer_to(            VkCommandBuffer command_buffer,
                                             const RefBuffer& src,
                                             const RefBuffer& dst,
                                             size_t device_size,
                                             VkQueue queue);
+            uint32_t find_memory_type(Device *device, uint32_t typeFilter, VkMemoryPropertyFlags properties);
+
+
+            class Image : public GPUResource{
+            private:
+                int num_layers;
+                Device* device;
+                VkExtent2D extent;
+            public:
+                Image(Device* _device,
+                      uint32_t Width, uint32_t Height,
+                      VkFormat format,
+                      VkImageTiling tiling,
+                      VkImageUsageFlags usage,
+                      VkMemoryPropertyFlags properties,
+                      VkImageCreateFlags flags, VkImageAspectFlags aspectFlags,
+                      uint32_t arrayLayers =1 ,
+                      bool useMaxNumMips = true,
+                      VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT);
+                VkImage image;
+                VkDeviceMemory  memory;
+                VkImageView view;
+                ~Image();
+            };
+            using RefImage = std::shared_ptr<Image>;
 
 
             class ResourcesManager{
@@ -84,10 +107,24 @@ namespace Canella
 
             public:
                 RefBuffer get_buffer_cached(uint64_t);
+                RefImage get_image_cached(uint64_t);
+
                 explicit ResourcesManager(Device* device);
                 ResourceAccessor create_buffer(VkDeviceSize size,
                                                VkBufferUsageFlags usage,
                                                VkMemoryPropertyFlags properties);
+                ResourceAccessor  create_image(Device* device,
+                                               uint32_t width,
+                                               uint32_t height,
+                                               VkFormat format,
+                                               VkImageTiling tilling,
+                                               VkImageUsageFlags usage,
+                                               VkMemoryPropertyFlags properties,
+                                               VkImageCreateFlags flags, VkImageAspectFlags aspectFlags,
+                                               uint32_t arrayLayers =1 ,
+                                               bool useMaxNumMips = true,
+                                               VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT);
+
                 ~ResourcesManager();
                 template<typename Data>
                 uint64_t  create_storage_buffer(size_t size,

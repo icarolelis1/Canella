@@ -9,11 +9,15 @@ void Canella::GlfwWindow::initialize(nlohmann::json &config)
 		Canella::Logger::Error("Glfw doesnt support vulkan");
 		return;
 	}
-
+    title = config["Title"].get<std::string>();
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-	m_window = glfwCreateWindow(config["Width"], config["Height"], config["Title"].get<std::string>().c_str(), nullptr, nullptr);
+	m_window = glfwCreateWindow(config["Width"],
+                                config["Height"],
+                                title.c_str(),
+                                nullptr, nullptr);
+
 	glfwMakeContextCurrent(m_window);
 	glfwSetWindowUserPointer(m_window, this);
 
@@ -75,5 +79,10 @@ void Canella::GlfwWindow::getSurface(VkInstance instance, VkSurfaceKHR *surface)
 GLFWwindow *Canella::GlfwWindow::getHandle()
 {
 	return m_window;
+}
+
+    void Canella::GlfwWindow::set_title_data() {
+    title += " ds";
+    glfwSetWindowTitle(m_window,title.c_str());
 }
 

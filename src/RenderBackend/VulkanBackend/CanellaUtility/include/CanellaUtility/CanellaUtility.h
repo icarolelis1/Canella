@@ -31,6 +31,7 @@ namespace Canella
 			VkShaderStageFlagBits convert_from_string_shader_stage(const char* stage);
 			VkShaderStageFlags read_shader_stage_from_json(nlohmann::json descriptorsets);
 			size_t get_size_of_structure(const char* structure);
+            void VK_CHECK(VkResult result,const char*);
 
 			inline std::vector<char> readFile(const std::string& filename) {
 				std::fstream file(filename, std::ios::ate | std::ios::binary);
@@ -46,6 +47,16 @@ namespace Canella
 
 				return buffer;
 			}
+
+            struct RenderQueries{
+                VkQueryPool statistics_pool;
+                std::vector< uint64_t> statistics;
+                VkQueryPool timestamp_pool;
+                std::vector< uint64_t> time_stamps;
+            };
+
+            void create_render_query(RenderQueries& renderQueries,Device* device);
+
 			namespace initializers
 			{
 

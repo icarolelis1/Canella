@@ -35,7 +35,6 @@ namespace Canella
                 {
                     VkPhysicalDeviceProperties physicalDeviceProps;
                     VkPhysicalDeviceFeatures features;
-
                     VkPhysicalDeviceMeshShaderFeaturesEXT mesh_shader_feature{};
                     mesh_shader_feature.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_NV;
                     mesh_shader_feature.meshShader = VK_TRUE;
@@ -56,6 +55,7 @@ namespace Canella
                     vkGetPhysicalDeviceFeatures(device, &features);
 
                     vkGetPhysicalDeviceFeatures2(device, &features2);
+                    timestamp_period = physicalDeviceProps.limits.timestampPeriod;
 
                     bindless_suported = indexing_features.descriptorBindingPartiallyBound && indexing_features.
                         runtimeDescriptorArray;
@@ -376,6 +376,9 @@ namespace Canella
                 features11.pNext = &features12;
                 enabledMeshShaderFeatures.pNext  = &features11;
 
+                VkPhysicalDeviceFeatures deviceFeatures{};
+                deviceFeatures.pipelineStatisticsQuery = VK_TRUE;
+
                 VkDeviceCreateInfo deviceInfo = {};
                 deviceInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
                 deviceInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
@@ -386,7 +389,6 @@ namespace Canella
                 deviceInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
                 deviceInfo.ppEnabledLayerNames = validationLayers.data();
                 deviceInfo.pNext = &vk_PhysicalDevicefeatures2;
-
 
                 VkResult result = vkCreateDevice(physicalDevice, &deviceInfo, nullptr, &logicalDevice);
 
@@ -497,6 +499,25 @@ namespace Canella
             VkQueue Device::getTransferQueueHandle() const
             {
                 return transferQueue;
+            }
+
+            VkFormat
+                Device::get_depth_supported_format(const std::vector<VkFormat>&candidates,
+                                               VkImageTiling tiling,
+                                               VkFormatFeatureFlags features) {
+                for (VkFormat format : candidates) {
+                    VkFormatProperties props;
+                    vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &props);
+
+                    if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) {
+                        return format;
+                    }
+                    else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features){
+                        return format;
+                    }
+                }
+
+                throw std::runtime_error("failed to find supported format!");
             }
         }
     }

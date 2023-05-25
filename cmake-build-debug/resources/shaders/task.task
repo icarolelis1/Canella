@@ -5,15 +5,13 @@
 #extension GL_KHR_shader_subgroup_basic : enable
 #extension GL_KHR_shader_subgroup_ballot : require
 #extension GL_GOOGLE_include_directive: require
-
-
 #include "common.glsl"
 
 
-layout(local_size_x = 1 ,local_size_y = 1 , local_size_z = 1 ) in;
-
-
 const float pi_half = 1.57079;
+
+layout(local_size_x = 32 ,local_size_y = 1 , local_size_z = 1 ) in;
+
 
 layout (set = 0 ,binding = 0) uniform UBO 
 {
@@ -27,18 +25,57 @@ layout(set = 1 ,binding = 0)readonly  buffer Meshlets
 	Meshlet meshlets[];
 };
 
+layout(set = 1 ,binding = 2)readonly  buffer Bounds
+{
+	MeshletBound bounds[];
+};
+
+
 struct Task
 {
-   uint meshletIndice;
+   uint meshletIndices[32];
 };
 taskPayloadSharedEXT Task OUT;
 
 
+bool cone_cull(vec3 cone, vec3 view_dir,float cutoff)
+{
+   return dot(cone.xyz,view_dir) >= cutoff;  
+}
+
+vec3 getViewPosition(mat4 viewMatrix) {
+  // Invert the view matrix to get the camera-to-world transformation
+  mat4 inverseViewMatrix = inverse(viewMatrix);
+
+  // Retrieve the translation component (fourth column) of the inverted view matrix
+  vec3 viewPosition = inverseViewMatrix[3].xyz;
+
+  return viewPosition;
+}
+
+
 void main()
 {
-   uint mgi = gl_WorkGroupID.x;    
+   uint mgi = gl_WorkGroupID.x;   
+   uint ti = gl_LocalInvocationID.x; 
+   uint thread_meshlet = mgi*32 +ti;
+   MeshletBound bound = bounds[thread_meshlet];
 
-   OUT.meshletIndice = mgi;
+   vec3 cone_apex = bound.cone_apex.xyz;
+   vec4 cone =  ubo.model *vec4(cone_apex.xyz,1);
+   vec4 cone_axis = ubo.model * bound.cone_axis;
+   vec3 direction = normalize( cone.xyz - vec3(0.0 , 3.1, -12));
 
-   EmitMeshTasksEXT(1, 1, 1);
+   bool accept = !cone_cull(cone_axis.xyz,direction,bound.cone_cutoff.x);
+
+   uvec4 ballot = subgroupBallot(accept);
+   uint index = subgroupBallotInclusiveBitCount(ballot);
+
+   if(accept)
+      OUT.meshletIndices[index] = thread_meshlet;
+      
+   uint count = subgroupBallotBitCount(ballot);
+   if( ti == 0 )
+      EmitMeshTasksEXT(count, 1, 1);
+   
 }

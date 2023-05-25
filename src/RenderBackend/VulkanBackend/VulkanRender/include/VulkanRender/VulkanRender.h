@@ -23,7 +23,6 @@ namespace Canella
 	{
 		namespace VulkanBackend
 		{
-	
 			using Surface = VkSurfaceKHR;
 
 			class VulkanRender : public Render
@@ -34,6 +33,7 @@ namespace Canella
 				std::vector<std::shared_ptr<Buffer>> global_buffers;
 				Drawables m_drawables;
 				RenderGraph render_graph;
+
 				void init_descriptor_pool();
 				//void initPipelines();
 				void init_vulkan_instance();
@@ -45,7 +45,7 @@ namespace Canella
 				void write_global_descriptorsets();
 				void destroy_pipeline_layouts();
 				void allocate_global_descriptorsets();
-				void create_meshlets_buffers();
+                float t = 0;
 			public:
                 PFN_vkCmdDrawMeshTasksEXT vkCmdDrawMeshTasksEXT;
                 Descriptorpool descriptorPool;

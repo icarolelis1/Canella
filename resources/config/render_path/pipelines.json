@@ -32,8 +32,8 @@
             "Binding": 1
           },
           {
-            "Key": "Indices",
-            "Stage": [ "MESH_STAGE" ],
+            "Key": "Bounds",
+            "Stage": [ "TASK_SHADER","MESH_STAGE"],
             "Type": "STORAGE_BUFFER",
             "Binding": 2
           },

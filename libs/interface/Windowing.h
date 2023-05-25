@@ -9,6 +9,7 @@ struct Extent {
 class Windowing {
     virtual void update() = 0;
     virtual Extent getExtent() = 0;
+    virtual void set_title_data() = 0;
 };
 
 #endif

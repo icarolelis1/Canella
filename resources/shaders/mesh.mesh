@@ -7,14 +7,7 @@
 layout(local_size_x = 124, local_size_y = 1, local_size_z = 1) in;
 layout(triangles, max_vertices = 64, max_primitives = 124) out;
 
-
 #include "common.glsl"
-struct Task
-{
-   uint meshletIndice;
-};
-taskPayloadSharedEXT Task IN;
-
 
 layout (set = 0 ,binding = 0) uniform UBO 
 {
@@ -32,11 +25,9 @@ layout(std430, set = 1 ,binding = 1) readonly  buffer Vertices
 {
 	Vertex vertices[];
 };
-
-//NOT SURE IF I NEED THE ENTIRE MESH INDICES
-layout( set = 1 ,binding = 2) readonly buffer Indices
+layout(set = 1 ,binding = 2)readonly  buffer Bounds
 {
-	uint indices[];
+	MeshletBound bounds[];
 };
 
 layout( set = 1 ,binding = 3) readonly buffer MeshletIndices
@@ -54,12 +45,30 @@ layout(location = 0) out VertexOutput
 	vec4 color;
 } vertexOutput[];
 
+struct Task
+{
+   uint meshletIndices[32];
+};
+taskPayloadSharedEXT Task IN;
+
+
+uint hash(uint a)
+{
+   a = (a+0x7ed55d16) + (a<<12);
+   a = (a^0xc761c23c) ^ (a>>19);
+   a = (a+0x165667b1) + (a<<5);
+   a = (a+0xd3a2646c) ^ (a<<9);
+   a = (a+0xfd7046c5) + (a<<3);
+   a = (a^0xb55a4f09) ^ (a>>16);
+   return a;
+}
 void main()
 {
 
  uint ti = gl_LocalInvocationID.x;
  uint mgi = gl_WorkGroupID.x;    
- Meshlet meshlet = meshlets[IN.meshletIndice];
+ uint mi = IN.meshletIndices[mgi];
+ Meshlet meshlet = meshlets[mi];
  
  mat4 model = ubo.model;
  mat4 mvp = ubo.projection* ubo.view;
@@ -69,7 +78,10 @@ if( ti < meshlet.vertex_count   )
   	uint vertex_indice = uint(meshlet_vertices[meshlet.vertex_offset + ti]);
 	vec3 fragPos = vec3(ubo.model * vec4(vertices[vertex_indice].position.xyz,1.0));
   	gl_MeshVerticesEXT[ti].gl_Position = mvp * vec4(fragPos,1.0)  ;
-	
+	//Debug
+	uint mhash = hash(mi);
+	vec3 mcolor = vec3(float(mhash & 255), float((mhash >> 8) & 255), float((mhash >> 16) & 255)) / 255.0;
+	vertexOutput[ti].color = vec4(mcolor,1);
 }
 
 if (ti < meshlet.triangle_count)

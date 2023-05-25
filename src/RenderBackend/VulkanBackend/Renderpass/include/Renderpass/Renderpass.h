@@ -4,12 +4,14 @@
 #include "Device/Device.h"
 #include "Swapchain/Swapchain.h"
 #include <vector>
+
 namespace Canella
 {
     namespace RenderSystem
     {
         namespace VulkanBackend
         {
+            class Image;
             struct RenderAttachment
             {
                 VkAttachmentDescription description;
@@ -34,7 +36,8 @@ namespace Canella
 
             public:
                 std::vector<VkFramebuffer> vk_framebuffers;
-                RenderPass(Device *device, 
+                std::vector<std::shared_ptr<Image>> image_accessors;
+                RenderPass(Device *device,
                     std::string key,
                     Swapchain* swapchain, 
                     VkExtent2D extent, 
@@ -42,6 +45,7 @@ namespace Canella
                     std::vector<Subpass> &subpasses);
 
                 void createFrameBuffer(Swapchain* swapchain);
+                void create_images(Swapchain* swapchain);
 
                 /**
                  * @brief return VkRenderpass object

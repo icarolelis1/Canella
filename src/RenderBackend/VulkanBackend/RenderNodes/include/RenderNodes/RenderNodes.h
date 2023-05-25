@@ -2,6 +2,7 @@
 #ifndef RENDER_NODES
 #define RENDER_NODES
 #include "RenderGraph/RenderGraph.h"
+#include "CanellaUtility/CanellaUtility.h"
 
 namespace Canella {
     namespace RenderSystem {
@@ -20,13 +21,16 @@ namespace Canella {
                 void execute(Canella::Render *render,VkCommandBuffer,int) override;
                 void write_outputs() override;
             private:
+                bool debug_statics = true;
                 std::vector<ResourceAccessor> resource_meshlet_buffers;
                 std::vector<ResourceAccessor> resource_meshlet_triangles;
                 std::vector<ResourceAccessor> resource_meshlet_vertices;
                 std::vector<ResourceAccessor> resource_vertices_buffers;
-                std::vector<ResourceAccessor> resource_indices_buffers;
+                std::vector<ResourceAccessor> resource_bounds_buffers;
                 std::vector<DescriptorsPerImage> descriptors;
                 std::vector<Canella::Meshlet> meshlets;
+                RenderQueries queries;
+
 
             };
         }

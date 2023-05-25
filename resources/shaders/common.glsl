@@ -16,6 +16,15 @@ struct Meshlet
 	uint triangle_count;
 };
 
+struct MeshletBound{
+
+	/* normal cone, useful for backface culling */
+	vec4 cone_apex;
+	vec4 cone_axis;
+	vec4 cone_cutoff;
+};
+
+
 struct Vertex
 {
 	vec4 position;

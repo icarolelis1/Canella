@@ -70,13 +70,16 @@ void VulkanRender::render(glm::mat4& _view_projection)
     FrameData& frame_data = frames[current_frame];
     vkWaitForFences(device.getLogicalDevice(), 1, &frame_data.imageAvaibleFence, VK_FALSE, UINT64_MAX);
     uint32_t next_image_index;
-    const auto eye_pos = glm::vec3(0.0 , 10, -5);
-
+    const auto eye_pos = glm::vec3(0.0 , 3.1, -12);
+    t += 0.01;
+    if(t >= 1000000.00)
+        t = 0.0;
     ViewProjection view_projection{};
     view_projection.model = glm::mat4(1.0f);
-    view_projection.model = glm::scale(view_projection.model,glm::vec3(1));
+    view_projection.model = glm::rotate(view_projection.model,glm::radians(-90.0f),glm::vec3(1,0,0));
+    view_projection.model = glm::rotate(view_projection.model,glm::radians(t),glm::vec3(0,0,1));
     view_projection.projection = glm::perspective(glm::radians(45.0f), 1.0f, .1f, 100.f);
-    view_projection.view = glm::lookAt(eye_pos, glm::vec3(0, 0, 0), glm::vec3(0, -1, 0));
+    view_projection.view = glm::lookAt(eye_pos, glm::vec3(0, 1, 0), glm::vec3(0, -1, 0));
 
     global_buffers[current_frame]->udpate(view_projection);
     VkResult result = vkAcquireNextImageKHR(device.getLogicalDevice(),

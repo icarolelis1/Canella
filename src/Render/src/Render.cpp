@@ -51,29 +51,19 @@ void Canella::load_asset_mesh(ModelMesh& model, const ::std::string& assetsPath,
                 indices.push_back(static_cast<uint32_t>(assimp_mesh->mFaces[face].mIndices[face_index]));
             }
 
-
-        for(auto indice : indices){
-            if(indices[i] >= positions.size())
-                indices[i];
         }
-
-
-    }
-
-
 }
 
 void Canella::load_meshlet(Canella::Meshlet& canellaMeshlet, const Canella::Mesh &mesh) {
 
     constexpr size_t max_vertices = 64;
     constexpr size_t max_triangles = 124;
-    constexpr float cone_weight = 0.5f;
 
     auto &indices = mesh.indices;
     auto &positions = mesh.positions;
     const size_t max_meshlets = meshopt_buildMeshletsBound(indices.size(), max_vertices, max_triangles);
     std::vector<meshopt_Meshlet> meshlets;
-    std::vector<meshopt_Bounds> bounds;
+    std::vector<MeshletBound> bounds;
     meshlets.resize(max_meshlets);
     std::vector<unsigned int> meshlet_vertices(max_meshlets * max_vertices);
     std::vector<unsigned char> meshlet_triangles(max_meshlets * max_triangles * 3);
@@ -89,11 +79,17 @@ void Canella::load_meshlet(Canella::Meshlet& canellaMeshlet, const Canella::Mesh
 
     for (const auto& m : meshlets)
     {
-        bounds.emplace_back(meshopt_computeMeshletBounds(&meshlet_vertices[m.vertex_offset],
+        auto bound = meshopt_Bounds(meshopt_computeMeshletBounds(&meshlet_vertices[m.vertex_offset],
                                                          &meshlet_triangles[m.triangle_offset],
                                                          m.triangle_count, &positions[0].vertex.x,
                                                          positions.size(),
                                                          sizeof(Vertex)));
+
+        MeshletBound meshletBound {};
+        meshletBound.cone_apex = glm::vec4(bound.cone_apex[0],bound.cone_apex[1],bound.cone_apex[2],0.f);
+        meshletBound.cone_axis = glm::vec4(bound.cone_axis[0],bound.cone_axis[1],bound.cone_axis[2],0.f);
+        meshletBound.cone_cutoff = glm::vec4(0.5f,0,0,0.0f);
+        bounds.push_back(meshletBound);
     }
     canellaMeshlet.meshlets = meshlets;
     canellaMeshlet.bounds = bounds;

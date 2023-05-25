@@ -33,7 +33,6 @@ namespace Canella
                 {
                     nlohmann::json renderpassJson = j["Passes"]["Renderpass"][i];
 
-                    VkFormat format = swapchain->getFormat();
                     uint32_t attchmenCount = renderpassJson["Attachment_count"].get<std::uint32_t>();
 
                     // Resize to number of attachments
@@ -55,6 +54,8 @@ namespace Canella
                         RenderAttachment attachment;
                         attachment.description = {};
                         attachment.reference = {};
+                        std::string format_str = renderAttachmentDescriptionJson["Format"].get<std::string>();
+                        VkFormat format = get_attachment_format(format_str.c_str(),swapchain);
                         attachment.description.format = format;
                         attachment.description.samples = convert_from_string_sample_count(
                             renderAttachmentDescriptionJson["Samples"].get<std::string>().c_str());
@@ -66,11 +67,15 @@ namespace Canella
                         attachment.description.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
                         attachment.description.initialLayout = convert_from_string_image_layout(
                             renderAttachmentDescriptionJson["InitialLayout"].get<std::string>().c_str());
-                        attachment.description.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+                        attachment.description.finalLayout =
+                                convert_from_string_image_layout(
+                                        renderAttachmentDescriptionJson["FinalLayout"].get<std::string>().c_str());
                         attachment.description.flags = 0;
                         attachment.reference.attachment = renderAttachmentDescriptionJson["Attachment"].get<
                             std::uint32_t>();
-                        attachment.reference.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+                        attachment.reference.layout = convert_from_string_image_layout(
+                                renderAttachmentDescriptionJson["AttachmentLayout"].get<std::string>().c_str());
                         render_attachments_descriptions.push_back(attachment);
                     }
 
@@ -98,6 +103,12 @@ namespace Canella
                             description.preserveAttachmentCount = 0;
                             description.pColorAttachments = &render_attachments_descriptions[subpassDescriptionJson[
                                 "ColorAttachemntIndex"][0].get<std::uint32_t>()].reference;
+                            bool has_depth = subpassDescriptionJson["HasDepthAttachment"].get<bool>();
+                            if(has_depth)
+                            {
+                                description.pDepthStencilAttachment = &render_attachments_descriptions[subpassDescriptionJson[
+                                        "DepthAttachmentIndex"].get<std::uint32_t>()].reference;
+                            }
                             description.flags = 0;
                             subpass.description[x] = description;
                             VkSubpassDependency dependency = {};
@@ -132,6 +143,17 @@ namespace Canella
                 renderpasses[key] = new RenderPass(device, key, swapchain, extent,
                                                    managerdescription.renderpasses_descriptions[0].attachements,
                                                    managerdescription.renderpasses_descriptions[0].subpasses);
+            }
+
+            VkFormat RenderpassManager::get_attachment_format(const char *format_str,Swapchain* swapchain) {
+                if(strcmp(format_str,"SUPPORTED_DEPTH") == 0)
+                    return device->get_depth_supported_format({ VK_FORMAT_D32_SFLOAT,
+                                                                VK_FORMAT_D32_SFLOAT_S8_UINT,
+                                                                VK_FORMAT_D24_UNORM_S8_UINT },
+                                                                VK_IMAGE_TILING_OPTIMAL,
+                                                                VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+                if(strcmp(format_str,"SWAPCHAIN") == 0)
+                    return swapchain->getFormat();
             }
         }
     }

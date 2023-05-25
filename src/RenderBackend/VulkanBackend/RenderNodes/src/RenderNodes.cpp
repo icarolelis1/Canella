@@ -2,36 +2,6 @@
 #include "VulkanRender/VulkanRender.h"
 #include "CanellaUtility/CanellaUtility.h"
 
-void pipelineBarrier(VkCommandBuffer commandBuffer, VkDependencyFlags dependencyFlags, size_t bufferBarrierCount, const VkBufferMemoryBarrier2* bufferBarriers, size_t imageBarrierCount, const VkImageMemoryBarrier2* imageBarriers)
-{
-    VkDependencyInfo dependencyInfo = { VK_STRUCTURE_TYPE_DEPENDENCY_INFO };
-    dependencyInfo.dependencyFlags = dependencyFlags;
-    dependencyInfo.bufferMemoryBarrierCount = unsigned(bufferBarrierCount);
-    dependencyInfo.pBufferMemoryBarriers = bufferBarriers;
-    dependencyInfo.imageMemoryBarrierCount = unsigned(imageBarrierCount);
-    dependencyInfo.pImageMemoryBarriers = imageBarriers;
-
-    vkCmdPipelineBarrier2(commandBuffer, &dependencyInfo);
-}
-
-
-
-VkBufferMemoryBarrier2 bufferBarrier(VkBuffer buffer, VkPipelineStageFlags2 srcStageMask, VkAccessFlags2 srcAccessMask, VkPipelineStageFlags2 dstStageMask, VkAccessFlags2 dstAccessMask)
-{
-    VkBufferMemoryBarrier2 result = { VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER_2 };
-
-    result.srcStageMask = srcStageMask;
-    result.srcAccessMask = srcAccessMask;
-    result.dstStageMask = dstStageMask;
-    result.dstAccessMask = dstAccessMask;
-    result.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    result.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    result.buffer = buffer;
-    result.offset = 0;
-    result.size = VK_WHOLE_SIZE;
-
-    return result;
-}
 void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::execute(
                                                                         Canella::Render *render,
                                                                         VkCommandBuffer command_buffer,
@@ -52,8 +22,15 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::execute(
     std::vector<VkClearValue> clear_values = {};
     clear_values.resize(2);
     clear_values[0].color = {{0.0f, 1.0f, 1.f, 1.0f}};
+    clear_values[1].depthStencil = {1.0f};
 
     const auto render_pass = renderpasses[renderpass_name];
+    if(debug_statics){
+        vkCmdResetQueryPool(command_buffer,
+                            queries.timestamp_pool,
+                            0,
+                            2);
+    }
     if(begin_render_pass)
         render_pass->beginRenderPass(command_buffer, clear_values, current_frame);
 
@@ -65,6 +42,14 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::execute(
     vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
                       pipelines[pipeline_name]->getPipelineHandle());
 
+    if(debug_statics){
+        vkCmdWriteTimestamp(command_buffer,
+                            VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+                            queries.timestamp_pool,
+                            0);
+    }
+
+    for(auto z = 0; z < 1; z++)
     for(auto i = 0 ; i < meshlets.size(); ++i ){
         VkDescriptorSet desc[2] = {global_descriptors[index],descriptors[i].descriptor_sets[index]};
 
@@ -76,11 +61,31 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::execute(
                                 0,
                                 nullptr);
 
-        vulkan_renderer->vkCmdDrawMeshTasksEXT(command_buffer, meshlets[i].meshlets.size(), 1, 1);
+        vulkan_renderer->vkCmdDrawMeshTasksEXT(command_buffer,std::ceil(meshlets[i].meshlets.size()/32)+1 , 1, 1);
     }
-
+    if(debug_statics){
+        vkCmdWriteTimestamp(command_buffer,
+                            VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+                            queries.timestamp_pool,1);
+    }
     if(end_render_pass)
         renderpasses[renderpass_name]->endRenderPass(command_buffer);
+    if(debug_statics){
+        vkGetQueryPoolResults(
+                device.getLogicalDevice(),
+                queries.timestamp_pool,
+                0,
+                2,
+                sizeof(uint64_t)*2,
+                queries.time_stamps.data(),
+                sizeof(uint64_t),
+                VK_QUERY_RESULT_64_BIT
+        );
+
+        Canella::Logger::Info("%f", (queries.time_stamps[1] - queries.time_stamps[0]) *
+        device.timestamp_period/1000000.0f);
+    }
+
 }
 
 void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::load_transient_resources(
@@ -94,7 +99,7 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::load_transient_re
 
     meshlets.resize(drawables.size());
     resource_vertices_buffers.resize(drawables.size());
-    resource_indices_buffers.resize(drawables.size());
+    resource_bounds_buffers.resize(drawables.size());
 
     auto &resource_manager   = vulkan_renderer->resources_manager;
     auto i = 0 ;
@@ -110,14 +115,6 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::load_transient_re
                     &vulkan_renderer->transfer_pool,
                     mesh.positions.data());
 
-            resource_indices_buffers[i] = resource_manager.create_storage_buffer(
-                     sizeof(uint32_t)*
-                        mesh.indices.size(),
-                    VK_BUFFER_USAGE_TRANSFER_DST_BIT |
-                    VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
-                    &vulkan_renderer->transfer_pool,
-                    mesh.indices.data());
-
             load_meshlet(meshlets[i], mesh);
         }
         i++;
@@ -129,6 +126,14 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::load_transient_re
     resource_meshlet_vertices.resize(meshlets.size());
     i = 0;
     for(auto& meshlet : meshlets){
+        resource_bounds_buffers[i] = resource_manager.create_storage_buffer(
+                sizeof(meshlet.bounds[0])*
+                meshlet.bounds.size(),
+                VK_BUFFER_USAGE_TRANSFER_DST_BIT |
+                VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
+                &vulkan_renderer->transfer_pool,
+                meshlet.bounds.data());
+
         resource_meshlet_buffers[i] = resource_manager.create_storage_buffer(sizeof(meshlet.meshlets[0])
                                                                              * meshlet.meshlets.size(),
                                                                              VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
@@ -171,8 +176,8 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::load_transient_re
                     resource_manager.get_buffer_cached(resource_meshlet_buffers[i]);
             RefBuffer vertices_buffer =
                     resource_manager.get_buffer_cached(resource_vertices_buffers[i]);
-            RefBuffer indices_buffer =
-                    resource_manager.get_buffer_cached(resource_indices_buffers[i]);
+            RefBuffer bounds_buffer =
+                    resource_manager.get_buffer_cached(resource_bounds_buffers[i]);
             RefBuffer meshlet_tris =
                     resource_manager.get_buffer_cached(resource_meshlet_triangles[i]);
             RefBuffer meshlet_vertices =
@@ -186,9 +191,9 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::load_transient_re
             buffer_infos[1].offset = static_cast<uint32_t>(0);
             buffer_infos[1].range  = vertices_buffer->size;
 
-            buffer_infos[2].buffer = indices_buffer->getBufferHandle();
+            buffer_infos[2].buffer = bounds_buffer->getBufferHandle();
             buffer_infos[2].offset = static_cast<uint32_t>(0);
-            buffer_infos[2].range  = indices_buffer->size;
+            buffer_infos[2].range  = bounds_buffer->size;
 
             buffer_infos[3].buffer = meshlet_tris->getBufferHandle();
             buffer_infos[3].offset = static_cast<uint32_t>(0);
@@ -204,7 +209,11 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::load_transient_re
                                                    true);
         }
     }
+
+    if(debug_statics)
+        create_render_query(queries,&vulkan_renderer->device);
 }
 
 void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::write_outputs() {
 }
+

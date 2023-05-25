@@ -31,9 +31,84 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f3fc5e0f-8f89-4e41-a906-50d83f14594e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/.ninja_deps" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/.ninja_deps" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/.ninja_log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/.ninja_log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Canella.dir/main.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Canella.dir/main.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Canella.dir/vc140.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Canella.dir/vc140.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Canella.exe" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Canella.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Canella.ilk" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Canella.ilk" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Canella.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Canella.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/resources/config/render_path/basic.json" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/resources/config/render_path/basic.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/resources/config/render_path/pipelines.json" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/resources/config/render_path/pipelines.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/resources/shaders/common.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/resources/shaders/common.glsl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/resources/shaders/fragment.frag" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/resources/shaders/fragment.frag" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/resources/shaders/mesh.mesh" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/resources/shaders/mesh.mesh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/resources/shaders/spirv/fragment.frag.spv" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/resources/shaders/spirv/fragment.frag.spv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/resources/shaders/spirv/mesh.mesh.spv" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/resources/shaders/spirv/mesh.mesh.spv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/resources/shaders/spirv/task.task.spv" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/resources/shaders/spirv/task.task.spv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/resources/shaders/task.task" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/resources/shaders/task.task" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Engine.dir/Components/src/Components.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Engine.dir/Components/src/Components.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Engine.dir/Engine.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Engine.dir/Engine.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Engine.dir/Entity/src/Entity.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Engine.dir/Entity/src/Entity.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Engine.dir/Project/src/Project.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Engine.dir/Project/src/Project.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Engine.dir/Scene/src/Scene.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Engine.dir/Scene/src/Scene.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Engine.dir/Serializer/src/Serializer.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Engine.dir/Serializer/src/Serializer.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Engine.dir/Systems/src/Systems.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Engine.dir/Systems/src/Systems.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Meshoptimizer.dir/Meshoptimizer.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Meshoptimizer.dir/Meshoptimizer.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Meshoptimizer.dir/Meshoptimizer/src/allocator.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Meshoptimizer.dir/Meshoptimizer/src/allocator.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Meshoptimizer.dir/Meshoptimizer/src/clusterizer.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Meshoptimizer.dir/Meshoptimizer/src/clusterizer.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Meshoptimizer.dir/Meshoptimizer/src/indexcodec.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Meshoptimizer.dir/Meshoptimizer/src/indexcodec.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Meshoptimizer.dir/Meshoptimizer/src/indexgenerator.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Meshoptimizer.dir/Meshoptimizer/src/indexgenerator.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Meshoptimizer.dir/Meshoptimizer/src/overdrawanalyzer.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Meshoptimizer.dir/Meshoptimizer/src/overdrawanalyzer.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Meshoptimizer.dir/Meshoptimizer/src/overdrawoptimizer.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Meshoptimizer.dir/Meshoptimizer/src/overdrawoptimizer.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Meshoptimizer.dir/Meshoptimizer/src/simplifier.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Meshoptimizer.dir/Meshoptimizer/src/simplifier.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Meshoptimizer.dir/Meshoptimizer/src/spatialorder.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Meshoptimizer.dir/Meshoptimizer/src/spatialorder.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Meshoptimizer.dir/Meshoptimizer/src/stripifier.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Meshoptimizer.dir/Meshoptimizer/src/stripifier.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Meshoptimizer.dir/Meshoptimizer/src/vcacheanalyzer.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Meshoptimizer.dir/Meshoptimizer/src/vcacheanalyzer.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Meshoptimizer.dir/Meshoptimizer/src/vcacheoptimizer.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Meshoptimizer.dir/Meshoptimizer/src/vcacheoptimizer.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Meshoptimizer.dir/Meshoptimizer/src/vertexcodec.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Meshoptimizer.dir/Meshoptimizer/src/vertexcodec.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Meshoptimizer.dir/Meshoptimizer/src/vertexfilter.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Meshoptimizer.dir/Meshoptimizer/src/vertexfilter.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Meshoptimizer.dir/Meshoptimizer/src/vfetchanalyzer.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Meshoptimizer.dir/Meshoptimizer/src/vfetchanalyzer.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Meshoptimizer.dir/Meshoptimizer/src/vfetchoptimizer.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Meshoptimizer.dir/Meshoptimizer/src/vfetchoptimizer.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/Render.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/Render.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/Render/src/Render.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/Render/src/Render.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/CanellaUtility/src/CanellaUtility.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/CanellaUtility/src/CanellaUtility.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/Commandpool/src/Commandpool.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/Commandpool/src/Commandpool.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/DescriptorSet/src/DescriptorSet.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/DescriptorSet/src/DescriptorSet.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/Descriptorpool/src/Descriptorpool.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/Descriptorpool/src/Descriptorpool.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/Device/src/Device.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/Device/src/Device.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/Frame/src/Frame.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/Frame/src/Frame.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/Image/src/Image.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/Image/src/Image.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/Instance/src/Instance.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/Instance/src/Instance.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/Pipeline/src/Pipeline.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/Pipeline/src/Pipeline.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/PipelineBuilder/src/PipelineBuilder.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/PipelineBuilder/src/PipelineBuilder.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/RenderAttachment/src/RenderAttachment.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/RenderAttachment/src/RenderAttachment.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/RenderGraph/src/RenderGraph.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/RenderGraph/src/RenderGraph.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/RenderNodes/src/RenderNodes.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/RenderNodes/src/RenderNodes.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/Renderpass/src/Renderpass.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/Renderpass/src/Renderpass.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/RenderpassManager/src/RenderpassManager.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/RenderpassManager/src/RenderpassManager.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/Resources/src/Resources.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/Resources/src/Resources.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/Swapchain/src/Swapchain.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/Swapchain/src/Swapchain.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/VulkanRender/src/VulkanRender.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/RenderBackend/VulkanBackend/VulkanRender/src/VulkanRender.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/SpirV/spirv_reflect.c.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Render.dir/SpirV/spirv_reflect.c.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Systems.dir/Eventsystem/src/Eventsystem.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Systems.dir/Eventsystem/src/Eventsystem.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Systems.dir/Input/src/Input.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Systems.dir/Input/src/Input.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Systems.dir/JobSystem/src/JobSystem.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Systems.dir/JobSystem/src/JobSystem.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Systems.dir/Systems.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Systems.dir/Systems.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Systems.dir/Window/src/Window.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/CMakeFiles/Systems.dir/Window/src/Window.cpp.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/Engine.lib" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/Engine.lib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/Meshoptimizer.lib" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/Meshoptimizer.lib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/Render.lib" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/Render.lib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src/Systems.lib" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src/Systems.lib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/interface/Windowing.h" beforeDir="false" afterPath="$PROJECT_DIR$/libs/interface/Windowing.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/config/render_path/basic.json" beforeDir="false" afterPath="$PROJECT_DIR$/resources/config/render_path/basic.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/config/render_path/pipelines.json" beforeDir="false" afterPath="$PROJECT_DIR$/resources/config/render_path/pipelines.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/shaders/common.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/resources/shaders/common.glsl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/shaders/fragment.frag" beforeDir="false" afterPath="$PROJECT_DIR$/resources/shaders/fragment.frag" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/shaders/mesh.mesh" beforeDir="false" afterPath="$PROJECT_DIR$/resources/shaders/mesh.mesh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/shaders/spirv/fragment.frag.spv" beforeDir="false" afterPath="$PROJECT_DIR$/resources/shaders/spirv/fragment.frag.spv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/shaders/spirv/mesh.mesh.spv" beforeDir="false" afterPath="$PROJECT_DIR$/resources/shaders/spirv/mesh.mesh.spv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/shaders/spirv/task.task.spv" beforeDir="false" afterPath="$PROJECT_DIR$/resources/shaders/spirv/task.task.spv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/shaders/task.task" beforeDir="false" afterPath="$PROJECT_DIR$/resources/shaders/task.task" afterDir="false" />
@@ -128,6 +203,24 @@
       <change beforePath="$PROJECT_DIR$/src/Meshoptimizer/tools/vcachetuner.cpp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Meshoptimizer/tools/wasmpack.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Meshoptimizer/tools/wasmstubs.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Render/include/Render/Render.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Render/include/Render/Render.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Render/src/Render.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Render/src/Render.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/CanellaUtility/include/CanellaUtility/CanellaUtility.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/CanellaUtility/include/CanellaUtility/CanellaUtility.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/CanellaUtility/src/CanellaUtility.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/CanellaUtility/src/CanellaUtility.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Device/include/Device/Device.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Device/include/Device/Device.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Device/src/Device.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Device/src/Device.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/include/RenderNodes/RenderNodes.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/include/RenderNodes/RenderNodes.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/RenderNodes.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/RenderNodes.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Renderpass/include/Renderpass/Renderpass.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Renderpass/include/Renderpass/Renderpass.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Renderpass/src/Renderpass.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Renderpass/src/Renderpass.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderpassManager/include/RenderpassManager/RenderpassManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderpassManager/include/RenderpassManager/RenderpassManager.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderpassManager/src/RenderpassManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderpassManager/src/RenderpassManager.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Resources/include/Resources/Resources.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Resources/include/Resources/Resources.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Resources/src/Resources.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Resources/src/Resources.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/VulkanRender/include/VulkanRender/VulkanRender.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/VulkanRender/include/VulkanRender/VulkanRender.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/VulkanRender/src/VulkanRender.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/VulkanRender/src/VulkanRender.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Window/include/Window/Window.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Window/include/Window/Window.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Window/src/Window.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Window/src/Window.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -174,6 +267,7 @@
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;copyright&quot;,
     &quot;settings.editor.splitter.proportion&quot;: &quot;0.24922441&quot;,
     &quot;structure.view.defaults.are.configured&quot;: &quot;true&quot;,
@@ -181,11 +275,6 @@
   }
 }</component>
   <component name="RunManager" selected="CMake Application.Canella">
-    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="Canella" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Canella" TARGET_NAME="Canella" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Canella" RUN_TARGET_NAME="Canella">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -259,7 +348,14 @@
       <workItem from="1684598469385" duration="24088000" />
       <workItem from="1684676731453" duration="6071000" />
       <workItem from="1684683259773" duration="2217000" />
-      <workItem from="1684759756019" duration="29131000" />
+      <workItem from="1684759756019" duration="29868000" />
+      <workItem from="1684852083141" duration="4607000" />
+      <workItem from="1684877096592" duration="1083000" />
+      <workItem from="1684881076173" duration="1417000" />
+      <workItem from="1684935517374" duration="14411000" />
+      <workItem from="1685019461303" duration="2572000" />
+      <workItem from="1685027725878" duration="2737000" />
+      <workItem from="1685034152175" duration="6653000" />
     </task>
     <servers />
   </component>
@@ -287,54 +383,34 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Resources/src/Resources.cpp</url>
-          <line>132</line>
-          <option name="timeStamp" value="303" />
+          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Renderpass/src/Renderpass.cpp</url>
+          <line>103</line>
+          <option name="timeStamp" value="387" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Resources/src/Resources.cpp</url>
-          <line>133</line>
-          <option name="timeStamp" value="304" />
+          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderpassManager/src/RenderpassManager.cpp</url>
+          <line>107</line>
+          <option name="timeStamp" value="394" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/RenderNodes.cpp</url>
-          <line>104</line>
-          <option name="timeStamp" value="363" />
+          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderpassManager/src/RenderpassManager.cpp</url>
+          <line>108</line>
+          <option name="timeStamp" value="395" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/RenderNodes.cpp</url>
-          <line>112</line>
-          <option name="timeStamp" value="364" />
+          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderpassManager/src/RenderpassManager.cpp</url>
+          <line>109</line>
+          <option name="timeStamp" value="396" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/RenderNodes.cpp</url>
-          <line>131</line>
-          <option name="timeStamp" value="372" />
+          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderpassManager/src/RenderpassManager.cpp</url>
+          <line>106</line>
+          <option name="timeStamp" value="397" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/RenderNodes.cpp</url>
-          <line>138</line>
-          <option name="timeStamp" value="373" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/RenderNodes.cpp</url>
-          <line>145</line>
-          <option name="timeStamp" value="374" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/Render/src/Render.cpp</url>
-          <line>100</line>
-          <option name="timeStamp" value="375" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/Render/src/Render.cpp</url>
-          <line>99</line>
-          <option name="timeStamp" value="376" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/RenderNodes.cpp</url>
-          <line>115</line>
-          <option name="timeStamp" value="377" />
+          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderpassManager/src/RenderpassManager.cpp</url>
+          <line>105</line>
+          <option name="timeStamp" value="398" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

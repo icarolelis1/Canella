@@ -11,15 +11,24 @@
 #include <vector>
 namespace Canella
 {
+
+    struct MeshletBound{
+
+        glm::vec4 cone_apex;
+        glm::vec4 cone_axis;
+        glm::vec4 cone_cutoff;
+
+    };
+
     struct Meshlet{
         std::vector<meshopt_Meshlet> meshlets;
-        std::vector<meshopt_Bounds> bounds;
+        std::vector<MeshletBound> bounds;
         std::vector<unsigned int> meshlet_vertices;
         std::vector<unsigned char> meshlet_triangles ;
     };
 
-    struct Vertex{
-        alignas(16)  glm::vec4 vertex;
+    struct   Vertex {
+         glm::vec4 vertex;
     };
     struct Mesh{
         std::vector<Vertex> positions;
@@ -33,6 +42,8 @@ namespace Canella
         std::vector<Mesh> meshes;
         glm::mat4* model_matrix;
     };
+
+
 
 
     void load_asset_mesh( ModelMesh& mesh, const::std::string& assetsPath, const std::string& source );
