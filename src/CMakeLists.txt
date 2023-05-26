@@ -52,7 +52,7 @@ target_include_directories(
     Logger/include
     Input/include
     Render/include
-    Meshoptimizer 
+    Meshoptimizer_
     ${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/stb
 )
 
@@ -76,7 +76,7 @@ target_include_directories(
 )
 
 file (GLOB MESHOPT_SRC
-    "Meshoptimizer/*.cpp"
+    "Meshoptimizer_/*.cpp"
 )
 add_library(
    Meshoptimizer
