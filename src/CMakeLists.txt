@@ -57,7 +57,7 @@ target_include_directories(
 )
 
 add_library(
-    Systems 
+    Systems
     Window/src/Window.cpp
     Input/src/Input.cpp
     Eventsystem/src/Eventsystem.cpp
@@ -75,16 +75,30 @@ target_include_directories(
     Containers/include
 )
 
+file (GLOB IMGUI_SRC
+        "ImGUI/*.cpp"
+        )
+add_library(
+        ImGUI
+        ${IMGUI_SRC})
+
+target_include_directories(ImGUI
+        PUBLIC ImGUI)
+target_link_libraries(Render PUBLIC ImGUI)
+
+
 file (GLOB MESHOPT_SRC
     "Meshoptimizer_/*.cpp"
 )
+
+
 add_library(
    Meshoptimizer
    ${MESHOPT_SRC}
 
 )
 
-target_include_directories(Meshoptimizer 
+target_include_directories(Meshoptimizer
 PUBLIC Meshoptimizer/include)
 target_link_libraries(Render PUBLIC Meshoptimizer)
 

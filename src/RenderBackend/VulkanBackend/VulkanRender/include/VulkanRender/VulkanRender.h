@@ -16,6 +16,7 @@
 #include "Window/Window.h"
 #include "ComponentBase.h"
 #include "RenderGraph/RenderGraph.h"
+#include "imgui.h"
 
 namespace Canella
 {
