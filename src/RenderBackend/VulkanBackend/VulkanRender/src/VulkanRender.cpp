@@ -73,7 +73,7 @@ void VulkanRender::render(glm::mat4& _view_projection)
     const auto eye_pos = glm::vec3(0.0 , 3.1, -12);
     t += 0.01;
     if(t >= 1000000.00)
-        t = 0.0;
+        t = 0.0; 
     ViewProjection view_projection{};
     view_projection.model = glm::mat4(1.0f);
     view_projection.model = glm::rotate(view_projection.model,glm::radians(-90.0f),glm::vec3(1,0,0));

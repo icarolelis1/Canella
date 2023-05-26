@@ -7,7 +7,7 @@
 #include <iostream>
 #include <unordered_map>
 #include <glm/glm.hpp>
-#include <Meshoptimizer/meshoptimizer.h>
+#include <meshoptimizer.h>
 #include <vector>
 namespace Canella
 {

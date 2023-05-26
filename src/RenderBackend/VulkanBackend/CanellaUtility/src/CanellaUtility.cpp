@@ -1,7 +1,7 @@
 #include "CanellaUtility/CanellaUtility.h"
 #include <vector>
 #include <numeric>
-#include <Meshoptimizer/meshoptimizer.h>
+#include <meshoptimizer.h>
 
 namespace Canella
 {

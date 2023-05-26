@@ -1,6 +1,6 @@
 #ifndef VK_RESOURCES
 #define VK_RESOURCES
-#include <Meshoptimizer/meshoptimizer.h>
+#include <meshoptimizer.h>
 #include "Device/Device.h"
 #include <unordered_map>
 #include "Commandpool/Commandpool.h"
