@@ -154,6 +154,7 @@ namespace Canella
                                                                 VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
                 if(strcmp(format_str,"SWAPCHAIN") == 0)
                     return swapchain->getFormat();
+                return swapchain->getFormat();
             }
         }
     }

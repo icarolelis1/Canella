@@ -75,16 +75,17 @@ target_include_directories(
     Containers/include
 )
 
-file (GLOB IMGUI_SRC
-        "ImGUI/*.cpp"
-        )
-add_library(
-        ImGUI
-        ${IMGUI_SRC})
 
-target_include_directories(ImGUI
-        PUBLIC ImGUI)
-target_link_libraries(Render PUBLIC ImGUI)
+# file (GLOB IMGUI_SRC
+#         "ImGUI/*.cpp"
+#         )
+# add_library(
+#         ImGUI
+#         ${IMGUI_SRC})
+
+# target_include_directories(ImGUI
+#         PUBLIC ImGUI)
+# target_link_libraries(Render PUBLIC ImGUI)
 
 
 file (GLOB MESHOPT_SRC

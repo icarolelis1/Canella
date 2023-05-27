@@ -5,9 +5,6 @@ project("Canella")
 set(LIBS_DIR "./libs")
 
 # VULKAN AND GLFW FOLDER
-IF(WIN32)
-  SET(GLFW_PATH C:/glfw)
-endif()
 
 add_definitions(-DCMAKE_EXPORT_COMPILE_COMMANDS=ON)
 
@@ -19,6 +16,9 @@ if(NOT VULKAN_FOUND)
 else()
   message(STATUS "Using vulkan lib at: ${Vulkan_LIBRARIES}")
 endif()
+
+find_program(glslc_executable NAMES glslc HINTS Vulkan::glslc)
+
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   SET(OS_LIBS_DIR ${LIBS_DIR}/linux)
@@ -32,16 +32,18 @@ IF(WIN32)
   SET(OS_LIBS_DIR ${LIBS_DIR}/win)
 ENDIF()
 
+SET(GLFW_PATH ${OS_LIBS_DIR}/glfw)
 # GLFW
 if(DEFINED GLFW_PATH)
   message(STATUS "Using GLFW path specified in .env")
   set(GLFW_INCLUDE_DIRS "${GLFW_PATH}/include")
 
   if(MSVC)
-    set(GLFW_LIB "${GLFW_PATH}/lib-vc2022") #
+    message(STATUS "USING MSVC")
+    set(GLFW_LIB "${GLFW_PATH}/lib/lib-vc2022") #
   elseif(CMAKE_GENERATOR STREQUAL "MinGW Makefiles")
     message(STATUS "USING MINGW")
-    set(GLFW_LIB "${GLFW_PATH}/lib-mingw-w64") #
+    set(GLFW_LIB "${GLFW_PATH}/lib/lib-mingw-w64") #
   endif()
 else()
   find_package(glfw3 3.3 REQUIRED)
@@ -55,8 +57,10 @@ else()
   message(STATUS "Using glfw lib at: ${GLFW_LIB}")
 endif()
 
+#find_package(glfw3 3.3 REQUIRED PATHS ${OS_LIBS_DIR}/glfw/lib/cmake/glfw3)
+
 # GLM
-find_package(glm REQUIRED PATHS ${LIBS_DIR}/glm/lib/cmake/glm)
+#find_package(glm REQUIRED PATHS ${LIBS_DIR}/glm/lib/cmake/glm)
 
 add_executable(${PROJECT_NAME}  main.cpp)
 
@@ -97,7 +101,7 @@ file(GLOB SHADERS ${SHADER_DIR}/*.vert ${SHADER_DIR}/*.frag ${SHADER_DIR}/*.comp
 foreach(SHADER IN LISTS SHADERS)
     get_filename_component(FILENAME ${SHADER} NAME)
     add_custom_command(OUTPUT ${SHADER_DIR}/shaders/${FILENAME}.spv
-        COMMAND "C:/VulkanSDK/1.3.246.1/Bin/glslc.exe" ${SHADER} -o ${SHADER_DIR}/spirv/${FILENAME}.spv  --target-spv=spv1.4
+        COMMAND ${glslc_executable} ${SHADER} -o ${SHADER_DIR}/spirv/${FILENAME}.spv  --target-spv=spv1.4
         DEPENDS ${SHADER}
         COMMENT "Compiling ${FILENAME}")
 list(APPEND SPV_SHADERS ${SHADER_DIR}/shaders/${FILENAME}.spv)
