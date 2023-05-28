@@ -7,10 +7,6 @@ namespace Canella
 	{
 		namespace VulkanBackend
 		{
-			Swapchain::Swapchain(){
-
-			};
-
 			bool Swapchain::querySwapChainProperties(VkPhysicalDevice device, VkSurfaceKHR surface, VkFormat &desiredFormat, GLFWwindow *window)
 			{
 

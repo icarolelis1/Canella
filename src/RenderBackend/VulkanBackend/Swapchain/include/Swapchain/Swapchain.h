@@ -45,7 +45,8 @@ namespace Canella
                 std::vector<VkDeviceMemory> vk_deviceMemories;
 
             public:
-                Swapchain();
+                Swapchain() = default;
+                ~Swapchain() = default;
                 Swapchain(const Swapchain &other) = delete;
 
                 void prepare_swapchain(uint32_t WIDTH,
@@ -57,9 +58,7 @@ namespace Canella
                                        QueueSharingMode queueSharingMode);
 
                 void destroySwapchain(Device &device);
-                std::vector<VkImage> getImages();
                 std::vector<VkImageView> &getViews();
-                VkFormat getSwapchainFormat();
                 VkExtent2D getExtent();
                 VkViewport get_view_port();
                 VkRect2D get_rect2d();

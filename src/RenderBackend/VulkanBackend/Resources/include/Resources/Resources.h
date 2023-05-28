@@ -92,10 +92,10 @@ namespace Canella
                       uint32_t arrayLayers =1 ,
                       bool useMaxNumMips = true,
                       VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT);
+                ~Image();
                 VkImage image;
                 VkDeviceMemory  memory;
                 VkImageView view;
-                ~Image();
             };
             using RefImage = std::shared_ptr<Image>;
 

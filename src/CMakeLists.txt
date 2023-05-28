@@ -76,22 +76,19 @@ target_include_directories(
 )
 
 
-# file (GLOB IMGUI_SRC
-#         "ImGUI/*.cpp"
-#         )
-# add_library(
-#         ImGUI
-#         ${IMGUI_SRC})
-
-# target_include_directories(ImGUI
-#         PUBLIC ImGUI)
-# target_link_libraries(Render PUBLIC ImGUI)
-
+ file (GLOB IMGUI_SRC
+         "ImGUI/*.cpp"
+         )
+ add_library(
+         ImGUI
+         ${IMGUI_SRC}) 
+ target_include_directories(ImGUI
+         PUBLIC ImGUI)
+ target_link_libraries(Render PUBLIC ImGUI)
 
 file (GLOB MESHOPT_SRC
     "Meshoptimizer_/*.cpp"
 )
-
 
 add_library(
    Meshoptimizer
@@ -112,6 +109,7 @@ Entity/src/Entity.cpp
 Systems/src/Systems.cpp
 Serializer/src/Serializer.cpp
 )
+
 target_include_directories(Engine PUBLIC 
 Entity/include
 Project/include    

@@ -35,7 +35,6 @@ namespace Canella
 				RenderGraph render_graph;
 
 				void init_descriptor_pool();
-				//void initPipelines();
 				void init_vulkan_instance();
 				void setup_frames();
 				void cache_pipelines(const char* pipelines);
@@ -48,27 +47,27 @@ namespace Canella
                 float t = 0;
 			public:
                 PFN_vkCmdDrawMeshTasksEXT vkCmdDrawMeshTasksEXT;
-                Descriptorpool descriptorPool;
                 DescriptorSetLayouts cachedDescriptorSetLayouts;
-
+                Pipelines cachedPipelines;
                 std::vector<FrameData> frames;
                 ResourcesManager resources_manager;
+
                 Device device;
+                Descriptorpool descriptorPool;
                 Commandpool transfer_pool;
                 Swapchain swapChain;
                 std::vector<VkDescriptorSet> global_descriptors;
                 unsigned int current_frame = 0;
                 PipelineLayouts cachedPipelineLayouts;
+                Drawables &get_drawables() override;
+                std::unique_ptr<RenderpassManager> renderpassManager;
 
-                void enqueue_drawables(Drawables&) override;
 				VulkanRender(nlohmann::json& config, Windowing* window);
 				~VulkanRender();
-				void update(float time) override;
 				void render(glm::mat4& viewProjection) override;
-                Drawables &get_drawables() override;
+				void update(float time) override;
+                void enqueue_drawables(Drawables&) override;
 
-                Pipelines cachedPipelines;
-                std::unique_ptr<RenderpassManager> renderpassManager;
 
             };
 
