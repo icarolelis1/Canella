@@ -6,6 +6,7 @@
 #endif
 #include <GLFW/glfw3.h>
 #include <GLFW/glfw3native.h>
+
 namespace Canella {
 
 	class KeyBoard {
@@ -30,18 +31,18 @@ namespace Canella {
 	public:
 		Mouse() = default;
 		static Mouse& getMouse();
-		bool getMouseACtionStatus(int button, int action);
+		bool get_mouse_action_status(int button, int action) const;
 		void setWindowHandler(GLFWwindow* _window);
 		CursorPos getCursorPos();
-		void MouseCallback(GLFWwindow* window, double xpos, double ypos);
+		void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 		GLFWmousebuttonfun mouse_button_callback(GLFWwindow* window, int x, int z, int y);
 		GLFWwindow* window;
 
 	private:
-		float x;
-		float y;
-		float lastX;
-		float lastY;
+		double x;
+		double y;
+		double lastX;
+		double lastY;
 		bool initialized = false;
 	};
 }

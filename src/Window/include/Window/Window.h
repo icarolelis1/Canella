@@ -6,14 +6,14 @@
 
 #include <vulkan/vulkan.h>
 #include <json.hpp>
-
-
+#define GLFW_INCLUDE_VULKAN
+#ifdef DWIN32
 #define VK_USE_PLATFORM_WIN32_KHR
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
-
+#endif
 
 #include "Windowing.h"
 
@@ -26,17 +26,17 @@ namespace Canella
 
         GlfwWindow() = default;
         ~GlfwWindow();
+        void set_title_data() override;
         GLFWwindow* getHandle();
         void initialize(nlohmann::json& config);
         GLFWwindow* m_window;
         int shouldCloseWindow();
-        
-        Extent& getExtent();
+        Extent getExtent();
         void getSurface(VkInstance instance, VkSurfaceKHR* surface);
         void update();
 
     private:
-
+        std::string title;
         Mouse mouse;
         KeyBoard keyboard;
 

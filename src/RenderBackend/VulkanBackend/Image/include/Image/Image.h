@@ -1,6 +1,5 @@
 #ifndef IMAGE_
 #define IMAGE_
-#include "stb_image.h"
 #include "Device/Device.h"
 namespace RenderSystem
 {

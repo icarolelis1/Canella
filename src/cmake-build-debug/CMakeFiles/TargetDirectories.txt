@@ -1,0 +1,7 @@
+D:/IALCProjects/Canella/src/cmake-build-debug/CMakeFiles/Render.dir
+D:/IALCProjects/Canella/src/cmake-build-debug/CMakeFiles/Systems.dir
+D:/IALCProjects/Canella/src/cmake-build-debug/CMakeFiles/ImGUI.dir
+D:/IALCProjects/Canella/src/cmake-build-debug/CMakeFiles/Meshoptimizer.dir
+D:/IALCProjects/Canella/src/cmake-build-debug/CMakeFiles/Engine.dir
+D:/IALCProjects/Canella/src/cmake-build-debug/CMakeFiles/edit_cache.dir
+D:/IALCProjects/Canella/src/cmake-build-debug/CMakeFiles/rebuild_cache.dir

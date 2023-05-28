@@ -9,6 +9,7 @@
 #include <vector>
 #include <iostream>
 #include <Logger/Logger.hpp>
+
 namespace Canella {
 
     class join_threads
@@ -45,7 +46,7 @@ namespace Canella {
 
         }
         bool pop(T& item) {
-
+            return true;
         }
         std::shared_ptr<T> pop() {
             std::lock_guard<std::mutex> lg(m);

@@ -1,49 +1,54 @@
 #include "Instance/Instance.h"
 
-namespace Canella {
+#include <Logger/Logger.hpp>
+
+namespace Canella
+{
     namespace RenderSystem
     {
         namespace VulkanBackend
         {
+
             DebugLayers::DebugLayers()
             {
                 debugMessenger = 0;
             }
 
-            const std::vector<const char*> getValidationLayers()
+            std::vector<const char *> getValidationLayers()
             {
                 return validationLayers;
             }
 
-            const std::vector<const char*> DebugLayers::getExtension(bool enableValidationLayers)
+      
+            auto DebugLayers::getExtension(bool enableValidationLayers) -> const std::vector<const char *>
             {
                 uint32_t glfwExtensionsCount = 0;
-                const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionsCount);
-                std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionsCount);
+                const char **glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionsCount);
+                std::vector<const char *> extensions(glfwExtensions, glfwExtensions + glfwExtensionsCount);
                 if (enableValidationLayers)
-                {
                     extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME); // DISPLAY WARNING\ERROR MESSAGES
-                }
-
                 return extensions;
             }
-            void DebugLayers::setDebugerMessenger(VkDebugUtilsMessengerCreateInfoEXT& createInfo, VkInstance instance)
+
+            void DebugLayers::setDebugerMessenger(VkDebugUtilsMessengerCreateInfoEXT &createInfo, VkInstance instance)
             {
                 populateDebugMessengerCreateInfo(createInfo);
 
                 if (CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger) != VK_SUCCESS)
-                {
-                    std::cout << "    Failed to create DebugMessenger\n";
-                }
+                    Logger::Error("Failed to create DebugMessenger");
             }
-            void DebugLayers::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
+
+            void DebugLayers::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &createInfo)
             {
                 createInfo = {};
                 createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-                createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-                createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+                createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
+                                             VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+                createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+                                         VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
                 createInfo.pfnUserCallback = debugCallback;
             }
+
             bool DebugLayers::checkLayerSupport()
             {
                 uint32_t layerCount = 0;
@@ -57,41 +62,35 @@ namespace Canella {
                 // Check if all layer inside validationLayer are supported (inside avaibleLayers).
                 // Will tag if it can't find any layer;
                 bool anyMyssingLayer = 0;
-                for (const char* layerName : validationLayers)
+                for (const char *layerName : validationLayers)
                 {
                     bool foundLayer = 0;
-
-                    for (const auto& layerProperties : avaibleLayers)
-                    {
-
+                    for (const auto &layerProperties : avaibleLayers)
                         if (strcmp(layerProperties.layerName, layerName) == 0)
                         {
                             foundLayer = 1;
                             break;
                         }
-                    }
-
                     if (foundLayer == 0)
-                    {
                         anyMyssingLayer = 1;
-                    }
                 }
 
                 if (anyMyssingLayer)
                 {
-                    std::cout << "    LAYER NOT SUPPORTED \n";
+                    Logger::Debug("LAYER NOT SUPPORTED");
                     return false;
                 }
 
                 return true;
             }
+
             void DebugLayers::destroy(VkInstance instance)
             {
                 DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
                 std::cout << "    Debuger Destroyed\n";
             };
 
-            Instance::Instance(DebugLayers& debugger, bool enableValidationLayers)
+            Instance::Instance(DebugLayers &debugger, bool enableValidationLayers)
             {
                 VkInstanceCreateInfo instanceInfo{};
                 instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -108,6 +107,7 @@ namespace Canella {
                 instanceInfo.pApplicationInfo = &appInfo;
                 // Require vulkan validation layers
                 auto extensions = debugger.getExtension(enableValidationLayers);
+                extensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
                 instanceInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
                 instanceInfo.ppEnabledExtensionNames = extensions.data();
 
@@ -121,7 +121,7 @@ namespace Canella {
                     instanceInfo.enabledLayerCount = static_cast<uint32_t>(layers.size());
                     instanceInfo.ppEnabledLayerNames = layers.data();
                     debugger.populateDebugMessengerCreateInfo(debugCreateInfo);
-                    instanceInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo;
+                    instanceInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
                 }
 
                 if (vkCreateInstance(&instanceInfo, nullptr, &handle) != VK_SUCCESS)
@@ -129,8 +129,6 @@ namespace Canella {
                     std::cout << "Failed to create instance\n";
                 }
             }
-
         }
-
     }
 }

@@ -1,34 +1,64 @@
 #pragma once
 #ifndef RENDER
 #define RENDER
+#include "Windowing.h"
+#include "RenderBase.h"
 #include <json.hpp>
 #include <iostream>
-#include <stb.h>
-#include "Windowing.h"
+#include <unordered_map>
+#include <glm/glm.hpp>
+#include <meshoptimizer.h>
+#include <vector>
+namespace Canella
+{
 
-namespace Canella{
-    
-    struct RenderConfig
-    {
-        const char* API = "VULKAN";
+    struct MeshletBound{
+
+        glm::vec4 cone_apex;
+        glm::vec4 cone_axis;
+        glm::vec4 cone_cutoff;
+
     };
-        
-    class Render{
+
+    struct Meshlet{
+        std::vector<meshopt_Meshlet> meshlets;
+        std::vector<MeshletBound> bounds;
+        std::vector<unsigned int> meshlet_vertices;
+        std::vector<unsigned char> meshlet_triangles ;
+    };
+
+    struct   Vertex {
+         glm::vec4 vertex;
+    };
+    struct Mesh{
+        std::vector<Vertex> positions;
+        std::vector<glm::vec4> normal;
+        std::vector<uint32_t> indices;
+        Mesh() = default;
+        Mesh(const Mesh& other) = default;
+    };
+
+    struct ModelMesh{
+        std::vector<Mesh> meshes;
+        glm::mat4* model_matrix;
+    };
+
+
+
+
+    void load_asset_mesh( ModelMesh& mesh, const::std::string& assetsPath, const std::string& source );
+    void load_meshlet( Meshlet &, const Mesh & mesh );
+    using Drawables = std::vector<ModelMesh>;
+
+    class Render
+        {
         public:
             Render() = default;
-            Render(nlohmann::json& json);
-            Render(RenderConfig& config);
-
-            virtual void initialize(Windowing* window) = 0;
-
-            virtual void render() = 0;
-
+            explicit Render(nlohmann::json &json);
+            virtual void enqueue_drawables(Drawables&) = 0;
+            virtual Drawables& get_drawables() = 0;
+            virtual void render(glm::mat4& viewProjection) = 0;
             virtual void update(float time) = 0;
-
-            RenderConfig& getConfig();
-
-        protected:
-            RenderConfig config;
-    };
-}
+        };
+    }
 #endif

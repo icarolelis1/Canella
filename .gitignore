@@ -1,4 +1,7 @@
 out/
 Build/
+.cmake-build-debug/
 BUILD/
 .vs/
+.vscode/
+CmakePresets.json

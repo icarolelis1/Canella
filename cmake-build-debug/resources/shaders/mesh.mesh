@@ -1,0 +1,101 @@
+#version 450
+#extension GL_EXT_shader_16bit_storage: require
+#extension GL_EXT_shader_8bit_storage: require
+#extension GL_EXT_mesh_shader : require
+#extension GL_GOOGLE_include_directive: require
+
+layout(local_size_x = 124, local_size_y = 1, local_size_z = 1) in;
+layout(triangles, max_vertices = 64, max_primitives = 124) out;
+
+#include "common.glsl"
+
+layout (set = 0 ,binding = 0) uniform UBO 
+{
+	mat4 projection;
+	mat4 model;
+	mat4 view;
+} ubo;
+
+layout(std430,set = 1 ,binding = 0) readonly  buffer Meshlets
+{
+	Meshlet meshlets[];
+};
+
+layout(std430, set = 1 ,binding = 1) readonly  buffer Vertices
+{
+	Vertex vertices[];
+};
+layout(set = 1 ,binding = 2)readonly  buffer Bounds
+{
+	MeshletBound bounds[];
+};
+
+layout( set = 1 ,binding = 3) readonly buffer MeshletIndices
+{
+	uint8_t meshlet_indices[];
+};
+
+layout( set = 1 ,binding = 4) readonly buffer MeshletVertices
+{
+	uint meshlet_vertices[];
+};
+
+layout(location = 0) out VertexOutput
+{
+	vec4 color;
+} vertexOutput[];
+
+struct Task
+{
+   uint meshletIndices[32];
+};
+taskPayloadSharedEXT Task IN;
+
+
+uint hash(uint a)
+{
+   a = (a+0x7ed55d16) + (a<<12);
+   a = (a^0xc761c23c) ^ (a>>19);
+   a = (a+0x165667b1) + (a<<5);
+   a = (a+0xd3a2646c) ^ (a<<9);
+   a = (a+0xfd7046c5) + (a<<3);
+   a = (a^0xb55a4f09) ^ (a>>16);
+   return a;
+}
+void main()
+{
+
+ uint ti = gl_LocalInvocationID.x;
+ uint mgi = gl_WorkGroupID.x;    
+ uint mi = IN.meshletIndices[mgi];
+ Meshlet meshlet = meshlets[mi];
+ 
+ mat4 model = ubo.model;
+ mat4 mvp = ubo.projection* ubo.view;
+
+if( ti < meshlet.vertex_count   )
+{
+  	uint vertex_indice = uint(meshlet_vertices[meshlet.vertex_offset + ti]);
+	vec3 fragPos = vec3(ubo.model * vec4(vertices[vertex_indice].position.xyz,1.0));
+  	gl_MeshVerticesEXT[ti].gl_Position = mvp * vec4(fragPos,1.0)  ;
+	//Debug
+	uint mhash = hash(mi);
+	vec3 mcolor = vec3(float(mhash & 255), float((mhash >> 8) & 255), float((mhash >> 16) & 255)) / 255.0;
+	vertexOutput[ti].color = vec4(mcolor,1);
+}
+
+if (ti < meshlet.triangle_count)
+{
+	 gl_PrimitiveTriangleIndicesEXT[ti] = uvec3(	
+	 											(uint(meshlet_indices[meshlet.triangle_offset + ti*3 + 0])), 
+	 											(uint(meshlet_indices[meshlet.triangle_offset + ti*3 + 1])),
+	 											(uint(meshlet_indices[meshlet.triangle_offset + ti*3 + 2])) 
+	 											);
+}
+
+ if(gl_LocalInvocationID.x == 0 )
+  {
+  	SetMeshOutputsEXT(meshlet.vertex_count, meshlet.triangle_count);
+  }
+}
+

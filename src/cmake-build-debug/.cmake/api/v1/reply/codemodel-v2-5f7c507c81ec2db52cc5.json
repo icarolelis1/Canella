@@ -1,0 +1,96 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "Project",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "Engine::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Engine-Debug-f6de7ae616ffe0a5e0c1.json",
+					"name" : "Engine",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ImGUI::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ImGUI-Debug-5c4a378408e3bda25217.json",
+					"name" : "ImGUI",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "Meshoptimizer::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Meshoptimizer-Debug-1bde324970e2b96b9dcd.json",
+					"name" : "Meshoptimizer",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "Render::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Render-Debug-a7ac7984f8d0a7e01ea9.json",
+					"name" : "Render",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "Systems::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Systems-Debug-468cb1aa99bb404fcdfa.json",
+					"name" : "Systems",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "D:/IALCProjects/Canella/src/cmake-build-debug",
+		"source" : "D:/IALCProjects/Canella/src"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 4
+	}
+}

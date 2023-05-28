@@ -1,0 +1,65 @@
+The system is: Windows - 10.0.22621 - AMD64
+Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+Compiler: D:/Program Files/Microsoft Visual Studio/2022/Professional/VC/Tools/MSVC/14.33.31629/bin/HostX86/x64/cl.exe 
+Build flags: 
+Id flags:  
+
+The output was:
+0
+Microsoft (R) C/C++ Optimizing Compiler Versão 19.33.31631 para x64
+Copyright (C) Microsoft Corporation. Todos os direitos reservados.
+
+CMakeCCompilerId.c
+Microsoft (R) Incremental Linker Version 14.33.31631.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+/out:CMakeCCompilerId.exe 
+CMakeCCompilerId.obj 
+
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CMakeCCompilerId.exe"
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CMakeCCompilerId.obj"
+
+The C compiler identification is MSVC, found in "D:/IALCProjects/Canella/cmake-build-debug/CMakeFiles/3.25.2/CompilerIdC/CMakeCCompilerId.exe"
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+Compiler: D:/Program Files/Microsoft Visual Studio/2022/Professional/VC/Tools/MSVC/14.33.31629/bin/HostX86/x64/cl.exe 
+Build flags: 
+Id flags:  
+
+The output was:
+0
+Microsoft (R) C/C++ Optimizing Compiler Versão 19.33.31631 para x64
+Copyright (C) Microsoft Corporation. Todos os direitos reservados.
+
+CMakeCXXCompilerId.cpp
+Microsoft (R) Incremental Linker Version 14.33.31631.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+/out:CMakeCXXCompilerId.exe 
+CMakeCXXCompilerId.obj 
+
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CMakeCXXCompilerId.exe"
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CMakeCXXCompilerId.obj"
+
+The CXX compiler identification is MSVC, found in "D:/IALCProjects/Canella/cmake-build-debug/CMakeFiles/3.25.2/CompilerIdCXX/CMakeCXXCompilerId.exe"
+
+Detecting C compiler ABI info compiled with the following output:
+Change Dir: D:/IALCProjects/Canella/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-7h1hqd
+
+Run Build Command(s):D:/Program Files/JetBrains/CLion 2023.1.2/bin/ninja/win/x64/ninja.exe cmTC_698af && [1/2] Building C object CMakeFiles\cmTC_698af.dir\CMakeCCompilerABI.c.obj
+[2/2] Linking C executable cmTC_698af.exe
+
+
+
+Detecting CXX compiler ABI info compiled with the following output:
+Change Dir: D:/IALCProjects/Canella/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-y4cefd
+
+Run Build Command(s):D:/Program Files/JetBrains/CLion 2023.1.2/bin/ninja/win/x64/ninja.exe cmTC_4599a && [1/2] Building CXX object CMakeFiles\cmTC_4599a.dir\CMakeCXXCompilerABI.cpp.obj
+[2/2] Linking CXX executable cmTC_4599a.exe
+
+
+

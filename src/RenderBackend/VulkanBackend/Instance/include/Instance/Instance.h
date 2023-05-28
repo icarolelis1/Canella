@@ -8,16 +8,15 @@
 #define VULKAN_FRAME_WORK
 #include "vulkan/vulkan.h"
 #include <GLFW/glfw3.h>
-
 #include <iostream>
 #include <vector>
+#include "Logger/Logger.hpp"
 
 namespace Canella {
     namespace RenderSystem
     {
         namespace VulkanBackend
         {
-
             inline VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger)
             {
 
@@ -42,9 +41,9 @@ namespace Canella {
             }
 
             // STANDARD LUNGARG validation layer
-            static const std::vector<const char*> validationLayers = {
-                "VK_LAYER_KHRONOS_validation",
-            };
+           	static const std::vector<const char*> validationLayers = {
+		            "VK_LAYER_KHRONOS_validation",
+	            };
 
             // Enable validation layers for debugging
             class DebugLayers
@@ -57,7 +56,7 @@ namespace Canella {
                     const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
                     void* pUserData)
                 {
-                    std::cerr << "Validation Layer: " << pCallbackData->pMessage << std::endl;
+                    Logger::Debug("Validation Layer: %s", pCallbackData->pMessage);
 
                     return VK_FALSE;
                 }

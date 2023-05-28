@@ -4,19 +4,20 @@
 
 void Canella::GlfwWindow::initialize(nlohmann::json &config)
 {
-
 	glfwInit();
-
-
 	if (!glfwVulkanSupported()) {
 		Canella::Logger::Error("Glfw doesnt support vulkan");
 		return;
 	}
-
+    title = config["Title"].get<std::string>();
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-	m_window = glfwCreateWindow(config["Width"], config["Height"], config["Title"].get<std::string>().c_str(), nullptr, nullptr);
+	m_window = glfwCreateWindow(config["Width"],
+                                config["Height"],
+                                title.c_str(),
+                                nullptr, nullptr);
+
 	glfwMakeContextCurrent(m_window);
 	glfwSetWindowUserPointer(m_window, this);
 
@@ -30,7 +31,7 @@ void Canella::GlfwWindow::initialize(nlohmann::json &config)
 
 	auto f = [](GLFWwindow *window, double xpos, double ypos)
 	{
-		static_cast<GlfwWindow *>(glfwGetWindowUserPointer(window))->mouse.MouseCallback(window, xpos, ypos);
+        static_cast<GlfwWindow *>(glfwGetWindowUserPointer(window))->mouse.mouse_callback(window, xpos, ypos);
 	};
 	auto mouse_btn_callBack = [](GLFWwindow *window, int x, int y, int z)
 	{
@@ -54,7 +55,7 @@ Canella::GlfwWindow::~GlfwWindow()
 	glfwDestroyWindow(m_window);
 }
 
-Extent &Canella::GlfwWindow::getExtent()
+Extent Canella::GlfwWindow::getExtent()
 {
 	int w, h;
 	glfwGetFramebufferSize(m_window, &w, &h);
@@ -79,3 +80,9 @@ GLFWwindow *Canella::GlfwWindow::getHandle()
 {
 	return m_window;
 }
+
+    void Canella::GlfwWindow::set_title_data() {
+    title += " ds";
+    glfwSetWindowTitle(m_window,title.c_str());
+}
+
