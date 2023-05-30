@@ -226,12 +226,6 @@ Vulkan_INCLUDE_DIR:PATH=C:/VulkanSDK/1.3.246.1/Include
 //Path to a library.
 Vulkan_LIBRARY:FILEPATH=C:/VulkanSDK/1.3.246.1/Lib/vulkan-1.lib
 
-//The directory containing a CMake configuration file for glfw3.
-glfw3_DIR:PATH=D:/IALCProjects/Canella/libs/win/glfw/lib/cmake/glfw3
-
-//The directory containing a CMake configuration file for glm.
-glm_DIR:PATH=D:/IALCProjects/Canella/libs/glm/lib/cmake/glm
-
 //Path to a program.
 glslc_executable:FILEPATH=C:/VulkanSDK/1.3.246.1/Bin/glslc.exe
 
@@ -308,12 +302,6 @@ CMAKE_GENERATOR_INSTANCE:INTERNAL=
 CMAKE_GENERATOR_PLATFORM:INTERNAL=
 //Name of generator toolset.
 CMAKE_GENERATOR_TOOLSET:INTERNAL=
-//Test CMAKE_HAVE_LIBC_PTHREAD
-CMAKE_HAVE_LIBC_PTHREAD:INTERNAL=
-//Have library pthreads
-CMAKE_HAVE_PTHREADS_CREATE:INTERNAL=
-//Have library pthread
-CMAKE_HAVE_PTHREAD_CREATE:INTERNAL=
 //Source directory with the top level CMakeLists.txt file for this
 // project
 CMAKE_HOME_DIRECTORY:INTERNAL=D:/IALCProjects/Canella
@@ -378,8 +366,6 @@ CMAKE_STATIC_LINKER_FLAGS_RELEASE-ADVANCED:INTERNAL=1
 CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
 CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
-//Details about finding Threads
-FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
 //Details about finding Vulkan
 FIND_PACKAGE_MESSAGE_DETAILS_Vulkan:INTERNAL=[C:/VulkanSDK/1.3.246.1/Lib/vulkan-1.lib][C:/VulkanSDK/1.3.246.1/Include][cfound components: glslc glslangValidator ][v1.3.246()]
 //ADVANCED property for variable: Vulkan_GLSLANG_VALIDATOR_EXECUTABLE

@@ -38,10 +38,8 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::execute(
     const VkRect2D rect_2d = swapchain.get_rect2d();
     vkCmdSetViewport(command_buffer, 0, 1, &viewport);
     vkCmdSetScissor(command_buffer, 0, 1, &rect_2d);
-
     vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
                       pipelines[pipeline_name]->getPipelineHandle());
-
     if(debug_statics){
         vkCmdWriteTimestamp(command_buffer,
                             VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
@@ -96,7 +94,7 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::load_transient_re
     const auto& drawables = render->get_drawables();
     auto& descriptor_pool = vulkan_renderer->descriptorPool;
     auto& cached_descriptor_set_layouts = vulkan_renderer->cachedDescriptorSetLayouts;
-
+    device = &vulkan_renderer->device;
     meshlets.resize(drawables.size());
     resource_vertices_buffers.resize(drawables.size());
     resource_bounds_buffers.resize(drawables.size());
@@ -215,5 +213,13 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::load_transient_re
 }
 
 void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::write_outputs() {
+}
+
+Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::~MeshletGBufferPass() {
+
+    vkDestroyQueryPool(
+                        device->getLogicalDevice(),
+                       queries.timestamp_pool,
+                       device->getAllocator());
 }
 

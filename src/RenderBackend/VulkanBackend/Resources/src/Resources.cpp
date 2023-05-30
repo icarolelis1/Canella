@@ -132,12 +132,6 @@ void Canella::RenderSystem::VulkanBackend::copy_buffer_to(
     vkQueueWaitIdle(queue);
 }
 
-Canella::RenderSystem::VulkanBackend::ResourcesManager::~ResourcesManager() {
-    auto it = resource_cache.begin();
-    for(auto it = resource_cache.begin(); it != resource_cache.end();++it)
-        it->second.reset();
-}
-
 Canella::RenderSystem::VulkanBackend::ResourcesManager::ResourcesManager(Device * _device) : device(_device) {}
 
 Canella::RenderSystem::VulkanBackend::ResourceAccessor
@@ -212,6 +206,12 @@ uint64_t Canella::RenderSystem::VulkanBackend::ResourcesManager::write_descripto
     return unique_id;
 }
 
+void Canella::RenderSystem::VulkanBackend::ResourcesManager::destroy_resources()
+{
+    auto it = resource_cache.begin();
+    for(auto it = resource_cache.begin(); it != resource_cache.end();++it)
+        it->second.reset();
+}
 
 
 Canella::RenderSystem::VulkanBackend::Image::Image(Canella::RenderSystem::VulkanBackend::Device *_device,

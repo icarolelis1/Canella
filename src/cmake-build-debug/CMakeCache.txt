@@ -212,7 +212,7 @@ Project_IS_TOP_LEVEL:STATIC=ON
 Project_SOURCE_DIR:STATIC=D:/IALCProjects/Canella/src
 
 //Dependencies for the target
-Render_LIB_DEPENDS:STATIC=general;Meshoptimizer;
+Render_LIB_DEPENDS:STATIC=general;ImGUI;general;Meshoptimizer;
 
 
 ########################

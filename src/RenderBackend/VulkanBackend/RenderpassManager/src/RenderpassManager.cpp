@@ -156,6 +156,16 @@ namespace Canella
                     return swapchain->getFormat();
                 return swapchain->getFormat();
             }
+
+
+            void RenderpassManager::destroy_renderpasses() {
+                renderpasses;
+                auto it = renderpasses.begin();
+                while(it != renderpasses.end()){
+                    delete(it->second);
+                    it++;
+                }
+            }
         }
     }
 }

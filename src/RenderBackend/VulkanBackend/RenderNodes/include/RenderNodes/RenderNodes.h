@@ -16,12 +16,14 @@ namespace Canella {
                 };
 
                 MeshletGBufferPass() = default;
-
+                ~MeshletGBufferPass();
                 void load_transient_resources(Canella::Render *render) override;
                 void execute(Canella::Render *render,VkCommandBuffer,int) override;
                 void write_outputs() override;
+
             private:
                 bool debug_statics = true;
+                Device* device;
                 std::vector<ResourceAccessor> resource_meshlet_buffers;
                 std::vector<ResourceAccessor> resource_meshlet_triangles;
                 std::vector<ResourceAccessor> resource_meshlet_vertices;
@@ -30,8 +32,6 @@ namespace Canella {
                 std::vector<DescriptorsPerImage> descriptors;
                 std::vector<Canella::Meshlet> meshlets;
                 RenderQueries queries;
-
-
             };
         }
     }

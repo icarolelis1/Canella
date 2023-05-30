@@ -1,6 +1,8 @@
 #include "Renderpass/Renderpass.h"
 #include "Resources/Resources.h"
 
+//todo properly extract this class
+//todo serialize the creation of framebuffers
 namespace Canella
 {
     namespace RenderSystem
@@ -121,8 +123,10 @@ namespace Canella
             RenderPass::~RenderPass()
             {
                 vkDestroyRenderPass(device->getLogicalDevice(), vk_renderpass, device->getAllocator());
-                for(auto& img : image_accessors)
+                 for(auto& img : image_accessors)
                     img.reset();
+                 for(auto& frame : vk_framebuffers)
+                     vkDestroyFramebuffer(device->getLogicalDevice(),frame,device->getAllocator());
             }
 
 

@@ -106,3 +106,18 @@ void Canella::RenderSystem::VulkanBackend::RenderGraph::load_node_transient_reso
         load_node_transient_resources(descendent,render);
     }
 }
+
+void Canella::RenderSystem::VulkanBackend::RenderGraph::destroy_render_graph() {
+    destroy_render_node( start );
+
+}
+
+void Canella::RenderSystem::VulkanBackend::RenderGraph::destroy_render_node(
+        const Canella::RenderSystem::VulkanBackend::RefRenderNode & node)
+{
+    for(auto& descendent : node->descedent_nodes){
+        destroy_render_node(descendent);
+        descendent.reset();
+    }
+}
+

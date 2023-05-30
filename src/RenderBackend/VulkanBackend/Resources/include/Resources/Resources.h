@@ -28,6 +28,7 @@ namespace Canella
                 std::string debug_id= "";
                 VkDeviceSize size;
                 explicit GPUResource(ResourceType type);
+                virtual ~GPUResource() = default;
                 ResourceType type;
 
             };
@@ -37,6 +38,7 @@ namespace Canella
             public:
                 Buffer(Device *_device, VkDeviceSize size,
                        VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
+                ~Buffer() override;
                 template<typename T>
                 void udpate(T& data)
                 {
@@ -57,7 +59,6 @@ namespace Canella
                 VkBuffer &getBufferHandle();
                 VkDeviceMemory &getMemoryHandle();
 
-                ~Buffer();
                 VkDeviceMemory vk_deviceMemory;
                 void* mapPointer;
                 Device* device;
@@ -92,7 +93,7 @@ namespace Canella
                       uint32_t arrayLayers =1 ,
                       bool useMaxNumMips = true,
                       VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT);
-                ~Image();
+                ~Image() override;
                 VkImage image;
                 VkDeviceMemory  memory;
                 VkImageView view;
@@ -125,7 +126,8 @@ namespace Canella
                                                bool useMaxNumMips = true,
                                                VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT);
 
-                ~ResourcesManager();
+                ~ResourcesManager() = default;
+                void destroy_resources();
                 template<typename Data>
                 uint64_t  create_storage_buffer(size_t size,
                                                 VkBufferUsageFlags flags,

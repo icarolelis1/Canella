@@ -438,10 +438,6 @@ namespace Canella
                 Logger::Debug("SuccessFully destroyed Device");
             }
 
-            Device::~Device()
-            {
-                destroyDevice();
-            }
 
             VkDevice& Device::getLogicalDevice()
             {

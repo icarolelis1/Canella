@@ -41,11 +41,15 @@ namespace Canella
 				void record_command_index(VkCommandBuffer& commandBuffer, glm::mat4&viewProjection,uint32_t index);
 				void allocate_global_usage_buffers();
 				void destroy_descriptor_set_layouts();
+				void destroy_pipelines();
 				void write_global_descriptorsets();
 				void destroy_pipeline_layouts();
 				void allocate_global_descriptorsets();
                 float t = 0;
 			public:
+                VulkanRender(nlohmann::json& config, Windowing* window);
+                ~VulkanRender() override;
+
                 PFN_vkCmdDrawMeshTasksEXT vkCmdDrawMeshTasksEXT;
                 DescriptorSetLayouts cachedDescriptorSetLayouts;
                 Pipelines cachedPipelines;
@@ -62,8 +66,7 @@ namespace Canella
                 Drawables &get_drawables() override;
                 std::unique_ptr<RenderpassManager> renderpassManager;
 
-				VulkanRender(nlohmann::json& config, Windowing* window);
-				~VulkanRender();
+
 				void render(glm::mat4& viewProjection) override;
 				void update(float time) override;
                 void enqueue_drawables(Drawables&) override;

@@ -26,20 +26,15 @@ namespace Canella
 				vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentationCount, propertiesQuery.presentationModes.data());
 
 				properties.format = chooseFormat(propertiesQuery.formats, desiredFormat);
-				;
 				properties.extent = chooseImageExtent(properties.capabilities, window);
 				properties.presentMode = choosePresentationMode(propertiesQuery.presentationModes);
-
 				properties.minImageCount =  properties.capabilities.minImageCount +1;
 
 				if (properties.capabilities.maxImageCount > 0 && properties.minImageCount > properties.capabilities.maxImageCount)
-				{
 					properties.minImageCount = properties.capabilities.maxImageCount;
-				}
 
 				bool isSuitableSwapChain = false;
 				isSuitableSwapChain = !propertiesQuery.formats.empty() && !propertiesQuery.presentationModes.empty();
-
 				return isSuitableSwapChain;
 			}
 

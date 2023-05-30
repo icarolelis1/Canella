@@ -142,7 +142,7 @@ void VulkanRender::update(float time)
 
 void VulkanRender::init_descriptor_pool()
 {
-    descriptorPool.build(device);
+    descriptorPool.build(&device);
 }
 
 void VulkanRender::setup_frames()
@@ -213,32 +213,55 @@ void VulkanRender::allocate_global_descriptorsets()
 
 VulkanRender::~VulkanRender()
 {
-    free(instance);
-    for (auto& frame : frames)
-        frame.destroy();
+    vkQueueWaitIdle(device.getGraphicsQueueHandle());
 
+    transfer_pool.destroy(&device);
+    free(instance);
+    for (auto& frame : frames) frame.destroy();
+    render_graph.destroy_render_graph();
     swapChain.destroySwapchain(device);
-    device.destroyDevice();
+    renderpassManager->destroy_renderpasses();
+    for(auto& buffer : global_buffers) buffer.reset();
     destroy_descriptor_set_layouts();
     destroy_pipeline_layouts();
-    transfer_pool.destroy(&device);
+    destroy_pipelines();
+    descriptorPool.destroy();
     //T0DO DESTROY BUFFER
     //TODO REMOVE THE BUFFER ALOCATION FROM VULKAN_RENDER
+    resources_manager.destroy_resources();
+    device.destroyDevice();
+
+    Canella::Logger::Info("Vulkan Renderer Destroyed!");
 
 }
 
 void VulkanRender::destroy_pipeline_layouts()
 {
-    const auto it = cachedDescriptorSetLayouts.begin();
-    while (it != cachedDescriptorSetLayouts.end())
+    auto it = cachedPipelineLayouts.begin();
+    while (it != cachedPipelineLayouts.end()){
         it->second->destroy(&device);
+        it++;
+    }
 }
 
 void VulkanRender::destroy_descriptor_set_layouts()
 {
-    const auto it = cachedPipelineLayouts.begin();
-    while (it != cachedPipelineLayouts.end())
+    auto it = cachedDescriptorSetLayouts.begin();
+    while (it != cachedDescriptorSetLayouts.end())
+    {
         it->second->destroy(&device);
+        it++;
+    }
+}
+
+void VulkanRender::destroy_pipelines()
+{
+    auto it = cachedPipelines.begin();
+    while (it != cachedPipelines.end())
+    {
+        it->second->destroy();
+        it++;
+    }
 }
 
 Canella::Drawables &VulkanRender::get_drawables() {

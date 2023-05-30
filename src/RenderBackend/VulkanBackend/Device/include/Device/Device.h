@@ -129,6 +129,7 @@ namespace Canella
                 VkPhysicalDeviceMeshShaderFeaturesEXT enabledMeshShaderFeatures{};
             public:
                 Device();
+                ~Device() = default;
                 QueueSharingMode getQueueSharingMode();
                 VkDevice &getLogicalDevice();
                 VkDevice *getLogicalDevicePtr();
@@ -143,7 +144,6 @@ namespace Canella
                 uint32_t getTransferQueueIndex() const;
                 uint32_t getComputeQueueIndex() const;
                 bool prepareDevice(VkSurfaceKHR surface, Instance instance);
-                ~Device();
                 void destroyDevice();
                 float timestamp_period;
             };

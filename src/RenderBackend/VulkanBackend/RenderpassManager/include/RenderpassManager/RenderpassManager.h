@@ -20,6 +20,7 @@ namespace Canella
     {
         namespace VulkanBackend
         {
+            //todo remove raw pointer usage of RenderPass
             using Renderpasses = std::unordered_map<std::string, RenderPass *>;
 
             class RenderpassManager
@@ -55,6 +56,8 @@ namespace Canella
                  * @param render_path
                  */
                 RenderpassManager(Device *device, Swapchain *swapchain, const char *render_path);
+                ~RenderpassManager() = default;
+                void destroy_renderpasses();
                 Renderpasses renderpasses;
             };
 

@@ -83,17 +83,17 @@ namespace Canella {
 			class RenderGraph{
             public:
                 RenderGraph();
+                ~RenderGraph()=default;
                 RenderGraph(const RenderGraph&other) = delete;
                 static NodeType convert_from_string(const std::string&);
-
-                ~RenderGraph() = default;
-
                 void load_render_graph(const char*,Canella::Render*);
                 void execute(VkCommandBuffer,Canella::Render*,int);
                 void execute_descendent(const RefRenderNode&,VkCommandBuffer,Canella::Render*,int);
                 void load_render_node(const nlohmann::json &, const RefRenderNode &,
                                       Canella::Render *render);
                 void load_resources(Canella::Render*);
+                void destroy_render_graph();
+                void destroy_render_node(const RefRenderNode &);
                 void load_node_transient_resources(RefRenderNode ,Canella::Render*);
 
             private:

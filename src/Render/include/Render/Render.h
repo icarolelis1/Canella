@@ -43,9 +43,6 @@ namespace Canella
         glm::mat4* model_matrix;
     };
 
-
-
-
     void load_asset_mesh( ModelMesh& mesh, const::std::string& assetsPath, const std::string& source );
     void load_meshlet( Meshlet &, const Mesh & mesh );
     using Drawables = std::vector<ModelMesh>;
@@ -54,6 +51,7 @@ namespace Canella
         {
         public:
             Render() = default;
+            virtual ~Render() {};
             explicit Render(nlohmann::json &json);
             virtual void enqueue_drawables(Drawables&) = 0;
             virtual Drawables& get_drawables() = 0;

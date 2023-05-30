@@ -43,6 +43,7 @@ namespace Canella
                     VkExtent2D extent, 
                     std::vector<RenderAttachment> &attachments, 
                     std::vector<Subpass> &subpasses);
+                ~RenderPass();
 
                 void createFrameBuffer(Swapchain* swapchain);
                 void create_images(Swapchain* swapchain);
@@ -50,7 +51,7 @@ namespace Canella
                 /**
                  * @brief return VkRenderpass object
                  */
-                
+
                 VkRenderPass& get_vk_render_pass();
                 /**
                  * @brief internally begins the renderpass
@@ -72,7 +73,6 @@ namespace Canella
                  */
                 void endRenderPass(VkCommandBuffer cmd);
 
-                ~RenderPass();
             };
         }
     }
