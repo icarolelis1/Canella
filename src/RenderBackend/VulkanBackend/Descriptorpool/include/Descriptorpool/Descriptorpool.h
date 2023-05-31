@@ -12,6 +12,12 @@ namespace Canella
         {
             class Descriptorpool
             {
+            public:
+                void destroy();
+                void build(Device *device);
+                void allocate_descriptor_set(Device& device,std::shared_ptr<DescriptorSetLayout> layout,
+                                             VkDescriptorSet& set);
+                void free_descriptorsets(Device& device,const VkDescriptorSet*,uint32_t count);
             private:
                 const uint32_t k_bindless_texture_binding = 10;
                 const uint32_t k_max_bindless_resources = 1024;
@@ -25,11 +31,6 @@ namespace Canella
                 void build_bindless_descriptor_pool(Device &device);
                 void build_descriptor_set_layout(Device &device);
                 Device* device;
-            public:
-                void destroy();
-                void build(Device *device);
-                void allocate_descriptor_set(Device& device,std::shared_ptr<DescriptorSetLayout> layout,
-                    VkDescriptorSet& set);
             };
 
         }

@@ -10,16 +10,20 @@ namespace Canella
     {
         namespace VulkanBackend
         {
-            RenderpassManager::RenderpassManager(Device* _device, Swapchain* swapchain,
-                                                 const char* render_path) : device(_device)
+            void RenderpassManager::build(Device* _device,
+                                          Swapchain* swapchain,
+                                          const char* render_path,
+                                          ResourcesManager* resource_manager)
             {
+                device = _device;
                 // Read renderpath json
-                std::fstream f(render_path);
-                f;
-                nlohmann::json j;
-                f >> j;
+                if(render_path != nullptr)
+                {
+                    std::fstream f(render_path);
+                    f >> config;
+                }
 
-                uint32_t number_of_passes = j["Passes"]["Number_of_passes"].get<std::uint32_t>();
+                uint32_t number_of_passes = config["Passes"]["Number_of_passes"].get<std::uint32_t>();
                 Logger::Debug("Number of Renderpasses %d", number_of_passes);
 
                 // Object that contains the description of all render passes defined in the render_path file
@@ -31,7 +35,7 @@ namespace Canella
 
                 for (uint32_t i = 0; i < number_of_passes; ++i)
                 {
-                    nlohmann::json renderpassJson = j["Passes"]["Renderpass"][i];
+                    nlohmann::json renderpassJson = config["Passes"]["Renderpass"][i];
 
                     uint32_t attchmenCount = renderpassJson["Attachment_count"].get<std::uint32_t>();
 
@@ -132,17 +136,26 @@ namespace Canella
                     VkExtent2D extent;
                     extent.width = renderpassJson["Extent"]["Width"].get<std::uint32_t>();
                     extent.height = renderpassJson["Extent"]["Height"].get<std::uint32_t>();
+                    if( extent.width == -1 || extent.height == -1)
+                    {
+                        auto ext = swapchain->getExtent();
+                        extent.width = uint32_t(ext.width);
+                        extent.height = uint32_t(ext.height);
+                    }
                     auto key = renderpassJson["Key"].get<std::string>();
-                    loadRenderPassManager(key, swapchain, extent, renderpassManagerDescription);
+                    loadRenderPassManager(key, swapchain, extent, renderpassManagerDescription,resource_manager);
                 }
             }
 
             void RenderpassManager::loadRenderPassManager(std::string key, Swapchain* swapchain, VkExtent2D extent,
-                                                          RenderpassManagerDescription& managerdescription)
+                                                          RenderpassManagerDescription& managerdescription,
+                                                          ResourcesManager* resource_manager)
             {
-                renderpasses[key] = new RenderPass(device, key, swapchain, extent,
+
+                renderpasses[key] = std::make_unique<RenderPass>(device, key, swapchain, extent,
                                                    managerdescription.renderpasses_descriptions[0].attachements,
-                                                   managerdescription.renderpasses_descriptions[0].subpasses);
+                                                   managerdescription.renderpasses_descriptions[0].subpasses,
+                                                                 resource_manager);
             }
 
             VkFormat RenderpassManager::get_attachment_format(const char *format_str,Swapchain* swapchain) {
@@ -162,9 +175,14 @@ namespace Canella
                 renderpasses;
                 auto it = renderpasses.begin();
                 while(it != renderpasses.end()){
-                    delete(it->second);
+                    it->second.reset();
                     it++;
                 }
+            }
+
+            void RenderpassManager::rebuild(Device *device, Swapchain *swapchain, ResourcesManager *resource_manager)
+            {
+                build(device,swapchain,nullptr,resource_manager);
             }
         }
     }

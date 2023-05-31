@@ -22,8 +22,6 @@ namespace Canella {
                 void write_outputs() override;
 
             private:
-                bool debug_statics = true;
-                Device* device;
                 std::vector<ResourceAccessor> resource_meshlet_buffers;
                 std::vector<ResourceAccessor> resource_meshlet_triangles;
                 std::vector<ResourceAccessor> resource_meshlet_vertices;
@@ -32,6 +30,11 @@ namespace Canella {
                 std::vector<DescriptorsPerImage> descriptors;
                 std::vector<Canella::Meshlet> meshlets;
                 RenderQueries queries;
+                void setup_reload_resource_event(Canella::Render*);
+                void clear_render_node(Canella::Render *render);
+                bool debug_statics = true;
+                bool post_first_load = false;
+                Device* device;
             };
         }
     }

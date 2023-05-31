@@ -16,10 +16,9 @@ namespace Canella
             public:
                 FrameData() = default;
                 uint32_t begin_command(Device &device, Swapchain *swapChain, VkCommandBufferUsageFlags usageFlags);
-                void finishCommand();
                 void build(Device *device);
+                void rebuild();
                 void destroy();
-                
                 Commandpool commandPool;
                 VkFence imageAvaibleFence;
                 VkCommandBuffer commandBuffer;

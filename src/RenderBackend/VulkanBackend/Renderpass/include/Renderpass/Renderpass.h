@@ -2,9 +2,9 @@
 #ifndef RENDER_PASS
 
 #include "Device/Device.h"
+#include "Resources/Resources.h"
 #include "Swapchain/Swapchain.h"
 #include <vector>
-
 namespace Canella
 {
     namespace RenderSystem
@@ -19,13 +19,12 @@ namespace Canella
             };
             struct Subpass
             {
-
                 std::vector<VkSubpassDependency> dependencies;
                 std::vector<VkSubpassDescription> description;
             };
+
             class RenderPass
             {
-
                 Device *device;
                 VkRenderPass vk_renderpass;
                 std::string key; // String identifier for this renderpass
@@ -35,18 +34,30 @@ namespace Canella
 
 
             public:
-                std::vector<VkFramebuffer> vk_framebuffers;
-                std::vector<std::shared_ptr<Image>> image_accessors;
+                /**
+                 * @brief Creates a Renderpass
+                 * @param device Vulkan Device wrapper
+                 * @param key string identifier of the renderpass
+                 * @param swapchain Swapchain
+                 * @param extent extent of the renderpass {dimensions width, height}
+                 * @param attachments structure that defines a list of VkAttachmentDescription and VkAttachmentReference
+                 * @param subpasses structure that defines a list of VkSubpassDependency and VkSubpassDescription
+                 * @param resource_manager resource manager of the renderer
+                 */
                 RenderPass(Device *device,
                     std::string key,
                     Swapchain* swapchain, 
                     VkExtent2D extent, 
                     std::vector<RenderAttachment> &attachments, 
-                    std::vector<Subpass> &subpasses);
+                    std::vector<Subpass> &subpasses,
+                    ResourcesManager* resource_manager);
                 ~RenderPass();
 
-                void createFrameBuffer(Swapchain* swapchain);
-                void create_images(Swapchain* swapchain);
+                void create_frame_buffer(Swapchain* swapchain,ResourcesManager* resource_manager);
+                void create_images(Swapchain* swapchain,ResourcesManager* resource_manager);
+
+                std::vector<VkFramebuffer> vk_framebuffers;
+                std::vector<ResourceAccessor> image_accessors;
 
                 /**
                  * @brief return VkRenderpass object

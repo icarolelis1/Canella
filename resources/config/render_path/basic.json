@@ -10,8 +10,8 @@
                 "index": 0,
                 "Format": 44,
                 "Extent": {
-                    "Width": 1920,
-                    "Height": 1080
+                    "Width": -1,
+                    "Height": -1
                 },
                 "Attachments_descriptions": {
                     "0": {

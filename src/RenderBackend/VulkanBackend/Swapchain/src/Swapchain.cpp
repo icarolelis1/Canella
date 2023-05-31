@@ -228,7 +228,7 @@ namespace Canella
 				}
 			}
 
-			void Swapchain::destroySwapchain(Device &device)
+			void Swapchain::destroy_swapchain(Device &device)
 			{
 				for (auto view : vk_imageViews)
 				{

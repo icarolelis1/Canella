@@ -14,7 +14,8 @@ namespace Canella
                                    Swapchain* swapchain,
                                    VkExtent2D _extent,
                                    std::vector<RenderAttachment>& _attachemnts,
-                                   std::vector<Subpass>& _subpasses) : device(_device),
+                                   std::vector<Subpass>& _subpasses,
+                                   ResourcesManager* resource_manager) : device(_device),
                                                                        extent(_extent),
                                                                        key(_key),
                                                                        attachments(_attachemnts),
@@ -41,8 +42,8 @@ namespace Canella
                     Canella::Logger::Error("failed to create render pass!");
                 }
 
-                create_images(swapchain);
-                createFrameBuffer(swapchain);
+                create_images(swapchain,resource_manager);
+                create_frame_buffer(swapchain,resource_manager);
             };
 
 
@@ -69,14 +70,14 @@ namespace Canella
                 vkCmdBeginRenderPass(commandBuffer, &info, contents);
             }
 
-            void RenderPass::createFrameBuffer(Swapchain* swapchain)
+            void RenderPass::create_frame_buffer(Swapchain* swapchain,ResourcesManager* resource_manager)
             {
                 auto targets = swapchain->getViews();
                 vk_framebuffers.resize(static_cast<uint32_t>(targets.size()));
                 auto i = 0;
                 for (auto& view : targets)
                 {
-                    VkImageView views[2] = {view,image_accessors[i]->view};
+                    VkImageView views[2] = {view,resource_manager->get_image_cached(image_accessors[i])->view};
                     VkFramebufferCreateInfo fbufCreateInfo{};
                     fbufCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
                     fbufCreateInfo.renderPass = vk_renderpass;
@@ -92,7 +93,7 @@ namespace Canella
             }
 
             //Todo refactor this. Make attachments creation dynamic
-            void RenderPass::create_images(Swapchain *swapchain) {
+            void RenderPass::create_images(Swapchain *swapchain,ResourcesManager* resource_manager) {
                 auto number_of_images = swapchain->getNumberOfImages();
                 //todo save this only once
                 auto depth_format = device->get_depth_supported_format({ VK_FORMAT_D32_SFLOAT,
@@ -103,7 +104,7 @@ namespace Canella
                 for(auto i  =0 ; i < number_of_images; ++i)
                 {
                     image_accessors.push_back(
-                            std::make_shared<Image>(device, extent.width, extent.height,
+                            resource_manager->create_image(device, extent.width, extent.height,
                                                                depth_format,
                                                                       VK_IMAGE_TILING_OPTIMAL,
                                                                       VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT|
@@ -123,8 +124,6 @@ namespace Canella
             RenderPass::~RenderPass()
             {
                 vkDestroyRenderPass(device->getLogicalDevice(), vk_renderpass, device->getAllocator());
-                 for(auto& img : image_accessors)
-                    img.reset();
                  for(auto& frame : vk_framebuffers)
                      vkDestroyFramebuffer(device->getLogicalDevice(),frame,device->getAllocator());
             }

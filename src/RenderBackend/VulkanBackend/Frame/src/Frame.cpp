@@ -59,6 +59,38 @@ namespace Canella
 				Logger::Info("Destroyed Syncronization objects");
 				commandPool.destroy(device);
 			}
-		}
+
+            void FrameData::rebuild() {
+
+                vkResetCommandPool(device->getLogicalDevice(),
+                                   commandPool.pool,
+                                   VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT);
+
+                vkDestroySemaphore(device->getLogicalDevice(), imageAcquiredSemaphore, device->getAllocator());
+                vkDestroySemaphore(device->getLogicalDevice(), renderFinishedSemaphore, device->getAllocator());
+                vkDestroyFence(device->getLogicalDevice(), imageAvaibleFence, device->getAllocator());
+                Logger::Info("Destroyed Syncronization objects");
+
+                VkSemaphoreCreateInfo semaph_info{};
+                semaph_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+                VkFenceCreateInfo fence_info{};
+                fence_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+                fence_info.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+                if (vkCreateSemaphore(device->getLogicalDevice(), &semaph_info, nullptr, &imageAcquiredSemaphore) != VK_SUCCESS ||
+                    vkCreateSemaphore(device->getLogicalDevice(), &semaph_info, nullptr, &renderFinishedSemaphore) != VK_SUCCESS ||
+                    vkCreateFence(device->getLogicalDevice(), &fence_info, nullptr, &imageAvaibleFence))
+                {
+
+                    Logger::Error("Failed to create synchronization objects for given frame");
+                }
+                else
+                {
+                    Logger::Debug("Succesfully  created FrameData");
+                }
+
+            }
+        }
 	}
 }

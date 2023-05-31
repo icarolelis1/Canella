@@ -55,6 +55,7 @@ void Canella::get_meshes_on_scene(Drawables& drawables,const std::weak_ptr<Scene
 void Canella::update_camera(CameraComponent& camera_component, GlfwWindow& window)
 {
     const auto [width, height] = window.getExtent();
+    if(height == 0 || width == 0) return;
     const auto aspect = static_cast<float>(width / height);
     const auto perspective = glm::perspective(camera_component.fovy, aspect, camera_component.zNear,
                                               camera_component.zFar);

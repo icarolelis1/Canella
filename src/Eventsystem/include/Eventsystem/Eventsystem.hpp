@@ -7,7 +7,7 @@
 #include <mutex>
 #include <functional>
 
-namespace Engine
+namespace Canella
 {
     template <typename... Args>
     class Event_Handler
@@ -54,11 +54,6 @@ namespace Engine
         std::mutex event_mutex;
 
     public:
-        void add(const event_handler_type &handler)
-        {
-            std::lock_guard<std::mutex> lock(event_mutex);
-            collection.push_back(handler);
-        }
         void operator+=(const event_handler_type &handler)
         {
             add(handler);
@@ -83,15 +78,22 @@ namespace Engine
         {
             return remove(handler);
         }
-
-        void call(Args... params)
+        void invoke(Args... params)
         {
             for (const auto &handler : collection)
             {
                 handler(params...);
             }
         }
+        void add(const event_handler_type &handler)
+        {
+            std::lock_guard<std::mutex> lock(event_mutex);
+            collection.push_back(handler);
+        }
     };
+
+    namespace EventCategory{}
+
 }
 
 #endif

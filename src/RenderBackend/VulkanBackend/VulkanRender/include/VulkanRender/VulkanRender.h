@@ -16,6 +16,7 @@
 #include "Window/Window.h"
 #include "ComponentBase.h"
 #include "RenderGraph/RenderGraph.h"
+#include "Eventsystem/Eventsystem.hpp"
 
 namespace Canella
 {
@@ -27,51 +28,48 @@ namespace Canella
 
 			class VulkanRender : public Render
 			{
-
-				Surface surface;
-				Instance *instance;
-				std::vector<std::shared_ptr<Buffer>> global_buffers;
-				Drawables m_drawables;
-				RenderGraph render_graph;
-
-				void init_descriptor_pool();
-				void init_vulkan_instance();
-				void setup_frames();
-				void cache_pipelines(const char* pipelines);
-				void record_command_index(VkCommandBuffer& commandBuffer, glm::mat4&viewProjection,uint32_t index);
-				void allocate_global_usage_buffers();
-				void destroy_descriptor_set_layouts();
-				void destroy_pipelines();
-				void write_global_descriptorsets();
-				void destroy_pipeline_layouts();
-				void allocate_global_descriptorsets();
-                float t = 0;
-			public:
+            public:
                 VulkanRender(nlohmann::json& config, Windowing* window);
                 ~VulkanRender() override;
-
-                PFN_vkCmdDrawMeshTasksEXT vkCmdDrawMeshTasksEXT;
-                DescriptorSetLayouts cachedDescriptorSetLayouts;
-                Pipelines cachedPipelines;
-                std::vector<FrameData> frames;
-                ResourcesManager resources_manager;
+                void render(glm::mat4& viewProjection) override;
+                void update(float time) override;
+                void enqueue_drawables(Drawables&) override;
+                unsigned int current_frame = 0;
+                Drawables &get_drawables() override;
 
                 Device device;
+                Pipelines cachedPipelines;
+                PipelineLayouts cachedPipelineLayouts;
+                DescriptorSetLayouts cachedDescriptorSetLayouts;
+                PFN_vkCmdDrawMeshTasksEXT vkCmdDrawMeshTasksEXT;
+                std::vector<FrameData> frames;
+                std::vector<VkDescriptorSet> global_descriptors;
+                ResourcesManager resources_manager;
                 Descriptorpool descriptorPool;
                 Commandpool transfer_pool;
                 Swapchain swapChain;
-                std::vector<VkDescriptorSet> global_descriptors;
-                unsigned int current_frame = 0;
-                PipelineLayouts cachedPipelineLayouts;
-                Drawables &get_drawables() override;
-                std::unique_ptr<RenderpassManager> renderpassManager;
+                RenderpassManager renderpassManager;
 
-
-				void render(glm::mat4& viewProjection) override;
-				void update(float time) override;
-                void enqueue_drawables(Drawables&) override;
-
-
+			private:
+                Surface surface;
+                Instance *instance;
+                std::vector<ResourceAccessor> global_buffers;
+                Drawables m_drawables;
+                RenderGraph render_graph;
+                Windowing* window;
+                void record_command_index(VkCommandBuffer& commandBuffer, glm::mat4&viewProjection,uint32_t index);
+                void cache_pipelines(const char* pipelines);
+                void destroy_descriptor_set_layouts();
+                void allocate_global_descriptorsets();
+                void allocate_global_usage_buffers();
+                void write_global_descriptorsets();
+                void destroy_pipeline_layouts();
+                void init_vulkan_instance();
+                void init_descriptor_pool();
+                void destroy_pipelines();
+                void setup_frames();
+                void setup_renderer_events();
+                float t = 0;
             };
 
 		}

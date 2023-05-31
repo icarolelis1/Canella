@@ -38,7 +38,7 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 81,
+				"line" : 79,
 				"parent" : 0
 			},
 			{
@@ -65,7 +65,7 @@
 			{
 				"command" : 3,
 				"file" : 0,
-				"line" : 84,
+				"line" : 82,
 				"parent" : 0
 			}
 		]
@@ -130,6 +130,10 @@
 				{
 					"backtrace" : 5,
 					"path" : "D:/IALCProjects/Canella/./libs/win/assimp/include"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "D:/IALCProjects/Canella/src/Eventsystem/include"
 				},
 				{
 					"backtrace" : 6,

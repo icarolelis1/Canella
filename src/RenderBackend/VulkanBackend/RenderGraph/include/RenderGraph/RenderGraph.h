@@ -25,10 +25,6 @@ namespace Canella {
                 std::vector<RenderSystem::VulkanBackend::GPUResource> resources;
 			};
 
-            struct RenderEdge{
-
-            };
-
             using ResourcesRef =  std::vector<RefGPUResource>;
             /**
             * \brief A individual work unit of the render graph
@@ -77,11 +73,10 @@ namespace Canella {
 
             using RefRenderNode =  std::shared_ptr<RenderNode>;
 
-            /**
-            * \brief Graph that contains all the render passes
-            */
+
 			class RenderGraph{
             public:
+
                 RenderGraph();
                 ~RenderGraph()=default;
                 RenderGraph(const RenderGraph&other) = delete;

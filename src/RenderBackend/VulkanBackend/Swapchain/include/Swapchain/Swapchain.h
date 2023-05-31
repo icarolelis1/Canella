@@ -57,7 +57,7 @@ namespace Canella
                                        GLFWwindow *window,
                                        QueueSharingMode queueSharingMode);
 
-                void destroySwapchain(Device &device);
+                void destroy_swapchain(Device &device);
                 std::vector<VkImageView> &getViews();
                 VkExtent2D getExtent();
                 VkViewport get_view_port();

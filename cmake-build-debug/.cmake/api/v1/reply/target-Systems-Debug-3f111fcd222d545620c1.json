@@ -65,7 +65,7 @@
 			{
 				"command" : 3,
 				"file" : 0,
-				"line" : 67,
+				"line" : 66,
 				"parent" : 0
 			}
 		]
@@ -132,16 +132,16 @@
 					"path" : "D:/IALCProjects/Canella/./libs/win/assimp/include"
 				},
 				{
+					"backtrace" : 5,
+					"path" : "D:/IALCProjects/Canella/src/Eventsystem/include"
+				},
+				{
 					"backtrace" : 6,
 					"path" : "D:/IALCProjects/Canella/src/Window/include"
 				},
 				{
 					"backtrace" : 6,
 					"path" : "D:/IALCProjects/Canella/src/Threadpool/include"
-				},
-				{
-					"backtrace" : 6,
-					"path" : "D:/IALCProjects/Canella/src/Eventsystem/include"
 				},
 				{
 					"backtrace" : 6,
@@ -173,8 +173,7 @@
 			[
 				0,
 				1,
-				2,
-				3
+				2
 			]
 		}
 	],
@@ -194,8 +193,7 @@
 			[
 				0,
 				1,
-				2,
-				3
+				2
 			]
 		}
 	],
@@ -211,12 +209,6 @@
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
 			"path" : "src/Input/src/Input.cpp",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 1,
-			"compileGroupIndex" : 0,
-			"path" : "src/Eventsystem/src/Eventsystem.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{

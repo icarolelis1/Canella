@@ -1,5 +1,5 @@
 #include "Descriptorpool/Descriptorpool.h"
-
+#include "CanellaUtility/CanellaUtility.h"
 #include <json.hpp>
 
 using namespace Canella::RenderSystem::VulkanBackend;
@@ -140,4 +140,13 @@ void Descriptorpool::build(Device* _device)
 void Descriptorpool::destroy() {
     vkDestroyDescriptorPool(device->getLogicalDevice(),vk_bindless_descriptorpool,device->getAllocator());
     vkDestroyDescriptorPool(device->getLogicalDevice(),vk_global_descriptorpool,device->getAllocator());
+}
+
+void Descriptorpool::free_descriptorsets(Device &device, const VkDescriptorSet *sets,uint32_t count) {
+
+    VK_CHECK(vkFreeDescriptorSets(device.getLogicalDevice(),
+                                  vk_global_descriptorpool,
+                                  count,
+                                  sets),
+                                  "Failed to free descriptorsets");
 }

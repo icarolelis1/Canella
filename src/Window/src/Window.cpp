@@ -11,7 +11,7 @@ void Canella::GlfwWindow::initialize(nlohmann::json &config)
 	}
     title = config["Title"].get<std::string>();
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
 	m_window = glfwCreateWindow(config["Width"],
                                 config["Height"],
@@ -85,4 +85,14 @@ GLFWwindow *Canella::GlfwWindow::getHandle()
     title += " ds";
     glfwSetWindowTitle(m_window,title.c_str());
 }
+
+void Canella::GlfwWindow::wait_idle() {
+    int w, h = 0;
+    glfwGetFramebufferSize(m_window, &w, &h);
+    while (w == 0 || h == 0) {
+        glfwGetFramebufferSize(m_window, &w, &h);
+        glfwWaitEvents();
+    }
+}
+
 

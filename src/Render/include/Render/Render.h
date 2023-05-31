@@ -9,15 +9,15 @@
 #include <glm/glm.hpp>
 #include <meshoptimizer.h>
 #include <vector>
+#include <Eventsystem/Eventsystem.hpp>
 namespace Canella
 {
-
+    class Render;
     struct MeshletBound{
 
         glm::vec4 cone_apex;
         glm::vec4 cone_axis;
         glm::vec4 cone_cutoff;
-
     };
 
     struct Meshlet{
@@ -47,6 +47,11 @@ namespace Canella
     void load_meshlet( Meshlet &, const Mesh & mesh );
     using Drawables = std::vector<ModelMesh>;
 
+    //Todo Finish implementation as needed
+    class LoseSwapchainEvent: public Event<Canella::Render*>{};
+    class RenderEvent: public Event<Canella::Render*>{};
+    class DrawableEnqueueEvent: public Event<Canella::Render*>{};
+
     class Render
         {
         public:
@@ -57,6 +62,10 @@ namespace Canella
             virtual Drawables& get_drawables() = 0;
             virtual void render(glm::mat4& viewProjection) = 0;
             virtual void update(float time) = 0;
+            //Render Events
+            Canella::LoseSwapchainEvent OnLostSwapchain;
+            Canella::DrawableEnqueueEvent OnDrawableEnqueue;
+            Canella::RenderEvent OnRender;
         };
     }
 #endif

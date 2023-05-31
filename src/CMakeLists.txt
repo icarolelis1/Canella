@@ -60,7 +60,6 @@ add_library(
     Systems
     Window/src/Window.cpp
     Input/src/Input.cpp
-    Eventsystem/src/Eventsystem.cpp
     JobSystem/src/JobSystem.cpp
 )
 
@@ -68,7 +67,6 @@ target_include_directories(
     Systems 
     PUBLIC Window/include
     Threadpool/include
-    Eventsystem/include
     Logger/include
     Input/include
     JobSystem/include

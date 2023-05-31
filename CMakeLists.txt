@@ -74,6 +74,7 @@ include_directories(${PROJECT_NAME} PUBLIC
   $ENV{VULKAN_SDK}/Include
   ${LIBS_DIR}/interface
   ${OS_LIBS_DIR}/assimp/include
+  src/Eventsystem/include
 )
 
 add_subdirectory(src)
