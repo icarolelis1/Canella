@@ -37,6 +37,7 @@ namespace Canella
 
 				commandPool.build(device, POOL_TYPE::GRAPHICS, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 				commandBuffer = commandPool.requestCommandBuffer(device, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+                editor_command = commandPool.requestCommandBuffer(device, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
 			}
 
 			/**

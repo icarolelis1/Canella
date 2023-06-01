@@ -404,6 +404,12 @@ namespace Canella
                 vkGetDeviceQueue(logicalDevice, queueFamilies.present.value(), 0, &presentationQueue);
                 vkGetDeviceQueue(logicalDevice, queueFamilies.transfer.value(), 0, &transferQueue);
                 vkGetDeviceQueue(logicalDevice, queueFamilies.compute.value(), 0, &computeQueue);
+
+                depth_format = get_depth_supported_format({ VK_FORMAT_D32_SFLOAT,
+                                                     VK_FORMAT_D32_SFLOAT_S8_UINT,
+                                                     VK_FORMAT_D24_UNORM_S8_UINT },
+                                                     VK_IMAGE_TILING_OPTIMAL,
+                                                     VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
             }
 
             size_t Device::getMinimumBufferAligment()
@@ -514,6 +520,10 @@ namespace Canella
                 }
 
                 throw std::runtime_error("failed to find supported format!");
+            }
+
+            VkFormat Device::get_depth_format() {
+                return depth_format;
             }
         }
     }

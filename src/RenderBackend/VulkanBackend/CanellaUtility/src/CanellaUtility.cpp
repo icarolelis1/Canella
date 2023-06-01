@@ -11,11 +11,13 @@ namespace Canella
         {
             void VK_CHECK(VkResult result,const char* message){
                 if(result != VK_SUCCESS)
-                    Logger::Error("%s",message);
+                    throw std::runtime_error("message");
             }
+
             VkFormat convert_from_string_format(const char* image_format)
             {
-                return VK_FORMAT_B8G8R8A8_UNORM;
+                if(strcmp(image_format,"VK_FORMAT_B8G8R8A8_UNORM") == 0)
+                    return VK_FORMAT_B8G8R8A8_UNORM;
             }
 
             VkSampleCountFlagBits convert_from_string_sample_count(const char* samples)
@@ -25,6 +27,8 @@ namespace Canella
 
             VkAttachmentLoadOp convert_from_string_loadOp(const char* loadOp)
             {
+                if(strcmp(loadOp,"VK_ATTACHMENT_LOAD_OP_LOAD") == 0)
+                    return VK_ATTACHMENT_LOAD_OP_LOAD;
                 return VK_ATTACHMENT_LOAD_OP_CLEAR;
             }
 
@@ -39,8 +43,6 @@ namespace Canella
             {
                 if (strcmp(layout, "VK_IMAGE_LAYOUT_PRESENT_SRC_KHR") == 0)
                     return VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-                if (strcmp(layout, "VK_IMAGE_LAYOUT_UNDEFINED") == 0)
-                    return VK_IMAGE_LAYOUT_UNDEFINED;
                 if(strcmp(layout,"VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL") == 0)
                     return VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
                 if(strcmp(layout,"VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL") == 0)

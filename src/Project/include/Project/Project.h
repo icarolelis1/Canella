@@ -19,15 +19,17 @@ namespace Canella
     /**
      * brief  User Project
      */
-    class Project
+    class Application
     {
 
     public:
-        Project() = default;
+        Application(Canella::GlfwWindow*,Canella::Render*);
+        ~Application();
         void load(nlohmann::json &config);
         void run();
         void close();
-        ~Project();
+
+
         std::string assetsFolder;
     private:
         void init_systems();
@@ -37,9 +39,10 @@ namespace Canella
         CameraComponent main_camera;
         entt::registry registry;
         bool playing = true;
-        std::unique_ptr<Canella::Render> render;
         std::shared_ptr<Canella::Scene> scene;
-        Canella::GlfwWindow window;
+
+        Canella::Render* render;
+        Canella::GlfwWindow* window;
         Canella::Serializer serializer;
     };
 

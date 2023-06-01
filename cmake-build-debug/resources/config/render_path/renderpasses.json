@@ -1,0 +1,10 @@
+{
+  "Renderpasses": [
+    {
+      "source": "resources\\config\\render_path\\basic.json"
+    },
+    {
+      "source" : "resources\\config\\render_path\\imgui.json"
+    }
+  ]
+}

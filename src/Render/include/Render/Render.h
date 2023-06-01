@@ -57,7 +57,7 @@ namespace Canella
         public:
             Render() = default;
             virtual ~Render() {};
-            explicit Render(nlohmann::json &json);
+            virtual void build(nlohmann::json &json) = 0;
             virtual void enqueue_drawables(Drawables&) = 0;
             virtual Drawables& get_drawables() = 0;
             virtual void render(glm::mat4& viewProjection) = 0;

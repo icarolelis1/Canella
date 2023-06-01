@@ -50,14 +50,29 @@ namespace Canella
                     VkExtent2D extent, 
                     std::vector<RenderAttachment> &attachments, 
                     std::vector<Subpass> &subpasses,
-                    ResourcesManager* resource_manager);
+                    ResourcesManager* resource_manager,
+                    nlohmann::json& framebufferRessources);
                 ~RenderPass();
 
-                void create_frame_buffer(Swapchain* swapchain,ResourcesManager* resource_manager);
-                void create_images(Swapchain* swapchain,ResourcesManager* resource_manager);
+                /**
+                 * @brief creates the framebuffer for the swapchain
+                 * @param swapchain
+                 * @param resource_manager
+                 */
+                void create_frame_buffer(Swapchain* swapchain,
+                                         ResourcesManager* resource_manager,
+                                         nlohmann::json& frame_buffers_meta);
+
+                /**
+                 * @brief creates the image output attachments for the renderpass
+                 * @param swapchain application swapchain
+                 * @param resource_manager
+                 * @param images_meta
+                 */
+                void create_images(Swapchain* swapchain,ResourcesManager* resource_manager,nlohmann::json& images_meta);
 
                 std::vector<VkFramebuffer> vk_framebuffers;
-                std::vector<ResourceAccessor> image_accessors;
+                std::vector<std::vector<ResourceAccessor>> image_accessors;
 
                 /**
                  * @brief return VkRenderpass object

@@ -93,6 +93,7 @@ void Canella::GlfwWindow::wait_idle() {
         glfwGetFramebufferSize(m_window, &w, &h);
         glfwWaitEvents();
     }
+    OnWindowFocus.invoke();
 }
 
 

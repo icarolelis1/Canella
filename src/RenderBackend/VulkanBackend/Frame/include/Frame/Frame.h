@@ -22,6 +22,7 @@ namespace Canella
                 Commandpool commandPool;
                 VkFence imageAvaibleFence;
                 VkCommandBuffer commandBuffer;
+                VkCommandBuffer editor_command;
                 VkSemaphore imageAcquiredSemaphore;
                 VkSemaphore renderFinishedSemaphore;
             private:

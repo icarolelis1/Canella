@@ -65,12 +65,16 @@ namespace Canella
                  * @param swapchain swapchain
                  * @param extent VkExtent with dimension of the swapchain
                  * @param managerdescriptio struct that contains
+                 * @param frameBufferAttachments metadata describing the images and framebuffer to be created
+                 * @param descriptions_index index the renderpasses references inside RenderpassManagerDescription
                  */
-                void loadRenderPassManager(std::string,
+                void loadRenderPass(std::string,
                                            Swapchain* swapchain,
                                            VkExtent2D extent,
                                            RenderpassManagerDescription& managerdescriptio,
-                                           ResourcesManager* resource_manager);
+                                           ResourcesManager* resource_manager,
+                                           nlohmann::json& frameBufferAttachments,
+                                            int  descriptions_index);
 
                 /**
                  *

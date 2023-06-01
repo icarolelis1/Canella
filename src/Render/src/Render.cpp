@@ -5,9 +5,6 @@
 #include <Logger/Logger.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <set>
-Canella::Render::Render(nlohmann::json& configFile)
-{
-}
 
 /**
  * \brief 

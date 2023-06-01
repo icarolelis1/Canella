@@ -101,12 +101,12 @@ namespace Canella
 
                             description.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
 
-                            description.colorAttachmentCount = subpassDescriptionJson["ColorAttachmentCount"].get<
-                                std::uint32_t>();
+                            description.colorAttachmentCount = subpassDescriptionJson["ColorAttachmentCount"].get<std::uint32_t>();
                             description.inputAttachmentCount = 0;
                             description.preserveAttachmentCount = 0;
-                            description.pColorAttachments = &render_attachments_descriptions[subpassDescriptionJson[
-                                "ColorAttachemntIndex"][0].get<std::uint32_t>()].reference;
+                            description.pColorAttachments =
+                                    &render_attachments_descriptions[subpassDescriptionJson[
+                                    "ColorAttachemntIndex"][0].get<std::uint32_t>()].reference;
                             bool has_depth = subpassDescriptionJson["HasDepthAttachment"].get<bool>();
                             if(has_depth)
                             {
@@ -129,6 +129,7 @@ namespace Canella
                         subpasses.push_back(subpass);
                     }
                     // Move the vector of attachment description to the renderpassmanager
+                    auto zzz = i ;
                     renderpassManagerDescription.renderpasses_descriptions[i].attachements = std::move(
                         render_attachments_descriptions);
                     renderpassManagerDescription.renderpasses_descriptions[i].subpasses = std::move(subpasses);
@@ -143,36 +144,44 @@ namespace Canella
                         extent.height = uint32_t(ext.height);
                     }
                     auto key = renderpassJson["Key"].get<std::string>();
-                    loadRenderPassManager(key, swapchain, extent, renderpassManagerDescription,resource_manager);
+                    nlohmann::json frame_resources = renderpassJson["FrameBufferRessources"];
+                    //Create the renderpass object with all the data loaded
+                    loadRenderPass(key,
+                                   swapchain,
+                                   extent,
+                                   renderpassManagerDescription,
+                                   resource_manager,
+                                   frame_resources,
+                                   i);
                 }
             }
 
-            void RenderpassManager::loadRenderPassManager(std::string key, Swapchain* swapchain, VkExtent2D extent,
-                                                          RenderpassManagerDescription& managerdescription,
-                                                          ResourcesManager* resource_manager)
+            void RenderpassManager::loadRenderPass(std::string key,
+                                                   Swapchain* swapchain,
+                                                   VkExtent2D extent,
+                                                   RenderpassManagerDescription& managerdescription,
+                                                   ResourcesManager* resource_manager,
+                                                   nlohmann::json& frameBufferAttachments,
+                                                   int  descriptions_index)
             {
 
                 renderpasses[key] = std::make_unique<RenderPass>(device, key, swapchain, extent,
-                                                   managerdescription.renderpasses_descriptions[0].attachements,
-                                                   managerdescription.renderpasses_descriptions[0].subpasses,
-                                                                 resource_manager);
+                                     managerdescription.renderpasses_descriptions[descriptions_index].attachements,
+                                     managerdescription.renderpasses_descriptions[descriptions_index].subpasses,
+                                     resource_manager,
+                                     frameBufferAttachments);
             }
 
             VkFormat RenderpassManager::get_attachment_format(const char *format_str,Swapchain* swapchain) {
                 if(strcmp(format_str,"SUPPORTED_DEPTH") == 0)
-                    return device->get_depth_supported_format({ VK_FORMAT_D32_SFLOAT,
-                                                                VK_FORMAT_D32_SFLOAT_S8_UINT,
-                                                                VK_FORMAT_D24_UNORM_S8_UINT },
-                                                                VK_IMAGE_TILING_OPTIMAL,
-                                                                VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+                    return device->get_depth_format();
                 if(strcmp(format_str,"SWAPCHAIN") == 0)
                     return swapchain->getFormat();
-                return swapchain->getFormat();
+                return convert_from_string_format(format_str);
             }
 
 
             void RenderpassManager::destroy_renderpasses() {
-                renderpasses;
                 auto it = renderpasses.begin();
                 while(it != renderpasses.end()){
                     it->second.reset();

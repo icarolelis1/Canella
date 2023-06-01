@@ -49,7 +49,7 @@ namespace Canella
                     Logger::Error("Failed to allocate CommandBuffer");
             }
 
-            void Commandpool::beginCommandBuffer(Device* device,VkCommandBuffer &buffer, bool single_usage)const
+            void Commandpool::begin_command_buffer(Device* device, VkCommandBuffer &buffer, bool single_usage)const
             {
                 vkResetCommandPool(device->getLogicalDevice(),pool,VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT);
                 VkCommandBufferBeginInfo beginInfo{VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};

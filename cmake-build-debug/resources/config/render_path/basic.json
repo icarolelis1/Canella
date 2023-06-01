@@ -1,6 +1,6 @@
 {
     "Passes": {
-        "Number_of_passes": 1,
+        "Number_of_passes": 2,
         "Renderpass": [
             {
                 "Attachment_count": 2,
@@ -17,9 +17,9 @@
                     "0": {
                         "Format": "SWAPCHAIN",
                         "Samples": "VK_SAMPLE_COUNT_1_BIT",
-                        "LoadOp": "VK_ATTACHMENT_LOAD_OP_DONT_CARE",
+                        "LoadOp": "VK_ATTACHMENT_LOAD_OP_LOAD",
                         "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE",
-                        "InitialLayout": "VK_IMAGE_LAYOUT_UNDEFINED",
+                        "InitialLayout": "VK_IMAGE_LAYOUT_PRESENT_SRC_KHR",
                         "FinalLayout": "VK_IMAGE_LAYOUT_PRESENT_SRC_KHR",
                         "Attachment": 0,
                         "AttachmentLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL"
@@ -52,6 +52,82 @@
                         "SrcAccessMask": "VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT",
                         "DstAccessMask": "VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT"
                     }
+                },
+                "FrameBufferRessources"  : {
+                    "ResourcesToCreate" :
+                    [
+                        {
+                            "ColorImage" : false,
+                            "Format" : "SupportedDepth",
+                            "Id" : "DepthImage",
+                            "NumberOfImages" : -1
+                        }
+                    ],
+                    "FrameBufferAttachments" :
+                    [
+                        {
+                            "ColorImage" : true,
+                            "Key" : "SwapchainImage",
+                            "ResourceIndex" : -1
+                        },
+                        {
+                            "ColorImage" : false,
+                            "Key" : "DepthImage",
+                            "ResourceIndex" : 0
+                        }
+                    ]
+                }
+            },
+
+            {
+                "Attachment_count": 1,
+                "Subpasses_count": 1,
+                "Description": "imgui stuff",
+                "Key": "imgui",
+                "index": 0,
+                "Format": 44,
+                "Extent": {
+                    "Width": -1,
+                    "Height": -1
+                },
+                "Attachments_descriptions": {
+                    "0": {
+                        "Format": "SWAPCHAIN",
+                        "Samples": "VK_SAMPLE_COUNT_1_BIT",
+                        "LoadOp": "VK_ATTACHMENT_LOAD_OP_LOAD ",
+                        "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE",
+                        "InitialLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
+                        "FinalLayout": "VK_IMAGE_LAYOUT_PRESENT_SRC_KHR",
+                        "Attachment": 0,
+                        "AttachmentLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL"
+                    }
+                },
+                "Subpasses_descriptions": {
+                    "Subpasses_count": 1,
+                    "0": {
+                        "PipelineBindPoint": "VK_PIPELINE_BIND_POINT_GRAPHICS",
+                        "ColorAttachmentCount": 1,
+                        "HasDepthAttachment" : false,
+                        "ColorAttachemntIndex": [0],
+                        "SrcSubpass": "VK_SUBPASS_EXTERNAL",
+                        "DstSubpass": 0,
+                        "SrcStageMask": "VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT",
+                        "DstStageMask": "VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT",
+                        "SrcAccessMask": "VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT",
+                        "DstAccessMask": "VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT"
+                    }
+                },
+                "FrameBufferRessources"  : {
+                    "ResourcesToCreate" :
+                    [],
+                    "FrameBufferAttachments" :
+                    [
+                        {
+                            "ColorImage" : true,
+                            "Key" : "SwapchainImage",
+                            "ResourceIndex" : -1
+                        }
+                    ]
                 }
             }
         ]

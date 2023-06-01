@@ -7,19 +7,19 @@ using namespace Canella;
  * \brief Load a project from disk
  * \param config project File
  */
-void Project::load(nlohmann::json& config)
+void Application::load(nlohmann::json& config)
 {
     JobSystem::initialize();
     //Setup Project Folder
     setup_project_folder(config);
     //init windowing
-    window.initialize(config["Window"]);
+    //window.initialize(config["Window"]);
     //load scene
     scene = std::make_shared<Scene>();
     //serialize scene
     serializer.Serialize(scene, config["Scenes"]);
     //init render
-    render = std::make_unique<RenderSystem::VulkanBackend::VulkanRender>(config["Render"], &window);
+    //render = std::make_unique<RenderSystem::VulkanBackend::VulkanRender>(config["Render"], &window);
     init_systems();
 }
 
@@ -27,12 +27,12 @@ void Project::load(nlohmann::json& config)
  * \brief Create project structure folder
  * \param data configuration file
  */
-void Project::setup_project_folder(nlohmann::json& data)
+void Application::setup_project_folder(nlohmann::json& data)
 {
     assetsFolder = data["Assets"].get<std::string>();
 }
 
-void Project::init_systems()
+void Application::init_systems()
 {
     //Loads all the scenes in the scene before run time
     load_meshes_from_scene(assetsFolder,scene);
@@ -48,25 +48,23 @@ void Project::init_systems()
             auto& comp = entity->GetComponent<ModelAssetComponent>();
             auto& m = comp.mesh.meshes;
         }
-
-
 }
 
-void Project::update_systems()
+void Application::update_systems()
 {
-    update_camera(main_camera,window);
+    update_camera(main_camera,*window);
     
 }
 
 /**
  * \brief Enter the game loop
  */
-void Project::run()
+void Application::run()
 {
     while (playing) {
 
-        playing = ~window.shouldCloseWindow();
-        window.update();
+        playing = ~window->shouldCloseWindow();
+        window->update();
         update_systems();
         render->render(main_camera.viewProjection);
         if (KeyBoard::getKeyBoard().getKeyPressed(GLFW_KEY_ESCAPE))
@@ -74,22 +72,28 @@ void Project::run()
             // serializer.Deserialize(scene);
             break;
         }
-        for (auto &[entt_value, entity]: scene->m_EntityLibrary)
+        /*for (auto &[entt_value, entity]: scene->m_EntityLibrary)
             if (entity->HasComponent<ModelAssetComponent>())
             {
                 auto& comp = entity->GetComponent<ModelAssetComponent>();
                 auto& m = comp.mesh.meshes;
             }
+        */
     }
 }
 
-void Project::close()
+void Application::close()
 {
-    render.reset();
 }
 
-Project::~Project()
+
+Application::~Application()
 {
     JobSystem::stop();
     close();
+}
+
+Application::Application(Canella::GlfwWindow *_window, Canella::Render *_render) {
+    window = _window;
+    render = _render;
 }
