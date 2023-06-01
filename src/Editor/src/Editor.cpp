@@ -22,7 +22,9 @@ Canella::Editor::Editor():application(&window,&render) {
     //Loads the application scenes and systems
     application.load(config);
     //Setup ImGui codee
+#if RENDER_EDITOR_LAYOUT
     setup_imgui();
+#endif
 #endif
 }
 
@@ -74,7 +76,7 @@ void Canella::Editor::setup_imgui() {
                                     &imguiPool),
                                     "Failed to create Imgui DescriptorPool");
 
-
+    IMGUI_CHECKVERSION();
     //this initializes the core structures of imgui
     ImGui::CreateContext();
 
@@ -85,19 +87,24 @@ void Canella::Editor::setup_imgui() {
     init_info.Instance = render.instance->handle;
     init_info.PhysicalDevice = render.device.getPhysicalDevice();
     init_info.Device = render.device.getLogicalDevice();
-    init_info.Queue = render.device.getGraphicsQueueHandle();
+    init_info.Queue = render.device.getTransferQueueHandle();
     init_info.DescriptorPool = imguiPool;
     init_info.MinImageCount = static_cast<uint32_t>(render.swapChain.getNumberOfImages());
     init_info.ImageCount = static_cast<uint32_t>(render.swapChain.getNumberOfImages());
     init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
-
     ImGui_ImplVulkan_Init(&init_info, render.renderpassManager.renderpasses["imgui"]->get_vk_render_pass());
     auto cmd = render.request_command_buffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
     render.begin_command_buffer(cmd);
+    VkSubmitInfo submit_info = {};
+    submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submit_info.commandBufferCount = 1;
+    submit_info.pCommandBuffers = &cmd;
     ImGui_ImplVulkan_CreateFontsTexture(cmd);
     render.end_command_buffer(cmd);
+    vkQueueSubmit(render.device.getTransferQueueHandle(), 1, &submit_info, VK_NULL_HANDLE);
+
     //clear font textures from cpu data
-    ImGui_ImplVulkan_DestroyFontUploadObjects();
+    //ImGui_ImplVulkan_DestroyFontUploadObjects();
 
     std::function<void(VkCommandBuffer&,uint32_t,FrameData&)> render_editor = [=]
             (VkCommandBuffer& cmd,
@@ -109,15 +116,7 @@ void Canella::Editor::setup_imgui() {
     render.OnRecordCommandEvent += Event_Handler(render_editor);
 }
 
-Canella::Editor::~Editor() {
-    vkDeviceWaitIdle(render.device.getLogicalDevice());
-    vkDestroyDescriptorPool(render.device.getLogicalDevice(),imguiPool,nullptr);
-    ImGui_ImplVulkan_Shutdown();
-    render.destroy();
-
-}
-
-void Canella::Editor::render_editor_gui(VkCommandBuffer& command_buffer,uint32_t image_index,FrameData& current_frame) {
+void Canella::Editor::render_editor_gui(VkCommandBuffer& dsds,uint32_t image_index,FrameData& current_frame) {
 
     auto& render_passes = render.renderpassManager.renderpasses;
     auto& swapchain = render.swapChain;
@@ -128,10 +127,10 @@ void Canella::Editor::render_editor_gui(VkCommandBuffer& command_buffer,uint32_t
     const VkViewport viewport = swapchain.get_view_port();
     const VkRect2D rect_2d = swapchain.get_rect2d();
 
-    current_frame.commandPool.begin_command_buffer(&render.device, command_buffer,true);
-    render_passes["imgui"]->beginRenderPass(command_buffer,clearValues,image_index);
-    vkCmdSetViewport(command_buffer, 0, 1, &viewport);
-    vkCmdSetScissor(command_buffer, 0, 1, &rect_2d);
+    current_frame.secondaryPool.begin_command_buffer(&render.device, current_frame.editor_command,true);
+    render_passes["imgui"]->beginRenderPass(current_frame.editor_command,clearValues,image_index);
+    vkCmdSetViewport(current_frame.editor_command, 0, 1, &viewport);
+    vkCmdSetScissor(current_frame.editor_command, 0, 1, &rect_2d);
 
     ImGui_ImplGlfw_NewFrame();
     ImGui_ImplVulkan_NewFrame();
@@ -147,9 +146,21 @@ void Canella::Editor::render_editor_gui(VkCommandBuffer& command_buffer,uint32_t
     ImGui::End();
     ImGui::ShowDemoWindow();
     ImGui::Render();
-    ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), command_buffer);
-    render_passes["imgui"]->endRenderPass(command_buffer);
-    current_frame.commandPool.endCommandBuffer(command_buffer);
+    ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), current_frame.editor_command);
+    render_passes["imgui"]->endRenderPass(current_frame.editor_command);
+    current_frame.secondaryPool.endCommandBuffer(current_frame.editor_command);
 }
+
+
+Canella::Editor::~Editor() {
+#if RENDER_EDITOR_LAYOUT
+    vkDeviceWaitIdle(render.device.getLogicalDevice());
+    vkDestroyDescriptorPool(render.device.getLogicalDevice(),imguiPool,nullptr);
+    ImGui_ImplVulkan_Shutdown();
+#endif
+    render.destroy();
+
+}
+
 
 

@@ -13,15 +13,13 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::execute(
     auto& renderpasses = vulkan_renderer->renderpassManager.renderpasses;
     auto& pipelines = vulkan_renderer->cachedPipelines;
     auto& pipeline_layouts = vulkan_renderer->cachedPipelineLayouts;
-    auto& frames = vulkan_renderer->frames;
     auto& swapchain = vulkan_renderer->swapChain;
     auto& global_descriptors = vulkan_renderer->global_descriptors;
     auto current_frame = index;
-    auto &resource_manager   = vulkan_renderer->resources_manager;
 
     std::vector<VkClearValue> clear_values = {};
     clear_values.resize(2);
-    clear_values[0].color = {{0.0f, 1.0f, 1.f, 1.0f}};
+    clear_values[0].color = {{.0f, 1.0f, 1.f, 1.0f}};
     clear_values[1].depthStencil = {1.0f};
 
     const auto render_pass = renderpasses[renderpass_name].get();

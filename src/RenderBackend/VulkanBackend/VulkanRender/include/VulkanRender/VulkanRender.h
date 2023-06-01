@@ -18,7 +18,7 @@
 #include "RenderGraph/RenderGraph.h"
 #include "Eventsystem/Eventsystem.hpp"
 
-#define RENDER_EDITOR_LAYOUT 0
+#define RENDER_EDITOR_LAYOUT 1
 
 namespace Canella
 {

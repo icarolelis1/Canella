@@ -18,6 +18,7 @@ namespace Canella
             {
                 if(strcmp(image_format,"VK_FORMAT_B8G8R8A8_UNORM") == 0)
                     return VK_FORMAT_B8G8R8A8_UNORM;
+                return  VK_FORMAT_B8G8R8A8_UNORM;
             }
 
             VkSampleCountFlagBits convert_from_string_sample_count(const char* samples)
@@ -29,6 +30,8 @@ namespace Canella
             {
                 if(strcmp(loadOp,"VK_ATTACHMENT_LOAD_OP_LOAD") == 0)
                     return VK_ATTACHMENT_LOAD_OP_LOAD;
+                if(strcmp(loadOp,"VK_ATTACHMENT_LOAD_OP_DONT_CARE") == 0)
+                    return VK_ATTACHMENT_LOAD_OP_DONT_CARE;
                 return VK_ATTACHMENT_LOAD_OP_CLEAR;
             }
 

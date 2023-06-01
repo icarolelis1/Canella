@@ -60,7 +60,7 @@ void VulkanRender::build(nlohmann::json &config)
                         VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
     command_pool.build(&device,
-                        POOL_TYPE::GRAPHICS,
+                        POOL_TYPE::TRANSFER,
                         VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 }
 
@@ -115,11 +115,11 @@ void VulkanRender::render(glm::mat4& _view_projection)
 
     vkResetFences(device.getLogicalDevice(), 1, &frame_data.imageAvaibleFence);
     VkSubmitInfo submit_info = {};
+
+    record_command_index(frame_data.commandBuffer, _view_projection, current_frame);
 #if RENDER_EDITOR_LAYOUT
     OnRecordCommandEvent.invoke(frame_data.editor_command,current_frame,frame_data);
 #endif
-    record_command_index(frame_data.commandBuffer, _view_projection, current_frame);
-
     submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
     const VkSemaphore wait_semaphores[] = {frame_data.imageAcquiredSemaphore};
     constexpr VkPipelineStageFlags wait_stages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};

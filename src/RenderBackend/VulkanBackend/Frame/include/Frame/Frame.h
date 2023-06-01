@@ -20,6 +20,7 @@ namespace Canella
                 void rebuild();
                 void destroy();
                 Commandpool commandPool;
+                Commandpool secondaryPool;
                 VkFence imageAvaibleFence;
                 VkCommandBuffer commandBuffer;
                 VkCommandBuffer editor_command;
