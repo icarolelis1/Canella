@@ -1,7 +1,9 @@
 #include "Window/Window.h"
 #include "Logger/Logger.hpp"
+#ifdef WIN32
 #include <vulkan/vulkan_win32.h>
-
+#include <Windows.h>
+#endif
 void Canella::GlfwWindow::initialize(nlohmann::json &config)
 {
 	glfwInit();
@@ -12,16 +14,29 @@ void Canella::GlfwWindow::initialize(nlohmann::json &config)
     title = config["Title"].get<std::string>();
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+   // glfwWindowHint(GLFW_DECORATED, false);
+    auto width  =  config["Width"].get<std::uint32_t>();
+    auto height =  config["Height"].get<std::uint32_t>();
 
-	m_window = glfwCreateWindow(config["Width"],
-                                config["Height"],
+	m_window = glfwCreateWindow(width,
+                                height,
                                 title.c_str(),
                                 nullptr, nullptr);
 
 	glfwMakeContextCurrent(m_window);
 	glfwSetWindowUserPointer(m_window, this);
+#ifdef WIN32
+    RECT desktop;
 
-	// Initialize Inptus
+    const HWND hDesktop = GetDesktopWindow();
+    int horizontal,vertical;
+    GetWindowRect(hDesktop, &desktop);
+    horizontal = desktop.right;
+    vertical = desktop.bottom;
+    glfwSetWindowPos(m_window, horizontal / 2 - width / 2, vertical / 2 - height / 2);
+
+#endif
+	// todo make the inputs all event driven
 	mouse = Mouse::getMouse();
 	keyboard = KeyBoard::getKeyBoard();
 	Mouse::getMouse().setWindowHandler(m_window);

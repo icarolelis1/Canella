@@ -60,7 +60,7 @@ void VulkanRender::build(nlohmann::json &config)
                         VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
     command_pool.build(&device,
-                        POOL_TYPE::TRANSFER,
+                        POOL_TYPE::GRAPHICS,
                         VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 }
 
@@ -100,14 +100,15 @@ void VulkanRender::render(glm::mat4& _view_projection)
     auto refBuffer = resources_manager.get_buffer_cached(global_buffers[current_frame]);
     refBuffer->udpate(view_projection);
     VkResult result = vkAcquireNextImageKHR(device.getLogicalDevice(),
-                                            swapChain.getSwapChainHandle(),
+                                            swapChain.get_swap_chain_handle(),
                                             UINT64_MAX,
                                             frame_data.imageAcquiredSemaphore,
                                             VK_NULL_HANDLE,
                                             &next_image_index);
     if (result == VK_ERROR_OUT_OF_DATE_KHR)
     {
-        // todo recreate
+        Canella::Logger::Info("--------- CALLING EVENT OnLostSwapchain ---------");
+        OnLostSwapchain.invoke(this);
         return;
     }
     if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
@@ -144,7 +145,7 @@ void VulkanRender::render(glm::mat4& _view_projection)
     present_info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
     present_info.waitSemaphoreCount = 1;
     present_info.pWaitSemaphores = signal_semaphores;
-    const VkSwapchainKHR swap_chains[] = {swapChain.getSwapChainHandle()};
+    const VkSwapchainKHR swap_chains[] = {swapChain.get_swap_chain_handle()};
     present_info.swapchainCount = 1;
     present_info.pSwapchains = swap_chains;
     present_info.pImageIndices = &next_image_index;
@@ -174,7 +175,7 @@ void VulkanRender::init_descriptor_pool()
 
 void VulkanRender::setup_frames()
 {
-    const auto number_of_images = swapChain.getNumberOfImages();
+    const auto number_of_images = swapChain.get_number_of_images();
     for (uint32_t i = 0; i < number_of_images; ++i)
     {
         frames.emplace_back();
@@ -194,7 +195,7 @@ void VulkanRender::cache_pipelines(const char* pipelines)
 
 void VulkanRender::allocate_global_usage_buffers()
 {
-    const auto number_of_images = swapChain.getNumberOfImages();
+    const auto number_of_images = swapChain.get_number_of_images();
     for (auto i = 0; i < number_of_images; i++)
         global_buffers.push_back(resources_manager.create_buffer(sizeof(ViewProjection),
                                         VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
@@ -231,7 +232,7 @@ void VulkanRender::record_command_index(VkCommandBuffer& commandBuffer,
 
 void VulkanRender::allocate_global_descriptorsets()
 {
-    global_descriptors.resize(swapChain.getNumberOfImages());
+    global_descriptors.resize(swapChain.get_number_of_images());
     for (auto& global_descriptor : global_descriptors)
         descriptorPool.allocate_descriptor_set(
             device,
@@ -359,6 +360,19 @@ void VulkanRender::end_command_buffer(VkCommandBuffer cmd) {
 void VulkanRender::begin_command_buffer(VkCommandBuffer cmd) {
     command_pool.begin_command_buffer(&device,cmd,true);
 }
+
+void VulkanRender::log_statistic_data(Canella::TimeQueryData&)
+{
+#if RENDER_EDITOR_LAYOUT
+
+#endif
+}
+
+#if RENDER_EDITOR_LAYOUT
+std::vector<Canella::TimeQueryData*>  VulkanRender::get_render_graph_timers() {
+    return render_graph.time_queries;
+}
+#endif
 
 
 

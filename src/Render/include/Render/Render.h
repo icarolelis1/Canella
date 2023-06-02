@@ -43,6 +43,12 @@ namespace Canella
         glm::mat4* model_matrix;
     };
 
+    struct TimeQueryData{
+        std::string name;
+        std::string description;
+        float time;
+    };
+
     void load_asset_mesh( ModelMesh& mesh, const::std::string& assetsPath, const std::string& source );
     void load_meshlet( Meshlet &, const Mesh & mesh );
     using Drawables = std::vector<ModelMesh>;
@@ -59,10 +65,12 @@ namespace Canella
             virtual ~Render() {};
             virtual void build(nlohmann::json &json) = 0;
             virtual void enqueue_drawables(Drawables&) = 0;
-            virtual Drawables& get_drawables() = 0;
             virtual void render(glm::mat4& viewProjection) = 0;
             virtual void update(float time) = 0;
-            //Render Events
+            virtual void log_statistic_data(TimeQueryData&) = 0;
+            virtual Drawables& get_drawables() = 0;
+
+            //Render Events`
             Canella::LoseSwapchainEvent OnLostSwapchain;
             Canella::DrawableEnqueueEvent OnDrawableEnqueue;
             Canella::RenderEvent OnRender;

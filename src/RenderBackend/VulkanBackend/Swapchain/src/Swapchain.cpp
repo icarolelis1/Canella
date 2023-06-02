@@ -7,7 +7,7 @@ namespace Canella
 	{
 		namespace VulkanBackend
 		{
-			bool Swapchain::querySwapChainProperties(VkPhysicalDevice device, VkSurfaceKHR surface, VkFormat &desiredFormat, GLFWwindow *window)
+			bool Swapchain::query_swapchain_properties(VkPhysicalDevice device, VkSurfaceKHR surface, VkFormat &desiredFormat, GLFWwindow *window)
 			{
 
 				SwapchainQueryProperties propertiesQuery{};
@@ -49,10 +49,10 @@ namespace Canella
 				width = WIDTH;
 				height = HEIGHT;
 
-				querySwapChainProperties(device.getPhysicalDevice(), surface, desiredFormat, window);
-				createSwapChain(device, surface, queueSharingMode);
-				aquireSwapChainImages(device);
-				createSwapchainViews(device);
+                query_swapchain_properties(device.getPhysicalDevice(), surface, desiredFormat, window);
+                create_swapchain(device, surface, queueSharingMode);
+                aquire_swapchain_images(device);
+                create_swapchain_views(device);
 			}
 
 			VkFormat Swapchain::getFormat() { return properties.format.format; }
@@ -85,12 +85,12 @@ namespace Canella
 				return rect;
 			}
 
-			VkSwapchainKHR &Swapchain::getSwapChainHandle()
+			VkSwapchainKHR &Swapchain::get_swap_chain_handle()
 			{
 				return properties.vk_swapChain;
 			}
 
-			uint32_t Swapchain::getNumberOfImages()
+			uint32_t Swapchain::get_number_of_images()
 			{
 				return static_cast<uint32_t>(vk_images.size());
 			}
@@ -142,7 +142,7 @@ namespace Canella
 				// If we don't get the first format, we take the first one.
 				return formats[0];
 			}
-			void Swapchain::createSwapchainViews(Device &device)
+			void Swapchain::create_swapchain_views(Device &device)
 			{
 
 				size_t n = vk_images.size();
@@ -172,7 +172,7 @@ namespace Canella
 				Canella::Logger::Debug("Sucessfully created Swapchain Images");
 			}
 
-			void Swapchain::aquireSwapChainImages(Device &device)
+			void Swapchain::aquire_swapchain_images(Device &device)
 			{
 
 				uint32_t imageCount;
@@ -184,7 +184,7 @@ namespace Canella
 				vkGetSwapchainImagesKHR(device.getLogicalDevice(), properties.vk_swapChain, &imageCount, vk_images.data());
 			}
 
-			void Swapchain::createSwapChain(Device &device, Surface &surface, QueueSharingMode &queueSharingMode)
+			void Swapchain::create_swapchain(Device &device, Surface &surface, QueueSharingMode &queueSharingMode)
 			{
 
 				VkSwapchainCreateInfoKHR createInfo{};

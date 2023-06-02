@@ -41,7 +41,7 @@ namespace Canella {
                 RenderNode(const std::string&,NodeType);
                 RenderNode(const RenderNode& other) = delete;
                 ~RenderNode() = default;
-
+                //execute the work of tthe render node
                 virtual void execute(Canella::Render*, VkCommandBuffer, int ) ;
                 //Give the node the resource loading logic
                 virtual void load_transient_resources(Canella::Render*);
@@ -50,18 +50,17 @@ namespace Canella {
                 //write the outputs
                 virtual void write_outputs();
                 std::vector<std::shared_ptr<RenderNode>> descedent_nodes;
-
+                TimeQueryData timeQuery;
+                bool debug_statics = true;
                 NodeType type;
+
             protected:
                 ResourcesRef inputs;
                 ResourcesRef outputs;
                 ResourcesRef transients;
-
                 bool begin_render_pass = true;
                 bool end_render_pass = true;
-
                 std::shared_ptr<RenderNode> parent = nullptr;
-
                 //Name of the render node that produces the input for this node
                 std::string procuder_name;
                 std::string pipeline_name;
@@ -72,8 +71,6 @@ namespace Canella {
 			};
 
             using RefRenderNode =  std::shared_ptr<RenderNode>;
-
-
 			class RenderGraph{
             public:
 
@@ -90,7 +87,7 @@ namespace Canella {
                 void destroy_render_graph();
                 void destroy_render_node(const RefRenderNode &);
                 void load_node_transient_resources(RefRenderNode ,Canella::Render*);
-
+                std::vector<TimeQueryData*> time_queries;
             private:
                 RefRenderNode start;
             };

@@ -19,7 +19,7 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::execute(
 
     std::vector<VkClearValue> clear_values = {};
     clear_values.resize(2);
-    clear_values[0].color = {{.0f, 1.0f, 1.f, 1.0f}};
+    clear_values[0].color = {{NORMALIZE_COLOR(0), NORMALIZE_COLOR(0), NORMALIZE_COLOR(0), 1.0f}};
     clear_values[1].depthStencil = {1.0f};
 
     const auto render_pass = renderpasses[renderpass_name].get();
@@ -78,8 +78,9 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::execute(
                 VK_QUERY_RESULT_64_BIT
         );
 
-        //Canella::Logger::Info("%f", (queries.time_stamps[1] - queries.time_stamps[0]) *
-        //device.timestamp_period/1000000.0f);
+        auto time = (queries.time_stamps[1] - queries.time_stamps[0]) *
+        device.timestamp_period/1000000.0f;
+        timeQuery.time = time;
     }
 
 }
@@ -88,7 +89,7 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::load_transient_re
                                                                                         Canella::Render *render)
 {
     auto vulkan_renderer =(VulkanBackend::VulkanRender*)render;
-    auto number_of_images = vulkan_renderer->swapChain.getNumberOfImages();
+    auto number_of_images = vulkan_renderer->swapChain.get_number_of_images();
     const auto& drawables = render->get_drawables();
     auto& descriptor_pool = vulkan_renderer->descriptorPool;
     auto& cached_descriptor_set_layouts = vulkan_renderer->cachedDescriptorSetLayouts;
@@ -259,6 +260,11 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::clear_render_node
     }
     descriptors.clear();
 
+}
+
+Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::MeshletGBufferPass() {
+    timeQuery.name = "DrawMeshTasks";
+    timeQuery.description = "Time for rendering the meses using mesh shaders and taskshaders";
 }
 
 

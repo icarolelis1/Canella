@@ -26,23 +26,6 @@ namespace Canella
 
             class Swapchain
             {
-            private:
-                SwapchainProperties properties;
-
-                void createSwapChain(Device &device, Surface &surface, QueueSharingMode &queueSharingMode);
-                void aquireSwapChainImages(Device &device);
-                void createSwapchainViews(Device &device);
-                bool querySwapChainProperties(VkPhysicalDevice device, VkSurfaceKHR surface, VkFormat &desiredFormat, GLFWwindow *window);
-
-                VkSurfaceFormatKHR chooseFormat(std::vector<VkSurfaceFormatKHR> formats, VkFormat desiredFormat);
-                VkExtent2D chooseImageExtent(const VkSurfaceCapabilitiesKHR &capabilities, GLFWwindow *window);
-                VkPresentModeKHR choosePresentationMode(std::vector<VkPresentModeKHR> &presentModes);
-
-                uint32_t width;
-                uint32_t height;
-                std::vector<VkImage> vk_images;
-                std::vector<VkImageView> vk_imageViews;
-                std::vector<VkDeviceMemory> vk_deviceMemories;
 
             public:
                 Swapchain() = default;
@@ -62,9 +45,26 @@ namespace Canella
                 VkExtent2D getExtent();
                 VkViewport get_view_port();
                 VkRect2D get_rect2d();
-                uint32_t getNumberOfImages();
+                uint32_t get_number_of_images();
                 VkFormat getFormat();
-                VkSwapchainKHR &getSwapChainHandle();
+                VkSwapchainKHR &get_swap_chain_handle();
+            private:
+                SwapchainProperties properties;
+
+                void create_swapchain(Device &device, Surface &surface, QueueSharingMode &queueSharingMode);
+                void aquire_swapchain_images(Device &device);
+                void create_swapchain_views(Device &device);
+                bool query_swapchain_properties(VkPhysicalDevice device, VkSurfaceKHR surface, VkFormat &desiredFormat, GLFWwindow *window);
+
+                VkSurfaceFormatKHR chooseFormat(std::vector<VkSurfaceFormatKHR> formats, VkFormat desiredFormat);
+                VkExtent2D chooseImageExtent(const VkSurfaceCapabilitiesKHR &capabilities, GLFWwindow *window);
+                VkPresentModeKHR choosePresentationMode(std::vector<VkPresentModeKHR> &presentModes);
+
+                uint32_t width;
+                uint32_t height;
+                std::vector<VkImage> vk_images;
+                std::vector<VkImageView> vk_imageViews;
+                std::vector<VkDeviceMemory> vk_deviceMemories;
             };
         };
 

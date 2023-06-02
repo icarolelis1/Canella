@@ -37,14 +37,17 @@ namespace Canella
                 void build(nlohmann::json&) override;
                 void render(glm::mat4& viewProjection) override;
                 void update(float time) override;
-
                 void begin_command_buffer(VkCommandBuffer);
-                VkCommandBuffer request_command_buffer(VkCommandBufferLevel);
                 void end_command_buffer(VkCommandBuffer);
                 void enqueue_drawables(Drawables&) override;
-                unsigned int current_frame = 0;
+                void log_statistic_data(TimeQueryData&) override;
+                VkCommandBuffer request_command_buffer(VkCommandBufferLevel);
                 Drawables &get_drawables() override;
+                Event<VkCommandBuffer&,uint32_t,FrameData&> OnRecordCommandEvent;
 
+#if RENDER_EDITOR_LAYOUT
+                std::vector<TimeQueryData*> get_render_graph_timers();
+#endif
                 Device device;
                 Pipelines cachedPipelines;
                 PipelineLayouts cachedPipelineLayouts;
@@ -58,15 +61,15 @@ namespace Canella
                 Swapchain swapChain;
                 RenderpassManager renderpassManager;
                 Instance *instance;
-                Event<VkCommandBuffer&,uint32_t,FrameData&> OnRecordCommandEvent;
-			private:
+                unsigned int current_frame = 0;
+
+            private:
                 Surface surface;
                 std::vector<ResourceAccessor> global_buffers;
                 Drawables m_drawables;
                 RenderGraph render_graph;
                 Windowing* window;
                 Commandpool command_pool;
-
 
                 void record_command_index(VkCommandBuffer& commandBuffer, glm::mat4&viewProjection,uint32_t index);
                 void cache_pipelines(const char* pipelines);
@@ -75,11 +78,11 @@ namespace Canella
                 void allocate_global_usage_buffers();
                 void write_global_descriptorsets();
                 void destroy_pipeline_layouts();
-                void init_vulkan_instance();
+                void setup_renderer_events();
                 void init_descriptor_pool();
+                void init_vulkan_instance();
                 void destroy_pipelines();
                 void setup_frames();
-                void setup_renderer_events();
                 float t = 0;
             };
         }

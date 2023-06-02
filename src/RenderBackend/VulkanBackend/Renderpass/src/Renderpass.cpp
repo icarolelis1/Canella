@@ -125,7 +125,7 @@ namespace Canella
                 {
 
                     auto number_of_images = image_meta["NumberOfImages"].get<std::uint32_t>();
-                    if(number_of_images == -1) number_of_images = swapchain->getNumberOfImages();
+                    if(number_of_images == -1) number_of_images = swapchain->get_number_of_images();
                     auto format_str = image_meta["Format"].get<std::string>();
                     VkFormat format;
 

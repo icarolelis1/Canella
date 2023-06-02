@@ -15,7 +15,7 @@ namespace Canella {
                     std::vector<VkDescriptorSet> indices_descriptorset;
                 };
 
-                MeshletGBufferPass() = default;
+                MeshletGBufferPass();
                 ~MeshletGBufferPass();
                 void load_transient_resources(Canella::Render *render) override;
                 void execute(Canella::Render *render,VkCommandBuffer,int) override;
@@ -32,7 +32,6 @@ namespace Canella {
                 RenderQueries queries;
                 void setup_reload_resource_event(Canella::Render*);
                 void clear_render_node(Canella::Render *render);
-                bool debug_statics = true;
                 bool post_first_load = false;
                 Device* device;
             };
