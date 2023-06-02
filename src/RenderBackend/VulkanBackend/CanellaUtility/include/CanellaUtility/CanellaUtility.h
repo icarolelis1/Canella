@@ -7,6 +7,7 @@
 #include <vulkan/vulkan.h>
 #include <fstream>
 #include <random>
+#define NORMALIZE_COLOR(x) (x/255.f)
 
 namespace Canella
 {

@@ -62,9 +62,18 @@ endif()
 # GLM
 #find_package(glm REQUIRED PATHS ${LIBS_DIR}/glm/lib/cmake/glm)
 
-add_executable(${PROJECT_NAME}  main.cpp)
+
+add_executable(${PROJECT_NAME}  main.cpp src/Editor/src/Editor.cpp)
 
 target_link_directories(${PROJECT_NAME} PUBLIC $ENV{VULKAN_SDK}/Lib ${GLFW_LIB}  ${OS_LIBS_DIR}/assimp/lib/)
+
+
+#Setup Imgui
+file (GLOB IMGUI_SRC
+        "src/ImGUI/*.cpp")
+add_library(
+        ImGUI
+        ${IMGUI_SRC})
 
 include_directories(${PROJECT_NAME} PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/nlhoman
@@ -74,7 +83,11 @@ include_directories(${PROJECT_NAME} PUBLIC
   $ENV{VULKAN_SDK}/Include
   ${LIBS_DIR}/interface
   ${OS_LIBS_DIR}/assimp/include
-)
+  src/Eventsystem/include
+  src/Editor/include
+  src/Logger/include
+  src/ImGUI
+        )
 
 add_subdirectory(src)
 
@@ -84,6 +97,7 @@ IF(WIN32)
     Engine
     vulkan-1
     assimp-vc143-mtd
+    ImGUI
     )
 
 ELSEIF(UNIX)

@@ -16,6 +16,9 @@
 #include "Window/Window.h"
 #include "ComponentBase.h"
 #include "RenderGraph/RenderGraph.h"
+#include "Eventsystem/Eventsystem.hpp"
+
+#define RENDER_EDITOR_LAYOUT 1
 
 namespace Canella
 {
@@ -27,51 +30,62 @@ namespace Canella
 
 			class VulkanRender : public Render
 			{
+            public:
+                VulkanRender();
+                void destroy();
+                void set_windowing(Windowing* window);
+                void build(nlohmann::json&) override;
+                void render(glm::mat4& viewProjection) override;
+                void update(float time) override;
+                void begin_command_buffer(VkCommandBuffer);
+                void end_command_buffer(VkCommandBuffer);
+                void enqueue_drawables(Drawables&) override;
+                void log_statistic_data(TimeQueryData&) override;
+                VkCommandBuffer request_command_buffer(VkCommandBufferLevel);
+                Drawables &get_drawables() override;
+                Event<VkCommandBuffer&,uint32_t,FrameData&> OnRecordCommandEvent;
 
-				Surface surface;
-				Instance *instance;
-				std::vector<std::shared_ptr<Buffer>> global_buffers;
-				Drawables m_drawables;
-				RenderGraph render_graph;
-
-				void init_descriptor_pool();
-				void init_vulkan_instance();
-				void setup_frames();
-				void cache_pipelines(const char* pipelines);
-				void record_command_index(VkCommandBuffer& commandBuffer, glm::mat4&viewProjection,uint32_t index);
-				void allocate_global_usage_buffers();
-				void destroy_descriptor_set_layouts();
-				void write_global_descriptorsets();
-				void destroy_pipeline_layouts();
-				void allocate_global_descriptorsets();
-                float t = 0;
-			public:
-                PFN_vkCmdDrawMeshTasksEXT vkCmdDrawMeshTasksEXT;
-                DescriptorSetLayouts cachedDescriptorSetLayouts;
-                Pipelines cachedPipelines;
-                std::vector<FrameData> frames;
-                ResourcesManager resources_manager;
-
+#if RENDER_EDITOR_LAYOUT
+                std::vector<TimeQueryData*> get_render_graph_timers();
+#endif
                 Device device;
+                Pipelines cachedPipelines;
+                PipelineLayouts cachedPipelineLayouts;
+                DescriptorSetLayouts cachedDescriptorSetLayouts;
+                PFN_vkCmdDrawMeshTasksEXT vkCmdDrawMeshTasksEXT;
+                std::vector<FrameData> frames;
+                std::vector<VkDescriptorSet> global_descriptors;
+                ResourcesManager resources_manager;
                 Descriptorpool descriptorPool;
                 Commandpool transfer_pool;
                 Swapchain swapChain;
-                std::vector<VkDescriptorSet> global_descriptors;
+                RenderpassManager renderpassManager;
+                Instance *instance;
                 unsigned int current_frame = 0;
-                PipelineLayouts cachedPipelineLayouts;
-                Drawables &get_drawables() override;
-                std::unique_ptr<RenderpassManager> renderpassManager;
 
-				VulkanRender(nlohmann::json& config, Windowing* window);
-				~VulkanRender();
-				void render(glm::mat4& viewProjection) override;
-				void update(float time) override;
-                void enqueue_drawables(Drawables&) override;
+            private:
+                Surface surface;
+                std::vector<ResourceAccessor> global_buffers;
+                Drawables m_drawables;
+                RenderGraph render_graph;
+                Windowing* window;
+                Commandpool command_pool;
 
-
+                void record_command_index(VkCommandBuffer& commandBuffer, glm::mat4&viewProjection,uint32_t index);
+                void cache_pipelines(const char* pipelines);
+                void destroy_descriptor_set_layouts();
+                void allocate_global_descriptorsets();
+                void allocate_global_usage_buffers();
+                void write_global_descriptorsets();
+                void destroy_pipeline_layouts();
+                void setup_renderer_events();
+                void init_descriptor_pool();
+                void init_vulkan_instance();
+                void destroy_pipelines();
+                void setup_frames();
+                float t = 0;
             };
-
-		}
+        }
 	}
 }
 #endif

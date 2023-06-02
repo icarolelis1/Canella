@@ -145,8 +145,7 @@ PipelineLayout Pipeline::getPipelineLayoutHandle()
     return pipelineLayout;
 }
 
-Pipeline::~Pipeline()
-{
+void Pipeline::destroy() {
     vkDestroyPipeline(device->getLogicalDevice(), vk_pipeline, device->getAllocator());
 }
 

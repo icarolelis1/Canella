@@ -15,6 +15,7 @@ namespace Canella {
     using EntityLibrary = std::unordered_map<entt::entity, std::shared_ptr<Entity>>;
     class Scene : public std::enable_shared_from_this<Scene> {
     public:
+
         Scene() = default;
         ~Scene() = default;
         Entity CreateEntity();

@@ -47,6 +47,7 @@ void Canella::RenderSystem::VulkanBackend::RenderGraph::load_render_node(const n
                                                                          const RefRenderNode &ref_node,
                                                                          Canella::Render *render)
 {
+    //todo propagete this to all descendentes nodes
     //Load the renderGraph recursively from the json file.
     for(const auto& descendent : entry["Descendents"])
     {
@@ -55,8 +56,8 @@ void Canella::RenderSystem::VulkanBackend::RenderGraph::load_render_node(const n
         render_node->load_render_node(descendent);
         //add to the descendent vector
         ref_node->descedent_nodes.push_back(render_node);
-        //Repeate the process recursively looking into Descendents descendents.
-       // load_render_node(entry["Descendents"]["Descendents"],render_node);
+        //store the timequery reference for the node in case of logging data
+        time_queries.push_back(&render_node->timeQuery);
     }
 }
 
@@ -85,9 +86,11 @@ void Canella::RenderSystem::VulkanBackend::RenderGraph::execute_descendent(
                                                                     int image_index)
 {
 
-    for(const auto& descendent : node->descedent_nodes){
-
+    for(const auto& descendent : node->descedent_nodes)
+    {
         descendent->execute(render,command,image_index);
+        if(descendent->debug_statics)
+            render->log_statistic_data(descendent->timeQuery);
         execute_descendent(descendent,command,render,image_index);
     }
 }
@@ -106,3 +109,18 @@ void Canella::RenderSystem::VulkanBackend::RenderGraph::load_node_transient_reso
         load_node_transient_resources(descendent,render);
     }
 }
+
+void Canella::RenderSystem::VulkanBackend::RenderGraph::destroy_render_graph() {
+    destroy_render_node( start );
+
+}
+
+void Canella::RenderSystem::VulkanBackend::RenderGraph::destroy_render_node(
+        const Canella::RenderSystem::VulkanBackend::RefRenderNode & node)
+{
+    for(auto& descendent : node->descedent_nodes){
+        destroy_render_node(descendent);
+        descendent.reset();
+    }
+}
+

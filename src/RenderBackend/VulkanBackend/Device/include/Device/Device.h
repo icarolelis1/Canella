@@ -100,6 +100,28 @@ namespace Canella
             using Surface = VkSurfaceKHR;
             class Device
             {
+            public:
+                Device();
+                ~Device() = default;
+                QueueSharingMode getQueueSharingMode();
+                VkDevice &getLogicalDevice();
+                VkDevice *getLogicalDevicePtr();
+                VkPhysicalDevice &getPhysicalDevice();
+                VkPhysicalDevice *getPhysicalDevicePtr();
+                VkFormat get_depth_supported_format(const std::vector<VkFormat>&, VkImageTiling, VkFormatFeatureFlags);
+                uint32_t getGraphicsQueueIndex() const;
+                VkQueue getGraphicsQueueHandle() const;
+                VkQueue  getTransferQueueHandle() const;
+                uint32_t getPresentQueueIndex()  const;
+                const VkAllocationCallbacks* getAllocator();
+                uint32_t getTransferQueueIndex() const;
+                uint32_t getComputeQueueIndex() const;
+                bool prepareDevice(VkSurfaceKHR surface, Instance instance);
+                void destroyDevice();
+                VkFormat get_depth_format();
+                float timestamp_period;
+
+            private:
                 bool bindless_suported;
                 bool mesh_shader_supported;
                 VkDevice logicalDevice;
@@ -122,30 +144,12 @@ namespace Canella
                 bool querySwapChainProperties(VkPhysicalDevice device, Surface surface);
                 void enableMeshShaderExtension();
                 void createLogicalDevice();
-
+                VkFormat  depth_format;
                 size_t getMinimumBufferAligment();
                 std::vector<const char*> deviceExtensions;
                 VkPhysicalDeviceDescriptorIndexingFeatures indexing_features{};
                 VkPhysicalDeviceMeshShaderFeaturesEXT enabledMeshShaderFeatures{};
-            public:
-                Device();
-                QueueSharingMode getQueueSharingMode();
-                VkDevice &getLogicalDevice();
-                VkDevice *getLogicalDevicePtr();
-                VkPhysicalDevice &getPhysicalDevice();
-                VkPhysicalDevice *getPhysicalDevicePtr();
-                VkFormat get_depth_supported_format(const std::vector<VkFormat>&, VkImageTiling, VkFormatFeatureFlags);
-                uint32_t getGraphicsQueueIndex() const;
-                VkQueue getGraphicsQueueHandle() const;
-                VkQueue  getTransferQueueHandle() const;
-                uint32_t getPresentQueueIndex()  const;
-                const VkAllocationCallbacks* getAllocator();
-                uint32_t getTransferQueueIndex() const;
-                uint32_t getComputeQueueIndex() const;
-                bool prepareDevice(VkSurfaceKHR surface, Instance instance);
-                ~Device();
-                void destroyDevice();
-                float timestamp_period;
+
             };
         }
     }

@@ -49,7 +49,6 @@ target_include_directories(
     RenderBackend/VulkanBackend/RenderGraph/include
     SpirV/
     Window/include
-    Logger/include
     Input/include
     Render/include
     Meshoptimizer_
@@ -60,7 +59,6 @@ add_library(
     Systems
     Window/src/Window.cpp
     Input/src/Input.cpp
-    Eventsystem/src/Eventsystem.cpp
     JobSystem/src/JobSystem.cpp
 )
 
@@ -68,23 +66,11 @@ target_include_directories(
     Systems 
     PUBLIC Window/include
     Threadpool/include
-    Eventsystem/include
-    Logger/include
     Input/include
     JobSystem/include
     Containers/include
 )
 
-
- file (GLOB IMGUI_SRC
-         "ImGUI/*.cpp"
-         )
- add_library(
-         ImGUI
-         ${IMGUI_SRC}) 
- target_include_directories(ImGUI
-         PUBLIC ImGUI)
- target_link_libraries(Render PUBLIC ImGUI)
 
 file (GLOB MESHOPT_SRC
     "Meshoptimizer_/*.cpp"

@@ -2,9 +2,10 @@
 #ifndef COMMAND_POOL
 #define COMMAND_POOL
 
+//Todo Fix naming convention inconsistence
 /**
  * @file Commandpool.h
- * @author your name (you@domain.com)
+ * @author Icaro (you@domain.com)
  * @brief Command pool that allocates commandbuffer
  * @version 0.1
  * @date 2022-09-08
@@ -76,7 +77,7 @@ namespace Canella
                  * @param buffer
                  * @param single_usage Whether the command is single_usage or not (This can be used to get performance)
                  */
-                void beginCommandBuffer(Device* device, VkCommandBuffer &buffer, bool single_usage = false) const;
+                void begin_command_buffer(Device* device, VkCommandBuffer &buffer, bool single_usage = false) const;
 
                 /**
                  * @brief Calls vkEndCommandBuffer on the commandBuffer changing it's state to PENDING again

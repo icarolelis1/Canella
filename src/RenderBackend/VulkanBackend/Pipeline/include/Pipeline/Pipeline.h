@@ -208,7 +208,8 @@ namespace Canella {
 
 			public:
 				DescriptorSetLayout(Device* _device, const std::vector<ShaderBindingResource> _resources, const char* description = "GenericSet");
-				std::vector< VkDescriptorSetLayoutBinding> getBindings() const;
+				~DescriptorSetLayout() = default;
+                std::vector< VkDescriptorSetLayoutBinding> getBindings() const;
 				VkDescriptorSetLayout& getDescriptorLayoutHandle();
 				void destroy(Device*);
 
@@ -226,6 +227,7 @@ namespace Canella {
 				PipelineLayout(Device* _device,
 					std::vector<std::shared_ptr<DescriptorSetLayout>> _descriptors,
 					std::vector<VkPushConstantRange> _pushConstants);
+                ~PipelineLayout() = default;
 				VkPipelineLayout getHandle();
 				void destroy(Device * device);
 
@@ -240,11 +242,12 @@ namespace Canella {
 
 			public:
 				Pipeline(Device* _device, PipelineLayout _pipelienLayout, std::vector<Shader> shaders, PipelineProperties& info, uint32_t bindingCount =0);
+				~Pipeline() = default;
+                void destroy();
 				VkPipeline& getPipelineHandle();
 				PipelineLayout getPipelineLayoutHandle();
 				const char* id;
-				~Pipeline();
-			private:	
+			private:
 				Device* device;
 				VkPipeline vk_pipeline;
 				VkPipelineCache vk_cache;
