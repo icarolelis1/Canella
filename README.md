@@ -18,6 +18,7 @@ Experiments on crafting a 3D vulkan game engine.
 - Vertex Skinning and
 - Implement more render nodes (PBR path with indirect diffuse, HBAO+,Bloom etc...)
 - Multhread command buffer generation
+- and the list will go on forever...
 
 # Dependencies
 ## Dependencies
@@ -27,7 +28,6 @@ Experiments on crafting a 3D vulkan game engine.
 - Meshoptmizer https://github.com/zeux/meshoptimizer
 - glfw https://www.glfw.org
 - glm https://github.com/g-truc/glm
-- and the list will go on forever...
 
 # Build
 clone the project 
