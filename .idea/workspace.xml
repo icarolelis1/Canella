@@ -31,13 +31,24 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f3fc5e0f-8f89-4e41-a906-50d83f14594e" name="Changes" comment="" />
+    <list default="true" id="f3fc5e0f-8f89-4e41-a906-50d83f14594e" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Components/include/Components/Components.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/include/Components/Components.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Editor/include/Editor/Editor.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Editor/include/Editor/Editor.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Editor/src/Editor.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Editor/src/Editor.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Entity/include/Entity.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Entity/include/Entity.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Project/src/Project.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Project/src/Project.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/RenderNodes.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/RenderNodes.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Serializer/src/Serializer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Serializer/src/Serializer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Systems/src/Systems.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Systems/src/Systems.cpp" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="ClangdSettings">
+    <option name="clangTidyViaClangd" value="false" />
     <option name="formatViaClangd" value="false" />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
@@ -191,7 +202,7 @@
       <workItem from="1685661031640" duration="4758000" />
       <workItem from="1685710492255" duration="1974000" />
       <workItem from="1685713115152" duration="11697000" />
-      <workItem from="1685745838060" duration="7000" />
+      <workItem from="1685745838060" duration="7679000" />
     </task>
     <servers />
   </component>
@@ -219,29 +230,9 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/ImGUI/imgui.cpp</url>
-          <line>7030</line>
-          <option name="timeStamp" value="532" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/ImGUI/imgui.cpp</url>
-          <line>7031</line>
-          <option name="timeStamp" value="533" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/ImGUI/imgui.cpp</url>
-          <line>7032</line>
-          <option name="timeStamp" value="534" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/ImGUI/imgui.cpp</url>
-          <line>7034</line>
-          <option name="timeStamp" value="535" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/ImGUI/imgui.cpp</url>
-          <line>7040</line>
-          <option name="timeStamp" value="536" />
+          <url>file://$PROJECT_DIR$/src/Components/include/Components/Components.h</url>
+          <line>75</line>
+          <option name="timeStamp" value="539" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

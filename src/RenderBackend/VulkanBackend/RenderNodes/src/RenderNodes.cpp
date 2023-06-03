@@ -19,7 +19,7 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::execute(
 
     std::vector<VkClearValue> clear_values = {};
     clear_values.resize(2);
-    clear_values[0].color = {{NORMALIZE_COLOR(0), NORMALIZE_COLOR(0), NORMALIZE_COLOR(0), 1.0f}};
+    clear_values[0].color = {{NORMALIZE_COLOR(70), NORMALIZE_COLOR(70), NORMALIZE_COLOR(70), 1.0f}};
     clear_values[1].depthStencil = {1.0f};
 
     const auto render_pass = renderpasses[renderpass_name].get();
@@ -263,8 +263,8 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::clear_render_node
 }
 
 Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::MeshletGBufferPass() {
-    timeQuery.name = "DrawMeshTasks";
-    timeQuery.description = "Time for rendering the meses using mesh shaders and taskshaders";
+    timeQuery.name = "DrawMeshTasks (GPU time)";
+    timeQuery.description = "Time for rendering the meshes using mesh shaders and taskshaders";
 }
 
 

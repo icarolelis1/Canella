@@ -44,7 +44,7 @@ void Canella::Serializer::LoadEntities(std::shared_ptr<Scene> scene, const std::
     for (auto entity_meta : scene_data["Entities"])
     {
         Entity created_entity = scene->CreateEntity();
-        LoadComponents(scene, created_entity.RawId(), entity_meta["Components"]);
+        LoadComponents(scene, created_entity.raw_id(), entity_meta["Components"]);
     }
 }
 
@@ -92,21 +92,21 @@ void Canella::Serializer::DeserializeEntities(
         nlohmann::json& components = entity["Components"];
         
         auto view = scene->m_registry.view<TransformComponent,CameraComponent,ModelAssetComponent>();
-        if(iterator->second->HasComponent<CameraComponent>())
+        if(iterator->second->has_component<CameraComponent>())
         {
             nlohmann::json component;
             DeserializeCamera(component,view.get<CameraComponent>(iterator->first));
             components.push_back(component);
         }
 
-        if(iterator->second->HasComponent<TransformComponent>())
+        if(iterator->second->has_component<TransformComponent>())
         {
             nlohmann::json component;
             DeserializeTransform(component,view.get<TransformComponent>(iterator->first));
             components.push_back(component);
         }
 
-        if(iterator->second->HasComponent<ModelAssetComponent>())
+        if(iterator->second->has_component<ModelAssetComponent>())
         {
             nlohmann::json component;
             DeserializeMeshAsset(component,view.get<ModelAssetComponent>(iterator->first));

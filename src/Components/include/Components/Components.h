@@ -10,7 +10,7 @@
 #include "json.hpp"
 #include <map>
 #include "Render/Render.h"
-
+#include "CanellaUtility/CanellaUtility.h"
 namespace Canella
 {
     struct Euler
@@ -62,6 +62,42 @@ namespace Canella
         std::string source;
         bool isStatic = false;
         ModelAssetComponent() = default;
+    };
+
+    class ScriptableEntity{
+
+    };
+
+    struct ScriptTest : public ScriptableEntity
+    {
+        void instantiate(){}
+        void destroy(){}
+        void on_create(){
+            Canella::Logger::Error("CALLING ON CREATE BITCH")
+            ;}
+        void on_update(float t){ Canella::Logger::Info("SCRIPT IS WORKING");}
+        void on_destroy(){ Canella::Logger::Info("DESTROING");}
+    };
+
+    struct Behavior{
+        std::function<void()> instantiate;
+        std::function<void(ScriptableEntity* entit)> on_create;
+        std::function<void(ScriptableEntity*,float)> on_update;
+        std::function<void(ScriptableEntity* entit)> on_destroy;
+        std::function<void()> destroy;
+
+        ScriptableEntity * entity;
+        template<typename T>
+        void bind(){
+
+            instantiate = [&](){ entity = new T();};
+            destroy = [&](){ delete (T*)entity; entity = nullptr; };
+            on_create = [](ScriptableEntity* entity) {
+                ((T*)entity)->on_create();
+            };
+            on_update = [](ScriptableEntity* entity,float t) {((T*)entity)->on_update(t);};
+            on_destroy = [](ScriptableEntity* entity) {((T*)entity)->on_destroy();};
+        }
     };
 
     void SerializeTransform(nlohmann::json& data,entt::registry& registry,entt::entity entity);

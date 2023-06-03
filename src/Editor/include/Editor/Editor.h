@@ -18,6 +18,8 @@
 #define TITLE_BG ImColor(92, 44, 12)
 #define BORDER   ImColor(130, 140, 148)
 #define FONT_COLOR ImColor(130, 140, 148)
+#define MENU_BG ImColor(251, 243, 212)
+
 #endif
 
 

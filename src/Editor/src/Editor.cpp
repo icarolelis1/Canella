@@ -100,6 +100,7 @@ void Canella::Editor::setup_imgui() {
     style.Colors[ImGuiCol_TabHovered] = ImColor(225, 0, 0);
     style.Colors[ImGuiCol_FrameBg] = ImColor(255, 0, 0);
     style.Colors[ImGuiCol_TitleBgActive] = ImColor(79, 53, 64);
+    style.Colors[ImGuiCol_MenuBarBg] = MENU_BG;
 
     ImGui_ImplGlfw_InitForVulkan(window.m_window, true);
 
@@ -164,17 +165,19 @@ void Canella::Editor::render_editor_gui(VkCommandBuffer& dsds,uint32_t image_ind
 }
 
 void Canella::Editor::editor_layout() {
-    if(!ImGui::Begin("Canella", 0, ImGuiWindowFlags_AlwaysAutoResize)){
+    if(!ImGui::Begin("Canella"  )){
         ImGui::End();
         return;
     }
 
-    if(ImGui::BeginMenuBar()){
+    if(ImGui::BeginMainMenuBar()){
         if (ImGui::BeginMenu("Menu"))
         {
+            if (ImGui::MenuItem("Quit")) { Canella::Logger::Info("Quit");}
+            //if (ImGui::MenuItem("Open", "Ctrl+O")) {}
             ImGui::EndMenu();
         }
-        ImGui::EndMenuBar();
+        ImGui::EndMainMenuBar();
     }
     auto i = 0 ;
     for(auto* timer : time_queries)
@@ -185,7 +188,7 @@ void Canella::Editor::editor_layout() {
         i++;
     }
     ImGui::End();
-    ImGui::ShowDemoWindow();
+    //ImGui::ShowDemoWindow();
 }
 
 
