@@ -11,31 +11,36 @@ layout(triangles, max_vertices = 64, max_primitives = 124) out;
 
 layout (set = 0 ,binding = 0) uniform UBO 
 {
-	mat4 projection;
+	mat4 view_projection;
 	mat4 model;
-	mat4 view;
 } ubo;
 
-layout(std430,set = 1 ,binding = 0) readonly  buffer Meshlets
+layout(std430,set = 1 ,binding = 0) readonly  buffer Model_Matrixes
+{
+	mat4 model_Matrixes[];
+};
+
+
+layout(std430,set = 2 ,binding = 0) readonly  buffer Meshlets
 {
 	Meshlet meshlets[];
 };
 
-layout(std430, set = 1 ,binding = 1) readonly  buffer Vertices
+layout(std430, set = 2 ,binding = 1) readonly  buffer Vertices
 {
 	Vertex vertices[];
 };
-layout(set = 1 ,binding = 2)readonly  buffer Bounds
+layout(set = 2 ,binding = 2)readonly  buffer Bounds
 {
 	MeshletBound bounds[];
 };
 
-layout( set = 1 ,binding = 3) readonly buffer MeshletIndices
+layout( set = 2 ,binding = 3) readonly buffer MeshletIndices
 {
 	uint8_t meshlet_indices[];
 };
 
-layout( set = 1 ,binding = 4) readonly buffer MeshletVertices
+layout( set = 2 ,binding = 4) readonly buffer MeshletVertices
 {
 	uint meshlet_vertices[];
 };
@@ -70,8 +75,8 @@ void main()
  uint mi = IN.meshletIndices[mgi];
  Meshlet meshlet = meshlets[mi];
  
- mat4 model = ubo.model;
- mat4 mvp = ubo.projection* ubo.view;
+ mat4 model = model_Matrixes[0];
+ mat4 mvp = ubo.view_projection;
 
 if( ti < meshlet.vertex_count   )
 {

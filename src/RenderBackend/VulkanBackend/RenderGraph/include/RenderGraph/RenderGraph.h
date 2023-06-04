@@ -6,6 +6,7 @@
 #include "Device/Device.h"
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 #include "json.hpp"
 
@@ -15,6 +16,7 @@
 namespace Canella {
 	namespace RenderSystem {
 		namespace VulkanBackend {
+			class MeshletGBufferPass;
             enum NodeType{
                 Compute,
                 Render,
@@ -41,6 +43,7 @@ namespace Canella {
                 RenderNode(const std::string&,NodeType);
                 RenderNode(const RenderNode& other) = delete;
                 ~RenderNode() = default;
+				//Todo try to improve this using Variants or no inheritance  mechanism
                 //execute the work of tthe render node
                 virtual void execute(Canella::Render*, VkCommandBuffer, int ) ;
                 //Give the node the resource loading logic

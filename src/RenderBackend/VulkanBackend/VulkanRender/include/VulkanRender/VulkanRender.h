@@ -19,7 +19,7 @@
 #include "Eventsystem/Eventsystem.hpp"
 
 #define RENDER_EDITOR_LAYOUT 1
-
+#define MAX_OBJECTS_TRANSFORM 500
 namespace Canella
 {
 	namespace RenderSystem
@@ -32,19 +32,21 @@ namespace Canella
 			{
             public:
                 VulkanRender();
-                void destroy();
-                void set_windowing(Windowing* window);
-                void build(nlohmann::json&) override;
+
+                VkCommandBuffer request_command_buffer(VkCommandBufferLevel);
                 void render(glm::mat4& viewProjection) override;
-                void update(float time) override;
+                void log_statistic_data(TimeQueryData&) override;
+                void enqueue_drawables(Drawables&) override;
                 void begin_command_buffer(VkCommandBuffer);
                 void end_command_buffer(VkCommandBuffer);
-                void enqueue_drawables(Drawables&) override;
-                void log_statistic_data(TimeQueryData&) override;
-                VkCommandBuffer request_command_buffer(VkCommandBufferLevel);
+                void set_windowing(Windowing* window);
+                void build(nlohmann::json&) override;
                 Drawables &get_drawables() override;
-                Event<VkCommandBuffer&,uint32_t,FrameData&> OnRecordCommandEvent;
+                void update(float time) override;
+                void destroy();
 
+
+                Event<VkCommandBuffer&,uint32_t,FrameData&> OnRecordCommandEvent;
 #if RENDER_EDITOR_LAYOUT
                 std::vector<TimeQueryData*> get_render_graph_timers();
 #endif
@@ -55,6 +57,7 @@ namespace Canella
                 PFN_vkCmdDrawMeshTasksEXT vkCmdDrawMeshTasksEXT;
                 std::vector<FrameData> frames;
                 std::vector<VkDescriptorSet> global_descriptors;
+                std::vector<VkDescriptorSet> transform_descriptors;
                 ResourcesManager resources_manager;
                 Descriptorpool descriptorPool;
                 Commandpool transfer_pool;
@@ -66,6 +69,7 @@ namespace Canella
             private:
                 Surface surface;
                 std::vector<ResourceAccessor> global_buffers;
+                std::vector<ResourceAccessor> transform_buffers;
                 Drawables m_drawables;
                 RenderGraph render_graph;
                 Windowing* window;
@@ -77,6 +81,7 @@ namespace Canella
                 void allocate_global_descriptorsets();
                 void allocate_global_usage_buffers();
                 void write_global_descriptorsets();
+                void create_transform_buffers();
                 void destroy_pipeline_layouts();
                 void setup_renderer_events();
                 void init_descriptor_pool();

@@ -16,7 +16,12 @@
             "type" : "MeshAsset",
             "Static":true,
             "Source" : "model_test/samus.glb"
-          },
+          }
+        ]
+      },
+      {
+        "Parent": "Root",
+        "Components": [
           {
             "type": "Camera",
             "Position": {

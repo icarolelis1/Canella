@@ -18,10 +18,6 @@ void Application::load(nlohmann::json& config)
     scene = std::make_shared<Scene>();
     //serialize scene
     serializer.Serialize(scene, config["Scenes"]);
-    auto e1 =  scene->CreateEntity();
-    e1.add_custom_component().bind<ScriptTest>();
-    //init render
-    //render = std::make_unique<RenderSystem::VulkanBackend::VulkanRender>(config["Render"], &window);
     init_systems();
 }
 
@@ -36,6 +32,7 @@ void Application::setup_project_folder(nlohmann::json& data)
 
 void Application::init_systems()
 {
+
     //Loads all the scenes in the scene before run time
     load_meshes_from_scene(assetsFolder,scene);
     std::vector<ModelMesh> meshes;
@@ -44,29 +41,35 @@ void Application::init_systems()
     //Gets the reference for the main Camera
     main_camera = get_main_camera(scene);
 
-    for (auto &[entt_value, entity]: scene->m_EntityLibrary)
-        if (entity->has_component<ModelAssetComponent>())
+    scene->m_registry.view<Behavior>().each([=](auto entity, auto &behavior)
         {
-            auto& comp = entity->get_component<ModelAssetComponent>();
-            auto& m = comp.mesh.meshes;
-        }
+        if (!behavior.instance)
+            {
+                behavior.instance = behavior.instantiate_fn();
+                behavior.instance->entt_entity = entity;
+            }
+            behavior.instance->on_start();
+        });
 }
 
-void Application::update_systems()
+void Application::update_systems(float frame_time)
 {
-    update_camera(main_camera,*window);
-
-    //Update custom components
-    scene->m_registry.view<Behavior>().each([=](auto entity,auto& script){
-        if(!script.entity)
+    //Update main Camera
+    //update_camera(main_camera,*window);
+    //Update Behavior scripts
+    scene->m_registry.view<Behavior>().each([=](auto entity,auto& behavior)
+    {
+        if(!behavior.instance)
         {
-            script.instantiate();
-            script.on_create(script.entity);
+            behavior.instance = behavior.instantiate_fn();
+            behavior.instance->entt_entity = entity;
         }
-        script.on_update(script.entity, 0.0f);
+        behavior.instance->on_update(frame_time);
+
     });
-
-
+    //Todo calculate the model matrix in shader side not CPU.
+    //Update scene transforms
+    update_transforms(scene);
 }
 
 /**
@@ -76,23 +79,20 @@ void Application::run()
 {
     while (playing) {
 
+        float time = (float)glfwGetTime();
+        application_time.time = time - application_time.last_time_frame;
+        frame_time = application_time.time_in_milli();
+        application_time.last_time_frame = time;
         playing = ~window->shouldCloseWindow();
+        
         window->update();
-        update_systems();
-        render->render(main_camera.viewProjection);
+        update_systems(frame_time);
+        render->render(main_camera->viewProjection);
+
 
         if (KeyBoard::getKeyBoard().getKeyPressed(GLFW_KEY_ESCAPE))
-        {
-            // serializer.Deserialize(scene);
             break;
-        }
-        /*for (auto &[entt_value, entity]: scene->m_EntityLibrary)
-            if (entity->has_component<ModelAssetComponent>())
-            {
-                auto& comp = entity->get_component<ModelAssetComponent>();
-                auto& m = comp.mesh.meshes;
-            }
-        */
+
     }
 }
 
@@ -105,18 +105,10 @@ Application::~Application()
 {
     JobSystem::stop();
     close();
-
-    scene->m_registry.view<Behavior>().each([=](auto entity,auto& script){
-        if(!script.entity)
-        {
-            script.instantiate();
-            script.on_create(script.entity);
-        }
-        script.destroy();
-    });
 }
 
-Application::Application(Canella::GlfwWindow *_window, Canella::Render *_render) {
+Application::Application(Canella::GlfwWindow *_window, Canella::Render *_render):application_time(0){
     window = _window;
     render = _render;
 }
+

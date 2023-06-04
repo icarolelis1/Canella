@@ -4,6 +4,8 @@
 #include <vulkan/vulkan_win32.h>
 #include <Windows.h>
 #endif
+
+Canella::GlfwWindow* Canella::GlfwWindow::instance = nullptr;
 void Canella::GlfwWindow::initialize(nlohmann::json &config)
 {
 	glfwInit();
@@ -43,7 +45,6 @@ void Canella::GlfwWindow::initialize(nlohmann::json &config)
 	KeyBoard::getKeyBoard().setWindowHandler(m_window);
 
 	//// Set Keyboard and mouse callbacks
-
 	auto f = [](GLFWwindow *window, double xpos, double ypos)
 	{
         static_cast<GlfwWindow *>(glfwGetWindowUserPointer(window))->mouse.mouse_callback(window, xpos, ypos);
@@ -56,9 +57,19 @@ void Canella::GlfwWindow::initialize(nlohmann::json &config)
 	{
 		static_cast<GlfwWindow *>(glfwGetWindowUserPointer(window))->keyboard.key_callback(window, key, scancode, action, mods);
 	};
+
+    auto resize_callback = [](GLFWwindow *window, int width, int height)
+    {
+        if(window == nullptr) return;
+        Extent ext(width,height);
+        static_cast<GlfwWindow *>(glfwGetWindowUserPointer(window))->OnWindowResize.invoke(ext);
+    };
+
 	glfwSetCursorPosCallback(m_window, f);
 	glfwSetMouseButtonCallback(m_window, mouse_btn_callBack);
 	glfwSetKeyCallback(m_window, key_btn_callBack);
+    glfwSetFramebufferSizeCallback(m_window,resize_callback);
+
 };
 int Canella::GlfwWindow::shouldCloseWindow()
 {
@@ -68,6 +79,7 @@ int Canella::GlfwWindow::shouldCloseWindow()
 Canella::GlfwWindow::~GlfwWindow()
 {
 	glfwDestroyWindow(m_window);
+    delete GlfwWindow::instance;
 }
 
 Extent Canella::GlfwWindow::getExtent()
@@ -109,6 +121,12 @@ void Canella::GlfwWindow::wait_idle() {
         glfwWaitEvents();
     }
     OnWindowFocus.invoke();
+}
+
+Canella::GlfwWindow *Canella::GlfwWindow::get_instance() {
+    if(GlfwWindow::instance == nullptr)
+        GlfwWindow::instance = new GlfwWindow();
+    return GlfwWindow::instance;
 }
 
 

@@ -1,6 +1,6 @@
 ﻿{
   "PipelineData": {
-    "DescriptorSetLayoutCounts":2,
+    "DescriptorSetLayoutCounts":3,
     "PipelinesCount":1,
     "DescriptorSetLayouts": [
       {
@@ -11,6 +11,18 @@
             "Key": "ViewProjection",
             "Stage": [ "MESH_STAGE", "TASK_SHADER" ],
             "Type": "UNIFORM_BUFFER",
+            "Binding": 0
+          }
+        ]
+      },
+      {
+        "Key": "Transforms",
+        "ResourceCount": 1,
+        "BindingResources": [
+          {
+            "Key": "Transforms",
+            "Stage": [ "MESH_STAGE", "TASK_SHADER" ],
+            "Type": "STORAGE_BUFFER",
             "Binding": 0
           }
         ]
@@ -56,10 +68,10 @@
       {
         "Key": "MeshShaderPipeline",
         "PushConstantRangesCount" : 0,
-        "NumerOfDescriptorSets": 2,
+        "NumerOfDescriptorSets": 3,
         "Renderpass": "basic",
         "VertexAttributeCount" : 0,
-        "PipelineLayoutDescriptors": [ "ViewProjection", "Meshlets" ],
+        "PipelineLayoutDescriptors": [ "ViewProjection","Transforms", "Meshlets" ],
 
         "Builtin": true,
         "ShaderCount":3,

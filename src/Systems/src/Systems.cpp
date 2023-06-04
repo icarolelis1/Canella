@@ -10,7 +10,7 @@ void Canella::load_meshes_from_scene(const std::string& assets_folder,const std:
         if (entity->has_component<ModelAssetComponent>())
         {
             auto& mesh_asset = entity->get_component<ModelAssetComponent>();
-            mesh_asset.mesh.model_matrix = &entity->get_component<TransformComponent>().modelMatrix;
+            //mesh_asset.mesh.model_matrix = &entity->get_component<TransformComponent>().modelMatrix;
             load_mesh_from_disk(assets_folder, mesh_asset);
         }
 }
@@ -25,16 +25,15 @@ void Canella::load_mesh_from_disk(const std::string& assets_folder, ModelAssetCo
  * \param scene scene object
  * \return returns the main Camera
  */
-CameraComponent& Canella::get_main_camera(const std::weak_ptr<Scene> scene)
+CameraComponent* Canella::get_main_camera(const std::weak_ptr<Scene> scene)
 {
     const auto scene_ref = scene.lock();
     assert(scene_ref);
 
     for (auto& [entt,entity] : scene_ref->m_EntityLibrary)
         if (entity->has_component<CameraComponent>())
-            return entity->get_component<CameraComponent>();
-    const auto camera_component = new CameraComponent();
-    return *camera_component;
+            return &entity->get_component<CameraComponent>();
+   return nullptr;
 }
 
 /**
@@ -63,4 +62,18 @@ void Canella::update_camera(CameraComponent& camera_component, GlfwWindow& windo
     const auto view = lookAt(camera_component.position,
         camera_component.euler.front, camera_component.euler.up);
     camera_component.viewProjection = view * perspective;
+}
+
+void Canella::update_transforms(const std::weak_ptr<Scene> scene)
+{
+    const auto scene_ref = scene.lock();
+    assert(scene_ref);
+    for (auto [key,value]: scene_ref->m_EntityLibrary)
+        if (value->has_component<TransformComponent>()) {
+            auto& transform= value->get_component<TransformComponent>();
+            auto& model  =  transform.modelMatrix;
+            model = glm::mat4(1.0f);
+            model = glm::rotate(model,90.f,glm::vec3(0,1,0));
+            model = glm::translate(model,transform.position);
+        }
 }

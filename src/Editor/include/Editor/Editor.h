@@ -42,9 +42,8 @@ namespace Canella{
     private:
         StartPlayEvent OnStartPlay;
         StopPlayEvent OnStopPlayEvent;
-        Canella::Application application;
+        std::unique_ptr<Canella::Application> application;
         Canella::RenderSystem::VulkanBackend::VulkanRender render;
-        Canella::GlfwWindow window;
         VkDescriptorPool imguiPool;
         std::vector<Canella::TimeQueryData*> time_queries;
         bool custom_font_pushed = false;

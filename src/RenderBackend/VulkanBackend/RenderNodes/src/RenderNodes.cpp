@@ -15,6 +15,7 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::execute(
     auto& pipeline_layouts = vulkan_renderer->cachedPipelineLayouts;
     auto& swapchain = vulkan_renderer->swapChain;
     auto& global_descriptors = vulkan_renderer->global_descriptors;
+    auto& transform_descriptors = vulkan_renderer->transform_descriptors;
     auto current_frame = index;
 
     std::vector<VkClearValue> clear_values = {};
@@ -47,18 +48,22 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::execute(
 
     for(auto z = 0; z < 1; z++)
     for(auto i = 0 ; i < meshlets.size(); ++i ){
-        VkDescriptorSet desc[2] = {global_descriptors[index],descriptors[i].descriptor_sets[index]};
+        VkDescriptorSet desc[3] = {global_descriptors[index],
+                                   transform_descriptors[index],
+                                   descriptors[i].descriptor_sets[index]};
 
-        vkCmdBindDescriptorSets(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+        vkCmdBindDescriptorSets(command_buffer,
+                                VK_PIPELINE_BIND_POINT_GRAPHICS,
                                 pipeline_layouts[pipeline_layout_name]->getHandle(),
                                 0,
-                                2,
+                                3,
                                 desc,
                                 0,
                                 nullptr);
 
         vulkan_renderer->vkCmdDrawMeshTasksEXT(command_buffer,std::ceil(meshlets[i].meshlets.size()/32)+1 , 1, 1);
     }
+
     if(debug_statics){
         vkCmdWriteTimestamp(command_buffer,
                             VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
@@ -174,8 +179,7 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::load_transient_re
         {
             descriptor_pool.allocate_descriptor_set(vulkan_renderer->device,
                                                     cached_descriptor_set_layouts["Meshlets"],
-                                                    descriptors[i].descriptor_sets[j]
-                                                    );
+                                                    descriptors[i].descriptor_sets[j]);
 
             std::vector<VkDescriptorBufferInfo> buffer_infos;
             std::vector<VkDescriptorImageInfo> image_infos;

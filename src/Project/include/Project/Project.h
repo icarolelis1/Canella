@@ -28,15 +28,15 @@ namespace Canella
         void load(nlohmann::json &config);
         void run();
         void close();
-
-
         std::string assetsFolder;
+
     private:
         void init_systems();
-        void update_systems();
+        void update_systems(float frame_time);
         void setup_project_folder(nlohmann::json& data);
-        
-        CameraComponent main_camera;
+        Time application_time;
+        float frame_time;
+        CameraComponent *main_camera;
         entt::registry registry;
         bool playing = true;
         std::shared_ptr<Canella::Scene> scene;

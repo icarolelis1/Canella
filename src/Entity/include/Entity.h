@@ -56,13 +56,6 @@ namespace Canella
             return handle;
         }
 
-        template<typename... Args>
-        Behavior& add_custom_component(Args&&... args)
-        {
-            assert(!m_Scene.expired());
-            auto scene =  m_Scene.lock();
-            return scene->m_registry.emplace<Behavior>(handle,std::forward<Args>(args)...);
-        }
     private:
         std::weak_ptr<Scene> m_Scene;
         entt::entity handle;

@@ -10,9 +10,10 @@ namespace Canella
 {
     void load_meshes_from_scene(const std::string& assetsFolder,const std::weak_ptr<Scene> scene);
     void load_mesh_from_disk(const std::string& assetsFolder,ModelAssetComponent& mesh_asset_component);
-    CameraComponent& get_main_camera(const std::weak_ptr<Scene> scene);
+    CameraComponent* get_main_camera(const std::weak_ptr<Scene> scene);
     void get_meshes_on_scene(Drawables& drawables,const std::weak_ptr<Scene> scene);
-    
+
+    void update_transforms(const std::weak_ptr<Scene> scene);
     class GlfwWindow;
     void update_camera(CameraComponent& camera_component,GlfwWindow& window);
 }

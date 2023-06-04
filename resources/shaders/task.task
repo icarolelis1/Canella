@@ -15,17 +15,22 @@ layout(local_size_x = 32 ,local_size_y = 1 , local_size_z = 1 ) in;
 
 layout (set = 0 ,binding = 0) uniform UBO 
 {
-	mat4 projection;
+	mat4 view_projection;
 	mat4 model;
-	mat4 view;
 } ubo;
 
-layout(set = 1 ,binding = 0)readonly  buffer Meshlets
+layout(std430,set = 1 ,binding = 0) readonly  buffer Model_Matrixes
+{
+	mat4 model_matrixes[];
+};
+
+
+layout(set = 2 ,binding = 0)readonly  buffer Meshlets
 {
 	Meshlet meshlets[];
 };
 
-layout(set = 1 ,binding = 2)readonly  buffer Bounds
+layout(set = 2 ,binding = 2)readonly  buffer Bounds
 {
 	MeshletBound bounds[];
 };
@@ -62,8 +67,8 @@ void main()
    MeshletBound bound = bounds[thread_meshlet];
 
    vec3 cone_apex = bound.cone_apex.xyz;
-   vec4 cone =  ubo.model *vec4(cone_apex.xyz,1);
-   vec4 cone_axis = ubo.model * bound.cone_axis;
+   vec4 cone =  model_matrixes[0] *vec4(cone_apex.xyz,1);
+   vec4 cone_axis = model_matrixes[0]* bound.cone_axis;
    vec3 direction = normalize( cone.xyz - vec3(0.0 , 3.1, -12));
 
    bool accept = !cone_cull(cone_axis.xyz,direction,bound.cone_cutoff.x);

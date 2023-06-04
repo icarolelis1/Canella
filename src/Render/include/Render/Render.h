@@ -12,6 +12,15 @@
 #include <Eventsystem/Eventsystem.hpp>
 namespace Canella
 {
+    struct Time
+    {
+        Time(float t): time(t){};
+        float time_in_milli(){return time*1000.;}
+        float time_in_sec(){return time ;}
+        float last_time_frame = 0;
+        float time;
+    };
+
     class Render;
     struct MeshletBound{
 
