@@ -3,13 +3,11 @@
 #include <filesystem>
 #include <fstream>
 
+#include "EditorComponents/EditorComponents.h"
 
 Canella::Serializer::Serializer(const std::string& project): m_ProjectFolder(project) {}
 
-/**
- * \brief Serialize the scene to a file
- * \param scene
- */
+
 void Canella::Serializer::Serialize(std::weak_ptr<Scene> scene, const std::string &projectPath)
 {
     if (const auto sceneRef = scene.lock())
@@ -48,11 +46,6 @@ void Canella::Serializer::LoadEntities(std::shared_ptr<Scene> scene, const std::
     }
 }
 
-/**
- * \brief Builds the components for each entity in the config File
- * \param entity entity the component is associated to
- * \param components_data Data Serialized for each component
- */
 void Canella::Serializer::LoadComponents(
     std::shared_ptr<Scene> scene,
     const entt::entity entity,
@@ -67,6 +60,8 @@ void Canella::Serializer::LoadComponents(
             SerializeCamera(component_data,scene->m_registry,entity);
         else if(type == "MeshAsset")
             SerializeMeshAsset(component_data,scene->m_registry,entity);
+        else if( type == "CameraEditor")
+            SerializeCameraEditor(component_data,scene->m_registry,entity);
     }
 }
 
@@ -110,6 +105,13 @@ void Canella::Serializer::DeserializeEntities(
         {
             nlohmann::json component;
             DeserializeMeshAsset(component,view.get<ModelAssetComponent>(iterator->first));
+            components.push_back(component);
+        }
+
+        if(iterator->second->has_component<CameraEditor>())
+        {
+            nlohmann::json component;
+            DeserializeCameraEditor(component,view.get<ModelAssetComponent>(iterator->first));
             components.push_back(component);
         }
         

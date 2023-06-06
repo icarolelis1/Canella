@@ -13,14 +13,14 @@ Canella::Editor::Editor() {
     //Loads the project metadata
     nlohmann::json config; f >> config;
     //Initialize window
-    auto window = GlfwWindow::get_instance();
-    window->initialize(config["Window"]);
+    auto& window = GlfwWindow::get_instance();
+    window.initialize(config["Window"]);
     //set the renderer window
-    render.set_windowing(window);
+    render.set_windowing(&window);
     //Pass the metadata configuration for the render to load all the ressources (renderpass/pipelines...)
     render.build(config["Render"]);
     //Loads the application scenes and systems
-    application = std::make_unique<Application>(window,&render);
+    application = std::make_unique<Application>(&window,&render);
     application->load(config);
     //Setup ImGui codee
 #if RENDER_EDITOR_LAYOUT
@@ -39,13 +39,13 @@ void Canella::Editor::run_editor() {
 
 void Canella::Editor::play() {
     OnStartPlay.invoke(*this);
-    edit_mode = false;
+    scene_mode = false;
 }
 
 void Canella::Editor::stop() {
 
     OnStopPlayEvent.invoke(*this);
-    edit_mode = false;
+    scene_mode = false;
 }
 
 void Canella::Editor::setup_imgui() {
@@ -103,8 +103,8 @@ void Canella::Editor::setup_imgui() {
     style.Colors[ImGuiCol_FrameBg] = ImColor(255, 0, 0);
     style.Colors[ImGuiCol_TitleBgActive] = ImColor(79, 53, 64);
     style.Colors[ImGuiCol_MenuBarBg] = MENU_BG;
-    auto window = GlfwWindow::get_instance();
-    ImGui_ImplGlfw_InitForVulkan(window->m_window, true);
+    auto& window = GlfwWindow::get_instance();
+    ImGui_ImplGlfw_InitForVulkan(window.m_window, true);
 
     //this initializes imgui for Vulkan
     ImGui_ImplVulkan_InitInfo init_info = {};

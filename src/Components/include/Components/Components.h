@@ -12,8 +12,8 @@
 namespace Canella
 {
     /*
- * List of Basic Components
- */
+    * List of Basic Components
+    */
 
     struct Euler
     {
@@ -22,8 +22,7 @@ namespace Canella
         glm::vec3 right;
     };
 
-    struct HierarchyComponent
-    {};
+    struct HierarchyComponent{};
 
     struct TransformComponent  {
         TransformComponent(const TransformComponent&)=default;
@@ -117,9 +116,11 @@ namespace Canella
     void SerializeTransform(nlohmann::json& data,entt::registry& registry,entt::entity entity);
     void SerializeCamera(nlohmann::json& data,entt::registry& registry,entt::entity entity);
     void SerializeMeshAsset(nlohmann::json& data,entt::registry& registry,entt::entity entity);
+    void SerializeCameraEditor(nlohmann::json& data,entt::registry& registry,entt::entity entity);
     void DeserializeTransform(nlohmann::json& data,TransformComponent&);
     void DeserializeCamera(nlohmann::json& data,CameraComponent&);
     void DeserializeMeshAsset(nlohmann::json& data,ModelAssetComponent&);
+    void DeserializeCameraEditor(nlohmann::json& data,ModelAssetComponent&);
 }
 
 #endif

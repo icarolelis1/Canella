@@ -6,56 +6,58 @@
 #endif
 
 Canella::GlfwWindow* Canella::GlfwWindow::instance = nullptr;
-void Canella::GlfwWindow::initialize(nlohmann::json &config)
-{
-	glfwInit();
-	if (!glfwVulkanSupported()) {
-		Canella::Logger::Error("Glfw doesnt support vulkan");
-		return;
-	}
+void Canella::GlfwWindow::initialize(nlohmann::json &config) {
+    glfwInit();
+    if (!glfwVulkanSupported()) {
+        Canella::Logger::Error("Glfw doesnt support vulkan");
+        return;
+    }
     title = config["Title"].get<std::string>();
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-   // glfwWindowHint(GLFW_DECORATED, false);
-    auto width  =  config["Width"].get<std::uint32_t>();
-    auto height =  config["Height"].get<std::uint32_t>();
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+    // glfwWindowHint(GLFW_DECORATED, false);
+    auto width = config["Width"].get<std::uint32_t>();
+    auto height = config["Height"].get<std::uint32_t>();
 
-	m_window = glfwCreateWindow(width,
+    m_window = glfwCreateWindow(width,
                                 height,
                                 title.c_str(),
                                 nullptr, nullptr);
 
-	glfwMakeContextCurrent(m_window);
-	glfwSetWindowUserPointer(m_window, this);
+    glfwMakeContextCurrent(m_window);
+    glfwSetWindowUserPointer(m_window, this);
 #ifdef WIN32
     RECT desktop;
 
     const HWND hDesktop = GetDesktopWindow();
-    int horizontal,vertical;
+    int horizontal, vertical;
     GetWindowRect(hDesktop, &desktop);
     horizontal = desktop.right;
     vertical = desktop.bottom;
     glfwSetWindowPos(m_window, horizontal / 2 - width / 2, vertical / 2 - height / 2);
 
 #endif
-	// todo make the inputs all event driven
-	mouse = Mouse::getMouse();
-	keyboard = KeyBoard::getKeyBoard();
-	Mouse::getMouse().setWindowHandler(m_window);
-	KeyBoard::getKeyBoard().setWindowHandler(m_window);
+    // todo make the inputs all event driven
+    auto &mouse = Mouse::instance();
+    auto &keyboard = KeyBoard::getKeyBoard();
+    Mouse::instance().setWindowHandler(m_window);
+    KeyBoard::getKeyBoard().setWindowHandler(m_window);
 
-	//// Set Keyboard and mouse callbacks
-	auto f = [](GLFWwindow *window, double xpos, double ypos)
+    //// Set Keyboard and mouse callbacks
+	auto mouse_pos_callback = [](GLFWwindow *window, double xpos, double ypos)
 	{
-        static_cast<GlfwWindow *>(glfwGetWindowUserPointer(window))->mouse.mouse_callback(window, xpos, ypos);
+        auto& mouse = Mouse::instance();
+        mouse.mouse_callback(window,xpos,ypos);
 	};
 	auto mouse_btn_callBack = [](GLFWwindow *window, int x, int y, int z)
 	{
-		static_cast<GlfwWindow *>(glfwGetWindowUserPointer(window))->mouse.mouse_button_callback(window, x, y, z);
+        auto& mouse = Mouse::instance();
+        mouse.mouse_button_callback(window, x, y, z);
 	};
 	auto key_btn_callBack = [](GLFWwindow *window, int key, int scancode, int action, int mods)
 	{
-		static_cast<GlfwWindow *>(glfwGetWindowUserPointer(window))->keyboard.key_callback(window, key, scancode, action, mods);
+        auto& keyboard = KeyBoard::getKeyBoard();
+        keyboard.key_callback(window, key, scancode, action, mods);
 	};
 
     auto resize_callback = [](GLFWwindow *window, int width, int height)
@@ -65,7 +67,7 @@ void Canella::GlfwWindow::initialize(nlohmann::json &config)
         static_cast<GlfwWindow *>(glfwGetWindowUserPointer(window))->OnWindowResize.invoke(ext);
     };
 
-	glfwSetCursorPosCallback(m_window, f);
+	glfwSetCursorPosCallback(m_window, mouse_pos_callback);
 	glfwSetMouseButtonCallback(m_window, mouse_btn_callBack);
 	glfwSetKeyCallback(m_window, key_btn_callBack);
     glfwSetFramebufferSizeCallback(m_window,resize_callback);
@@ -123,10 +125,9 @@ void Canella::GlfwWindow::wait_idle() {
     OnWindowFocus.invoke();
 }
 
-Canella::GlfwWindow *Canella::GlfwWindow::get_instance() {
-    if(GlfwWindow::instance == nullptr)
-        GlfwWindow::instance = new GlfwWindow();
-    return GlfwWindow::instance;
+Canella::GlfwWindow &Canella::GlfwWindow::get_instance() {
+        static GlfwWindow glfwWindow ;
+        return glfwWindow;
 }
 
 

@@ -26,7 +26,7 @@ namespace Canella
     {
     
     public:
-        static GlfwWindow * get_instance();
+        static GlfwWindow & get_instance();
         void initialize(nlohmann::json& config);
         GlfwWindow(GlfwWindow&) = delete;
         void operator=(const GlfwWindow&) = delete;
@@ -50,9 +50,6 @@ namespace Canella
     private:
         GlfwWindow() = default;
         std::string title;
-        Mouse mouse;
-        KeyBoard keyboard;
-
     };
 }
 

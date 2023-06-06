@@ -134,8 +134,8 @@ void VulkanRender::render(glm::mat4& _view_projection)
     vkWaitForFences(device.getLogicalDevice(), 1, &frame_data.imageAvaibleFence, VK_FALSE, UINT64_MAX);
     uint32_t next_image_index;
     const auto eye_pos = glm::vec3(0.0 , 3.1, -12);
-    t += 0.01;
-    if(t >= 1000000.00)t = 0.0;
+
+
     ViewProjection view_projection{};
     view_projection.view_projection = _view_projection;
     view_projection.model = glm::mat4(1.0f);

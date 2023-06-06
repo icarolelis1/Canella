@@ -6,7 +6,7 @@
 #endif
 #include <GLFW/glfw3.h>
 #include <GLFW/glfw3native.h>
-
+#include "Eventsystem/Eventsystem.hpp"
 namespace Canella {
 
 	class KeyBoard {
@@ -26,24 +26,39 @@ namespace Canella {
 		double y;
 	}CursorPos;
 
+    enum MouseButton{
+         LEFT_MOUSE,
+         RIGHT_MOUSE,
+         MIDDLE_MOUSE
+    };
+    enum MouseAction{
+        PRESS,
+        HOLD,
+        RELEASE
+    };
 
 	class Mouse {
 	public:
 		Mouse() = default;
-		static Mouse& getMouse();
-		bool get_mouse_action_status(int button, int action) const;
+        Mouse(const Mouse&)= delete;
+        Mouse operator=(const Mouse&) = delete;
+		static Mouse& instance();
 		void setWindowHandler(GLFWwindow* _window);
-		CursorPos getCursorPos();
-		void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+		bool get_mouse_action_status(int button, int action) const;
 		GLFWmousebuttonfun mouse_button_callback(GLFWwindow* window, int x, int z, int y);
-		GLFWwindow* window;
+		void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
+		CursorPos get_cursor_pos();
+		GLFWwindow* window;
+        Event<int,int> OnMouseMove;
+        Event<MouseButton,MouseAction> OnMouseClick;
 	private:
 		double x;
 		double y;
 		double lastX;
 		double lastY;
 		bool initialized = false;
+        bool key_pressing = false;
 	};
 }
 

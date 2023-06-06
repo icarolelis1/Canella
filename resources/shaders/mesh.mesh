@@ -17,7 +17,7 @@ layout (set = 0 ,binding = 0) uniform UBO
 
 layout(std430,set = 1 ,binding = 0) readonly  buffer Model_Matrixes
 {
-	mat4 model_Matrixes[];
+	mat4 model_Matrices[];
 };
 
 
@@ -75,13 +75,13 @@ void main()
  uint mi = IN.meshletIndices[mgi];
  Meshlet meshlet = meshlets[mi];
  
- mat4 model = model_Matrixes[0];
+ mat4 model = model_Matrices[0];
  mat4 mvp = ubo.view_projection;
 
 if( ti < meshlet.vertex_count   )
 {
   	uint vertex_indice = uint(meshlet_vertices[meshlet.vertex_offset + ti]);
-	vec3 fragPos = vec3(ubo.model * vec4(vertices[vertex_indice].position.xyz,1.0));
+	vec3 fragPos = vec3(model_Matrices[0] * vec4(vertices[vertex_indice].position.xyz,1.0));
   	gl_MeshVerticesEXT[ti].gl_Position = mvp * vec4(fragPos,1.0)  ;
 	//Debug
 	uint mhash = hash(mi);

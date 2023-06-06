@@ -47,10 +47,12 @@ namespace Canella{
         VkDescriptorPool imguiPool;
         std::vector<Canella::TimeQueryData*> time_queries;
         bool custom_font_pushed = false;
-        void setup_imgui();
-        void render_editor_gui(VkCommandBuffer& ,uint32_t,RenderSystem::VulkanBackend::FrameData&);
-        bool edit_mode = true;
 
+        void render_editor_gui(VkCommandBuffer& ,
+                               uint32_t,RenderSystem::VulkanBackend::FrameData&);
+        void setup_imgui();
+
+        bool scene_mode = true;
         void editor_layout();
     };
 }

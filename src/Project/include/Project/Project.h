@@ -14,11 +14,9 @@
 #include <json.hpp>
 #include <iostream>
 #include <string>
+
 namespace Canella
 {
-    /**
-     * brief  User Project
-     */
     class Application
     {
 
