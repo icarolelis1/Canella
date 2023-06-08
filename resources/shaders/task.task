@@ -16,7 +16,7 @@ layout(local_size_x = 32 ,local_size_y = 1 , local_size_z = 1 ) in;
 layout (set = 0 ,binding = 0) uniform UBO 
 {
 	mat4 view_projection;
-	mat4 modddel;
+	vec4 eye;
 } ubo;
 
 layout(std430,set = 1 ,binding = 0) readonly  buffer Model_Matrixes
@@ -69,7 +69,7 @@ void main()
    vec3 cone_apex = bound.cone_apex.xyz;
    vec4 cone =  model_matrixes[0] *vec4(cone_apex.xyz,1);
    vec4 cone_axis = model_matrixes[0]* bound.cone_axis;
-   vec3 direction = normalize( cone.xyz - vec3(0.0 , 3.1, -12));
+   vec3 direction = normalize( cone.xyz - ubo.eye.xyz);
 
    bool accept = !cone_cull(cone_axis.xyz,direction,bound.cone_cutoff.x);
 

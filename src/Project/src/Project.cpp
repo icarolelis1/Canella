@@ -72,7 +72,7 @@ void Application::run()
         
         window->update();
         update_systems(frame_time);
-        render->render(main_camera->viewProjection);
+        render->render(main_camera->view,main_camera->projection);
         if (KeyBoard::getKeyBoard().getKeyPressed(GLFW_KEY_ESCAPE))
             break;
     }

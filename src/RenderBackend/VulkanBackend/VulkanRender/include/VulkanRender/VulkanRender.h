@@ -34,7 +34,7 @@ namespace Canella
                 VulkanRender();
 
                 VkCommandBuffer request_command_buffer(VkCommandBufferLevel);
-                void render(glm::mat4& viewProjection) override;
+                void render(glm::mat4& view,glm::mat4& projection) override;
                 void log_statistic_data(TimeQueryData&) override;
                 void enqueue_drawables(Drawables&) override;
                 void begin_command_buffer(VkCommandBuffer);
@@ -55,6 +55,7 @@ namespace Canella
                 PipelineLayouts cachedPipelineLayouts;
                 DescriptorSetLayouts cachedDescriptorSetLayouts;
                 PFN_vkCmdDrawMeshTasksEXT vkCmdDrawMeshTasksEXT;
+                PFN_vkCmdDrawMeshTasksIndirectEXT vkCmdDrawMeshTasksIndirectEXT;
                 std::vector<FrameData> frames;
                 std::vector<VkDescriptorSet> global_descriptors;
                 std::vector<VkDescriptorSet> transform_descriptors;
@@ -75,7 +76,7 @@ namespace Canella
                 Windowing* window;
                 Commandpool command_pool;
 
-                void record_command_index(VkCommandBuffer& commandBuffer, glm::mat4&viewProjection,uint32_t index);
+                void record_command_index(VkCommandBuffer& commandBuffer,uint32_t index);
                 void cache_pipelines(const char* pipelines);
                 void destroy_descriptor_set_layouts();
                 void allocate_global_descriptorsets();

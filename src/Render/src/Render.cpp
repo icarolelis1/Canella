@@ -20,18 +20,20 @@ void Canella::load_asset_mesh(ModelMesh& model, const ::std::string& assetsPath,
     if (!assimpScene || assimpScene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !assimpScene->mRootNode)
         Logger::Error(importer.GetErrorString());
 
-    model.meshes.resize(1);
-
+    auto& [positions,normal,indices,meshes,matrix
+        ] = model;
+    indices.clear();
+    positions.clear();
+    meshes.resize(assimpScene->mNumMeshes);
+    uint32_t index_offset = 0;
+    uint32_t vertex_offset = 0;
     for (unsigned int i = 0; i < model.meshes.size(); ++i)
     {
         const aiMesh* assimp_mesh = assimpScene->mMeshes[i];
-        auto& [positions,
-            normal,
-            indices
-        ] = model.meshes[i];
-
-        indices.clear();
-        positions.clear();
+        meshes[i].index_offset = index_offset;
+        meshes[i].vertex_offset = vertex_offset;
+        meshes[i].index_count = assimp_mesh->mNumFaces * 3;
+        //Load vertices
         for (unsigned int j = 0; j < assimp_mesh->mNumVertices; j++)
         {
             auto v3 = glm::make_vec4(&assimp_mesh->mVertices[j].x);
@@ -39,7 +41,7 @@ void Canella::load_asset_mesh(ModelMesh& model, const ::std::string& assetsPath,
             vertex.vertex = v3;
             positions.push_back(vertex);
         }
-
+        vertex_offset +=assimp_mesh->mNumVertices;
         for (size_t face = 0; face < assimp_mesh->mNumFaces; ++face)
             for (uint32_t face_index = 0; face_index < 3; ++face_index ){
 
@@ -47,11 +49,11 @@ void Canella::load_asset_mesh(ModelMesh& model, const ::std::string& assetsPath,
                     Canella::Logger::Error("INVALID INDICE %d",assimp_mesh->mFaces[face].mIndices[face_index]);
                 indices.push_back(static_cast<uint32_t>(assimp_mesh->mFaces[face].mIndices[face_index]));
             }
-
+            index_offset +=assimp_mesh->mNumFaces *3;
         }
 }
 
-void Canella::load_meshlet(Canella::Meshlet& canellaMeshlet, const Canella::Mesh &mesh) {
+void Canella::load_meshlet(Canella::Meshlet& canellaMeshlet, const Canella::ModelMesh &mesh) {
 
     constexpr size_t max_vertices = 64;
     constexpr size_t max_triangles = 124;
@@ -64,10 +66,17 @@ void Canella::load_meshlet(Canella::Meshlet& canellaMeshlet, const Canella::Mesh
     meshlets.resize(max_meshlets);
     std::vector<unsigned int> meshlet_vertices(max_meshlets * max_vertices);
     std::vector<unsigned char> meshlet_triangles(max_meshlets * max_triangles * 3);
-    const size_t meshlet_count = meshopt_buildMeshletsScan(meshlets.data(), meshlet_vertices.data(),
-                                                       meshlet_triangles.data(),
-                                                       indices.data(),
-                                                       indices.size(),positions.size(),max_vertices,max_triangles);
+    const size_t meshlet_count = meshopt_buildMeshlets(meshlets.data(),
+                                                           meshlet_vertices.data(),
+                                                           meshlet_triangles.data(),
+                                                           indices.data(),
+                                                           indices.size(),
+                                                           &positions[0].vertex.x,
+                                                           positions.size(),
+                                                           sizeof(Vertex),
+                                                           max_vertices,
+                                                           max_triangles,
+                                                           0.0f);
 
     const meshopt_Meshlet& last = meshlets[meshlet_count - 1];
     meshlet_vertices.resize(last.vertex_offset + last.vertex_count);

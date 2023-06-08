@@ -55,6 +55,10 @@ void VulkanRender::build(nlohmann::json &config)
             device.getLogicalDevice(),
             "vkCmdDrawMeshTasksEXT"));
 
+    vkCmdDrawMeshTasksIndirectEXT = reinterpret_cast<PFN_vkCmdDrawMeshTasksIndirectEXT>(vkGetDeviceProcAddr(
+            device.getLogicalDevice(),
+            "vkCmdDrawMeshTasksIndirectEXT"));
+
     transfer_pool.build(&device,
                         POOL_TYPE::TRANSFER,
                         VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
@@ -128,20 +132,20 @@ void VulkanRender::create_transform_buffers() {//Loads the model matrix
     }
 }
 
-void VulkanRender::render(glm::mat4& _view_projection)
+void VulkanRender::render(glm::mat4& view,glm::mat4& projection)
 {
     FrameData& frame_data = frames[current_frame];
     vkWaitForFences(device.getLogicalDevice(), 1, &frame_data.imageAvaibleFence, VK_FALSE, UINT64_MAX);
     uint32_t next_image_index;
-    const auto eye_pos = glm::vec3(0.0 , 3.1, -12);
-
 
     ViewProjection view_projection{};
-    view_projection.view_projection = _view_projection;
-    view_projection.model = glm::mat4(1.0f);
-
+    view_projection.view_projection = projection * view;
+    view_projection.eye = glm::vec4(view[3]);
+    //view_projection.eye = glm::mat4(1.0f);
+    //Update the view projection buffer with global data for the renderer
     auto refBuffer = resources_manager.get_buffer_cached(global_buffers[current_frame]);
     refBuffer->udpate(view_projection);
+
     VkResult result = vkAcquireNextImageKHR(device.getLogicalDevice(),
                                             swapChain.get_swap_chain_handle(),
                                             UINT64_MAX,
@@ -159,8 +163,8 @@ void VulkanRender::render(glm::mat4& _view_projection)
 
     vkResetFences(device.getLogicalDevice(), 1, &frame_data.imageAvaibleFence);
     VkSubmitInfo submit_info = {};
-
-    record_command_index(frame_data.commandBuffer, _view_projection, current_frame);
+    auto c = glm::mat4(1.0f);
+    record_command_index(frame_data.commandBuffer, current_frame);
 #if RENDER_EDITOR_LAYOUT
     OnRecordCommandEvent.invoke(frame_data.editor_command,current_frame,frame_data);
 #endif
@@ -266,11 +270,8 @@ void VulkanRender::write_global_descriptorsets()
     }
 }
 
-void VulkanRender::record_command_index(VkCommandBuffer& commandBuffer,
-                                        glm::mat4& viewProjection,
-                                        uint32_t index)
+void VulkanRender::record_command_index(VkCommandBuffer& commandBuffer,uint32_t index)
 {
-
     frames[index].commandPool.begin_command_buffer(&device, commandBuffer, true);
     render_graph.execute(commandBuffer,this,index);
     frames[index].commandPool.endCommandBuffer(commandBuffer);

@@ -12,7 +12,7 @@ layout(triangles, max_vertices = 64, max_primitives = 124) out;
 layout (set = 0 ,binding = 0) uniform UBO 
 {
 	mat4 view_projection;
-	mat4 model;
+	vec4 eye;
 } ubo;
 
 layout(std430,set = 1 ,binding = 0) readonly  buffer Model_Matrixes

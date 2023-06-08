@@ -57,9 +57,10 @@ void Canella::update_transforms(const std::weak_ptr<Scene> scene)
         if (value->has_component<TransformComponent>()) {
             auto& transform= value->get_component<TransformComponent>();
             transform.modelMatrix = glm::mat4(1.0f);
+            transform.modelMatrix = glm::translate(transform.modelMatrix,transform.position);
+            transform.modelMatrix = glm::scale(transform.modelMatrix,transform.scale);
             //glm::quat rot = glm::angleAxis(glm::radians(0.f),glm::vec3(0,1,0));
             //transform.modelMatrix *= toMat4(rot);
-            transform.modelMatrix = glm::translate(transform.modelMatrix,transform.position);
         }
 }
 

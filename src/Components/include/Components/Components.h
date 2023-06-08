@@ -39,11 +39,11 @@ namespace Canella
         Euler euler;
         glm::vec3 position = glm::vec3(0,3,-3);
         glm::mat4 projection;
+        glm::mat4 view;
         glm::vec3 target;
         float fovy;
         float zNear;
         float zFar;
-        glm::mat4 viewProjection;
     };
 
     class CameraControllerComponent

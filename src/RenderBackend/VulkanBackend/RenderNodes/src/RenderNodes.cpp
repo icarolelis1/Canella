@@ -7,7 +7,6 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::execute(
                                                                         VkCommandBuffer command_buffer,
                                                                         int index)
 {
-
     auto vulkan_renderer =(VulkanBackend::VulkanRender*)render;
     auto& device = vulkan_renderer->device;
     auto& renderpasses = vulkan_renderer->renderpassManager.renderpasses;
@@ -17,6 +16,8 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::execute(
     auto& global_descriptors = vulkan_renderer->global_descriptors;
     auto& transform_descriptors = vulkan_renderer->transform_descriptors;
     auto current_frame = index;
+    auto &drawables = vulkan_renderer->get_drawables();
+    auto& resource_manager = vulkan_renderer->resources_manager;
 
     std::vector<VkClearValue> clear_values = {};
     clear_values.resize(2);
@@ -46,8 +47,8 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::execute(
                             0);
     }
 
-    for(auto z = 0; z < 1; z++)
-    for(auto i = 0 ; i < meshlets.size(); ++i ){
+    for(auto i = 0 ; i < drawables.size(); ++i )
+        for(auto j = 0 ; j < drawables[i].meshes.size();j++){
         VkDescriptorSet desc[3] = {global_descriptors[index],
                                    transform_descriptors[index],
                                    descriptors[i].descriptor_sets[index]};
@@ -61,7 +62,16 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::execute(
                                 0,
                                 nullptr);
 
-        vulkan_renderer->vkCmdDrawMeshTasksEXT(command_buffer,std::ceil(meshlets[i].meshlets.size()/32)+1 , 1, 1);
+        auto indirect_buffer = resource_manager.get_buffer_cached(draw_indirect_buffers);
+        auto indirect_size = sizeof(VkDrawMeshTasksIndirectCommandEXT);
+
+        vulkan_renderer->vkCmdDrawMeshTasksIndirectEXT(command_buffer,
+                                                       indirect_buffer->getBufferHandle(),
+                                                       i*sizeof(indirect_size),
+                                                       1,
+                                                       indirect_size);
+
+       //vulkan_renderer->vkCmdDrawMeshTasksEXT(command_buffer,std::ceil(meshlets[i].meshlets.size()/32)+1 , 1, 1);
     }
 
     if(debug_statics){
@@ -90,14 +100,10 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::execute(
 
 }
 
-void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::load_transient_resources(
-                                                                                        Canella::Render *render)
+void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::load_transient_resources(Canella::Render *render)
 {
     auto vulkan_renderer =(VulkanBackend::VulkanRender*)render;
-    auto number_of_images = vulkan_renderer->swapChain.get_number_of_images();
     const auto& drawables = render->get_drawables();
-    auto& descriptor_pool = vulkan_renderer->descriptorPool;
-    auto& cached_descriptor_set_layouts = vulkan_renderer->cachedDescriptorSetLayouts;
     device = &vulkan_renderer->device;
 
     if(post_first_load)
@@ -111,33 +117,84 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::load_transient_re
     resource_bounds_buffers.resize(drawables.size());
 
     auto &resource_manager   = vulkan_renderer->resources_manager;
-    auto i = 0 ;
-    for(auto& drawable : drawables)
-    {
-        for(const auto& mesh : drawable.meshes)
-        {
-            resource_vertices_buffers[i] = resource_manager.create_storage_buffer(
-                    (sizeof(Vertex)
-                    * mesh.positions.size()),
-                    VK_BUFFER_USAGE_TRANSFER_DST_BIT |
-                    VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
-                    &vulkan_renderer->transfer_pool,
-                    mesh.positions.data());
-
-            //todo bake this!
-            if(!post_first_load)
-                load_meshlet(meshlets[i], mesh);
-        }
-        i++;
-    }
-
-    //this size refers to number of drawables in scene
+    //Create the meshlets from the render drawable meshes
+    create_meshlets(render,vulkan_renderer->get_drawables());
 
     resource_meshlet_buffers.resize(meshlets.size());
     resource_meshlet_triangles.resize(meshlets.size());
     resource_meshlet_vertices.resize(meshlets.size());
 
-    i = 0;
+    //Create the buffer used by this node
+    create_resource_buffers(render);
+    //Writes the descriptorset
+    write_descriptorsets(render);
+
+    //Create the indirect draw commands
+    std::vector<VkDrawMeshTasksIndirectCommandEXT> ext(meshlets.size());
+    for(auto i =0 ; i < meshlets.size(); ++i)
+    {
+        ext[i].groupCountX = std::ceil(meshlets[i].meshlets.size()/32)+1;
+        ext[i].groupCountY = 1;
+        ext[i].groupCountZ = 1;
+    }
+    draw_indirect_buffers = resource_manager.create_storage_buffer(
+            ext.size()*(sizeof(VkDrawMeshTasksIndirectCommandEXT )),
+            VK_BUFFER_USAGE_TRANSFER_DST_BIT |
+            VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT,
+            &vulkan_renderer->transfer_pool,
+            ext.data());
+
+    if(debug_statics && !post_first_load)
+        create_render_query(queries,&vulkan_renderer->device);
+    post_first_load = true;
+}
+
+void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::write_outputs() {
+}
+
+Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::~MeshletGBufferPass()
+{
+    vkDestroyQueryPool(device->getLogicalDevice(),queries.timestamp_pool,device->getAllocator());
+}
+
+void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::setup_reload_resource_event(
+                                                                                    Canella::Render*vulkan_renderer)
+{
+    //Register the load event. When we perform window resize of Lose swapchain we need to reload this resources
+    std::function<void(Canella::Render *render)> reload_resources =[=](Canella::Render *render)
+    {load_transient_resources(render);};
+    Event_Handler<Canella::Render*> handler(reload_resources);
+    vulkan_renderer->OnLostSwapchain += handler;
+}
+
+//This is called when we lose swapchain. We need to clear and then reload everything
+void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::clear_render_node(Canella::Render *render)
+{
+    auto vulkan_renderer =(VulkanBackend::VulkanRender*)render;
+
+    resource_vertices_buffers.clear();
+    resource_bounds_buffers.clear();
+    resource_meshlet_buffers.clear();
+    resource_meshlet_triangles.clear();
+    resource_meshlet_vertices.clear();
+    for(auto& descriptor_per_image : descriptors){
+        for(auto& descriptorset : descriptor_per_image.descriptor_sets)
+            vulkan_renderer->descriptorPool.free_descriptorsets(vulkan_renderer->device,&descriptorset,1);
+    }
+    descriptors.clear();
+
+}
+
+Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::MeshletGBufferPass() {
+    timeQuery.name = "DrawMeshTasks (GPU time)";
+    timeQuery.description = "Time for rendering the meshes using mesh shaders and taskshaders";
+}
+
+void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::create_resource_buffers(Canella::Render *render)
+{
+    auto vulkan_renderer =(VulkanBackend::VulkanRender*)render;
+    auto& resource_manager = vulkan_renderer->resources_manager;
+    auto i = 0;
     for(auto& meshlet : meshlets){
         resource_bounds_buffers[i] = resource_manager.create_storage_buffer(
                 sizeof(meshlet.bounds[0])*
@@ -155,23 +212,55 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::load_transient_re
                                                                              meshlet.meshlets.data());
 
         resource_meshlet_vertices[i] = resource_manager.create_storage_buffer(sizeof(meshlet.meshlet_vertices[0])
-                                                                             * meshlet.meshlet_vertices.size(),
-                                                                             VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
-                                                                             | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-                                                                             &vulkan_renderer->transfer_pool,
-                                                                             meshlet.meshlet_vertices.data());
-
-        resource_meshlet_triangles[i] = resource_manager.create_storage_buffer(sizeof(meshlet.meshlet_triangles[0])
-                                                                              * meshlet.meshlet_triangles.size(),
+                                                                              * meshlet.meshlet_vertices.size(),
                                                                               VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
                                                                               | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
                                                                               &vulkan_renderer->transfer_pool,
-                                                                              meshlet.meshlet_triangles.data());
+                                                                              meshlet.meshlet_vertices.data());
+
+        resource_meshlet_triangles[i] = resource_manager.create_storage_buffer(sizeof(meshlet.meshlet_triangles[0])
+                                                                               * meshlet.meshlet_triangles.size(),
+                                                                               VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
+                                                                               | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+                                                                               &vulkan_renderer->transfer_pool,
+                                                                               meshlet.meshlet_triangles.data());
 
         i++;
     }
+}
 
+void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::create_meshlets(Canella::Render *render,
+                                                                               std::vector<ModelMesh>& drawables){
+    auto vulkan_renderer =(VulkanBackend::VulkanRender*)render;
+    auto& resource_manager = vulkan_renderer->resources_manager;
+
+    auto i = 0 ;
+    for(auto& drawable : drawables)
+    {
+
+        resource_vertices_buffers[i] = resource_manager.create_storage_buffer(
+                (sizeof(Vertex)
+                 * drawable.positions.size()),
+                VK_BUFFER_USAGE_TRANSFER_DST_BIT |
+                VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
+                &vulkan_renderer->transfer_pool,
+                drawable.positions.data());
+        //todo bake this!
+        if(!post_first_load)
+            load_meshlet(meshlets[i], drawable);
+        i++;
+    }
+}
+
+void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::write_descriptorsets(Canella::Render *render)
+{
     descriptors.resize(meshlets.size());
+    auto vulkan_renderer =(VulkanBackend::VulkanRender*)render;
+    auto& descriptor_pool = vulkan_renderer->descriptorPool;
+    auto& cached_descriptor_set_layouts = vulkan_renderer->cachedDescriptorSetLayouts;
+    auto& resource_manager = vulkan_renderer->resources_manager;
+    auto number_of_images = vulkan_renderer->swapChain.get_number_of_images();
+    
     for(auto i = 0 ; i < meshlets.size(); ++i)
     {
         descriptors[i].descriptor_sets.resize(number_of_images);
@@ -222,53 +311,6 @@ void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::load_transient_re
         }
     }
 
-    if(debug_statics && !post_first_load)
-        create_render_query(queries,&vulkan_renderer->device);
-    post_first_load = true;
-}
-
-void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::write_outputs() {
-}
-
-Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::~MeshletGBufferPass() {
-
-    vkDestroyQueryPool(
-                        device->getLogicalDevice(),
-                       queries.timestamp_pool,
-                       device->getAllocator());
-}
-
-void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::setup_reload_resource_event(
-                                                                                    Canella::Render*vulkan_renderer)
-{
-    //Register the load event. When we perform window resize of Lose swapchain we need to reload this resources
-    std::function<void(Canella::Render *render)> reload_resources =[=](Canella::Render *render)
-    {load_transient_resources(render);};
-    Event_Handler<Canella::Render*> handler(reload_resources);
-    vulkan_renderer->OnLostSwapchain += handler;
-}
-
-//This is called when we lose swapchain. We need to clear and then reload everything
-void Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::clear_render_node(Canella::Render *render)
-{
-    auto vulkan_renderer =(VulkanBackend::VulkanRender*)render;
-
-    resource_vertices_buffers.clear();
-    resource_bounds_buffers.clear();
-    resource_meshlet_buffers.clear();
-    resource_meshlet_triangles.clear();
-    resource_meshlet_vertices.clear();
-    for(auto& descriptor_per_image : descriptors){
-        for(auto& descriptorset : descriptor_per_image.descriptor_sets)
-            vulkan_renderer->descriptorPool.free_descriptorsets(vulkan_renderer->device,&descriptorset,1);
-    }
-    descriptors.clear();
-
-}
-
-Canella::RenderSystem::VulkanBackend::MeshletGBufferPass::MeshletGBufferPass() {
-    timeQuery.name = "DrawMeshTasks (GPU time)";
-    timeQuery.description = "Time for rendering the meshes using mesh shaders and taskshaders";
 }
 
 

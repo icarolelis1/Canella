@@ -40,28 +40,16 @@
       <change beforePath="$PROJECT_DIR$/resources/shaders/task.task" beforeDir="false" afterPath="$PROJECT_DIR$/resources/shaders/task.task" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Components/include/Components/Components.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/include/Components/Components.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Components/src/Components.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/src/Components.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Editor/include/Editor/Editor.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Editor/include/Editor/Editor.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Editor/src/Editor.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Editor/src/Editor.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/EditorComponents/include/EditorComponents/EditorComponents.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/EditorComponents/include/EditorComponents/EditorComponents.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/EditorComponents/src/EditorComponents.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/EditorComponents/src/EditorComponents.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ImGUI/imgui.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ImGUI/imgui.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ImGUI/imgui.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/ImGUI/imgui.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ImGUI/imgui_demo.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ImGUI/imgui_demo.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ImGUI/imgui_internal.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/ImGUI/imgui_internal.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ImGUI/imgui_tables.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ImGUI/imgui_tables.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ImGUI/imgui_widgets.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ImGUI/imgui_widgets.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ImGUI/imstb_textedit.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/ImGUI/imstb_textedit.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Input/include/Input/Input.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Input/include/Input/Input.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Input/src/Input.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Input/src/Input.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Project/include/Project/Project.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Project/include/Project/Project.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Project/src/Project.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Project/src/Project.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Render/include/Render/Render.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Render/include/Render/Render.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Render/src/Render.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Render/src/Render.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Pipeline/include/Pipeline/Pipeline.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Pipeline/include/Pipeline/Pipeline.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/include/RenderNodes/RenderNodes.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/include/RenderNodes/RenderNodes.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/RenderNodes.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/RenderNodes.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/VulkanRender/include/VulkanRender/VulkanRender.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/VulkanRender/include/VulkanRender/VulkanRender.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/VulkanRender/src/VulkanRender.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/VulkanRender/src/VulkanRender.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Serializer/include/Serializer/Serializer.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Serializer/include/Serializer/Serializer.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Serializer/src/Serializer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Serializer/src/Serializer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Systems/include/Systems/Systems.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Systems/include/Systems/Systems.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Systems/src/Systems.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Systems/src/Systems.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Window/include/Window/Window.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Window/include/Window/Window.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Window/src/Window.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Window/src/Window.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -84,7 +72,7 @@
     <option name="stateVersion" value="1" />
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="ProjectErrors" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectApplicationVersion">
     <option name="ide" value="CLion" />
@@ -238,7 +226,11 @@
       <workItem from="1685967815761" duration="5707000" />
       <workItem from="1686000969420" duration="5555000" />
       <workItem from="1686006931048" duration="1454000" />
-      <workItem from="1686060973681" duration="12087000" />
+      <workItem from="1686060973681" duration="12239000" />
+      <workItem from="1686088099065" duration="6266000" />
+      <workItem from="1686144845072" duration="4954000" />
+      <workItem from="1686151163663" duration="387000" />
+      <workItem from="1686153845575" duration="6854000" />
     </task>
     <servers />
   </component>
@@ -261,6 +253,47 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/VulkanRender/src/VulkanRender.cpp</url>
+          <line>141</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/Systems/src/Systems.cpp</url>
+          <line>57</line>
+          <option name="timeStamp" value="21" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/Systems/src/Systems.cpp</url>
+          <line>58</line>
+          <option name="timeStamp" value="22" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/Systems/src/Systems.cpp</url>
+          <line>59</line>
+          <option name="timeStamp" value="23" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/Components/src/Components.cpp</url>
+          <line>7</line>
+          <option name="timeStamp" value="24" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/Components/src/Components.cpp</url>
+          <line>11</line>
+          <option name="timeStamp" value="25" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/Components/src/Components.cpp</url>
+          <line>15</line>
+          <option name="timeStamp" value="26" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

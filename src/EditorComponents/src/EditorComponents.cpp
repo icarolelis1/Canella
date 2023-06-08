@@ -38,11 +38,12 @@ void CameraEditor::on_update(float delta_time){
     auto& mouse = Mouse::instance();
     auto pos = mouse.get_cursor_pos();
     auto& keyboard = KeyBoard::getKeyBoard();
-
-
     last_x = pos.x;
     last_y = pos.y;
-
+    if (PITCH > 89.0f)
+        PITCH = 89.0f;
+    if (PITCH < -89.0f)
+        PITCH = -89.0f;
     camera_input_keys(delta_time,camera_position,camera_euler,keyboard,pos);
     update_euler_directions();
 }
@@ -92,11 +93,13 @@ void CameraEditor::update_euler_directions()
     glm::mat4 rotate = glm::mat4_cast(orientation);
 
     glm::mat4 translate = glm::mat4(1.0f);
+
     translate = glm::translate(translate, -camera_component->position);
+
     camera_component->euler.front = glm::normalize(glm::vec3(0.f,0.f,-1.0f)*orientation);
     camera_component->euler.right = glm::normalize(glm::vec3(1.f,0.f,0.0f)*orientation);
     camera_component->euler.up = glm::normalize(glm::vec3(0.f,1.f,0.0f)*orientation);
-    camera_component->viewProjection =camera_component->projection* rotate * translate;
+    camera_component->view = rotate * translate;
 
 }
 
@@ -164,8 +167,8 @@ void CameraEditor::set_mouse_callbacks()
             auto horizontal_delta = rotating_x - x ;
             auto vertical_delta = rotating_y - y ;
             //TODO investigate the camera orientation is messedup
-            YAW +=(float)horizontal_delta * sensitivity;
-            PITCH  -= (float)vertical_delta * sensitivity;
+            YAW   +=(float)horizontal_delta * sensitivity;
+            PITCH += (float)vertical_delta * sensitivity;
             //Canella::Logger::Info("Event input is working %d %d",x,y);
             rotating_x = x;
             rotating_y = y;

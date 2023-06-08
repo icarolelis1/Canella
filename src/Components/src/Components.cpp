@@ -10,12 +10,19 @@ void Canella::SerializeTransform(nlohmann::json& data,entt::registry& registry,e
     position.x = data["Position"]["x"].get<float>();
     position.y = data["Position"]["y"].get<float>();
     position.z = data["Position"]["z"].get<float>();
+
+    scale.x = data["Scale"]["x"].get<float>();
+    scale.y = data["Scale"]["y"].get<float>();
+    scale.z = data["Scale"]["z"].get<float>();
 }
 
-//todo separate the  serialization of cameraComponent and CameraEditorController
 void Canella::SerializeCamera(nlohmann::json& data,entt::registry& registry,entt::entity entity)
 {
     auto& camera_component = registry.emplace<CameraComponent>(entity);
+    auto pos_x = data["Position"]["x"].get<float>();
+    auto pos_y = data["Position"]["y"].get<float>();
+    auto pos_z = data["Position"]["z"].get<float>();
+    camera_component.position = glm::vec3(pos_x,pos_y,pos_z);
 }
 
 void Canella::SerializeMeshAsset(nlohmann::json& data,entt::registry& registry,entt::entity entity)
