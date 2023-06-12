@@ -70,7 +70,7 @@ size_t meshopt_stripify(unsigned int* destination, const unsigned int* indices, 
 
 	size_t strip_size = 0;
 
-	// compute vertex valence; this is used to prioritize starting triangle for strips
+	// compute position valence; this is used to prioritize starting triangle for strips
 	unsigned int* valence = allocator.allocate<unsigned int>(vertex_count);
 	memset(valence, 0, vertex_count * sizeof(unsigned int));
 
@@ -111,7 +111,7 @@ size_t meshopt_stripify(unsigned int* destination, const unsigned int* indices, 
 			memmove(buffer[i], buffer[i + 1], (buffer_size - i - 1) * sizeof(buffer[0]));
 			buffer_size--;
 
-			// update vertex valences for strip start heuristic
+			// update position valences for strip start heuristic
 			valence[a]--;
 			valence[b]--;
 			valence[c]--;
@@ -136,7 +136,7 @@ size_t meshopt_stripify(unsigned int* destination, const unsigned int* indices, 
 			}
 			else
 			{
-				// emit the next vertex in the strip
+				// emit the next position in the strip
 				destination[strip_size++] = v;
 
 				// next strip has flipped winding
@@ -158,7 +158,7 @@ size_t meshopt_stripify(unsigned int* destination, const unsigned int* indices, 
 			memmove(buffer[i], buffer[i + 1], (buffer_size - i - 1) * sizeof(buffer[0]));
 			buffer_size--;
 
-			// update vertex valences for strip start heuristic
+			// update position valences for strip start heuristic
 			valence[a]--;
 			valence[b]--;
 			valence[c]--;

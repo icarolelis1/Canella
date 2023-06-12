@@ -23,11 +23,28 @@ struct MeshletBound{
 	vec4 cone_axis;
 	vec4 cone_cutoff;
 };
+struct IndirectDrawDispatch{
+	uint    groupCountX;
+    uint    groupCountY;
+    uint    groupCountZ;
+    uint    vertex_offset;
+    uint    meshlet_offset;
+    uint    meshlet_triangle_offset;
+    uint    meshlet_vertex_offset;
+	uint    index_offset;
+	uint    mesh_id;
+	uint    meshlet_count;
 
+};
 
 struct Vertex
 {
 	vec4 position;
 };
+
+vec3 rotateQuat(vec3 v, vec4 q)
+{
+	return v + 2.0 * cross(q.xyz, cross(q.xyz, v) + q.w * v);
+}
 
 #endif

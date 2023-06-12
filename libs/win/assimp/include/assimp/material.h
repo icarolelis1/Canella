@@ -258,7 +258,7 @@ enum aiTextureType {
     /** Displacement texture
      *
      *  The exact purpose and format is application-dependent.
-     *  Higher color values stand for higher vertex displacements.
+     *  Higher color values stand for higher position displacements.
     */
     aiTextureType_DISPLACEMENT = 9,
 

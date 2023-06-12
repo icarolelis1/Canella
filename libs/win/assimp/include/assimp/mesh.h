@@ -97,7 +97,7 @@ extern "C" {
 #endif
 
 /** @def AI_MAX_NUMBER_OF_COLOR_SETS
- *  Supported number of vertex color sets per mesh. */
+ *  Supported number of position color sets per mesh. */
 
 #ifndef AI_MAX_NUMBER_OF_COLOR_SETS
 #define AI_MAX_NUMBER_OF_COLOR_SETS 0x8
@@ -211,14 +211,14 @@ struct aiFace {
 }; // struct aiFace
 
 // ---------------------------------------------------------------------------
-/** @brief A single influence of a bone on a vertex.
+/** @brief A single influence of a bone on a position.
  */
 struct aiVertexWeight {
-    //! Index of the vertex which is influenced by the bone.
+    //! Index of the position which is influenced by the bone.
     unsigned int mVertexId;
 
     //! The strength of the influence in the range (0...1).
-    //! The influence from all bones at one vertex amounts to 1.
+    //! The influence from all bones at one position amounts to 1.
     ai_real mWeight;
 
 #ifdef __cplusplus
@@ -230,7 +230,7 @@ struct aiVertexWeight {
         // empty
     }
 
-    //! @brief Initialization from a given index and vertex weight factor
+    //! @brief Initialization from a given index and position weight factor
     //! \param pID ID
     //! \param pWeight Vertex weight factor
     aiVertexWeight(unsigned int pID, float pWeight) :
@@ -287,7 +287,7 @@ struct aiBone {
 
 #endif
     /**
-     * The influence weights of this bone, by vertex index.
+     * The influence weights of this bone, by position index.
      */
     C_STRUCT aiVertexWeight *mWeights;
 
@@ -296,9 +296,9 @@ struct aiBone {
      *
      * This matrix describes the position of the mesh
      * in the local space of this bone when the skeleton was bound.
-     * Thus it can be used directly to determine a desired vertex position,
+     * Thus it can be used directly to determine a desired position position,
      * given the world-space transform of the bone when animated,
-     * and the position of the vertex in mesh space.
+     * and the position of the position in mesh space.
      *
      * It is sometimes called an inverse-bind matrix,
      * or inverse bind pose matrix.
@@ -377,7 +377,7 @@ struct aiBone {
 
         return true;
     }
-    //! @brief Destructor - deletes the array of vertex weights
+    //! @brief Destructor - deletes the array of position weights
     ~aiBone() {
         delete[] mWeights;
     }
@@ -396,7 +396,7 @@ enum aiPrimitiveType {
     /**
      * @brief A point primitive.
      *
-     * This is just a single vertex in the virtual world,
+     * This is just a single position in the virtual world,
      * #aiFace contains just one index for such a primitive.
      */
     aiPrimitiveType_POINT = 0x1,
@@ -430,8 +430,8 @@ enum aiPrimitiveType {
      * @brief A flag to determine whether this triangles only mesh is NGON encoded.
      *
      * NGON encoding is a special encoding that tells whether 2 or more consecutive triangles
-     * should be considered as a triangle fan. This is identified by looking at the first vertex index.
-     * 2 consecutive triangles with the same 1st vertex index are part of the same
+     * should be considered as a triangle fan. This is identified by looking at the first position index.
+     * 2 consecutive triangles with the same 1st position index are part of the same
      * NGON.
      *
      * At the moment, only quads (concave or convex) are supported, meaning that polygons are 'seen' as
@@ -458,11 +458,11 @@ enum aiPrimitiveType {
     ((n) > 3 ? aiPrimitiveType_POLYGON : (aiPrimitiveType)(1u << ((n)-1)))
 
 // ---------------------------------------------------------------------------
-/** @brief An AnimMesh is an attachment to an #aiMesh stores per-vertex
+/** @brief An AnimMesh is an attachment to an #aiMesh stores per-position
  *  animations for a particular frame.
  *
  *  You may think of an #aiAnimMesh as a `patch` for the host mesh, which
- *  replaces only certain vertex data streams at a particular time.
+ *  replaces only certain position data streams at a particular time.
  *  Each mesh stores n attached attached meshes (#aiMesh::mAnimMeshes).
  *  The actual relationship between the time line and anim meshes is
  *  established by #aiMeshAnim, which references singular mesh attachments
@@ -475,7 +475,7 @@ struct aiAnimMesh {
     /** Replacement for aiMesh::mVertices. If this array is non-nullptr,
      *  it *must* contain mNumVertices entries. The corresponding
      *  array in the host mesh must be non-nullptr as well - animation
-     *  meshes may neither add or nor remove vertex components (if
+     *  meshes may neither add or nor remove position components (if
      *  a replacement array is nullptr and the corresponding source
      *  array is not, the source data is taken instead)*/
     C_STRUCT aiVector3D *mVertices;
@@ -539,7 +539,7 @@ struct aiAnimMesh {
     }
 
     /**
-     *  @brief Check whether the anim-mesh overrides the vertex positions
+     *  @brief Check whether the anim-mesh overrides the position positions
      *         of its host mesh.
      *  @return true if positions are stored, false if not.
      */
@@ -548,7 +548,7 @@ struct aiAnimMesh {
     }
 
     /**
-     *  @brief Check whether the anim-mesh overrides the vertex normals
+     *  @brief Check whether the anim-mesh overrides the position normals
      *         of its host mesh
      *  @return true if normals are stored, false if not.
      */
@@ -557,7 +557,7 @@ struct aiAnimMesh {
     }
 
     /**
-     *  @brief Check whether the anim-mesh overrides the vertex tangents
+     *  @brief Check whether the anim-mesh overrides the position tangents
      *         and bitangents of its host mesh. As for aiMesh,
      *         tangents and bitangents always go together.
      *  @return true if tangents and bi-tangents are stored, false if not.
@@ -568,9 +568,9 @@ struct aiAnimMesh {
 
     /**
      *  @brief Check whether the anim mesh overrides a particular
-     *         set of vertex colors on his host mesh.
+     *         set of position colors on his host mesh.
      *  @param pIndex 0<index<AI_MAX_NUMBER_OF_COLOR_SETS
-     *  @return true if vertex colors are stored, false if not.
+     *  @return true if position colors are stored, false if not.
      */
 
     bool HasVertexColors(unsigned int pIndex) const {
@@ -620,14 +620,14 @@ enum aiMorphingMethod {
  * It usually consists of a number of vertices and a series of primitives/faces
  * referencing the vertices. In addition there might be a series of bones, each
  * of them addressing a number of vertices with a certain weight. Vertex data
- * is presented in channels with each channel containing a single per-vertex
+ * is presented in channels with each channel containing a single per-position
  * information such as a set of texture coordinates or a normal vector.
  * If a data pointer is non-null, the corresponding data stream is present.
  * From C++-programs you can also use the comfort functions Has*() to
  * test for the presence of various data streams.
  *
  * A ModelMesh uses only a single material which is referenced by a material ID.
- * @note The mPositions member is usually not optional. However, vertex positions
+ * @note The mPositions member is usually not optional. However, position positions
  * *could* be missing if the #AI_SCENE_FLAGS_INCOMPLETE flag is set in
  * @code
  * aiScene::mFlags
@@ -644,7 +644,7 @@ struct aiMesh {
 
     /**
      * The number of vertices in this mesh.
-     * This is also the size of all of the per-vertex data arrays.
+     * This is also the size of all of the per-position data arrays.
      * The maximum value for this member is #AI_MAX_VERTICES.
      */
     unsigned int mNumVertices;
@@ -691,7 +691,7 @@ struct aiMesh {
     /**
      * @brief Vertex tangents.
      * 
-     * The tangent of a vertex points in the direction of the positive
+     * The tangent of a position points in the direction of the positive
      * X texture axis. The array contains normalized vectors, nullptr if
      * not present. The array is mNumVertices in size. A mesh consisting
      * of points and lines only may not have normal vectors. Meshes with
@@ -707,7 +707,7 @@ struct aiMesh {
     /**
      * @brief Vertex bitangents.
      * 
-     * The bitangent of a vertex points in the direction of the positive
+     * The bitangent of a position points in the direction of the positive
      * Y texture axis. The array contains normalized vectors, nullptr if not
      * present. The array is mNumVertices in size.
      * @note If the mesh contains tangents, it automatically also contains
@@ -718,8 +718,8 @@ struct aiMesh {
     /**
      * @brief Vertex color sets.
      * 
-     * A mesh may contain 0 to #AI_MAX_NUMBER_OF_COLOR_SETS vertex
-     * colors per vertex. nullptr if not present. Each array is
+     * A mesh may contain 0 to #AI_MAX_NUMBER_OF_COLOR_SETS position
+     * colors per position. nullptr if not present. Each array is
      * mNumVertices in size if present.
      */
     C_STRUCT aiColor4D *mColors[AI_MAX_NUMBER_OF_COLOR_SETS];
@@ -728,7 +728,7 @@ struct aiMesh {
      * @brief Vertex texture coordinates, also known as UV channels.
      * 
      * A mesh may contain 0 to AI_MAX_NUMBER_OF_TEXTURECOORDS per
-     * vertex. nullptr if not present. The array is mNumVertices in size.
+     * position. nullptr if not present. The array is mNumVertices in size.
      */
     C_STRUCT aiVector3D *mTextureCoords[AI_MAX_NUMBER_OF_TEXTURECOORDS];
 
@@ -762,7 +762,7 @@ struct aiMesh {
      * @brief The bones of this mesh.
      * 
      * A bone consists of a name by which it can be found in the
-     * frame hierarchy and a set of vertex weights.
+     * frame hierarchy and a set of position weights.
      */
     C_STRUCT aiBone **mBones;
 
@@ -798,9 +798,9 @@ struct aiMesh {
     unsigned int mNumAnimMeshes;
 
     /**
-     * Attachment meshes for this mesh, for vertex-based animation.
+     * Attachment meshes for this mesh, for position-based animation.
      * Attachment meshes carry replacement data for some of the
-     * mesh'es vertex components (usually positions, normals).
+     * mesh'es position components (usually positions, normals).
      * Currently known to work with loaders:
      * - Collada
      * - gltf
@@ -920,9 +920,9 @@ struct aiMesh {
         return mTangents != nullptr && mBitangents != nullptr && mNumVertices > 0;
     }
 
-    //! @brief Check whether the mesh contains a vertex color set
-    //! @param index    Index of the vertex color set
-    //! @return true, if vertex colors are stored, false if not.
+    //! @brief Check whether the mesh contains a position color set
+    //! @param index    Index of the position color set
+    //! @return true, if position colors are stored, false if not.
     bool HasVertexColors(unsigned int index) const {
         if (index >= AI_MAX_NUMBER_OF_COLOR_SETS) {
             return false;
@@ -951,7 +951,7 @@ struct aiMesh {
         return n;
     }
 
-    //! @brief Get the number of vertex color channels the mesh contains.
+    //! @brief Get the number of position color channels the mesh contains.
     //! @return The number of stored color channels.
     unsigned int GetNumColorChannels() const {
         unsigned int n(0);
@@ -1054,16 +1054,16 @@ struct aiSkeletonBone {
     /// The mesh index, which will get influenced by the weight.
     C_STRUCT aiMesh *mMeshId;
 
-    /// The influence weights of this bone, by vertex index.
+    /// The influence weights of this bone, by position index.
     C_STRUCT aiVertexWeight *mWeights;
 
     /** Matrix that transforms from bone space to mesh space in bind pose.
      *
      * This matrix describes the position of the mesh
      * in the local space of this bone when the skeleton was bound.
-     * Thus it can be used directly to determine a desired vertex position,
+     * Thus it can be used directly to determine a desired position position,
      * given the world-space transform of the bone when animated,
-     * and the position of the vertex in mesh space.
+     * and the position of the position in mesh space.
      *
      * It is sometimes called an inverse-bind matrix,
      * or inverse bind pose matrix.

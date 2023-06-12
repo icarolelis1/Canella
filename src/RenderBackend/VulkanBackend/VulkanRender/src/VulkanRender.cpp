@@ -7,10 +7,7 @@
 #include <functional>
 using namespace Canella::RenderSystem::VulkanBackend;
 
-/**
- * @brief pass a pointer to the window to the renderer
- * @param windowing
- */
+
 void VulkanRender::set_windowing(Windowing *windowing) {
     window = windowing;
 }
@@ -139,7 +136,7 @@ void VulkanRender::render(glm::mat4& view,glm::mat4& projection)
     uint32_t next_image_index;
 
     ViewProjection view_projection{};
-    view_projection.view_projection = projection * view;
+     view_projection.view_projection = projection * view;
     view_projection.eye = glm::vec4(view[3]);
     //view_projection.eye = glm::mat4(1.0f);
     //Update the view projection buffer with global data for the renderer

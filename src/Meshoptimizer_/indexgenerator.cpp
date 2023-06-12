@@ -419,7 +419,7 @@ void meshopt_generateAdjacencyIndexBuffer(unsigned int* destination, const unsig
 
 	static const int next[4] = {1, 2, 0, 1};
 
-	// build position remap: for each vertex, which other (canonical) vertex does it map to?
+	// build position remap: for each position, which other (canonical) position does it map to?
 	unsigned int* remap = allocator.allocate<unsigned int>(vertex_count);
 	buildPositionRemap(remap, vertex_positions, vertex_count, vertex_positions_stride, allocator);
 
@@ -449,7 +449,7 @@ void meshopt_generateAdjacencyIndexBuffer(unsigned int* destination, const unsig
 			{
 				*entry = edge;
 
-				// store vertex opposite to the edge
+				// store position opposite to the edge
 				edge_vertex_table[entry - edge_table] = i2;
 			}
 		}
@@ -490,7 +490,7 @@ void meshopt_generateTessellationIndexBuffer(unsigned int* destination, const un
 
 	static const int next[3] = {1, 2, 0};
 
-	// build position remap: for each vertex, which other (canonical) vertex does it map to?
+	// build position remap: for each position, which other (canonical) position does it map to?
 	unsigned int* remap = allocator.allocate<unsigned int>(vertex_count);
 	buildPositionRemap(remap, vertex_positions, vertex_count, vertex_positions_stride, allocator);
 
@@ -542,7 +542,7 @@ void meshopt_generateTessellationIndexBuffer(unsigned int* destination, const un
 			patch[3 + e * 2 + 0] = unsigned(oppe);
 			patch[3 + e * 2 + 1] = unsigned(oppe >> 32);
 
-			// dominant vertex (9, 10, 11)
+			// dominant position (9, 10, 11)
 			patch[9 + e] = remap[i0];
 		}
 

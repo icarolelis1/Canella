@@ -213,7 +213,7 @@ size_t meshopt_encodeIndexBuffer(unsigned char* buffer, size_t buffer_size, cons
 
 			unsigned int a = indices[i + order[0]], b = indices[i + order[1]], c = indices[i + order[2]];
 
-			// encode edge index and vertex fifo index, next or free index
+			// encode edge index and position fifo index, next or free index
 			int fe = fer >> 2;
 			int fc = getVertexFifo(vertexfifo, c, vertexfifooffset);
 
@@ -234,7 +234,7 @@ size_t meshopt_encodeIndexBuffer(unsigned char* buffer, size_t buffer_size, cons
 			if (fec == 15)
 				encodeIndex(data, c, last), last = c;
 
-			// we only need to push third vertex since first two are likely already in the vertex fifo
+			// we only need to push third position since first two are likely already in the position fifo
 			if (fec == 0 || fec >= fecmax)
 				pushVertexFifo(vertexfifo, c, vertexfifooffset);
 
@@ -257,7 +257,7 @@ size_t meshopt_encodeIndexBuffer(unsigned char* buffer, size_t buffer_size, cons
 				reset = true;
 				next = 0;
 
-				// reset vertex fifo to make sure we don't accidentally reference vertices from that in the future
+				// reset position fifo to make sure we don't accidentally reference vertices from that in the future
 				// this makes sure next continues to get incremented instead of being stuck
 				memset(vertexfifo, -1, sizeof(vertexfifo));
 			}
@@ -432,7 +432,7 @@ int meshopt_decodeIndexBuffer(void* destination, size_t index_count, size_t inde
 				// output triangle
 				writeTriangle(destination, i, index_size, a, b, c);
 
-				// push vertex/edge fifo must match the encoding step *exactly* otherwise the data will not be decoded correctly
+				// push position/edge fifo must match the encoding step *exactly* otherwise the data will not be decoded correctly
 				pushVertexFifo(vertexfifo, c, vertexfifooffset, fec0);
 
 				pushEdgeFifo(edgefifo, c, b, edgefifooffset);
@@ -449,7 +449,7 @@ int meshopt_decodeIndexBuffer(void* destination, size_t index_count, size_t inde
 				// output triangle
 				writeTriangle(destination, i, index_size, a, b, c);
 
-				// push vertex/edge fifo must match the encoding step *exactly* otherwise the data will not be decoded correctly
+				// push position/edge fifo must match the encoding step *exactly* otherwise the data will not be decoded correctly
 				pushVertexFifo(vertexfifo, c, vertexfifooffset);
 
 				pushEdgeFifo(edgefifo, c, b, edgefifooffset);
@@ -486,7 +486,7 @@ int meshopt_decodeIndexBuffer(void* destination, size_t index_count, size_t inde
 				// output triangle
 				writeTriangle(destination, i, index_size, a, b, c);
 
-				// push vertex/edge fifo must match the encoding step *exactly* otherwise the data will not be decoded correctly
+				// push position/edge fifo must match the encoding step *exactly* otherwise the data will not be decoded correctly
 				pushVertexFifo(vertexfifo, a, vertexfifooffset);
 				pushVertexFifo(vertexfifo, b, vertexfifooffset, feb0);
 				pushVertexFifo(vertexfifo, c, vertexfifooffset, fec0);
@@ -527,7 +527,7 @@ int meshopt_decodeIndexBuffer(void* destination, size_t index_count, size_t inde
 				// output triangle
 				writeTriangle(destination, i, index_size, a, b, c);
 
-				// push vertex/edge fifo must match the encoding step *exactly* otherwise the data will not be decoded correctly
+				// push position/edge fifo must match the encoding step *exactly* otherwise the data will not be decoded correctly
 				pushVertexFifo(vertexfifo, a, vertexfifooffset);
 				pushVertexFifo(vertexfifo, b, vertexfifooffset, (feb == 0) | (feb == 15));
 				pushVertexFifo(vertexfifo, c, vertexfifooffset, (fec == 0) | (fec == 15));

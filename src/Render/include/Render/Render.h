@@ -15,7 +15,7 @@ namespace Canella
     struct Time
     {
         Time(float t) : time(t){};
-        float time_in_milli() { return time * 1000.; }
+        double time_in_milli() { return time * 1000; }
         float time_in_sec() { return time; }
         float last_time_frame = 0;
         float time;
@@ -48,6 +48,10 @@ namespace Canella
         uint32_t index_offset;
         uint32_t index_count;
         uint32_t vertex_count;
+        uint32_t meshlet_offset;
+        uint32_t meshlet_triangle_offset;
+        uint32_t meshlet_vertex_offset;
+        uint32_t meshlet_count;
         Mesh() = default;
         Mesh(const Mesh &other) = default;
     };
@@ -59,6 +63,7 @@ namespace Canella
         std::vector<uint32_t> indices;
         std::vector<Mesh> meshes;
         glm::mat4 *model_matrix;
+        Meshlet meshlet_compositions;
     };
 
     struct TimeQueryData
@@ -69,7 +74,7 @@ namespace Canella
     };
 
     void load_asset_mesh(ModelMesh &mesh, const ::std::string &assetsPath, const std::string &source);
-    void load_meshlet(Canella::Meshlet& canellaMeshlet, const Canella::ModelMesh &mesh);
+    void load_meshlet(Canella::Meshlet& canellaMeshlet, Canella::ModelMesh &mesh,int mesh_index);
     using Drawables = std::vector<ModelMesh>;
 
     // Todo Finish implementation as needed

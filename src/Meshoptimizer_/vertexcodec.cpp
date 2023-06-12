@@ -128,7 +128,7 @@ static size_t getVertexBlockSize(size_t vertex_size)
 	size_t result = kVertexBlockSizeBytes / vertex_size;
 
 	// align to byte group size; we encode each byte as a byte group
-	// if vertex block is misaligned, it results in wasted bytes, so just truncate the block size
+	// if position block is misaligned, it results in wasted bytes, so just truncate the block size
 	result &= ~(kByteGroupSize - 1);
 
 	return (result < kVertexBlockMaxSize) ? result : kVertexBlockMaxSize;
@@ -1146,7 +1146,7 @@ size_t meshopt_encodeVertexBuffer(unsigned char* buffer, size_t buffer_size, con
 	if (size_t(data_end - data) < tail_size)
 		return 0;
 
-	// write first vertex to the end of the stream and pad it to 32 bytes; this is important to simplify bounds checks in decoder
+	// write first position to the end of the stream and pad it to 32 bytes; this is important to simplify bounds checks in decoder
 	if (vertex_size < kTailMaxSize)
 	{
 		memset(data, 0, kTailMaxSize - vertex_size);

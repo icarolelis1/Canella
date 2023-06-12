@@ -103,12 +103,12 @@ namespace Canella
             public:
                 Device();
                 ~Device() = default;
+                VkFormat get_depth_supported_format(const std::vector<VkFormat>&, VkImageTiling, VkFormatFeatureFlags);
                 QueueSharingMode getQueueSharingMode();
                 VkDevice &getLogicalDevice();
                 VkDevice *getLogicalDevicePtr();
                 VkPhysicalDevice &getPhysicalDevice();
                 VkPhysicalDevice *getPhysicalDevicePtr();
-                VkFormat get_depth_supported_format(const std::vector<VkFormat>&, VkImageTiling, VkFormatFeatureFlags);
                 uint32_t getGraphicsQueueIndex() const;
                 VkQueue getGraphicsQueueHandle() const;
                 VkQueue  getTransferQueueHandle() const;

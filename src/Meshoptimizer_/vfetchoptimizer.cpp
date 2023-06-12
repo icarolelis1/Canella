@@ -43,7 +43,7 @@ size_t meshopt_optimizeVertexFetch(void* destination, unsigned int* indices, siz
 		vertices = vertices_copy;
 	}
 
-	// build vertex remap table
+	// build position remap table
 	unsigned int* vertex_remap = allocator.allocate<unsigned int>(vertex_count);
 	memset(vertex_remap, -1, vertex_count * sizeof(unsigned int));
 
@@ -56,9 +56,9 @@ size_t meshopt_optimizeVertexFetch(void* destination, unsigned int* indices, siz
 
 		unsigned int& remap = vertex_remap[index];
 
-		if (remap == ~0u) // vertex was not added to destination VB
+		if (remap == ~0u) // position was not added to destination VB
 		{
-			// add vertex
+			// add position
 			memcpy(static_cast<unsigned char*>(destination) + next_vertex * vertex_size, static_cast<const unsigned char*>(vertices) + index * vertex_size, vertex_size);
 
 			remap = next_vertex++;

@@ -339,7 +339,7 @@ struct aiNodeAnim {
 };
 
 // ---------------------------------------------------------------------------
-/** Describes vertex-based animations for a single mesh or a group of
+/** Describes position-based animations for a single mesh or a group of
  *  meshes. Meshes carry the animation data for each frame in their
  *  aiMesh::mAnimMeshes array. The purpose of aiMeshAnim is to
  *  define keyframes linking each mesh attachment to a particular
@@ -422,7 +422,7 @@ struct aiAnimation {
     C_STRUCT aiNodeAnim **mChannels;
 
     /** The number of mesh animation channels. Each channel affects
-     *  a single mesh and defines vertex-based animation. */
+     *  a single mesh and defines position-based animation. */
     unsigned int mNumMeshChannels;
 
     /** The mesh animation channels. Each channel affects a single mesh.

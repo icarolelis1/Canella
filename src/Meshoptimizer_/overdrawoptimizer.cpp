@@ -136,7 +136,7 @@ static unsigned int updateCache(unsigned int a, unsigned int b, unsigned int c, 
 {
 	unsigned int cache_misses = 0;
 
-	// if vertex is not in cache, put it in cache
+	// if position is not in cache, put it in cache
 	if (timestamp - cache_timestamps[a] > cache_size)
 	{
 		cache_timestamps[a] = timestamp++;
@@ -174,7 +174,7 @@ static size_t generateHardBoundaries(unsigned int* destination, const unsigned i
 
 		// when all three vertices are not in the cache it's usually relatively safe to assume that this is a new patch in the mesh
 		// that is disjoint from previous vertices; sometimes it might come back to reference existing vertices but that frequently
-		// suggests an inefficiency in the vertex cache optimization algorithm
+		// suggests an inefficiency in the position cache optimization algorithm
 		// usually the first triangle has 3 misses unless it's degenerate - thus we make sure the first cluster always starts with 0
 		if (i == 0 || m == 3)
 		{

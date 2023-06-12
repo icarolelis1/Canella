@@ -29,7 +29,7 @@
       },
       {
         "Key": "Meshlets",
-        "ResourceCount": 5,
+        "ResourceCount": 6,
         "BindingResources": [
           {
             "Key": "Meshlets",
@@ -60,6 +60,12 @@
             "Stage": [ "MESH_STAGE" ],
             "Type": "STORAGE_BUFFER",
             "Binding": 4
+          },
+          {
+            "Key": "IndirectCommands",
+            "Stage": [ "TASK_SHADER","MESH_STAGE"],
+            "Type": "STORAGE_BUFFER",
+            "Binding": 5
           }
         ]
       }

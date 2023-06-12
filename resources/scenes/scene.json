@@ -7,20 +7,20 @@
           {
             "type": "Transform",
             "Position": {
-              "x": -1.5,
+              "x": -1.2,
               "y": 0,
               "z": 0
             },
             "Scale": {
-              "x": 1,
-              "y": 1,
-              "z": 1
+              "x":1,
+              "y":1,
+              "z":1
             }
           },
           {
             "type" : "MeshAsset",
             "Static":true,
-            "Source" : "model_test/samus.glb"
+            "Source" : "model_test/imaginary_city_i.glb"
           }
         ]
       },

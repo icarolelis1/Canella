@@ -31,11 +31,14 @@ namespace Canella
         glm::vec3 rotation;
         glm::vec3 scale;
         glm::mat4 modelMatrix;
+        std::list<TransformComponent> children;
+        TransformComponent* parent = nullptr;
     };
 
     struct CameraComponent
     {
         CameraComponent() = default;
+        ~CameraComponent() = default;
         Euler euler;
         glm::vec3 position = glm::vec3(0,3,-3);
         glm::mat4 projection;
@@ -59,7 +62,7 @@ namespace Canella
     {
         ModelMesh mesh;
         std::string source;
-        bool isStatic = false;
+        bool isStatic = true;
         ModelAssetComponent() = default;
     };
 

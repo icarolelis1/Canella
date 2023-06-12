@@ -4,11 +4,9 @@
 #include "Render/Render.h"
 using namespace Canella;
 
-void Canella::load_meshes_from_scene(const std::string& assets_folder,const std::weak_ptr<Scene> scene)
+void Canella::load_meshes_from_scene(const std::string& assets_folder, Scene *const scene)
 {
-    const auto scene_ref = scene.lock();
-    if (!scene_ref)return;
-    for (auto& [entt_value,entity] : scene_ref->m_EntityLibrary)
+    for (auto& [entt_value,entity] : scene->m_EntityLibrary)
         if (entity->has_component<ModelAssetComponent>())
         {
             auto& mesh_asset = entity->get_component<ModelAssetComponent>();
@@ -27,48 +25,42 @@ void Canella::load_mesh_from_disk(const std::string& assets_folder, ModelAssetCo
  * \param scene scene object
  * \return returns the main Camera
  */
-CameraComponent* Canella::get_main_camera(const std::weak_ptr<Scene> scene)
+CameraComponent* Canella::get_main_camera(Scene *const scene)
 {
-    const auto scene_ref = scene.lock();
-    assert(scene_ref);
-
-    for (auto& [entt,entity] : scene_ref->m_EntityLibrary)
+    for (auto& [entt,entity] : scene->m_EntityLibrary)
         if (entity->has_component<CameraComponent>())
             return &entity->get_component<CameraComponent>();
    return nullptr;
 }
 
-void Canella::get_meshes_on_scene(Drawables& drawables,const std::weak_ptr<Scene> scene)
+void Canella::get_static_meshes_on_scene(Drawables& drawables, Scene *const scene)
 {
-    const auto scene_ref = scene.lock();
-    assert(scene_ref);
-    for (auto [key,value]: scene_ref->m_EntityLibrary)
+    for (auto [key,value]: scene->m_EntityLibrary)
         if (value->has_component<ModelAssetComponent>()) {
             const auto& [mesh, source, isStatic] = value->get_component<ModelAssetComponent>();
-            drawables.push_back(mesh);
+            if(isStatic)
+                drawables.push_back(mesh);
         }
 }
 
-void Canella::update_transforms(const std::weak_ptr<Scene> scene)
+void Canella::update_transforms(Scene *const scene)
 {
-    const auto scene_ref = scene.lock();
-    assert(scene_ref);
-    for (auto [key,value]: scene_ref->m_EntityLibrary)
+    for (auto [key,value]: scene->m_EntityLibrary)
         if (value->has_component<TransformComponent>()) {
             auto& transform= value->get_component<TransformComponent>();
             transform.modelMatrix = glm::mat4(1.0f);
             transform.modelMatrix = glm::translate(transform.modelMatrix,transform.position);
             transform.modelMatrix = glm::scale(transform.modelMatrix,transform.scale);
+            if(transform.parent != nullptr)
+                transform.modelMatrix = transform.parent->modelMatrix *transform.modelMatrix;
             //glm::quat rot = glm::angleAxis(glm::radians(0.f),glm::vec3(0,1,0));
             //transform.modelMatrix *= toMat4(rot);
         }
 }
 
-void Canella::update_scripts(std::weak_ptr<Scene> scene,float frame_time)
+void Canella::update_scripts(Scene *scene, float frame_time)
 {
-    const auto scene_ref = scene.lock();
-    assert(scene_ref);
-    scene_ref->m_registry.view<Behavior>().each([=](auto entity, auto& behavior)
+    scene->m_registry.view<Behavior>().each([=](auto entity, auto& behavior)
     {
         if(!behavior.instance)
         {
@@ -79,11 +71,9 @@ void Canella::update_scripts(std::weak_ptr<Scene> scene,float frame_time)
     });
 }
 
-void Canella::start_scripts(std::weak_ptr<Scene> scene)
+void Canella::start_scripts(Scene *scene)
 {
-    const auto scene_ref = scene.lock();
-    assert(scene_ref);
-    scene_ref->m_registry.view<Behavior>().each([=](auto entity, auto& behavior)
+    scene->m_registry.view<Behavior>().each([=](auto entity, auto& behavior)
     {
         if(!behavior.instance)
         {

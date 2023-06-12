@@ -56,6 +56,7 @@ namespace Canella
                 DescriptorSetLayouts cachedDescriptorSetLayouts;
                 PFN_vkCmdDrawMeshTasksEXT vkCmdDrawMeshTasksEXT;
                 PFN_vkCmdDrawMeshTasksIndirectEXT vkCmdDrawMeshTasksIndirectEXT;
+                RenderpassManager renderpassManager;
                 std::vector<FrameData> frames;
                 std::vector<VkDescriptorSet> global_descriptors;
                 std::vector<VkDescriptorSet> transform_descriptors;
@@ -63,7 +64,6 @@ namespace Canella
                 Descriptorpool descriptorPool;
                 Commandpool transfer_pool;
                 Swapchain swapChain;
-                RenderpassManager renderpassManager;
                 Instance *instance;
                 unsigned int current_frame = 0;
 

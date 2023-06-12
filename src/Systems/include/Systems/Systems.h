@@ -14,37 +14,37 @@ namespace Canella
      * @param assets_folder subfolder inside project that contains the assets
      * @param scene the scene containing the meshes
      */
-    void load_meshes_from_scene(const std::string& assetsFolder,const std::weak_ptr<Scene> scene);
+    void load_meshes_from_scene(const std::string& assetsFolder, Scene *const scene);
     /**
-     * @brief load a mesh in assetsFolder path
+     * @brief load a mesh in assets_folder path
      * @param assetsFolder
      * @param mesh_asset_component
      */
     void load_mesh_from_disk(const std::string& assetsFolder,ModelAssetComponent& mesh_asset_component);
-    CameraComponent* get_main_camera(const std::weak_ptr<Scene> scene);
+    CameraComponent* get_main_camera(Scene *const scene);
     /**
  * \brief get a reference for all the Meshes in the scene
  * \param drawables Reference to vector containing the meshes
  * \param scene The Scene
  */
-    void get_meshes_on_scene(Drawables& drawables,const std::weak_ptr<Scene> scene);
+    void get_static_meshes_on_scene(Drawables& drawables, Scene *const scene);
     /**
      * @brief update all the transforms calculating the model matrix
      * @param scene the scene containing the transforms
      */
-    void update_transforms(const std::weak_ptr<Scene> scene);
+    void update_transforms(Scene *const scene);
 
     /**
      * @brief update the scene scripts calling on_update
      * @param scene
      */
-    void update_scripts(std::weak_ptr<Scene> scene,float frame_time);
+    void update_scripts(Scene *scene, float frame_time);
 
     /**
      * Starts the scene scripts calling on_start method
      * @param scene
      */
-    void start_scripts(std::weak_ptr<Scene> scene);
+    void start_scripts(Scene *scene);
     class GlfwWindow;
     void update_camera(CameraComponent& camera_component,GlfwWindow& window);
 }

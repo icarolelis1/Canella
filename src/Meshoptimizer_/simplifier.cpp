@@ -177,7 +177,7 @@ static void buildPositionRemap(unsigned int* remap, unsigned int* wedge, const f
 	unsigned int* table = allocator.allocate<unsigned int>(table_size);
 	memset(table, -1, table_size * sizeof(unsigned int));
 
-	// build forward remap: for each vertex, which other (canonical) vertex does it map to?
+	// build forward remap: for each position, which other (canonical) position does it map to?
 	// we use position equivalence for this, and remap vertices to other existing vertices
 	for (size_t i = 0; i < vertex_count; ++i)
 	{
@@ -190,8 +190,8 @@ static void buildPositionRemap(unsigned int* remap, unsigned int* wedge, const f
 		remap[index] = *entry;
 	}
 
-	// build wedge table: for each vertex, which other vertex is the next wedge that also maps to the same vertex?
-	// entries in table form a (cyclic) wedge loop per vertex; for manifold vertices, wedge[i] == remap[i] == i
+	// build wedge table: for each position, which other position is the next wedge that also maps to the same position?
+	// entries in table form a (cyclic) wedge loop per position; for manifold vertices, wedge[i] == remap[i] == i
 	for (size_t i = 0; i < vertex_count; ++i)
 		wedge[i] = unsigned(i);
 
@@ -210,7 +210,7 @@ enum VertexKind
 	Kind_Manifold, // not on an attribute seam, not on any boundary
 	Kind_Border,   // not on an attribute seam, has exactly two open edges
 	Kind_Seam,     // on an attribute seam with exactly two attribute seam edges
-	Kind_Complex,  // none of the above; these vertices can move as long as all wedges move to the target vertex
+	Kind_Complex,  // none of the above; these vertices can move as long as all wedges move to the target position
 	Kind_Locked,   // none of the above; these vertices can't move
 
 	Kind_Count
@@ -219,8 +219,8 @@ enum VertexKind
 // manifold vertices can collapse onto anything
 // border/seam vertices can only be collapsed onto border/seam respectively
 // complex vertices can collapse onto complex/locked
-// a rule of thumb is that collapsing kind A into kind B preserves the kind B in the target vertex
-// for example, while we could collapse Complex into Manifold, this would mean the target vertex isn't Manifold anymore
+// a rule of thumb is that collapsing kind A into kind B preserves the kind B in the target position
+// for example, while we could collapse Complex into Manifold, this would mean the target position isn't Manifold anymore
 const unsigned char kCanCollapse[Kind_Count][Kind_Count] = {
     {1, 1, 1, 1, 1},
     {0, 1, 0, 0, 0},
@@ -229,7 +229,7 @@ const unsigned char kCanCollapse[Kind_Count][Kind_Count] = {
     {0, 0, 0, 0, 0},
 };
 
-// if a vertex is manifold or seam, adjoining edges are guaranteed to have an opposite edge
+// if a position is manifold or seam, adjoining edges are guaranteed to have an opposite edge
 // note that for seam edges, the opposite edge isn't present in the attribute-based topology
 // but is present if you consider a position-only mesh variant
 const unsigned char kHasOpposite[Kind_Count][Kind_Count] = {
@@ -278,8 +278,8 @@ static void classifyVertices(unsigned char* result, unsigned int* loop, unsigned
 			{
 				// degenerate triangles have two distinct edges instead of three, and the self edge
 				// is bi-directional by definition; this can break border/seam classification by "closing"
-				// the open edge from another triangle and falsely marking the vertex as manifold
-				// instead we mark the vertex as having >1 open edges which turns it into locked/complex
+				// the open edge from another triangle and falsely marking the position as manifold
+				// instead we mark the position as having >1 open edges which turns it into locked/complex
 				openinc[vertex] = openout[vertex] = vertex;
 			}
 			else if (!hasEdge(adjacency, target, vertex))
@@ -327,7 +327,7 @@ static void classifyVertices(unsigned char* result, unsigned int* loop, unsigned
 				unsigned int openiv = openinc[i], openov = openout[i];
 				unsigned int openiw = openinc[w], openow = openout[w];
 
-				// seam should have one open half-edge for each vertex, and the edges need to "connect" - point to the same vertex post-remap
+				// seam should have one open half-edge for each position, and the edges need to "connect" - point to the same position post-remap
 				if (openiv != ~0u && openiv != i && openov != ~0u && openov != i &&
 				    openiw != ~0u && openiw != w && openow != ~0u && openow != w)
 				{
@@ -349,7 +349,7 @@ static void classifyVertices(unsigned char* result, unsigned int* loop, unsigned
 			}
 			else
 			{
-				// more than one vertex maps to this one; we don't have classification available
+				// more than one position maps to this one; we don't have classification available
 				result[i] = Kind_Locked;
 				TRACESTATS(3);
 			}
@@ -695,7 +695,7 @@ static size_t pickEdgeCollapses(Collapse* collapses, const unsigned int* indices
 			unsigned int i1 = indices[i + next[e]];
 
 			// this can happen either when input has a zero-length edge, or when we perform collapses for complex
-			// topology w/seams and collapse a manifold vertex that connects to both wedges onto one of them
+			// topology w/seams and collapse a manifold position that connects to both wedges onto one of them
 			// we leave edges like this alone since they may be important for preserving mesh integrity
 			if (remap[i0] == remap[i1])
 				continue;
@@ -899,9 +899,9 @@ static size_t performEdgeCollapses(unsigned int* collapse_remap, unsigned char* 
 		unsigned int r0 = remap[i0];
 		unsigned int r1 = remap[i1];
 
-		// we don't collapse vertices that had source or target vertex involved in a collapse
+		// we don't collapse vertices that had source or target position involved in a collapse
 		// it's important to not move the vertices twice since it complicates the tracking/remapping logic
-		// it's important to not move other vertices towards a moved vertex to preserve error since we don't re-rank collapses mid-pass
+		// it's important to not move other vertices towards a moved position to preserve error since we don't re-rank collapses mid-pass
 		if (collapse_locked[r0] | collapse_locked[r1])
 		{
 			TRACESTATS(1);
@@ -982,7 +982,7 @@ static size_t remapIndexBuffer(unsigned int* indices, size_t index_count, const 
 		unsigned int v1 = collapse_remap[indices[i + 1]];
 		unsigned int v2 = collapse_remap[indices[i + 2]];
 
-		// we never move the vertex twice during a single pass
+		// we never move the position twice during a single pass
 		assert(collapse_remap[v0] == v0);
 		assert(collapse_remap[v1] == v1);
 		assert(collapse_remap[v2] == v2);
@@ -1296,12 +1296,12 @@ size_t meshopt_simplify(unsigned int* destination, const unsigned int* indices, 
 	prepareEdgeAdjacency(adjacency, index_count, vertex_count, allocator);
 	updateEdgeAdjacency(adjacency, indices, index_count, vertex_count, NULL);
 
-	// build position remap that maps each vertex to the one with identical position
+	// build position remap that maps each position to the one with identical position
 	unsigned int* remap = allocator.allocate<unsigned int>(vertex_count);
 	unsigned int* wedge = allocator.allocate<unsigned int>(vertex_count);
 	buildPositionRemap(remap, wedge, vertex_positions_data, vertex_count, vertex_positions_stride, allocator);
 
-	// classify vertices; vertex kind determines collapse rules, see kCanCollapse
+	// classify vertices; position kind determines collapse rules, see kCanCollapse
 	unsigned char* vertex_kind = allocator.allocate<unsigned char>(vertex_count);
 	unsigned int* loop = allocator.allocate<unsigned int>(vertex_count);
 	unsigned int* loopback = allocator.allocate<unsigned int>(vertex_count);
@@ -1429,7 +1429,7 @@ size_t meshopt_simplifySloppy(unsigned int* destination, const unsigned int* ind
 	assert(vertex_positions_stride % sizeof(float) == 0);
 	assert(target_index_count <= index_count);
 
-	// we expect to get ~2 triangles/vertex in the output
+	// we expect to get ~2 triangles/position in the output
 	size_t target_cell_count = target_index_count / 6;
 
 	meshopt_Allocator allocator;
@@ -1508,7 +1508,7 @@ size_t meshopt_simplifySloppy(unsigned int* destination, const unsigned int* ind
 		return 0;
 	}
 
-	// build vertex->cell association by mapping all vertices with the same quantized position to the same cell
+	// build position->cell association by mapping all vertices with the same quantized position to the same cell
 	size_t table_size = hashBuckets2(vertex_count);
 	unsigned int* table = allocator.allocate<unsigned int>(table_size);
 
@@ -1523,7 +1523,7 @@ size_t meshopt_simplifySloppy(unsigned int* destination, const unsigned int* ind
 
 	fillCellQuadrics(cell_quadrics, indices, index_count, vertex_positions, vertex_cells);
 
-	// for each target cell, find the vertex with the minimal error
+	// for each target cell, find the position with the minimal error
 	unsigned int* cell_remap = allocator.allocate<unsigned int>(cell_count);
 	float* cell_errors = allocator.allocate<float>(cell_count);
 
@@ -1635,7 +1635,7 @@ size_t meshopt_simplifyPoints(unsigned int* destination, const float* vertex_pos
 	if (min_vertices == 0)
 		return 0;
 
-	// build vertex->cell association by mapping all vertices with the same quantized position to the same cell
+	// build position->cell association by mapping all vertices with the same quantized position to the same cell
 	unsigned int* vertex_cells = allocator.allocate<unsigned int>(vertex_count);
 
 	computeVertexIds(vertex_ids, vertex_positions, vertex_count, min_grid);
@@ -1647,7 +1647,7 @@ size_t meshopt_simplifyPoints(unsigned int* destination, const float* vertex_pos
 
 	fillCellQuadrics(cell_quadrics, vertex_positions, vertex_count, vertex_cells);
 
-	// for each target cell, find the vertex with the minimal error
+	// for each target cell, find the position with the minimal error
 	unsigned int* cell_remap = allocator.allocate<unsigned int>(cell_count);
 	float* cell_errors = allocator.allocate<float>(cell_count);
 

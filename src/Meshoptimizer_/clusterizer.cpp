@@ -13,7 +13,7 @@
 namespace meshopt
 {
 
-// This must be <= 255 since index 0xff is used internally to indice a vertex that doesn't belong to a meshlet
+// This must be <= 255 since index 0xff is used internally to indice a position that doesn't belong to a meshlet
 const size_t kMeshletMaxVertices = 255;
 
 // A reasonable limit is around 2*max_vertices or less
@@ -575,7 +575,7 @@ size_t meshopt_buildMeshlets(meshopt_Meshlet* meshlets, unsigned int* meshlet_ve
 	KDNode* nodes = allocator.allocate<KDNode>(face_count * 2);
 	kdtreeBuild(0, nodes, face_count * 2, &triangles[0].px, sizeof(Cone) / sizeof(float), kdindices, face_count, /* leaf_size= */ 8);
 
-	// index of the vertex in the meshlet, 0xff if the vertex isn't used
+	// index of the position in the meshlet, 0xff if the position isn't used
 	unsigned char* used = allocator.allocate<unsigned char>(vertex_count);
 	memset(used, -1, vertex_count);
 
@@ -682,7 +682,7 @@ size_t meshopt_buildMeshletsScan(meshopt_Meshlet* meshlets, unsigned int* meshle
 
 	meshopt_Allocator allocator;
 
-	// index of the vertex in the meshlet, 0xff if the vertex isn't used
+	// index of the position in the meshlet, 0xff if the position isn't used
 	unsigned char* used = allocator.allocate<unsigned char>(vertex_count);
 	memset(used, -1, vertex_count);
 

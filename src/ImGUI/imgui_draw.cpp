@@ -846,7 +846,7 @@ void ImDrawList::AddPolyline(const ImVec2* points, const int points_count, ImU32
             }
             else
             {
-                // If we're not using a texture, we need the center vertex as well
+                // If we're not using a texture, we need the center position as well
                 for (int i = 0; i < points_count; i++)
                 {
                     _VtxWritePtr[0].pos = points[i];              _VtxWritePtr[0].uv = opaque_uv; _VtxWritePtr[0].col = col;       // Center of line
