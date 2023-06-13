@@ -20,9 +20,10 @@ Experiments on crafting a 3D vulkan game engine.
 - Multhread command buffer generation
 - and the list will go on forever...
 
-# Dependencies
-## Dependencies
+### Dependencies
 - Vulkan SDK - https://vulkan.lunarg.com/doc/view/latest/windows/getting_started.html
+
+### External Libraries
 - Cmake https://cmake.org 
 - ImGui https://github.com/ocornut/imgui
 - Meshoptmizer https://github.com/zeux/meshoptimizer
