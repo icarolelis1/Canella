@@ -22,6 +22,7 @@ struct MeshletBound{
 	vec4 cone_apex;
 	vec4 cone_axis;
 	vec4 cone_cutoff;
+	vec4 center;
 };
 struct IndirectDrawDispatch{
 	uint    groupCountX;

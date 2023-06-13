@@ -11,7 +11,7 @@ namespace Canella
         namespace VulkanBackend
         {
 
-            class MeshletGBufferPass : public RenderNode
+            class GeomtryPass : public RenderNode
             {
             public:
                 struct IndirectCommand
@@ -35,8 +35,8 @@ namespace Canella
                     std::vector<VkDescriptorSet> indices_descriptorset;
                 };
 
-                MeshletGBufferPass();
-                ~MeshletGBufferPass();
+                GeomtryPass();
+                ~GeomtryPass();
                 void execute(Canella::Render *render, VkCommandBuffer, int) override;
                 void load_transient_resources(Canella::Render *render) override;
 
@@ -55,7 +55,13 @@ namespace Canella
                  * Writes the Descriptorset
                  * @param render
                  */
-                void write_descriptorsets(Canella::Render *render);
+                void write_descriptorsets_geomtry(Canella::Render *render);
+                /**
+                 * @brief Writes the descriptorsets used in the culling pass
+                 * @param render
+                */
+                void write_descriptorsets_culling(Canella::Render* render);
+
                 /**
                  * @brief writes the outputs to subsequent nodes
                  */
@@ -71,12 +77,20 @@ namespace Canella
                  */
                 void clear_render_node(Canella::Render *render);
 
+                /**
+                 * @brief performs Frustum Culling in a compute shader
+                 * @param Application Renderer
+                */
+                void compute_frustum_culling(Canella::Render* render);
+
                 std::vector<ResourceAccessor> resource_meshlet_buffers;
                 std::vector<ResourceAccessor> resource_meshlet_triangles;
                 std::vector<ResourceAccessor> resource_meshlet_vertices;
                 std::vector<ResourceAccessor> resource_vertices_buffers;
                 std::vector<ResourceAccessor> resource_bounds_buffers;
                 std::vector<ResourceAccessor> draw_indirect_buffers;
+                std::vector<ResourceAccessor> processed_indirect_buffers;
+                std::vector<DescriptorPerDrawable> frustum_culling_descriptors;
                 std::vector<DescriptorPerDrawable> descriptors;
                 RenderQueries queries;
                 bool post_first_load = false;

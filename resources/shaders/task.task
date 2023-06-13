@@ -55,17 +55,6 @@ bool cone_cull(vec3 cone, vec3 view_dir,float cutoff)
    return dot(cone.xyz,view_dir) >= cutoff;  
 }
 
-vec3 getViewPosition(mat4 viewMatrix) {
-  // Invert the view matrix to get the camera-to-world transformation
-  mat4 inverseViewMatrix = inverse(viewMatrix);
-
-  // Retrieve the translation component (fourth column) of the inverted view matrix
-  vec3 viewPosition = inverseViewMatrix[3].xyz;
-
-  return viewPosition;
-}
-
-
 void main()
 {
    IndirectDrawDispatch command = draw_commands[gl_DrawIDARB];
@@ -74,28 +63,24 @@ void main()
    uint mi = mgi * 32 + ti;
    uint thread_meshlet = mi + command.meshlet_offset ;
    
-   bool accept = false;
-   if( mi <  command.meshlet_count )
-   {
-
-      MeshletBound bound = bounds[thread_meshlet];
-      vec3 cone_apex = bound.cone_apex.xyz;
-      vec4 cone =  model_matrices[command.mesh_id]*vec4(cone_apex.xyz,1);
-      vec4 cone_axis = model_matrices[command.mesh_id]* bound.cone_axis/127.f;
-      vec3 direction = normalize( cone.xyz - ubo.eye.xyz);
-      accept = !cone_cull(cone_axis.xyz,direction,bound.cone_cutoff.x/127.f);
-   }
+  MeshletBound bound = bounds[thread_meshlet];
+  vec3 cone_apex = bound.cone_apex.xyz;
+  vec4 cone =  model_matrices[command.mesh_id]*vec4(cone_apex.xyz,1);
+  vec4 cone_axis = model_matrices[command.mesh_id]* bound.cone_axis/127.;
+  vec3 direction = normalize( cone.xyz - ubo.eye.xyz);
+  bool accept = !cone_cull(cone_axis.xyz,direction,bound.cone_cutoff.x/127.0);
+   
    uvec4 ballot = subgroupBallot(accept);
+   uint count = subgroupBallotBitCount(ballot);
    uint index = subgroupBallotInclusiveBitCount(ballot);
 
    if(accept);
       OUT.meshletIndices[ti] = thread_meshlet ;
       
-   uint count = subgroupBallotBitCount(ballot);
 
-    if( ti == 0 );
-       EmitMeshTasksEXT(count, 1, 1);   
+   if( ti == 0 );
+         EmitMeshTasksEXT(count, 1, 1);   
 
-   // if( ti == 0 );
-   //    EmitMeshTasksEXT(min(32,command.meshlet_count - mi ), 1, 1);   
+//  if( ti == 0 );
+//         EmitMeshTasksEXT(min(32,command.meshlet_count - mi ), 1, 1);   
 }

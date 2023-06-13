@@ -16,7 +16,7 @@
 namespace Canella {
 	namespace RenderSystem {
 		namespace VulkanBackend {
-			class MeshletGBufferPass;
+			class GeomtryPass;
             enum NodeType{
                 Compute,
                 Render,

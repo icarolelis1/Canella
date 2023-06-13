@@ -84,8 +84,8 @@ void CameraEditor::update_euler_directions()
 {
     //FPS camera:  RotationX(pitch) * RotationY(yaw)
     glm::quat qPitch = glm::angleAxis(PITCH, glm::vec3(1, 0, 0));
-    glm::quat qYaw = glm::angleAxis(YAW, glm::vec3(0, 0, 1));
-    glm::quat qRoll = glm::angleAxis(ROLL,glm::vec3(0,1,0));
+    glm::quat qYaw = glm::angleAxis(YAW, glm::vec3(0, 1, 0));
+    glm::quat qRoll = glm::angleAxis(ROLL,glm::vec3(0,0,1));
 
     //For a FPS camera we can omit roll
     orientation = qPitch * qYaw * qRoll;
@@ -154,7 +154,7 @@ void CameraEditor::set_mouse_callbacks()
             auto horizontal_delta = drag_x - x ;
             auto vertical_delta   = drag_y - y ;
 
-            camera_component->position += camera_component->euler.right *(float)horizontal_delta * drag_speed;
+            camera_component->position += camera_component->euler.right * (float)horizontal_delta * drag_speed;
             camera_component->position += camera_component->euler.up    * (float)vertical_delta  * drag_speed;
             //Canella::Logger::Info("Event input is working %d %d",x,y);
             drag_x = x;

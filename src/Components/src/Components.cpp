@@ -20,6 +20,10 @@ void Canella::SerializeTransform(nlohmann::json& data,entt::registry& registry,e
     scale.x = data["Scale"]["x"].get<float>();
     scale.y = data["Scale"]["y"].get<float>();
     scale.z = data["Scale"]["z"].get<float>();
+
+    rotation.x = data["Rotation"]["x"].get<float>();
+    rotation.y = data["Rotation"]["y"].get<float>();
+    rotation.z = data["Rotation"]["z"].get<float>();
 }
 
 void Canella::SerializeCamera(nlohmann::json& data,entt::registry& registry,entt::entity entity)

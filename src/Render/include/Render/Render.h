@@ -28,6 +28,7 @@ namespace Canella
         glm::vec4 cone_apex;
         glm::vec4 cone_axis;
         glm::vec4 cone_cutoff;
+        glm::vec4 center;
     };
 
     struct Meshlet

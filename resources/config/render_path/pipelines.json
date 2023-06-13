@@ -1,7 +1,7 @@
 ﻿{
   "PipelineData": {
-    "DescriptorSetLayoutCounts":3,
-    "PipelinesCount":1,
+    "DescriptorSetLayoutCounts": 4,
+    "PipelinesCount": 2,
     "DescriptorSetLayouts": [
       {
         "Key": "ViewProjection",
@@ -9,7 +9,10 @@
         "BindingResources": [
           {
             "Key": "ViewProjection",
-            "Stage": [ "MESH_STAGE", "TASK_SHADER" ],
+            "Stage": [
+              "MESH_STAGE",
+              "TASK_SHADER"
+            ],
             "Type": "UNIFORM_BUFFER",
             "Binding": 0
           }
@@ -21,7 +24,10 @@
         "BindingResources": [
           {
             "Key": "Transforms",
-            "Stage": [ "MESH_STAGE", "TASK_SHADER" ],
+            "Stage": [
+              "MESH_STAGE",
+              "TASK_SHADER"
+            ],
             "Type": "STORAGE_BUFFER",
             "Binding": 0
           }
@@ -33,39 +39,83 @@
         "BindingResources": [
           {
             "Key": "Meshlets",
-            "Stage": [ "MESH_STAGE" ],
+            "Stage": [
+              "MESH_STAGE"
+            ],
             "Type": "STORAGE_BUFFER",
             "Binding": 0
           },
           {
             "Key": "Vertices",
-            "Stage": [ "MESH_STAGE" ],
+            "Stage": [
+              "MESH_STAGE"
+            ],
             "Type": "STORAGE_BUFFER",
             "Binding": 1
           },
           {
             "Key": "Bounds",
-            "Stage": [ "TASK_SHADER","MESH_STAGE"],
+            "Stage": [
+              "TASK_SHADER",
+              "MESH_STAGE"
+            ],
             "Type": "STORAGE_BUFFER",
             "Binding": 2
           },
           {
             "Key": "MeshletIndices",
-            "Stage": [ "MESH_STAGE" ],
+            "Stage": [
+              "MESH_STAGE"
+            ],
             "Type": "STORAGE_BUFFER",
             "Binding": 3
           },
           {
             "Key": "MeshletVerticees",
-            "Stage": [ "MESH_STAGE" ],
+            "Stage": [
+              "MESH_STAGE"
+            ],
             "Type": "STORAGE_BUFFER",
             "Binding": 4
           },
           {
             "Key": "IndirectCommands",
-            "Stage": [ "TASK_SHADER","MESH_STAGE"],
+            "Stage": [
+              "TASK_STAGE",
+              "MESH_STAGE"
+            ],
             "Type": "STORAGE_BUFFER",
             "Binding": 5
+          }
+        ]
+      },
+      {
+        "Key": "CommandProcessor",
+        "ResourceCount": 3,
+        "BindingResources": [
+          {
+            "Key": "CommandProcessor",
+            "Stage": [
+              "COMPUTE_STAGE"
+            ],
+            "Type": "STORAGE_BUFFER",
+            "Binding": 0
+          },
+          {
+            "Key": "CommandProcessor",
+            "Stage": [
+              "COMPUTE_STAGE"
+            ],
+            "Type": "STORAGE_BUFFER",
+            "Binding": 1
+          },
+          {
+            "Key": "CommandProcessor",
+            "Stage": [
+              "COMPUTE_STAGE"
+            ],
+            "Type": "STORAGE_BUFFER",
+            "Binding": 2
           }
         ]
       }
@@ -73,31 +123,55 @@
     "Pipelines": [
       {
         "Key": "MeshShaderPipeline",
-        "PushConstantRangesCount" : 0,
+        "IsCompute": false,
+        "PushConstantRangesCount": 0,
         "NumerOfDescriptorSets": 3,
         "Renderpass": "basic",
-        "VertexAttributeCount" : 0,
-        "PipelineLayoutDescriptors": [ "ViewProjection","Transforms", "Meshlets" ],
-
+        "VertexAttributeCount": 0,
+        "PipelineLayoutDescriptors": [
+          "ViewProjection",
+          "Transforms",
+          "Meshlets"
+        ],
         "Builtin": true,
-        "ShaderCount":3,
+        "ShaderCount": 3,
         "Shaders": [
           {
             "Type": "Mesh",
             "ResourcesCount": 1,
-            "Source":"resources\\Shaders\\spirv\\mesh.mesh.spv"
+            "Source": "resources\\Shaders\\spirv\\mesh.mesh.spv"
           },
           {
             "Type": "Task",
             "ResourcesCount": 0,
-            "Source":"resources\\Shaders\\spirv\\task.task.spv"
+            "Source": "resources\\Shaders\\spirv\\task.task.spv"
           },
           {
             "Type": "Fragment",
             "ResourcesCount": 0,
-            "Source":"resources\\Shaders\\spirv\\fragment.frag.spv"
+            "Source": "resources\\Shaders\\spirv\\fragment.frag.spv"
           }
         ]
+      },
+      {
+        "Key": "CommandProcessor",
+        "IsCompute": true,
+        "PushConstantRangesCount": 1,
+        "NumerOfDescriptorSets": 1,
+        "PipelineLayoutDescriptors": [
+          "CommandProcessor"
+        ],
+        "PushConstants": {
+          "StageFlags" : "COMPUTE_STAGE",
+          "Size" : 96,
+          "Offset" : 0
+        },
+        "Builtin": true,
+        "Shader": {
+          "Type": "Compute",
+          "ResourcesCount": 1,
+          "Source": "resources\\Shaders\\spirv\\command.comp.spv"
+        }
       }
     ]
   }

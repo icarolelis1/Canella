@@ -135,6 +135,6 @@ add_custom_command(TARGET ${PROJECT_NAME}  POST_BUILD
 
 add_custom_target(copy-files ALL
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_BINARY_DIR}/resources
+        ${PROJECT_SOURCE_DIR}/resources
         ${CMAKE_BINARY_DIR}/resources
         )

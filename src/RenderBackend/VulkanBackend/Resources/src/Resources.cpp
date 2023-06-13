@@ -2,7 +2,6 @@
 #include "DescriptorSet/DescriptorSet.h"
 #include "CanellaUtility/CanellaUtility.h"
 
-
 Canella::RenderSystem::VulkanBackend::GPUResource::GPUResource(
         Canella::RenderSystem::VulkanBackend::ResourceType _type):type(_type) {
 
@@ -187,12 +186,11 @@ Canella::RenderSystem::VulkanBackend::ResourcesManager::get_image_cached(uint64_
     return std::static_pointer_cast<Image>(ref_image);
 }
 
-
 uint64_t Canella::RenderSystem::VulkanBackend::ResourcesManager::write_descriptor_sets(
-        VkDescriptorSet& descriptorset,
-        std::vector<VkDescriptorBufferInfo> &buffer_infos,
-        std::vector<VkDescriptorImageInfo> &image_infos,
-        bool storage_buffers)
+    VkDescriptorSet &descriptorset,
+    std::vector<VkDescriptorBufferInfo> &buffer_infos,
+    std::vector<VkDescriptorImageInfo> &image_infos,
+    bool storage_buffers)
 {
     auto unique_id = uuid();
 

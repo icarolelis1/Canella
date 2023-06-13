@@ -83,6 +83,9 @@ void Canella::load_meshlet(Canella::Meshlet& canellaMeshlet, Canella::ModelMesh 
     meshlet_triangles.resize(last.triangle_offset + ((last.triangle_count * 3 + 3) & ~3));
     meshlets.resize(meshlet_count);
 
+    while(meshlets.size() %32 !=0  )
+        meshlets.push_back(meshopt_Meshlet());
+
     for (const auto& m : meshlets)
     {
         auto bound = meshopt_Bounds(meshopt_computeMeshletBounds(&meshlet_vertices[m.vertex_offset],
@@ -93,8 +96,8 @@ void Canella::load_meshlet(Canella::Meshlet& canellaMeshlet, Canella::ModelMesh 
 
         MeshletBound meshletBound {};
         meshletBound.cone_apex = glm::vec4(bound.cone_apex[0],bound.cone_apex[1],bound.cone_apex[2],0.f);
-        meshletBound.cone_axis = glm::vec4(bound.cone_axis[0],bound.cone_axis[1],bound.cone_axis[2],0.f);
-        meshletBound.cone_cutoff = glm::vec4(bound.cone_cutoff,0,0,0.0f);
+        meshletBound.cone_axis = glm::vec4(bound.cone_axis_s8[0],bound.cone_axis_s8[1],bound.cone_axis_s8[2],0.f);
+        meshletBound.cone_cutoff = glm::vec4(bound.cone_cutoff_s8,0,0,0.0f);
         bounds.push_back(meshletBound);
     }
 

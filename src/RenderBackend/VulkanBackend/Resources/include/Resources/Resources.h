@@ -109,11 +109,12 @@ namespace Canella
             public:
                 RefBuffer get_buffer_cached(uint64_t);
                 RefImage get_image_cached(uint64_t);
-
+                
                 explicit ResourcesManager(Device* device);
                 ResourceAccessor create_buffer(VkDeviceSize size,
                                                VkBufferUsageFlags usage,
                                                VkMemoryPropertyFlags properties);
+
                 ResourceAccessor  create_image(Device* device,
                                                uint32_t width,
                                                uint32_t height,
@@ -125,7 +126,7 @@ namespace Canella
                                                uint32_t arrayLayers =1 ,
                                                bool useMaxNumMips = true,
                                                VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT);
-
+            
                 ~ResourcesManager() = default;
                 void destroy_resources();
                 template<typename Data>
@@ -170,6 +171,7 @@ namespace Canella
 
                     return id;
                 }
+
 
                 uint64_t
                 write_descriptor_sets(VkDescriptorSet& descriptorset,
