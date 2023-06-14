@@ -33,28 +33,26 @@ layout( push_constant ) uniform frustums
 };
 
 void main(){
+   
    uint gi = gl_WorkGroupID.x;   
    uint ti = gl_LocalInvocationID.x; 
    uint di = gi * 32 + ti;
    vec4 center = model_matrices[di]*bounds[di].center;
-   float radius = bounds[di].cone_cutoff.y;
+   float radius = bounds[di].cone_cutoff.y * 10;
    bool visible = true;
    
    for(int i = 0 ; i <6; ++i)
       visible = visible && dot(frustum[i],center) > -radius;
 
-   processed_commands[di].groupCountX              = commands[di].groupCountX;
+   processed_commands[di].groupCountX              = visible? (commands[di].meshlet_count + 31)/32 : 0;
    processed_commands[di].groupCountY              = commands[di].groupCountY;
-   processed_commands[di].groupCountY              = commands[di].groupCountY;
+   processed_commands[di].groupCountZ              = commands[di].groupCountZ;
    processed_commands[di].vertex_offset            = commands[di].vertex_offset;
    processed_commands[di].meshlet_triangle_offset  = commands[di].meshlet_triangle_offset;
    processed_commands[di].meshlet_offset           = commands[di].meshlet_offset;
    processed_commands[di].meshlet_vertex_offset    = commands[di].meshlet_vertex_offset;
    processed_commands[di].index_offset             = commands[di].index_offset;
    processed_commands[di].mesh_id                  = commands[di].mesh_id;
-   processed_commands[di].meshlet_count            = visible? commands[di].meshlet_count : 0;
-
-
-
+   processed_commands[di].meshlet_count            = commands[di].meshlet_count;
 
 }

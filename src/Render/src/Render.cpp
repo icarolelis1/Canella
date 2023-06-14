@@ -95,9 +95,12 @@ void Canella::load_meshlet(Canella::Meshlet& canellaMeshlet, Canella::ModelMesh 
                                                          sizeof(Vertex)));
 
         MeshletBound meshletBound {};
+        meshletBound.center = glm::vec4(bound.center[0],bound.center[1],bound.center[2],0);
         meshletBound.cone_apex = glm::vec4(bound.cone_apex[0],bound.cone_apex[1],bound.cone_apex[2],0.f);
         meshletBound.cone_axis = glm::vec4(bound.cone_axis_s8[0],bound.cone_axis_s8[1],bound.cone_axis_s8[2],0.f);
-        meshletBound.cone_cutoff = glm::vec4(bound.cone_cutoff_s8,0,0,0.0f);
+        meshletBound.cone_cutoff = glm::vec4(bound.cone_cutoff_s8,bound.radius,0,0.0);
+
+
         bounds.push_back(meshletBound);
     }
 

@@ -45,7 +45,7 @@ namespace Canella {
                 ~RenderNode() = default;
 				//Todo try to improve this using Variants or no inheritance  mechanism
                 //execute the work of tthe render node
-                virtual void execute(Canella::Render*, VkCommandBuffer, int ) ;
+                virtual void execute(Canella::Render*, VkCommandBuffer&, int ) ;
                 //Give the node the resource loading logic
                 virtual void load_transient_resources(Canella::Render*);
                 //Parse the json file with the configuration for each node
@@ -82,8 +82,8 @@ namespace Canella {
                 RenderGraph(const RenderGraph&other) = delete;
                 static NodeType convert_from_string(const std::string&);
                 void load_render_graph(const char*,Canella::Render*);
-                void execute(VkCommandBuffer,Canella::Render*,int);
-                void execute_descendent(const RefRenderNode&,VkCommandBuffer,Canella::Render*,int);
+                void execute(VkCommandBuffer&,Canella::Render*,int);
+                void execute_descendent(const RefRenderNode&,VkCommandBuffer&,Canella::Render*,int);
                 void load_render_node(const nlohmann::json &, const RefRenderNode &,
                                       Canella::Render *render);
                 void load_resources(Canella::Render*);

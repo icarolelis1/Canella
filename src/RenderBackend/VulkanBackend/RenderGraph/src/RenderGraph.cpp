@@ -12,7 +12,7 @@ void Canella::RenderSystem::VulkanBackend::RenderNode::load_render_node(const nl
     end_render_pass = node_json["EndRenderPass"].get<bool>();
 }
 
-void Canella::RenderSystem::VulkanBackend::RenderNode::execute(Canella::Render *, VkCommandBuffer, int) {}
+void Canella::RenderSystem::VulkanBackend::RenderNode::execute(Canella::Render *, VkCommandBuffer&, int) {}
 
 void Canella::RenderSystem::VulkanBackend::RenderNode::load_transient_resources(Canella::Render *) {}
 
@@ -72,7 +72,7 @@ Canella::RenderSystem::VulkanBackend::RenderGraph::convert_from_string(const std
 }
 
 void Canella::RenderSystem::VulkanBackend::RenderGraph::execute(
-                                                                    VkCommandBuffer commandBuffer,
+                                                                    VkCommandBuffer& commandBuffer,
                                                                     Canella::Render *render,
                                                                     int image_index)
 {
@@ -81,7 +81,7 @@ void Canella::RenderSystem::VulkanBackend::RenderGraph::execute(
 
 void Canella::RenderSystem::VulkanBackend::RenderGraph::execute_descendent(
                                                                     const RefRenderNode& node,
-                                                                    VkCommandBuffer command,
+                                                                    VkCommandBuffer& command,
                                                                     Canella::Render * render,
                                                                     int image_index)
 {

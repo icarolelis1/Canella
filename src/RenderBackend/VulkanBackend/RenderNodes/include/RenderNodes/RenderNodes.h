@@ -37,7 +37,7 @@ namespace Canella
 
                 GeomtryPass();
                 ~GeomtryPass();
-                void execute(Canella::Render *render, VkCommandBuffer, int) override;
+                void execute(Canella::Render *render, VkCommandBuffer&, int) override;
                 void load_transient_resources(Canella::Render *render) override;
 
             private:
@@ -59,8 +59,8 @@ namespace Canella
                 /**
                  * @brief Writes the descriptorsets used in the culling pass
                  * @param render
-                */
-                void write_descriptorsets_culling(Canella::Render* render);
+                 */
+                void write_descriptorsets_culling(Canella::Render *render);
 
                 /**
                  * @brief writes the outputs to subsequent nodes
@@ -80,8 +80,14 @@ namespace Canella
                 /**
                  * @brief performs Frustum Culling in a compute shader
                  * @param Application Renderer
-                */
-                void compute_frustum_culling(Canella::Render* render);
+                 * @param command Command buffer used in Dispatch
+                 * @param drawables_count number of  objects to perform culling
+                 */
+                void compute_frustum_culling(Canella::Render *render,
+                                             VkCommandBuffer& command,
+                                             VkPipeline &compute_pipeline,
+                                             Drawables &drawables,
+                                             int image_index);
 
                 std::vector<ResourceAccessor> resource_meshlet_buffers;
                 std::vector<ResourceAccessor> resource_meshlet_triangles;

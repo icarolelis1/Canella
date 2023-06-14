@@ -138,6 +138,8 @@ void VulkanRender::render(glm::mat4& view,glm::mat4& projection)
     ViewProjection view_projection{};
      view_projection.view_projection = projection * view;
     view_projection.eye = glm::vec4(view[3]);
+    render_camera_data.projection = projection;
+    render_camera_data.view = view;
     //view_projection.eye = glm::mat4(1.0f);
     //Update the view projection buffer with global data for the renderer
     auto refBuffer = resources_manager.get_buffer_cached(global_buffers[current_frame]);
@@ -269,6 +271,7 @@ void VulkanRender::write_global_descriptorsets()
 
 void VulkanRender::record_command_index(VkCommandBuffer& commandBuffer,uint32_t index)
 {
+    //Execute the render graph
     frames[index].commandPool.begin_command_buffer(&device, commandBuffer, true);
     render_graph.execute(commandBuffer,this,index);
     frames[index].commandPool.endCommandBuffer(commandBuffer);

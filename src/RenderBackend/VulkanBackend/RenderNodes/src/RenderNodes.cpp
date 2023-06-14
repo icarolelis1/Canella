@@ -3,13 +3,61 @@
 #include "CanellaUtility/CanellaUtility.h"
 #include <algorithm> // std::min
 
-void Canella::RenderSystem::VulkanBackend::GeomtryPass::compute_frustum_culling(Canella::Render *render)
+//todo move this to somewhere else
+VkBufferMemoryBarrier bufferBarrier(VkBuffer buffer, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask)
 {
+    VkBufferMemoryBarrier result = {VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER};
+
+    result.srcAccessMask = srcAccessMask;
+    result.dstAccessMask = dstAccessMask;
+    result.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    result.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    result.buffer = buffer;
+    result.offset = 0;
+    result.size = VK_WHOLE_SIZE;
+    return result;
+}
+
+void Canella::RenderSystem::VulkanBackend::GeomtryPass::compute_frustum_culling(Canella::Render *render,
+                                                                                VkCommandBuffer &command,
+                                                                                VkPipeline &compute_pipeline,
+                                                                                Drawables &drawables,
+                                                                                int image_index)
+{
+    auto vulkan_renderer = (VulkanBackend::VulkanRender *)render;
+    auto &transform_descriptors = vulkan_renderer->transform_descriptors;
+    auto &render_camera_data = vulkan_renderer->render_camera_data;
+    auto &pipeline_layouts = vulkan_renderer->cachedPipelineLayouts;
+    auto &resource_manager = vulkan_renderer->resources_manager;
+    auto &device = vulkan_renderer->device;
+    glm::mat4 projection_transposed = glm::transpose(render_camera_data.projection);
+    auto compute_pipeline_layout = pipeline_layouts["CommandProcessor"]->getHandle();
+    glm::vec4 frustum[6];
+    frustum[0] = projection_transposed[3] + projection_transposed[0];
+    frustum[1] = projection_transposed[3] - projection_transposed[0];
+    frustum[2] = projection_transposed[3] + projection_transposed[1];
+    frustum[3] = projection_transposed[3] - projection_transposed[1];
+    frustum[4] = projection_transposed[3] + projection_transposed[2];
+    frustum[5] = glm::vec4(0, 0, -1, 1000.);
+
+    for (auto i = 0; i < drawables.size(); ++i)
+    {
+        auto processed_buffer = resource_manager.get_buffer_cached(processed_indirect_buffers[i]);
+
+        VkDescriptorSet descriptors[2] = {frustum_culling_descriptors[i].descriptor_sets[image_index], transform_descriptors[image_index]};
+        vkCmdBindDescriptorSets(command, VK_PIPELINE_BIND_POINT_COMPUTE, compute_pipeline_layout, 0, 2, descriptors, 0, nullptr);
+        vkCmdPushConstants(command, compute_pipeline_layout, VK_SHADER_STAGE_COMPUTE_BIT, 0, 96, frustum);
+        vkCmdBindPipeline(command, VK_PIPELINE_BIND_POINT_COMPUTE, compute_pipeline);
+        vkCmdDispatch(command, uint32_t((drawables[i].meshes.size() + 31) / 32), 1, 1);
+
+        VkBufferMemoryBarrier cmdEndBarrier = bufferBarrier(processed_buffer->getBufferHandle(), VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_INDIRECT_COMMAND_READ_BIT);
+        vkCmdPipelineBarrier(command, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT, 0, 0, 0, 1, &cmdEndBarrier, 0, 0);
+    }
 }
 
 void Canella::RenderSystem::VulkanBackend::GeomtryPass::execute(
     Canella::Render *render,
-    VkCommandBuffer command_buffer,
+    VkCommandBuffer &command_buffer,
     int index)
 {
     auto vulkan_renderer = (VulkanBackend::VulkanRender *)render;
@@ -30,6 +78,10 @@ void Canella::RenderSystem::VulkanBackend::GeomtryPass::execute(
     clear_values[1].depthStencil = {1.0f};
 
     const auto render_pass = renderpasses[renderpass_name].get();
+    
+       // Compute Frustum culling
+    compute_frustum_culling(render, command_buffer, pipelines["CommandProcessor"]->getPipelineHandle(), drawables, current_frame);
+
     if (debug_statics)
     {
         vkCmdResetQueryPool(command_buffer,
@@ -37,6 +89,8 @@ void Canella::RenderSystem::VulkanBackend::GeomtryPass::execute(
                             0,
                             2);
     }
+
+ 
     if (begin_render_pass)
         render_pass->beginRenderPass(command_buffer, clear_values, current_frame);
 
@@ -71,7 +125,7 @@ void Canella::RenderSystem::VulkanBackend::GeomtryPass::execute(
                                     0,
                                     nullptr);
 
-            auto indirect_buffer = resource_manager.get_buffer_cached(draw_indirect_buffers[i]);
+            auto indirect_buffer = resource_manager.get_buffer_cached(processed_indirect_buffers[i]);
             auto indirect_size = sizeof(IndirectCommand);
             vulkan_renderer->vkCmdDrawMeshTasksIndirectEXT(command_buffer,
                                                            indirect_buffer->getBufferHandle(),
@@ -135,7 +189,7 @@ void Canella::RenderSystem::VulkanBackend::GeomtryPass::load_transient_resources
     // Writes the descriptorset
     write_descriptorsets_geomtry(render);
     // writes descriptorsets for culling pass
-   // write_descriptorsets_culling(render);
+    write_descriptorsets_culling(render);
 
     if (debug_statics && !post_first_load)
         create_render_query(queries, &vulkan_renderer->device);
@@ -307,7 +361,7 @@ void Canella::RenderSystem::VulkanBackend::GeomtryPass::write_descriptorsets_cul
 
             auto draw_commands_read = resource_manager.get_buffer_cached(draw_indirect_buffers[i]);
             auto processed_commands = resource_manager.get_buffer_cached(processed_indirect_buffers[i]);
-            auto bounds_buffer = resource_manager.get_buffer_cached(resource_bounds_buffers[i]);
+            auto bounds_buffer      = resource_manager.get_buffer_cached(resource_bounds_buffers[i]);
 
             std::vector<VkDescriptorBufferInfo> buffer_infos;
             std::vector<VkDescriptorImageInfo> image_infos;
@@ -326,7 +380,7 @@ void Canella::RenderSystem::VulkanBackend::GeomtryPass::write_descriptorsets_cul
             buffer_infos[2].range = bounds_buffer->size;
 
             // write Descriptors for geometry pass
-            resource_manager.write_descriptor_sets(descriptors[i].descriptor_sets[j],
+            resource_manager.write_descriptor_sets(frustum_culling_descriptors[i].descriptor_sets[j],
                                                    buffer_infos,
                                                    image_infos,
                                                    true);
@@ -368,10 +422,10 @@ void Canella::RenderSystem::VulkanBackend::GeomtryPass::create_indirect_commands
             &vulkan_renderer->transfer_pool,
             commands.data());
 
-        processed_indirect_buffers[i] = resource_manager.create_buffer(commands.size() * (sizeof(IndirectCommand)),
-                                                                       VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
-                                                                           VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT,
-                                                                       VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+        processed_indirect_buffers[i] = resource_manager.create_buffer( 128 * 1024 * 1024,
+                                                                            VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
+                                                                            VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT,
+                                                                            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
     }
 }
 

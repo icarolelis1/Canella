@@ -66,7 +66,7 @@ namespace Canella
                 Swapchain swapChain;
                 Instance *instance;
                 unsigned int current_frame = 0;
-
+                RenderCameraData render_camera_data;
             private:
                 Surface surface;
                 std::vector<ResourceAccessor> global_buffers;

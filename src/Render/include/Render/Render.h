@@ -31,6 +31,11 @@ namespace Canella
         glm::vec4 center;
     };
 
+    struct RenderCameraData{
+        glm::mat4 view;
+        glm::mat4 projection;
+    };
+
     struct Meshlet
     {
         std::vector<meshopt_Meshlet> meshlets;
@@ -53,6 +58,8 @@ namespace Canella
         uint32_t meshlet_triangle_offset;
         uint32_t meshlet_vertex_offset;
         uint32_t meshlet_count;
+        float radius;
+        glm::vec3 center;
         Mesh() = default;
         Mesh(const Mesh &other) = default;
     };
