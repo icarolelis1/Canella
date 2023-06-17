@@ -14,7 +14,7 @@ namespace Canella
             class GeomtryPass : public RenderNode
             {
             public:
-                struct IndirectCommand
+                struct IndirectCommandToCull
                 {
                     uint32_t groupCountX;
                     uint32_t groupCountY;
@@ -26,9 +26,13 @@ namespace Canella
                     uint32_t index_offset;
                     uint32_t mesh_id;
                     uint32_t meshlet_count;
+                    uint32_t cx;
+                    uint32_t cy;
+                    uint32_t cz;
+                    uint32_t radius;
                 };
 
-                typedef struct DescriptorPerDrawable
+                struct DescriptorPerDrawable
                 {
                     std::vector<VkDescriptorSet> descriptor_sets;
                     std::vector<VkDescriptorSet> vertex_descriptorset;
@@ -37,7 +41,7 @@ namespace Canella
 
                 GeomtryPass();
                 ~GeomtryPass();
-                void execute(Canella::Render *render, VkCommandBuffer&, int) override;
+                void execute(Canella::Render *render, VkCommandBuffer &, int) override;
                 void load_transient_resources(Canella::Render *render) override;
 
             private:
@@ -84,7 +88,7 @@ namespace Canella
                  * @param drawables_count number of  objects to perform culling
                  */
                 void compute_frustum_culling(Canella::Render *render,
-                                             VkCommandBuffer& command,
+                                             VkCommandBuffer &command,
                                              VkPipeline &compute_pipeline,
                                              Drawables &drawables,
                                              int image_index);
@@ -96,6 +100,7 @@ namespace Canella
                 std::vector<ResourceAccessor> resource_bounds_buffers;
                 std::vector<ResourceAccessor> draw_indirect_buffers;
                 std::vector<ResourceAccessor> processed_indirect_buffers;
+                std::vector<ResourceAccessor> command_count_buffers;
                 std::vector<DescriptorPerDrawable> frustum_culling_descriptors;
                 std::vector<DescriptorPerDrawable> descriptors;
                 RenderQueries queries;

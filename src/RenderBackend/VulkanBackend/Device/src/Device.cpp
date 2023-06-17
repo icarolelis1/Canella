@@ -375,15 +375,14 @@ namespace Canella
 
                 features11.pNext = &features12;
                 enabledMeshShaderFeatures.pNext  = &features11;
-
                 VkPhysicalDeviceFeatures deviceFeatures{};
                 deviceFeatures.pipelineStatisticsQuery = VK_TRUE;
-
+                
                 VkDeviceCreateInfo deviceInfo = {};
                 deviceInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
                 deviceInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
                 deviceInfo.pQueueCreateInfos = queueCreateInfos.data();
-                deviceInfo.pEnabledFeatures = nullptr;
+                deviceInfo.pEnabledFeatures = &deviceFeatures;
                 deviceInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
                 deviceInfo.ppEnabledExtensionNames = deviceExtensions.data();
                 deviceInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());

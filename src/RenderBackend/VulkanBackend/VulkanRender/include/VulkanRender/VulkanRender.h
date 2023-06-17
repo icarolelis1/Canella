@@ -56,6 +56,8 @@ namespace Canella
                 DescriptorSetLayouts cachedDescriptorSetLayouts;
                 PFN_vkCmdDrawMeshTasksEXT vkCmdDrawMeshTasksEXT;
                 PFN_vkCmdDrawMeshTasksIndirectEXT vkCmdDrawMeshTasksIndirectEXT;
+                PFN_vkCmdDrawMeshTasksIndirectCountEXT vkCmdDrawMeshTasksIndirectCountEXT;
+
                 RenderpassManager renderpassManager;
                 std::vector<FrameData> frames;
                 std::vector<VkDescriptorSet> global_descriptors;

@@ -7,14 +7,14 @@
 #include <functional>
 using namespace Canella::RenderSystem::VulkanBackend;
 
-
-void VulkanRender::set_windowing(Windowing *windowing) {
+void VulkanRender::set_windowing(Windowing *windowing)
+{
     window = windowing;
 }
 /**
  * \brief Creates the VulkanRender
  */
-VulkanRender::VulkanRender(): resources_manager(&this->device) { }
+VulkanRender::VulkanRender() : resources_manager(&this->device) {}
 
 /**
  * @brief Creates the vulkan renderer and initialize dependencies
@@ -23,9 +23,9 @@ VulkanRender::VulkanRender(): resources_manager(&this->device) { }
 void VulkanRender::build(nlohmann::json &config)
 {
     init_vulkan_instance();
-    auto glfw_window = dynamic_cast<GlfwWindow*>(window);
+    auto glfw_window = dynamic_cast<GlfwWindow *>(window);
     glfw_window->getSurface(instance->handle, &surface);
-    const auto [width, height] = dynamic_cast<GlfwWindow*>(window)->getExtent();
+    const auto [width, height] = dynamic_cast<GlfwWindow *>(window)->getExtent();
     device.prepareDevice(surface, *instance);
     swapChain.prepare_swapchain(width,
                                 height,
@@ -35,10 +35,10 @@ void VulkanRender::build(nlohmann::json &config)
                                 dynamic_cast<GlfwWindow *>(window)->getHandle(),
                                 device.getQueueSharingMode());
 
-    renderpassManager.build(    &device,
-                                &swapChain,
-                                config["RenderPath"].get<std::string>().c_str(),
-                                &resources_manager);
+    renderpassManager.build(&device,
+                            &swapChain,
+                            config["RenderPath"].get<std::string>().c_str(),
+                            &resources_manager);
 
     cache_pipelines(config["Pipelines"].get<std::string>().c_str());
     init_descriptor_pool();
@@ -47,24 +47,21 @@ void VulkanRender::build(nlohmann::json &config)
     allocate_global_descriptorsets();
     write_global_descriptorsets();
     setup_renderer_events();
-    render_graph.load_render_graph(config["RenderGraph"].get<std::string>().c_str(),this);
+    render_graph.load_render_graph(config["RenderGraph"].get<std::string>().c_str(), this);
     vkCmdDrawMeshTasksEXT = reinterpret_cast<PFN_vkCmdDrawMeshTasksEXT>(vkGetDeviceProcAddr(
-            device.getLogicalDevice(),
-            "vkCmdDrawMeshTasksEXT"));
+        device.getLogicalDevice(),
+        "vkCmdDrawMeshTasksEXT"));
 
-    vkCmdDrawMeshTasksIndirectEXT = reinterpret_cast<PFN_vkCmdDrawMeshTasksIndirectEXT>(vkGetDeviceProcAddr(
-            device.getLogicalDevice(),
-            "vkCmdDrawMeshTasksIndirectEXT"));
+    vkCmdDrawMeshTasksIndirectEXT = reinterpret_cast<PFN_vkCmdDrawMeshTasksIndirectEXT>(vkGetDeviceProcAddr( device.getLogicalDevice(),
+        "vkCmdDrawMeshTasksIndirectEXT"));
+   
+    vkCmdDrawMeshTasksIndirectCountEXT = reinterpret_cast<PFN_vkCmdDrawMeshTasksIndirectCountEXT>(vkGetDeviceProcAddr(device.getLogicalDevice(),
+        "vkCmdDrawMeshTasksIndirectCountEXT"));
 
-    transfer_pool.build(&device,
-                        POOL_TYPE::TRANSFER,
-                        VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+    transfer_pool.build(&device,POOL_TYPE::TRANSFER,VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
-    command_pool.build(&device,
-                        POOL_TYPE::GRAPHICS,
-                        VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+    command_pool.build(&device, POOL_TYPE::GRAPHICS, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 }
-
 
 /**
  * \brief Initialize vulkan instance
@@ -77,49 +74,47 @@ void VulkanRender::init_vulkan_instance()
     debugger.setDebugerMessenger(createInfo, instance->handle);
 }
 
-void VulkanRender::enqueue_drawables(Drawables& drawables)
+void VulkanRender::enqueue_drawables(Drawables &drawables)
 {
     m_drawables = drawables;
     render_graph.load_resources(this);
     create_transform_buffers();
-
 }
 
-void VulkanRender::create_transform_buffers() {//Loads the model matrix
+void VulkanRender::create_transform_buffers()
+{ // Loads the model matrix
     std::vector<glm::mat4> models;
-    for(auto& drawable : m_drawables)
+    for (auto &drawable : m_drawables)
         models.push_back(*drawable.model_matrix);
 
-    //Create the Transform Storage Buffers
+    // Create the Transform Storage Buffers
     auto number_of_images = swapChain.get_number_of_images();
     transform_descriptors.resize(number_of_images);
-    for(auto i = 0 ; i < number_of_images; ++i)
+    for (auto i = 0; i < number_of_images; ++i)
     {
         transform_buffers.push_back(resources_manager.create_storage_buffer(sizeof(glm::mat4) * MAX_OBJECTS_TRANSFORM,
-                                                                            VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
-                                                                            | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+                                                                            VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
                                                                             &transfer_pool,
                                                                             models.data()));
     }
-    for (auto& descriptor : transform_descriptors)
+    for (auto &descriptor : transform_descriptors)
     {
         descriptorPool.allocate_descriptor_set(
-                device,
-                cachedDescriptorSetLayouts["Transforms"],
-                descriptor);
-
+            device,
+            cachedDescriptorSetLayouts["Transforms"],
+            descriptor);
     }
 
     auto i = 0;
-    for (auto& buffer : transform_buffers)
+    for (auto &buffer : transform_buffers)
     {
         std::vector<VkDescriptorBufferInfo> buffer_infos;
         std::vector<VkDescriptorImageInfo> image_infos;
-        RefBuffer  transform_buffer = resources_manager.get_buffer_cached(buffer);
+        RefBuffer transform_buffer = resources_manager.get_buffer_cached(buffer);
         buffer_infos.resize(1);
         buffer_infos[0].buffer = transform_buffer->getBufferHandle();
         buffer_infos[0].offset = static_cast<uint32_t>(0);
-        buffer_infos[0].range = sizeof(glm::mat4)*m_drawables.size();
+        buffer_infos[0].range = sizeof(glm::mat4) * m_drawables.size();
 
         resources_manager.write_descriptor_sets(transform_descriptors[i],
                                                 buffer_infos,
@@ -129,19 +124,19 @@ void VulkanRender::create_transform_buffers() {//Loads the model matrix
     }
 }
 
-void VulkanRender::render(glm::mat4& view,glm::mat4& projection)
+void VulkanRender::render(glm::mat4 &view, glm::mat4 &projection)
 {
-    FrameData& frame_data = frames[current_frame];
+    FrameData &frame_data = frames[current_frame];
     vkWaitForFences(device.getLogicalDevice(), 1, &frame_data.imageAvaibleFence, VK_FALSE, UINT64_MAX);
     uint32_t next_image_index;
-
-    ViewProjection view_projection{};
-     view_projection.view_projection = projection * view;
-    view_projection.eye = glm::vec4(view[3]);
     render_camera_data.projection = projection;
     render_camera_data.view = view;
-    //view_projection.eye = glm::mat4(1.0f);
-    //Update the view projection buffer with global data for the renderer
+    ViewProjection view_projection{};
+    view_projection.view_projection = projection * view;
+    view_projection.eye = glm::vec4(view[3]);
+
+    // view_projection.eye = glm::mat4(1.0f);
+    // Update the view projection buffer with global data for the renderer
     auto refBuffer = resources_manager.get_buffer_cached(global_buffers[current_frame]);
     refBuffer->udpate(view_projection);
 
@@ -165,7 +160,7 @@ void VulkanRender::render(glm::mat4& view,glm::mat4& projection)
     auto c = glm::mat4(1.0f);
     record_command_index(frame_data.commandBuffer, current_frame);
 #if RENDER_EDITOR_LAYOUT
-    OnRecordCommandEvent.invoke(frame_data.editor_command,current_frame,frame_data);
+    OnRecordCommandEvent.invoke(frame_data.editor_command, current_frame, frame_data);
 #endif
     submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
     const VkSemaphore wait_semaphores[] = {frame_data.imageAcquiredSemaphore};
@@ -176,7 +171,7 @@ void VulkanRender::render(glm::mat4& view,glm::mat4& projection)
     const VkCommandBuffer cmd = frame_data.commandBuffer;
 #if RENDER_EDITOR_LAYOUT
     submit_info.commandBufferCount = 2;
-    VkCommandBuffer commands[2] = {cmd,frame_data.editor_command};
+    VkCommandBuffer commands[2] = {cmd, frame_data.editor_command};
     submit_info.pCommandBuffers = &commands[0];
 #else
     submit_info.commandBufferCount = 1;
@@ -209,9 +204,10 @@ void VulkanRender::render(glm::mat4& view,glm::mat4& projection)
     }
     current_frame = (current_frame + 1) % 3;
 }
-//todo probably remove this
+// todo probably remove this
 void VulkanRender::update(float time)
-{}
+{
+}
 
 void VulkanRender::init_descriptor_pool()
 {
@@ -228,7 +224,7 @@ void VulkanRender::setup_frames()
     }
 }
 
-void VulkanRender::cache_pipelines(const char* pipelines)
+void VulkanRender::cache_pipelines(const char *pipelines)
 {
     std::fstream f_stream(pipelines);
     nlohmann::json pipeline_data;
@@ -245,20 +241,19 @@ void VulkanRender::allocate_global_usage_buffers()
     {
         global_buffers.push_back(resources_manager.create_buffer(sizeof(ViewProjection),
                                                                  VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-                                                                 VK_MEMORY_PROPERTY_HOST_COHERENT_BIT|
-                                                                 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
+                                                                 VK_MEMORY_PROPERTY_HOST_COHERENT_BIT |
+                                                                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT));
     }
-
 }
 
 void VulkanRender::write_global_descriptorsets()
 {
     auto i = 0;
-    for (auto& buffer : global_buffers)
+    for (auto &buffer : global_buffers)
     {
         std::vector<VkDescriptorBufferInfo> buffer_infos;
         std::vector<VkDescriptorImageInfo> image_infos;
-        RefBuffer  refBuffer = resources_manager.get_buffer_cached(buffer);
+        RefBuffer refBuffer = resources_manager.get_buffer_cached(buffer);
         buffer_infos.resize(1);
         buffer_infos[0].buffer = refBuffer->getBufferHandle();
         buffer_infos[0].offset = static_cast<uint32_t>(0);
@@ -269,26 +264,24 @@ void VulkanRender::write_global_descriptorsets()
     }
 }
 
-void VulkanRender::record_command_index(VkCommandBuffer& commandBuffer,uint32_t index)
+void VulkanRender::record_command_index(VkCommandBuffer &commandBuffer, uint32_t index)
 {
-    //Execute the render graph
+    // Execute the render graph
     frames[index].commandPool.begin_command_buffer(&device, commandBuffer, true);
-    render_graph.execute(commandBuffer,this,index);
+    render_graph.execute(commandBuffer, this, index);
     frames[index].commandPool.endCommandBuffer(commandBuffer);
 }
 
 void VulkanRender::allocate_global_descriptorsets()
 {
     global_descriptors.resize(swapChain.get_number_of_images());
-    for (auto& global_descriptor : global_descriptors)
+    for (auto &global_descriptor : global_descriptors)
     {
         descriptorPool.allocate_descriptor_set(
-                device,
-                cachedDescriptorSetLayouts["ViewProjection"],
-                global_descriptor);
-
+            device,
+            cachedDescriptorSetLayouts["ViewProjection"],
+            global_descriptor);
     }
-
 }
 
 void VulkanRender::destroy()
@@ -298,28 +291,29 @@ void VulkanRender::destroy()
     transfer_pool.destroy(&device);
     command_pool.destroy(&device);
     free(instance);
-    for (auto& frame : frames) frame.destroy();
+    for (auto &frame : frames)
+        frame.destroy();
     render_graph.destroy_render_graph();
     swapChain.destroy_swapchain(device);
     renderpassManager.destroy_renderpasses();
-    //for(auto& buffer : global_buffers) buffer.reset();
+    // for(auto& buffer : global_buffers) buffer.reset();
     destroy_descriptor_set_layouts();
     destroy_pipeline_layouts();
     destroy_pipelines();
     descriptorPool.destroy();
-    //T0DO DESTROY BUFFER
-    //TODO REMOVE THE BUFFER ALOCATION FROM VULKAN_RENDER
+    // T0DO DESTROY BUFFER
+    // TODO REMOVE THE BUFFER ALOCATION FROM VULKAN_RENDER
     resources_manager.destroy_resources();
     device.destroyDevice();
 
     Canella::Logger::Info("Vulkan Renderer Destroyed!");
-
 }
 
 void VulkanRender::destroy_pipeline_layouts()
 {
     auto it = cachedPipelineLayouts.begin();
-    while (it != cachedPipelineLayouts.end()){
+    while (it != cachedPipelineLayouts.end())
+    {
         it->second->destroy(&device);
         it++;
     }
@@ -345,31 +339,33 @@ void VulkanRender::destroy_pipelines()
     }
 }
 
-Canella::Drawables &VulkanRender::get_drawables() {
+Canella::Drawables &VulkanRender::get_drawables()
+{
     return m_drawables;
 }
 
-void VulkanRender::setup_renderer_events() {
+void VulkanRender::setup_renderer_events()
+{
 
-    //Handlers for the function events
-    std::function<void(Canella::Render*)> reload_fn_pass_manager = [=](Canella::Render*)
+    // Handlers for the function events
+    std::function<void(Canella::Render *)> reload_fn_pass_manager = [=](Canella::Render *)
     {
-        //Get Window Surface
-        auto glfw_window = dynamic_cast<GlfwWindow*>(window);
+        // Get Window Surface
+        auto glfw_window = dynamic_cast<GlfwWindow *>(window);
         glfw_window->getSurface(instance->handle, &surface);
-        const auto [width, height] = dynamic_cast<GlfwWindow*>(window)->getExtent();
+        const auto [width, height] = dynamic_cast<GlfwWindow *>(window)->getExtent();
 
-        //If window is minimized wait until we focus
+        // If window is minimized wait until we focus
         glfw_window->wait_idle();
         vkQueueWaitIdle(device.getGraphicsQueueHandle());
 
-        //Destroy Objects
+        // Destroy Objects
         renderpassManager.destroy_renderpasses();
         swapChain.destroy_swapchain(device);
         resources_manager.destroy_resources();
         global_buffers.clear();
         transform_buffers.clear();
-        //Rebuld Swapchain
+        // Rebuld Swapchain
         swapChain.prepare_swapchain(width,
                                     height,
                                     device,
@@ -378,42 +374,46 @@ void VulkanRender::setup_renderer_events() {
                                     dynamic_cast<GlfwWindow *>(window)->getHandle(),
                                     device.getQueueSharingMode());
 
-        //Free the descriptorsets
+        // Free the descriptorsets
         descriptorPool.free_descriptorsets(device,
-                                               global_descriptors.data(),
-                                               static_cast<uint32_t>(global_descriptors.size()));
+                                           global_descriptors.data(),
+                                           static_cast<uint32_t>(global_descriptors.size()));
         global_descriptors.clear();
         transform_descriptors.clear();
-        //Rebuild Frames command pool and semaphores
-        for(auto& frame : frames) frame.rebuild();
-        //Rebuild Renderpasses
-        renderpassManager.rebuild(&device,&swapChain,&resources_manager);
-        //Recreate the uniform buffers
+        // Rebuild Frames command pool and semaphores
+        for (auto &frame : frames)
+            frame.rebuild();
+        // Rebuild Renderpasses
+        renderpassManager.rebuild(&device, &swapChain, &resources_manager);
+        // Recreate the uniform buffers
         allocate_global_usage_buffers();
-        //Allocate the descriptorsets for global uniforms
+        // Allocate the descriptorsets for global uniforms
         allocate_global_descriptorsets();
-        //Write the descriptorsets
+        // Write the descriptorsets
         write_global_descriptorsets();
-        //recreate the transform buffers
+        // recreate the transform buffers
         create_transform_buffers();
     };
-    Event_Handler<Canella::Render*> reload_renderpass_manager (reload_fn_pass_manager);
+    Event_Handler<Canella::Render *> reload_renderpass_manager(reload_fn_pass_manager);
     OnLostSwapchain += reload_renderpass_manager;
 }
 
-VkCommandBuffer VulkanRender::request_command_buffer(VkCommandBufferLevel level) {
-    return command_pool.requestCommandBuffer(&device,level);
+VkCommandBuffer VulkanRender::request_command_buffer(VkCommandBufferLevel level)
+{
+    return command_pool.requestCommandBuffer(&device, level);
 }
 
-void VulkanRender::end_command_buffer(VkCommandBuffer cmd) {
+void VulkanRender::end_command_buffer(VkCommandBuffer cmd)
+{
     command_pool.endCommandBuffer(cmd);
 }
 
-void VulkanRender::begin_command_buffer(VkCommandBuffer cmd) {
-    command_pool.begin_command_buffer(&device,cmd,true);
+void VulkanRender::begin_command_buffer(VkCommandBuffer cmd)
+{
+    command_pool.begin_command_buffer(&device, cmd, true);
 }
 
-void VulkanRender::log_statistic_data(Canella::TimeQueryData&)
+void VulkanRender::log_statistic_data(Canella::TimeQueryData &)
 {
 #if RENDER_EDITOR_LAYOUT
 
@@ -421,10 +421,8 @@ void VulkanRender::log_statistic_data(Canella::TimeQueryData&)
 }
 
 #if RENDER_EDITOR_LAYOUT
-std::vector<Canella::TimeQueryData*>  VulkanRender::get_render_graph_timers() {
+std::vector<Canella::TimeQueryData *> VulkanRender::get_render_graph_timers()
+{
     return render_graph.time_queries;
 }
 #endif
-
-
-

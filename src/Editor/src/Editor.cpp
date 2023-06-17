@@ -185,7 +185,7 @@ void Canella::Editor::editor_layout() {
     for(auto* timer : time_queries)
     {
         ImGui::PushID(i);
-        ImGui::Text("%s %f ms",timer->name.c_str(),timer->time);
+        ImGui::Text("%s %f",timer->name.c_str(),timer->time);
         ImGui::PopID();
         i++;
     }

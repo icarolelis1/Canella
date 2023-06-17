@@ -10,9 +10,7 @@
 #include <vector>
 #include "json.hpp"
 
-/**
- * THIS IS A HUGE TOPIC AND WILL INCREASE EXPONENTIALLY ON THE GO
- */
+
 namespace Canella {
 	namespace RenderSystem {
 		namespace VulkanBackend {
@@ -53,7 +51,7 @@ namespace Canella {
                 //write the outputs
                 virtual void write_outputs();
                 std::vector<std::shared_ptr<RenderNode>> descedent_nodes;
-                TimeQueryData timeQuery;
+                std::vector<TimeQueryData> timeQuery;
                 bool debug_statics = true;
                 NodeType type;
 

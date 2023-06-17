@@ -6,7 +6,24 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <set>
 
-void Canella::load_asset_mesh(ModelMesh& model, const ::std::string& assetsPath, const std::string& source)
+glm::vec4 Canella::compute_sphere_bounding_volume(Mesh &mesh, std::vector<Vertex>& vertices)
+{
+    std::vector<Vertex> slice = std::vector<Vertex>(vertices.begin() + mesh.vertex_offset, vertices.begin() + mesh.vertex_count + mesh.vertex_offset);
+    
+    glm::vec3 center = glm::vec4(0);
+    
+    for(auto& vertex : slice)
+        center += glm::vec3(vertex.vertex.x,vertex.vertex.y,vertex.vertex.z);
+    center /= slice.size();
+
+    double radius = 0.0f;
+    for(auto& v : slice)
+		radius = max(radius, glm::distance(center, glm::vec3(v.vertex.x, v.vertex.y, v.vertex.z)));
+    
+    return glm::vec4(center.x,center.y,center.z,radius);
+
+}
+void Canella::load_asset_mesh(ModelMesh &model, const ::std::string &assetsPath, const std::string &source)
 {
     static const int assimpFlags = aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_JoinIdenticalVertices;
     Assimp::Importer importer;
@@ -95,10 +112,10 @@ void Canella::load_meshlet(Canella::Meshlet& canellaMeshlet, Canella::ModelMesh 
                                                          sizeof(Vertex)));
 
         MeshletBound meshletBound {};
-        meshletBound.center = glm::vec4(bound.center[0],bound.center[1],bound.center[2],0);
+        meshletBound.center = glm::vec4(bound.center[0],bound.center[1],bound.center[2],1);
         meshletBound.cone_apex = glm::vec4(bound.cone_apex[0],bound.cone_apex[1],bound.cone_apex[2],0.f);
-        meshletBound.cone_axis = glm::vec4(bound.cone_axis_s8[0],bound.cone_axis_s8[1],bound.cone_axis_s8[2],0.f);
-        meshletBound.cone_cutoff = glm::vec4(bound.cone_cutoff_s8,bound.radius,0,0.0);
+        meshletBound.cone_axis = glm::vec4(bound.cone_axis_s8[0],bound.cone_axis_s8[1],bound.cone_axis_s8[2],1.f);
+        meshletBound.cone_cutoff = glm::vec4(bound.cone_cutoff_s8,bound.radius,1,1.1);
 
 
         bounds.push_back(meshletBound);

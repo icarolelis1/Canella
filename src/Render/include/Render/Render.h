@@ -12,6 +12,14 @@
 #include <Eventsystem/Eventsystem.hpp>
 namespace Canella
 {
+
+    // TODO BREAK THIS FILE INTO MULTIPLE FILES LATER
+
+    struct SphereBoundingVolume
+    {
+        glm::vec4 center_radius;
+    };
+
     struct Time
     {
         Time(float t) : time(t){};
@@ -31,7 +39,8 @@ namespace Canella
         glm::vec4 center;
     };
 
-    struct RenderCameraData{
+    struct RenderCameraData
+    {
         glm::mat4 view;
         glm::mat4 projection;
     };
@@ -50,7 +59,7 @@ namespace Canella
     };
     struct Mesh
     {
-        uint32_t  vertex_offset;
+        uint32_t vertex_offset;
         uint32_t index_offset;
         uint32_t index_count;
         uint32_t vertex_count;
@@ -81,8 +90,9 @@ namespace Canella
         float time;
     };
 
+    glm::vec4 compute_sphere_bounding_volume(Mesh &mesh, std::vector<Vertex> &vertices);
     void load_asset_mesh(ModelMesh &mesh, const ::std::string &assetsPath, const std::string &source);
-    void load_meshlet(Canella::Meshlet& canellaMeshlet, Canella::ModelMesh &mesh,int mesh_index);
+    void load_meshlet(Canella::Meshlet &canellaMeshlet, Canella::ModelMesh &mesh, int mesh_index);
     using Drawables = std::vector<ModelMesh>;
 
     // Todo Finish implementation as needed

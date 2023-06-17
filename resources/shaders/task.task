@@ -66,9 +66,9 @@ void main()
   MeshletBound bound = bounds[thread_meshlet];
   vec3 cone_apex = bound.cone_apex.xyz;
   vec4 cone =  model_matrices[command.mesh_id]*vec4(cone_apex.xyz,1);
-  vec4 cone_axis = model_matrices[command.mesh_id]* bound.cone_axis/127.;
+  vec4 cone_axis = model_matrices[command.mesh_id]* bound.cone_axis;
   vec3 direction = normalize( cone.xyz - ubo.eye.xyz);
-  bool accept = !cone_cull(cone_axis.xyz,direction,bound.cone_cutoff.x/127.0);
+  bool accept = !cone_cull(cone_axis.xyz,direction,bound.cone_cutoff.x);
    
    uvec4 ballot = subgroupBallot(accept);
    uint count = subgroupBallotBitCount(ballot);
@@ -79,8 +79,8 @@ void main()
       
 
    if( ti == 0 );
-         EmitMeshTasksEXT(count, 1, 1);   
+          EmitMeshTasksEXT(count, 1, 1);   
 
-//  if( ti == 0 );
-//         EmitMeshTasksEXT(min(32,command.meshlet_count - mi ), 1, 1);   
+   // if( ti == 0 );
+   //        EmitMeshTasksEXT(min(32,command.meshlet_count - mi ), 1, 1);   
 }

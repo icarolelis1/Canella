@@ -57,7 +57,7 @@ void Canella::update_transforms(Scene *const scene)
             glm::quat orientation = q1 * q2 * q3;
             transform.modelMatrix = glm::translate(transform.modelMatrix, transform.position) * glm::mat4_cast(orientation);
             transform.modelMatrix = glm::scale(transform.modelMatrix, transform.scale);
-            transform.modelMatrix = glm::scale(transform.modelMatrix, transform.scale);
+            transform.modelMatrix;
             if (transform.parent != nullptr)
                 transform.modelMatrix = transform.parent->modelMatrix * transform.modelMatrix;
 
