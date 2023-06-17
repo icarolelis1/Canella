@@ -55,7 +55,7 @@ namespace Canella
 
     struct Vertex
     {
-        glm::vec4 vertex;
+        glm::vec4 position;
     };
     struct Mesh
     {

@@ -3,6 +3,15 @@
 #include "CanellaUtility/CanellaUtility.h"
 #include <algorithm> // std::min
 
+int sphere_cullig(glm::vec3 center, float radius, glm::vec4 frustum[6])
+
+{
+    bool visible = true;
+    for (int i = 0; i < 6; ++i)
+        visible = visible && glm::dot(frustum[i], glm::vec4(center, 1)) > -radius;
+   return int(!visible);
+};
+
 Canella::RenderSystem::VulkanBackend::GeomtryPass::GeomtryPass()
 {
     timeQuery.resize(6);
@@ -39,25 +48,30 @@ void Canella::RenderSystem::VulkanBackend::GeomtryPass::compute_frustum_culling(
     auto &pipeline_layouts = vulkan_renderer->cachedPipelineLayouts;
     auto &resource_manager = vulkan_renderer->resources_manager;
     auto &device = vulkan_renderer->device;
+
     glm::mat4 projection_view = glm::transpose(render_camera_data.projection * render_camera_data.view);
     auto compute_pipeline_layout = pipeline_layouts["CommandProcessor"]->getHandle();
 
+    auto normalize_plane = [](glm::vec4 p) { return p / length(glm::vec3(p)); };
+
     glm::vec4 frustum[6];
-    frustum[0] = (projection_view[3] + projection_view[0]) / (glm::length(glm::vec3(projection_view[3] + projection_view[0])));
-    frustum[1] = (projection_view[3] - projection_view[0]) / (glm::length(glm::vec3(projection_view[3] - projection_view[0])));
-    frustum[2] = (projection_view[3] - projection_view[1]) / (glm::length(glm::vec3(projection_view[3] - projection_view[1])));
-    frustum[3] = (projection_view[3] + projection_view[1]) / (glm::length(glm::vec3(projection_view[3] + projection_view[1])));
-    frustum[4] = (projection_view[3] + projection_view[2]) / (glm::length(glm::vec3(projection_view[3] + projection_view[2])));
-    frustum[5] = (projection_view[3] - projection_view[2]) / (glm::length(glm::vec3(projection_view[3] - projection_view[2])));
+    frustum[0] =  normalize_plane(projection_view[3] + projection_view[0]);
+    frustum[1] =  normalize_plane(projection_view[3] - projection_view[0]);
+    frustum[2] =  normalize_plane(projection_view[3] + projection_view[1]);
+    frustum[3] =  normalize_plane(projection_view[3] - projection_view[1]);
+    frustum[4] =  normalize_plane(projection_view[3] + projection_view[2]);
+    frustum[5] =  normalize_plane(projection_view[3] - projection_view[2]);
+
+    int culled_geomtry = 0;
 
     for (auto i = 0; i < drawables.size(); ++i)
     {
 
-        // auto count_buffer = resource_manager.get_buffer_cached(command_count_buffers[i]);
-        // vkCmdFillBuffer(command, count_buffer->getBufferHandle(), 0, sizeof(uint32_t), 0);
+        auto count_buffer = resource_manager.get_buffer_cached(command_count_buffers[i]);
+        vkCmdFillBuffer(command, count_buffer->getBufferHandle(), 0, sizeof(uint32_t), 0);
 
-        // VkBufferMemoryBarrier fill_barrier = bufferBarrier(count_buffer->getBufferHandle(), VK_ACCESS_MEMORY_READ_BIT, VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT);
-        // vkCmdPipelineBarrier(command, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, 0, 0, 0, 1, &fill_barrier, 0, 0);
+        VkBufferMemoryBarrier fill_barrier = bufferBarrier(count_buffer->getBufferHandle(), VK_ACCESS_MEMORY_READ_BIT, VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT);
+        vkCmdPipelineBarrier(command, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, 0, 0, 0, 1, &fill_barrier, 0, 0);
 
         auto processed_buffer = resource_manager.get_buffer_cached(processed_indirect_buffers[i]);
         VkDescriptorSet descriptors[2] = {frustum_culling_descriptors[i].descriptor_sets[image_index], transform_descriptors[image_index]};
@@ -130,7 +144,7 @@ void Canella::RenderSystem::VulkanBackend::GeomtryPass::execute(
                                        transform_descriptors[index],
                                        descriptors[i].descriptor_sets[index]};
 
-            vkCmdBindDescriptorSets(command_buffer,VK_PIPELINE_BIND_POINT_GRAPHICS,pipeline_layouts[pipeline_layout_name]->getHandle(),0,
+            vkCmdBindDescriptorSets(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layouts[pipeline_layout_name]->getHandle(), 0,
                                     3,
                                     desc,
                                     0,
@@ -139,7 +153,7 @@ void Canella::RenderSystem::VulkanBackend::GeomtryPass::execute(
             auto indirect_buffer = resource_manager.get_buffer_cached(processed_indirect_buffers[i]);
             auto command_count = resource_manager.get_buffer_cached(command_count_buffers[i]);
             auto indirect_size = sizeof(IndirectCommandToCull);
-            
+
             // vulkan_renderer->vkCmdDrawMeshTasksIndirectCountEXT(command_buffer,
             //                                                     indirect_buffer->getBufferHandle(),
             //                                                     0,
@@ -148,7 +162,7 @@ void Canella::RenderSystem::VulkanBackend::GeomtryPass::execute(
             //                                                     drawables[i].meshes.size(),
             //                                                     indirect_size);
 
-            vulkan_renderer->vkCmdDrawMeshTasksIndirectEXT(command_buffer,indirect_buffer->getBufferHandle(), 0,drawables[i].meshes.size(),indirect_size);
+            vulkan_renderer->vkCmdDrawMeshTasksIndirectEXT(command_buffer, indirect_buffer->getBufferHandle(), 0, drawables[i].meshes.size(), indirect_size);
         }
     };
     draw_indirect();
@@ -423,7 +437,6 @@ void Canella::RenderSystem::VulkanBackend::GeomtryPass::create_indirect_commands
 
     for (auto i = 0; i < drawables.size(); ++i)
     {
-        std::vector<IndirectCommandToCull> commands;
         for (auto j = 0; j < drawables[i].meshes.size(); ++j)
         {
             IndirectCommandToCull ext;
@@ -438,15 +451,16 @@ void Canella::RenderSystem::VulkanBackend::GeomtryPass::create_indirect_commands
             ext.meshlet_offset = drawables[i].meshes[j].meshlet_offset;
             ext.mesh_id = i;
             auto sphere = compute_sphere_bounding_volume(drawables[i].meshes[j], drawables[i].positions);
-            ext.cx = static_cast<uint32_t>(sphere.x);
-            ext.cy = static_cast<uint32_t>(sphere.y);
-            ext.cz = static_cast<uint32_t>(sphere.z);
+            ext.cx = (sphere.x);
+            ext.cy = (sphere.y);
+            ext.cz = (sphere.z);
+            ext.draw_id = j;
             ext.radius = sphere.w;
 
             ext.meshlet_count = static_cast<uint32_t>(drawables[i].meshes[j].meshlet_count);
             commands.push_back(ext);
         }
-            
+
         draw_indirect_buffers[i] = resource_manager.create_storage_buffer(
             commands.size() * (sizeof(IndirectCommandToCull)),
             VK_BUFFER_USAGE_TRANSFER_DST_BIT |

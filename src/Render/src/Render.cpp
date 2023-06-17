@@ -10,15 +10,15 @@ glm::vec4 Canella::compute_sphere_bounding_volume(Mesh &mesh, std::vector<Vertex
 {
     std::vector<Vertex> slice = std::vector<Vertex>(vertices.begin() + mesh.vertex_offset, vertices.begin() + mesh.vertex_count + mesh.vertex_offset);
     
-    glm::vec3 center = glm::vec4(0);
+    glm::vec3 center = glm::vec3(0);
     
     for(auto& vertex : slice)
-        center += glm::vec3(vertex.vertex.x,vertex.vertex.y,vertex.vertex.z);
+        center += glm::vec3(vertex.position.x,vertex.position.y,vertex.position.z);
     center /= slice.size();
 
     double radius = 0.0f;
     for(auto& v : slice)
-		radius = max(radius, glm::distance(center, glm::vec3(v.vertex.x, v.vertex.y, v.vertex.z)));
+		radius = max(radius, glm::distance(center, glm::vec3(v.position.x, v.position.y, v.position.z)));
     
     return glm::vec4(center.x,center.y,center.z,radius);
 
@@ -50,7 +50,7 @@ void Canella::load_asset_mesh(ModelMesh &model, const ::std::string &assetsPath,
             auto v3 = glm::make_vec4(&assimp_mesh->mVertices[j].x);
             auto c = assimp_mesh->mColors[0];
             Vertex vertex;
-            vertex.vertex = v3;
+            vertex.position = v3;
             positions.push_back(vertex);
         }
         vertex_offset +=assimp_mesh->mNumVertices;
@@ -88,7 +88,7 @@ void Canella::load_meshlet(Canella::Meshlet& canellaMeshlet, Canella::ModelMesh 
                                                            meshlet_triangles.data(),
                                                            indices.data(),
                                                            indices.size(),
-                                                           &positions[0].vertex.x,
+                                                           &positions[0].position.x,
                                                            positions.size(),
                                                            sizeof(Vertex),
                                                            max_vertices,
@@ -107,7 +107,7 @@ void Canella::load_meshlet(Canella::Meshlet& canellaMeshlet, Canella::ModelMesh 
     {
         auto bound = meshopt_Bounds(meshopt_computeMeshletBounds(&meshlet_vertices[m.vertex_offset],
                                                          &meshlet_triangles[m.triangle_offset],
-                                                         m.triangle_count, &positions[0].vertex.x,
+                                                         m.triangle_count, &positions[0].position.x,
                                                          positions.size(),
                                                          sizeof(Vertex)));
 

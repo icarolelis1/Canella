@@ -10,7 +10,6 @@ namespace Canella
     {
         namespace VulkanBackend
         {
-
             class GeomtryPass : public RenderNode
             {
             public:
@@ -26,10 +25,11 @@ namespace Canella
                     uint32_t index_offset;
                     uint32_t mesh_id;
                     uint32_t meshlet_count;
-                    uint32_t cx;
-                    uint32_t cy;
-                    uint32_t cz;
-                    uint32_t radius;
+                    float cx;
+                    float cy;
+                    float cz;
+                    float radius;
+                    uint32_t draw_id;
                 };
 
                 struct DescriptorPerDrawable
@@ -103,6 +103,10 @@ namespace Canella
                 std::vector<ResourceAccessor> command_count_buffers;
                 std::vector<DescriptorPerDrawable> frustum_culling_descriptors;
                 std::vector<DescriptorPerDrawable> descriptors;
+
+                // debug commands
+                std::vector<IndirectCommandToCull> commands;
+
                 RenderQueries queries;
                 bool post_first_load = false;
                 Device *device;

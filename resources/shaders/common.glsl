@@ -36,20 +36,21 @@ struct FrustumCamera
 
 //Todo break this command into multiple smaller structures (VERY IMPORTANT)
 struct IndirectDrawDispatch{
-  uint groupCountX;
-  uint groupCountY;
-  uint groupCountZ;
-  uint vertex_offset;
-  uint meshlet_offset;
-  uint meshlet_triangle_offset;
-  uint meshlet_vertex_offset;
-  uint index_offset;
-  uint mesh_id;
-  uint meshlet_count;
-  uint cx;
-  uint cy;
-  uint cz;
-  uint radius;
+  	uint groupCountX;
+    uint groupCountY;
+    uint groupCountZ;
+    uint vertex_offset;
+    uint meshlet_offset;
+    uint meshlet_triangle_offset;
+    uint meshlet_vertex_offset;
+    uint index_offset;
+    uint mesh_id;
+    uint meshlet_count;
+   	float cx;
+   	float cy;
+   	float cz;
+   	float radius;
+    uint draw_id;
 };
 
 struct Vertex
