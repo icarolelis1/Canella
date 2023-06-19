@@ -9,18 +9,18 @@ void CameraEditor::on_start() {
     auto& window = Canella::GlfwWindow::get_instance();
     auto extent = window.getExtent();
     //Initialize camera_component projection matrix usign window width and height
-    camera_component->projection = glm::perspective(glm::radians(55.0f),
+    camera_component->projection = glm::perspective(glm::radians(70.0f),
                                                     float(extent.width)/ extent.height,
-                                                    .1f, 100.f);
+                                                    .01f, 500.f);
     //Attach Window Resize Event Callback.
     //Reconstruct the projection matrix when the window resizes
     std::function<void(Extent)> resize_callback = [&](Extent extent)
     {
         Canella::Logger::Info("Resizing Window");
         if(extent.width == 0 || extent.height == 0)return;
-            camera_component->projection = glm::perspective(glm::radians(55.0f),
+            camera_component->projection = glm::perspective(glm::radians(70.0f),
                                                                     float(extent.width)/ extent.height,
-                                                                    .1f, 100.f);
+                                                                    .01f, 500.f);
     };
     //Create the event handler and register
     Event_Handler<Extent> resize_handler(resize_callback);

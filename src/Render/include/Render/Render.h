@@ -67,8 +67,7 @@ namespace Canella
         uint32_t meshlet_triangle_offset;
         uint32_t meshlet_vertex_offset;
         uint32_t meshlet_count;
-        float radius;
-        glm::vec3 center;
+
         Mesh() = default;
         Mesh(const Mesh &other) = default;
     };
@@ -95,16 +94,9 @@ namespace Canella
     void load_meshlet(Canella::Meshlet &canellaMeshlet, Canella::ModelMesh &mesh, int mesh_index);
     using Drawables = std::vector<ModelMesh>;
 
-    // Todo Finish implementation as needed
-    class LoseSwapchainEvent : public Event<Canella::Render *>
-    {
-    };
-    class RenderEvent : public Event<Canella::Render *>
-    {
-    };
-    class DrawableEnqueueEvent : public Event<Canella::Render *>
-    {
-    };
+    class LoseSwapchainEvent : public Event<Canella::Render *>{};
+    class RenderEvent : public Event<Canella::Render *>{};
+    class DrawableEnqueueEvent : public Event<Canella::Render *>  {};
 
     class Render
     {

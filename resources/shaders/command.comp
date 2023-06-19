@@ -4,16 +4,18 @@
 #extension GL_EXT_shader_atomic_float: require
 
 layout(local_size_x = 32 ,local_size_y = 1 , local_size_z = 1 ) in;
+
 #include "common.glsl"
 
-layout(set = 0 ,binding = 0)readonly  buffer CommandRead
-{
-	IndirectDrawDispatch commands[];
-};
-
-layout(set = 0 ,binding = 1)writeonly  buffer CommandWrite
+layout(set = 0 ,binding = 0) writeonly  buffer CommandsRead
 {
 	IndirectDrawDispatch processed_commands[];
+};
+
+
+layout(set = 0 ,binding = 1) readonly  buffer MeshData
+{
+	StaticMeshData static_meshes[];
 };
 
 layout(set = 0 ,binding = 2)  buffer CountBuffer
@@ -27,8 +29,6 @@ layout(std430,set = 1 ,binding = 0) readonly  buffer Model_Matrices
 	mat4 model_matrices[];
 };
 
-
-
 layout( push_constant ) uniform Frustums
 {
    vec4 frustums[6];
@@ -40,26 +40,22 @@ void main(){
    uint ti = gl_LocalInvocationID.x; 
    uint di = gi * 32 + ti;
 
-   IndirectDrawDispatch command = commands[di];
-   vec4 center = model_matrices[command.mesh_id] * vec4(command.cx,command.cy,command.cz,1.0);
-   float radius = command.radius * 0.02; 
+
+    StaticMeshData mesh = static_meshes[di];
+   vec4 center = model_matrices[mesh.mesh_id] *vec4(mesh.center,1);
+   float radius = mesh.radius * 0.02; 
     
    bool visible = true;
 	for (int i = 0; i < 6; ++i)
 		visible = visible && dot(frustums[i], vec4(center.xyz, 1)) > -radius;
-      
-   uint commands_count = atomicAdd(commands_count, 1);
-   processed_commands[di].groupCountX              = visible? (commands[di].meshlet_count + 31)/32 : 0;
-   processed_commands[di].groupCountY              = commands[di].groupCountY;
-   processed_commands[di].groupCountZ              = commands[di].groupCountZ;
-   processed_commands[di].vertex_offset            = commands[di].vertex_offset;
-   processed_commands[di].meshlet_triangle_offset  = commands[di].meshlet_triangle_offset;
-   processed_commands[di].meshlet_offset           = commands[di].meshlet_offset;
-   processed_commands[di].meshlet_vertex_offset    = commands[di].meshlet_vertex_offset;
-   processed_commands[di].index_offset             = commands[di].index_offset;
-   processed_commands[di].mesh_id                  = commands[di].mesh_id;
-   processed_commands[di].meshlet_count            = visible? (commands[di].meshlet_count + 31)/32 : 0;
-   processed_commands[di].draw_id                  =  di;
-
-
+   
+   
+   if(visible)
+   {
+      uint command_index = atomicAdd(commands_count, 1);
+      processed_commands[command_index].groupCountX              = (mesh.meshlet_count + 31)/32 ;
+      processed_commands[command_index].groupCountY              = 1;
+      processed_commands[command_index].groupCountZ              = 1;
+      processed_commands[command_index].draw_id                  = di;
+   }
 }

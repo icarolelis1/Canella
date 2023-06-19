@@ -34,23 +34,23 @@ struct FrustumCamera
 	vec3 near_far_fovy;
 };
 
-//Todo break this command into multiple smaller structures (VERY IMPORTANT)
 struct IndirectDrawDispatch{
-  	uint groupCountX;
-    uint groupCountY;
-    uint groupCountZ;
+	uint groupCountX;
+	uint groupCountY;
+	uint groupCountZ;
+	uint draw_id;
+};
+
+struct StaticMeshData{
+    vec3 center;
+    float radius;
+	uint mesh_id;
     uint vertex_offset;
-    uint meshlet_offset;
-    uint meshlet_triangle_offset;
-    uint meshlet_vertex_offset;
     uint index_offset;
-    uint mesh_id;
-    uint meshlet_count;
-   	float cx;
-   	float cy;
-   	float cz;
-   	float radius;
-    uint draw_id;
+    uint meshlet_offset;
+    uint meshlet_vertices_offset;
+    uint meshlet_triangles_offset;
+	uint meshlet_count;
 };
 
 struct Vertex

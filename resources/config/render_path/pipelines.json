@@ -36,7 +36,7 @@
       },
       {
         "Key": "Meshlets",
-        "ResourceCount": 6,
+        "ResourceCount": 7,
         "BindingResources": [
           {
             "Key": "Meshlets",
@@ -87,6 +87,15 @@
             ],
             "Type": "STORAGE_BUFFER",
             "Binding": 5
+          },
+          {
+            "Key": "MeshData",
+            "Stage": [
+              "TASK_STAGE",
+              "MESH_STAGE"
+            ],
+            "Type": "STORAGE_BUFFER",
+            "Binding": 6
           }
         ]
       },
@@ -103,7 +112,7 @@
             "Binding": 0
           },
           {
-            "Key": "CommandProcessor",
+            "Key": "MeshData",
             "Stage": [
               "COMPUTE_STAGE"
             ],

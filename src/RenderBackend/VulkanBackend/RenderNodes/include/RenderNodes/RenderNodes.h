@@ -18,18 +18,20 @@ namespace Canella
                     uint32_t groupCountX;
                     uint32_t groupCountY;
                     uint32_t groupCountZ;
-                    uint32_t vertex_offset;
-                    uint32_t meshlet_offset;
-                    uint32_t meshlet_triangle_offset;
-                    uint32_t meshlet_vertex_offset;
-                    uint32_t index_offset;
-                    uint32_t mesh_id;
-                    uint32_t meshlet_count;
-                    float cx;
-                    float cy;
-                    float cz;
-                    float radius;
                     uint32_t draw_id;
+                };
+
+                struct alignas(16) StaticMeshData
+                {
+                    glm::vec3 center;
+                    float radius;
+                    uint32_t mesh_id;
+                    uint32_t vertex_offset;
+                    uint32_t index_offset;
+                    uint32_t meshlet_offset;
+                    uint32_t meshlet_vertices_offset;
+                    uint32_t meshlet_triangles_offset;
+                    uint32_t meshlet_count;
                 };
 
                 struct DescriptorPerDrawable
@@ -85,7 +87,9 @@ namespace Canella
                  * @brief performs Frustum Culling in a compute shader
                  * @param Application Renderer
                  * @param command Command buffer used in Dispatch
-                 * @param drawables_count number of  objects to perform culling
+                 * @param compute_pipeline compute pipeline that executes frustum culling
+                 * @param drawables objects to process culling
+                 * @param image_index frame index
                  */
                 void compute_frustum_culling(Canella::Render *render,
                                              VkCommandBuffer &command,
@@ -99,11 +103,11 @@ namespace Canella
                 std::vector<ResourceAccessor> resource_vertices_buffers;
                 std::vector<ResourceAccessor> resource_bounds_buffers;
                 std::vector<ResourceAccessor> draw_indirect_buffers;
-                std::vector<ResourceAccessor> processed_indirect_buffers;
                 std::vector<ResourceAccessor> command_count_buffers;
                 std::vector<DescriptorPerDrawable> frustum_culling_descriptors;
                 std::vector<DescriptorPerDrawable> descriptors;
-
+                std::vector<ResourceAccessor> resource_static_meshes;
+                
                 // debug commands
                 std::vector<IndirectCommandToCull> commands;
 

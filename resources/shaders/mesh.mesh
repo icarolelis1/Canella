@@ -51,6 +51,10 @@ layout( set = 2 ,binding = 5) readonly buffer MeshDrawCommand
 	IndirectDrawDispatch draw_commands[];
 };
 
+layout( set = 2 ,binding = 6) readonly buffer MeshData
+{
+	StaticMeshData static_meshes[];
+};
 
 layout(location = 0) out VertexOutput
 {
@@ -60,6 +64,7 @@ layout(location = 0) out VertexOutput
 struct Task
 {
    uint meshletIndices[32];
+
 };
 taskPayloadSharedEXT Task IN;
 
@@ -76,19 +81,20 @@ uint hash(uint a)
 }
 void main()
 {
- IndirectDrawDispatch command = draw_commands[gl_DrawIDARB];
+
+ StaticMeshData mesh = static_meshes[draw_commands[gl_DrawIDARB].draw_id];
  uint ti = gl_LocalInvocationID.x;
  uint mgi = gl_WorkGroupID.x;    
  uint mi = IN.meshletIndices[mgi];
  Meshlet meshlet = meshlets[mi];
  
- mat4 model = model_Matrices[command.mesh_id];
+ mat4 model = model_Matrices[mesh.mesh_id];
  mat4 mvp = ubo.view_projection; 
 
 if( ti < meshlet.vertex_count )
 {
-  	uint vertex_indice = uint(meshlet_vertices[meshlet.vertex_offset + ti + command.meshlet_vertex_offset]);
-	vec3 fragPos = vec3(model * vec4(vertices[vertex_indice + command.vertex_offset].position.xyz,1.0));
+  	uint vertex_indice = uint(meshlet_vertices[meshlet.vertex_offset + ti + mesh.meshlet_vertices_offset]);
+	vec3 fragPos = vec3(model * vec4(vertices[vertex_indice + mesh.vertex_offset].position.xyz,1.0));
   	gl_MeshVerticesEXT[ti].gl_Position = mvp * vec4(fragPos,1.0)  ;
 
 	uint mhash = hash(mi);
@@ -98,7 +104,7 @@ if( ti < meshlet.vertex_count )
 
 if (ti < meshlet.triangle_count)
 {
-	uint index_offset =  command.meshlet_triangle_offset;
+	uint index_offset =  mesh.meshlet_triangles_offset;
 	gl_PrimitiveTriangleIndicesEXT[ti] = uvec3(	
 	 											uint(meshlet_indices[index_offset + meshlet.triangle_offset + ti*3 + 0 ]) , 
 	 											uint(meshlet_indices[index_offset + meshlet.triangle_offset + ti*3 + 1 ]) ,
@@ -106,7 +112,7 @@ if (ti < meshlet.triangle_count)
 	 											);
 }
 
- if(gl_LocalInvocationID.x == 0 )
+ if(gl_LocalInvocationID.x == 0 );
   	SetMeshOutputsEXT(meshlet.vertex_count, meshlet.triangle_count);
 }
 
