@@ -18,45 +18,87 @@
 #include "RenderGraph/RenderGraph.h"
 #include "Eventsystem/Eventsystem.hpp"
 
-#define RENDER_EDITOR_LAYOUT 1
 #define MAX_OBJECTS_TRANSFORM 500
+#define RENDER_EDITOR_LAYOUT 1
+
 namespace Canella
 {
-	namespace RenderSystem
-	{
-		namespace VulkanBackend
-		{
-			using Surface = VkSurfaceKHR;
+    namespace RenderSystem
+    {
+        // Todo Refactor/Break this class into separate objects
+        namespace VulkanBackend
+        {
+            using Surface = VkSurfaceKHR;
 
-			class VulkanRender : public Render
-			{
+            class VulkanRender : public Render
+            {
             public:
+                /**
+                 * @brief Constructs a vulkan Renderer
+                 */
                 VulkanRender();
-
-                VkCommandBuffer request_command_buffer(VkCommandBufferLevel);
-                void render(glm::mat4& view,glm::mat4& projection) override;
-                void log_statistic_data(TimeQueryData&) override;
-                void enqueue_drawables(Drawables&) override;
-                void begin_command_buffer(VkCommandBuffer);
-                void end_command_buffer(VkCommandBuffer);
-                void set_windowing(Windowing* window);
-                void build(nlohmann::json&) override;
+                /**
+                 * @brief Use the command pool to allocate a vkCommandBufer
+                 * @param level whether its a primary or a secondary command buffer
+                 */
+                VkCommandBuffer request_command_buffer(VkCommandBufferLevel level);
+                /**
+                 * @brief Execute the nodes in the rendergraph
+                 * @param view view matrix
+                 * @param projectin projection matrix
+                 */
+                void render(glm::mat4 &view, glm::mat4 &projection) override;
+                /**
+                 * @brief Add a new drawable object to be rendered
+                 * @param drawable object added to be rendered
+                 */
+                void enqueue_drawables(Drawables &drawables) override;
+                /**
+                 * @brief Call vkBeginCommandBuffer on a command buffer
+                 * @param commandbuffer
+                 */
+                void begin_command_buffer(VkCommandBuffer commandbuffer);
+                /**
+                 * @brief command Ends the command buffer
+                 * @param commandbuffer
+                 */
+                void end_command_buffer(VkCommandBuffer command);
+                /**
+                 * @brief passes a pointer to the windowing system used in swapchain creation
+                 * @param windowing 
+                 */
+                void set_windowing(Windowing *window);
+                /**
+                 * @brief Builds the renderer with data serialized in the json
+                 * @param data
+                 */
+                void build(nlohmann::json &data) override;
+                /**
+                 * @brief Return all the drawables enqueued
+                 */
                 Drawables &get_drawables() override;
-                void update(float time) override;
+                /**
+                 * @brief Enqueue a semaphore to be waited before submitting graphics comands
+                 * @param semaphore the semaphore to wait
+                 */
+                void enqueue_waits(VkSemaphore &semaphore);
+                /**
+                 * @brief Add a semaphore to wait before submiting graphics commands
+                 * @param semaphore the semaphore to wait
+                 */
                 void destroy();
 
-
-                Event<VkCommandBuffer&,uint32_t,FrameData&> OnRecordCommandEvent;
+                Event<VkCommandBuffer &, uint32_t, FrameData &> OnRecordCommandEvent;
 #if RENDER_EDITOR_LAYOUT
-                std::vector<TimeQueryData*> get_render_graph_timers();
+                std::vector<TimeQueries *> get_render_graph_timers();
 #endif
+                PFN_vkCmdDrawMeshTasksEXT vkCmdDrawMeshTasksEXT;
+                PFN_vkCmdDrawMeshTasksIndirectEXT vkCmdDrawMeshTasksIndirectEXT;
+                PFN_vkCmdDrawMeshTasksIndirectCountEXT vkCmdDrawMeshTasksIndirectCountEXT;
                 Device device;
                 Pipelines cachedPipelines;
                 PipelineLayouts cachedPipelineLayouts;
                 DescriptorSetLayouts cachedDescriptorSetLayouts;
-                PFN_vkCmdDrawMeshTasksEXT vkCmdDrawMeshTasksEXT;
-                PFN_vkCmdDrawMeshTasksIndirectEXT vkCmdDrawMeshTasksIndirectEXT;
-                PFN_vkCmdDrawMeshTasksIndirectCountEXT vkCmdDrawMeshTasksIndirectCountEXT;
 
                 RenderpassManager renderpassManager;
                 std::vector<FrameData> frames;
@@ -69,17 +111,19 @@ namespace Canella
                 Instance *instance;
                 unsigned int current_frame = 0;
                 RenderCameraData render_camera_data;
+
             private:
                 Surface surface;
                 std::vector<ResourceAccessor> global_buffers;
                 std::vector<ResourceAccessor> transform_buffers;
                 Drawables m_drawables;
                 RenderGraph render_graph;
-                Windowing* window;
+                Windowing *window;
                 Commandpool command_pool;
+                std::vector<VkSemaphore> queued_semaphores;
 
-                void record_command_index(VkCommandBuffer& commandBuffer,uint32_t index);
-                void cache_pipelines(const char* pipelines);
+                void record_command_index(VkCommandBuffer &commandBuffer, uint32_t index);
+                void cache_pipelines(const char *pipelines);
                 void destroy_descriptor_set_layouts();
                 void allocate_global_descriptorsets();
                 void allocate_global_usage_buffers();
@@ -91,9 +135,8 @@ namespace Canella
                 void init_vulkan_instance();
                 void destroy_pipelines();
                 void setup_frames();
-                float t = 0;
             };
         }
-	}
+    }
 }
 #endif

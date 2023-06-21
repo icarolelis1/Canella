@@ -51,7 +51,7 @@ namespace Canella {
                 //write the outputs
                 virtual void write_outputs();
                 std::vector<std::shared_ptr<RenderNode>> descedent_nodes;
-                std::vector<TimeQueryData> timeQuery;
+                std::vector<TimeQueries> timeQuery;
                 bool debug_statics = true;
                 NodeType type;
 
@@ -88,7 +88,7 @@ namespace Canella {
                 void destroy_render_graph();
                 void destroy_render_node(const RefRenderNode &);
                 void load_node_transient_resources(RefRenderNode ,Canella::Render*);
-                std::vector<TimeQueryData*> time_queries;
+                std::vector<TimeQueries*> time_queries;
             private:
                 RefRenderNode start;
             };

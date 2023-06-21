@@ -13,8 +13,6 @@
 namespace Canella
 {
 
-    // TODO BREAK THIS FILE INTO MULTIPLE FILES LATER
-
     struct SphereBoundingVolume
     {
         glm::vec4 center_radius;
@@ -27,6 +25,7 @@ namespace Canella
         float time_in_sec() { return time; }
         float last_time_frame = 0;
         float time;
+        float delta;
     };
 
     class Render;
@@ -82,12 +81,13 @@ namespace Canella
         Meshlet meshlet_compositions;
     };
 
-    struct TimeQueryData
+    struct TimeQueries
     {
         std::string name;
         std::string description;
         float time;
     };
+    
 
     glm::vec4 compute_sphere_bounding_volume(Mesh &mesh, std::vector<Vertex> &vertices);
     void load_asset_mesh(ModelMesh &mesh, const ::std::string &assetsPath, const std::string &source);
@@ -98,6 +98,7 @@ namespace Canella
     class RenderEvent : public Event<Canella::Render *>{};
     class DrawableEnqueueEvent : public Event<Canella::Render *>  {};
 
+
     class Render
     {
     public:
@@ -106,8 +107,6 @@ namespace Canella
         virtual void build(nlohmann::json &json) = 0;
         virtual void enqueue_drawables(Drawables &) = 0;
         virtual void render(glm::mat4 &, glm::mat4 &) = 0;
-        virtual void update(float time) = 0;
-        virtual void log_statistic_data(TimeQueryData &) = 0;
         virtual Drawables &get_drawables() = 0;
 
         // Render Events`
@@ -116,4 +115,5 @@ namespace Canella
         Canella::RenderEvent OnRender;
     };
 }
+
 #endif

@@ -14,11 +14,14 @@ int sphere_cullig(glm::vec3 center, float radius, glm::vec4 frustum[6])
 
 Canella::RenderSystem::VulkanBackend::GeomtryPass::GeomtryPass()
 {
+    // Setup Query Pools for debugging
     timeQuery.resize(6);
-    timeQuery[0].name = "DrawMeshTasks (GPU time)";
+    timeQuery[0].name = "DrawMeshTasks (ms)";
     timeQuery[0].description = "Time for rendering the meshes using mesh shaders and taskshaders";
     timeQuery[1].name = "Task Shader invocations ";
     timeQuery[2].name = "Mesh Shader invocations ";
+    timeQuery[3].name = "Clipping Primitives ";
+    timeQuery[4].name = "Fragment Shader invocations";
 }
 
 // todo move this to somewhere else
@@ -160,8 +163,6 @@ void Canella::RenderSystem::VulkanBackend::GeomtryPass::execute(
                                                                 0,
                                                                 drawables[i].meshes.size(),
                                                                 indirect_size);
-
-            // vulkan_renderer->vkCmdDrawMeshTasksIndirectEXT(command_buffer, indirect_buffer->getBufferHandle(), 0, drawables[i].meshes.size(), indirect_size);
         }
     };
     draw_indirect();
@@ -203,6 +204,8 @@ void Canella::RenderSystem::VulkanBackend::GeomtryPass::execute(
 
         timeQuery[1].time = queries.statistics[0];
         timeQuery[2].time = queries.statistics[1];
+        timeQuery[3].time = queries.statistics[2];
+        timeQuery[4].time = queries.statistics[3];
     }
 }
 
@@ -306,19 +309,22 @@ void Canella::RenderSystem::VulkanBackend::GeomtryPass::create_resource_buffers(
                                                                                &vulkan_renderer->transfer_pool,
                                                                                drawable.meshlet_compositions.meshlet_triangles.data());
 
-        std::vector<StaticMeshData> mesh_data(drawables[i].meshes.size());
+        std::vector<StaticMeshData> mesh_data;
+        auto sphere = compute_sphere_bounding_volume(drawables[i].meshes[0], drawables[0].positions);
         for (auto j = 0; j < drawables[i].meshes.size(); ++j)
         {
-            auto sphere = compute_sphere_bounding_volume(drawables[i].meshes[j], drawables[i].positions);
-            mesh_data[j].center = glm::vec3(sphere.x, sphere.w, sphere.z);
-            mesh_data[j].radius = sphere.w;
-            mesh_data[j].vertex_offset = drawables[i].meshes[j].vertex_offset;
-            mesh_data[j].meshlet_triangles_offset = drawables[i].meshes[j].meshlet_triangle_offset;
-            mesh_data[j].meshlet_offset = drawables[i].meshes[j].meshlet_offset;
-            mesh_data[j].meshlet_vertices_offset = drawables[i].meshes[j].meshlet_vertex_offset;
-            mesh_data[j].index_offset = drawables[i].meshes[j].index_offset;
-            mesh_data[j].mesh_id = i;
-            mesh_data[j].meshlet_count = drawables[i].meshes[j].meshlet_count;
+
+            StaticMeshData mesh;
+            mesh.center = glm::vec3(sphere.x, sphere.w, sphere.z);
+            mesh.radius = sphere.w;
+            mesh.vertex_offset = drawables[i].meshes[0].vertex_offset;
+            mesh.meshlet_triangles_offset = drawables[0].meshes[0].meshlet_triangle_offset;
+            mesh.meshlet_offset = drawables[i].meshes[0].meshlet_offset;
+            mesh.meshlet_vertices_offset = drawables[0].meshes[0].meshlet_vertex_offset;
+            mesh.index_offset = drawables[i].meshes[0].index_offset;
+            mesh.mesh_id = i;
+            mesh.meshlet_count = drawables[i].meshes[0].meshlet_count;
+            mesh_data.push_back(mesh);
         }
 
         resource_static_meshes[i] = resource_manager.create_storage_buffer(sizeof(StaticMeshData) * mesh_data.size(),
@@ -457,7 +463,7 @@ void Canella::RenderSystem::VulkanBackend::GeomtryPass::create_indirect_commands
 
     for (auto i = 0; i < drawables.size(); ++i)
     {
-   
+
         draw_indirect_buffers[i] = resource_manager.create_buffer(drawables[i].meshes.size() * sizeof(IndirectCommandToCull),
                                                                   VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
                                                                       VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT,

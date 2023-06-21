@@ -15,8 +15,16 @@ namespace Canella
             {
             public:
                 FrameData() = default;
-                uint32_t begin_command(Device &device, Swapchain *swapChain, VkCommandBufferUsageFlags usageFlags);
+                FrameData(const FrameData&other ) = default;
+                /**
+                 * @brief
+                 * FrameData object corresponds to a swapchain image
+                 * Each FrameData has a collection of syncronization primitives that allow
+                 * Record overlapping between frames and a set of commandspools
+                 * @param device
+                 */
                 void build(Device *device);
+
                 void rebuild();
                 void destroy();
                 Commandpool commandPool;
@@ -26,6 +34,7 @@ namespace Canella
                 VkCommandBuffer editor_command;
                 VkSemaphore imageAcquiredSemaphore;
                 VkSemaphore renderFinishedSemaphore;
+
             private:
                 Device *device;
             };

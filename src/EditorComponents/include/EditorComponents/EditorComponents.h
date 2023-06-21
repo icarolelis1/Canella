@@ -17,15 +17,11 @@ namespace Canella{
         void on_start() override;
         void on_update(float t)  override;
     private:
-        void camera_input_keys(float deta_time,
-                               glm::vec3 &camera_position,
-                               const Euler &camera_euler,
-                               Canella::KeyBoard &KeyBoard,
-                               Canella::CursorPos& cursor_position);
+        void camera_input_keys();
 
         float sensitivity = 0.005f;
         float speed = 0.0050f;
-        float drag_speed = 0.001f;
+        float drag_speed = 0.01f;
         glm::quat orientation = glm::quat(glm::vec3(0.f,0.f,0.f));
         double last_x;
         double last_y;
@@ -39,7 +35,6 @@ namespace Canella{
         void set_mouse_callbacks();
         void update_euler_directions();
         double last_yaw,last_pich;
-        float  YAW,PITCH,ROLL;
 
     };
 

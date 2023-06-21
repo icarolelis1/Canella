@@ -12,8 +12,8 @@
 namespace Canella
 {
     /*
-    * List of Basic Components
-    */
+     * List of Basic Components
+     */
 
     struct Euler
     {
@@ -22,17 +22,20 @@ namespace Canella
         glm::vec3 right;
     };
 
-    struct HierarchyComponent{};
+    struct HierarchyComponent
+    {
+    };
 
-    struct TransformComponent  {
-        TransformComponent(const TransformComponent&)=default;
+    struct TransformComponent
+    {
+        TransformComponent(const TransformComponent &) = default;
         TransformComponent() = default;
         glm::vec3 position = glm::vec3(0);
         glm::vec3 rotation;
         glm::vec3 scale;
         glm::mat4 modelMatrix;
         std::list<TransformComponent> children;
-        TransformComponent* parent = nullptr;
+        TransformComponent *parent = nullptr;
     };
 
     struct CameraComponent
@@ -40,8 +43,11 @@ namespace Canella
         CameraComponent() = default;
         ~CameraComponent() = default;
         Euler euler;
-        glm::vec3 position = glm::vec3(0,3,-3);
+        glm::vec3 position = glm::vec3(0, 3, -3);
         glm::mat4 projection;
+        float yaw = 90;
+        float pitch = 0;
+        float roll;
         glm::mat4 view;
         glm::vec3 target;
         float fovy;
@@ -55,7 +61,7 @@ namespace Canella
         float YAW = 90;
         float PITCH = 0;
         float ROLL;
-        CameraComponent* camera_component;
+        CameraComponent *camera_component;
     };
 
     struct ModelAssetComponent
@@ -66,30 +72,35 @@ namespace Canella
         ModelAssetComponent() = default;
     };
 
-    class ScriptableEntity{
+    class ScriptableEntity
+    {
     public:
         entt::entity entt_entity;
-        virtual ~ScriptableEntity(){}
-        virtual void on_create() {};
+        virtual ~ScriptableEntity() {}
+        virtual void on_create(){};
         virtual void on_destroy(){};
-        virtual void on_update(float) {};
-        virtual void on_start() {};
-        virtual void serialize(nlohmann::json& config)  {};
-        virtual void deserialize(nlohmann::json& config)  {};
+        virtual void on_update(float){};
+        virtual void on_start(){};
+        virtual void serialize(nlohmann::json &config){};
+        virtual void deserialize(nlohmann::json &config){};
         virtual void destroy(){};
+        
     };
 
-    class Behavior{
+    class Behavior
+    {
     public:
-        ScriptableEntity* instance =  nullptr;
-        ScriptableEntity*(*instantiate_fn)();
-        void (*destroy_fn)(Behavior*) ;
+        ScriptableEntity *instance = nullptr;
+        ScriptableEntity *(*instantiate_fn)();
+        void (*destroy_fn)(Behavior *);
 
-        template<typename T>
+        template <typename T>
         void bind()
         {
-            instantiate_fn = []() { return static_cast<ScriptableEntity*>(new T()); };
-            destroy_fn = [](Behavior* behavior) {delete behavior->instance;behavior->instance = nullptr;};
+            instantiate_fn = []()
+            { return static_cast<ScriptableEntity *>(new T()); };
+            destroy_fn = [](Behavior *behavior)
+            {delete behavior->instance;behavior->instance = nullptr; };
             instance = instantiate_fn();
         }
         friend class Application;
@@ -116,14 +127,14 @@ namespace Canella
         }
     };*/
 
-    void SerializeTransform(nlohmann::json& data,entt::registry& registry,entt::entity entity);
-    void SerializeCamera(nlohmann::json& data,entt::registry& registry,entt::entity entity);
-    void SerializeMeshAsset(nlohmann::json& data,entt::registry& registry,entt::entity entity);
-    void SerializeCameraEditor(nlohmann::json& data,entt::registry& registry,entt::entity entity);
-    void DeserializeTransform(nlohmann::json& data,TransformComponent&);
-    void DeserializeCamera(nlohmann::json& data,CameraComponent&);
-    void DeserializeMeshAsset(nlohmann::json& data,ModelAssetComponent&);
-    void DeserializeCameraEditor(nlohmann::json& data,ModelAssetComponent&);
+    void SerializeTransform(nlohmann::json &data, entt::registry &registry, entt::entity entity);
+    void SerializeCamera(nlohmann::json &data, entt::registry &registry, entt::entity entity);
+    void SerializeMeshAsset(nlohmann::json &data, entt::registry &registry, entt::entity entity);
+    void SerializeCameraEditor(nlohmann::json &data, entt::registry &registry, entt::entity entity);
+    void DeserializeTransform(nlohmann::json &data, TransformComponent &);
+    void DeserializeCamera(nlohmann::json &data, CameraComponent &);
+    void DeserializeMeshAsset(nlohmann::json &data, ModelAssetComponent &);
+    void DeserializeCameraEditor(nlohmann::json &data, ModelAssetComponent &);
 }
 
 #endif

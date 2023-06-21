@@ -37,11 +37,10 @@ void Canella::GlfwWindow::initialize(nlohmann::json &config) {
     glfwSetWindowPos(m_window, horizontal / 2 - width / 2, vertical / 2 - height / 2);
 
 #endif
-    // todo make the inputs all event driven
     auto &mouse = Mouse::instance();
-    auto &keyboard = KeyBoard::getKeyBoard();
-    Mouse::instance().setWindowHandler(m_window);
-    KeyBoard::getKeyBoard().setWindowHandler(m_window);
+    auto &keyboard = KeyBoard::instance();
+    mouse.setWindowHandler(m_window);
+    keyboard.setWindowHandler(m_window);
 
     //// Set Keyboard and mouse callbacks
 	auto mouse_pos_callback = [](GLFWwindow *window, double xpos, double ypos)
@@ -56,7 +55,7 @@ void Canella::GlfwWindow::initialize(nlohmann::json &config) {
 	};
 	auto key_btn_callBack = [](GLFWwindow *window, int key, int scancode, int action, int mods)
 	{
-        auto& keyboard = KeyBoard::getKeyBoard();
+        auto& keyboard = KeyBoard::instance();
         keyboard.key_callback(window, key, scancode, action, mods);
 	};
 

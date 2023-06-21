@@ -27,6 +27,7 @@ namespace Canella
         void run();
         void close();
         std::string assets_folder;
+        std::shared_ptr<Canella::Scene> scene;
 
     private:
         void init_systems();
@@ -36,7 +37,6 @@ namespace Canella
         float frame_time;
         entt::registry registry;
         bool playing = true;
-        std::shared_ptr<Canella::Scene> scene;
 
         Canella::Render* render;
         Canella::GlfwWindow* window;

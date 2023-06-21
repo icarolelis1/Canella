@@ -59,7 +59,6 @@ namespace Canella
         {
             /**
              * @brief Construct a new Canella Job object for a single job
-             *
              * @param job the job
              */
             CanellaJob(HJob job);
@@ -68,7 +67,6 @@ namespace Canella
 
             /**
              * @brief Construct a new Canella Job object to dispatch a group of jobs
-             *
              * @param jobGroup
              */
 

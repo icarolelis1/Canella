@@ -137,10 +137,12 @@ Canella::RenderSystem::VulkanBackend::ResourceAccessor
 Canella::RenderSystem::VulkanBackend::ResourcesManager::create_buffer(size_t size,
                                                                       VkBufferUsageFlags usage,
                                                                       VkMemoryPropertyFlags properties)
-{
+{   
+    mutex.lock();
     auto unique_resource_id = uuid();
     resource_cache[unique_resource_id] = std::make_shared<Buffer>(device,size,usage,properties);
     resource_cache[unique_resource_id]->debug_id = "Cant destroy";
+    mutex.unlock();
     return unique_resource_id;
 }
 
