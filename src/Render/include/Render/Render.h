@@ -106,12 +106,13 @@ namespace Canella
         virtual ~Render(){};
         virtual void build(nlohmann::json &json) = 0;
         virtual void enqueue_drawables(Drawables &) = 0;
+        virtual void enqueue_drawable(ModelMesh& ) = 0;
         virtual void render(glm::mat4 &, glm::mat4 &) = 0;
         virtual Drawables &get_drawables() = 0;
 
         // Render Events`
         Canella::LoseSwapchainEvent OnLostSwapchain;
-        Canella::DrawableEnqueueEvent OnDrawableEnqueue;
+        Canella::DrawableEnqueueEvent OnEnqueueDrawable;
         Canella::RenderEvent OnRender;
     };
 }

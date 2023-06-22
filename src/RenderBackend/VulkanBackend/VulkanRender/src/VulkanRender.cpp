@@ -1,10 +1,9 @@
 #include "VulkanRender/VulkanRender.h"
-
 #include <core/compressed_pair.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
-
 #include <functional>
+
 using namespace Canella::RenderSystem::VulkanBackend;
 
 void VulkanRender::set_windowing(Windowing *windowing)
@@ -395,6 +394,7 @@ void VulkanRender::setup_renderer_events()
     };
     Event_Handler<Canella::Render *> reload_renderpass_manager(reload_fn_pass_manager);
     OnLostSwapchain += reload_renderpass_manager;
+    OnEnqueueDrawable += reload_fn_pass_manager;
 }
 
 VkCommandBuffer VulkanRender::request_command_buffer(VkCommandBufferLevel level)
@@ -413,6 +413,12 @@ void VulkanRender::begin_command_buffer(VkCommandBuffer cmd)
 }
 
 #if RENDER_EDITOR_LAYOUT
+void Canella::RenderSystem::VulkanBackend::VulkanRender::enqueue_drawable(ModelMesh &mesh)
+{
+    m_drawables.push_back(mesh);
+    OnEnqueueDrawable.invoke(this);
+}
+
 std::vector<Canella::TimeQueries *> VulkanRender::get_render_graph_timers()
 {
     return render_graph.time_queries;

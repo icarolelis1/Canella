@@ -94,6 +94,8 @@ add_library(
     Entity/src/Entity.cpp
     Systems/src/Systems.cpp
     Serializer/src/Serializer.cpp
+    AssetSystem/src/AssetSystem.cpp
+
 )
 
 target_include_directories(Engine PUBLIC
@@ -103,6 +105,7 @@ target_include_directories(Engine PUBLIC
     Systems/include
     Scene/include
     Serializer/include
+    AssetSystem/include
 )
 
 target_link_libraries(Engine PUBLIC Render Systems)

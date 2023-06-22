@@ -1,6 +1,8 @@
 #include "Project/Project.h"
 #include "Components/Components.h"
 #include "Systems/Systems.h"
+#include "AssetSystem/AssetSystem.h"
+
 
 using namespace Canella;
 Application::Application(Canella::GlfwWindow *_window, Canella::Render *_render) : application_time(0)
@@ -22,7 +24,14 @@ void Application::load(nlohmann::json &config)
 
 void Application::setup_project_folder(nlohmann::json &data)
 {
+    auto& asset_system = AssetSystem::instance();
     assets_folder = data["Assets"].get<std::string>();
+    asset_system.set_project_src(assets_folder.c_str());
+}
+
+void Canella::Application::submit_loaded_model(ModelMesh &mesh)
+{
+    render->enqueue_drawable(mesh);
 }
 
 void Application::run()

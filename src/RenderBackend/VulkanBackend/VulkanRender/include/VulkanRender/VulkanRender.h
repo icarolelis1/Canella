@@ -87,6 +87,11 @@ namespace Canella
                  * @param semaphore the semaphore to wait
                  */
                 void destroy();
+                /**
+                 * @brief enqueue a new Mesh to be rendered
+                 * @param mesh mesh to be rendered
+                */
+                void enqueue_drawable(ModelMesh& mesh) override;
 
                 Event<VkCommandBuffer &, uint32_t, FrameData &> OnRecordCommandEvent;
 #if RENDER_EDITOR_LAYOUT

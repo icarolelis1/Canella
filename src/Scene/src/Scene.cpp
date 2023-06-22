@@ -7,7 +7,8 @@ Canella::Entity Canella::Scene::CreateEntity()
 {
     entt::entity entt_entity = m_registry.create();
     auto shared_ptr = this->shared_from_this();
-    auto entity =  std::make_shared<Entity>(entt_entity, shared_ptr );
+    auto entity =  std::make_shared<Entity>(entt_entity, shared_ptr);
+    entity->add_component<TransformComponent>();
     m_EntityLibrary[entt_entity] = entity;
     return *entity;
 }

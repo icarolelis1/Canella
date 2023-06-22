@@ -3,7 +3,6 @@
 
 void Canella::SerializeTransform(nlohmann::json &data, entt::registry &registry, entt::entity entity)
 {
-    registry.emplace<TransformComponent>(entity);
     const auto view = registry.view<TransformComponent>();
     auto &[position,
            rotation,

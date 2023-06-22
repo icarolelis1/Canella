@@ -255,6 +255,7 @@ void Canella::RenderSystem::VulkanBackend::GeomtryPass::setup_reload_resource_ev
     { load_transient_resources(render); };
     Event_Handler<Canella::Render *> handler(reload_resources);
     vulkan_renderer->OnLostSwapchain += handler;
+    vulkan_renderer->OnEnqueueDrawable += handler;
 }
 
 // This is called when we lose swapchain. We need to clear and then reload everything

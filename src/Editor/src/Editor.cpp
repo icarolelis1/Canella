@@ -4,6 +4,8 @@
 #include "imgui_impl_glfw.h"
 #include "memory"
 #include "Components/Components.h"
+#include "AssetSystem/AssetSystem.h"
+
 Canella::Logger::Priority Canella::Logger::log_priority = Canella::Logger::Priority::Error_LOG;
 std::mutex Canella::Logger::logger_mutex;
 
@@ -52,6 +54,19 @@ void Canella::Editor::bind_shortcuts()
             game_mode = !game_mode;
             Canella::Logger::Debug("%d key_code ", display_statistics);
         }
+
+        if (key == GLFW_KEY_Y && action == InputAction::RELEASE)
+        {
+            //Todo put all this process in a clean api
+            Entity model_entity = application->scene->CreateEntity();
+            auto& trans = model_entity.get_component<TransformComponent>();
+            trans.position = glm::vec3(0,0,4);
+            auto asset = model_entity.add_component<ModelAssetComponent>();
+            asset.source = "model_test/mario.glb";
+            AssetSystem::instance().load_asset(asset);
+            asset.mesh.model_matrix = &trans.modelMatrix;
+            application->submit_loaded_model(asset.mesh);
+        }
     };
     keyboard.OnKeyInput += Event_Handler(short_cuts);
 }
@@ -92,7 +107,7 @@ void Canella::Editor::stop()
 void Canella::Editor::setup_imgui()
 {
 
-    VkDescriptorPoolSize pool_sizes[] = 
+    VkDescriptorPoolSize pool_sizes[] =
         {
             {VK_DESCRIPTOR_TYPE_SAMPLER, 1000},
             {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000},
@@ -130,38 +145,38 @@ void Canella::Editor::setup_imgui()
         30);
 
     // Setup Dear ImGui style
-    ImGuiStyle &style                    = ImGui     ::GetStyle();
-    style.WindowBorderSize               = 7;
-    style.WindowRounding                 = 10;
-    style.Colors[ImGuiCol_WindowBg]      = MAIN_BG;
-    style.Colors[ImGuiCol_TitleBg]       = TITLE_BG;
-    style.Colors[ImGuiCol_Header]        = ImColor(255, 255, 255);
-    style.Colors[ImGuiCol_Border]        = BLUE;
-    style.Colors[ImGuiCol_Text]          = FONT_COLOR;
-    style.Colors[ImGuiCol_Separator]     = BLUE;
-    style.Colors[ImGuiCol_ChildBg]       = ImColor(0, 0, 0);
-    style.Colors[ImGuiCol_Tab]           = ImColor(255, 0, 0);
-    style.Colors[ImGuiCol_TabActive]     = ImColor(79, 53, 645);
-    style.Colors[ImGuiCol_TabHovered]    = ImColor(225, 0, 0);
-    style.Colors[ImGuiCol_FrameBg]       = ImColor(255, 0, 0);
+    ImGuiStyle &style = ImGui ::GetStyle();
+    style.WindowBorderSize = 7;
+    style.WindowRounding = 10;
+    style.Colors[ImGuiCol_WindowBg] = MAIN_BG;
+    style.Colors[ImGuiCol_TitleBg] = TITLE_BG;
+    style.Colors[ImGuiCol_Header] = ImColor(255, 255, 255);
+    style.Colors[ImGuiCol_Border] = BLUE;
+    style.Colors[ImGuiCol_Text] = FONT_COLOR;
+    style.Colors[ImGuiCol_Separator] = BLUE;
+    style.Colors[ImGuiCol_ChildBg] = ImColor(0, 0, 0);
+    style.Colors[ImGuiCol_Tab] = ImColor(255, 0, 0);
+    style.Colors[ImGuiCol_TabActive] = ImColor(79, 53, 645);
+    style.Colors[ImGuiCol_TabHovered] = ImColor(225, 0, 0);
+    style.Colors[ImGuiCol_FrameBg] = ImColor(255, 0, 0);
     style.Colors[ImGuiCol_TitleBgActive] = ImColor(79, 53, 64);
-    style.Colors[ImGuiCol_MenuBarBg]     = MENU_BG;
-    style.SeparatorTextBorderSize        = 10;
-    style.FramePadding                   = ImVec2(3, 3);
-    style.ChildRounding                  = 5;
-    auto &window                         = GlfwWindow::get_instance();
+    style.Colors[ImGuiCol_MenuBarBg] = MENU_BG;
+    style.SeparatorTextBorderSize = 10;
+    style.FramePadding = ImVec2(3, 3);
+    style.ChildRounding = 5;
+    auto &window = GlfwWindow::get_instance();
     ImGui_ImplGlfw_InitForVulkan(window.m_window, true);
 
     // this initializes imgui for Vulkan
     ImGui_ImplVulkan_InitInfo init_info = {};
-    init_info.Instance       = render.instance->handle;
+    init_info.Instance = render.instance->handle;
     init_info.PhysicalDevice = render.device.getPhysicalDevice();
-    init_info.Device         = render.device.getLogicalDevice();
-    init_info.Queue          = render.device.getTransferQueueHandle();
+    init_info.Device = render.device.getLogicalDevice();
+    init_info.Queue = render.device.getTransferQueueHandle();
     init_info.DescriptorPool = imguiPool;
-    init_info.MinImageCount  = static_cast<uint32_t>(render.swapChain.get_number_of_images());
-    init_info.ImageCount     = static_cast<uint32_t>(render.swapChain.get_number_of_images());
-    init_info.MSAASamples    = VK_SAMPLE_COUNT_1_BIT;
+    init_info.MinImageCount = static_cast<uint32_t>(render.swapChain.get_number_of_images());
+    init_info.ImageCount = static_cast<uint32_t>(render.swapChain.get_number_of_images());
+    init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
     ImGui_ImplVulkan_Init(&init_info,
                           render.renderpassManager.renderpasses["imgui"]->get_vk_render_pass());
 
@@ -192,20 +207,20 @@ void Canella::Editor::render_editor_gui(VkCommandBuffer &dsds, uint32_t image_in
     auto &render_passes = render.renderpassManager.renderpasses;
     auto &swapchain = render.swapChain;
 
-    std                                  ::vector<VkClearValue> clearValues(1);
-    clearValues[0].color                 = {.0f, .0f, .0f, 0.f};
-    const VkViewport viewport            = swapchain.get_view_port();
-    const VkRect2D rect_2d               = swapchain.get_rect2d();
+    std ::vector<VkClearValue> clearValues(1);
+    clearValues[0].color = {.0f, .0f, .0f, 0.f};
+    const VkViewport viewport = swapchain.get_view_port();
+    const VkRect2D rect_2d = swapchain.get_rect2d();
     current_frame.secondaryPool.begin_command_buffer(&render.device, current_frame.editor_command, true);
     render_passes["imgui"]->beginRenderPass(current_frame.editor_command, clearValues, image_index);
     vkCmdSetViewport(current_frame.editor_command, 0, 1, &viewport);
     vkCmdSetScissor(current_frame.editor_command, 0, 1, &rect_2d);
     ImGui_ImplGlfw_NewFrame();
     ImGui_ImplVulkan_NewFrame();
-    ImGui                                ::NewFrame();
+    ImGui ::NewFrame();
     editor_layout();
 
-    ImGui                                ::Render();
+    ImGui ::Render();
     ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), current_frame.editor_command);
     render_passes["imgui"]->endRenderPass(current_frame.editor_command);
     current_frame.secondaryPool.endCommandBuffer(current_frame.editor_command);

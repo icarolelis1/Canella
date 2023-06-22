@@ -7,7 +7,6 @@ Canella::KeyBoard &Canella::KeyBoard::instance()
     return keyboard;
 }
 
-
 void Canella::KeyBoard::setWindowHandler(GLFWwindow *_window)
 {
     this->_window = _window;
@@ -33,7 +32,7 @@ void Canella::KeyBoard::key_callback(GLFWwindow *window, int button, int scancod
     else if (action == GLFW_PRESS && key_pressing)
         input_action = InputAction::HOLD;
 
-    else
+    else if (action == GLFW_RELEASE)
     {
         input_action = InputAction::RELEASE;
         key_pressing = false;

@@ -49,6 +49,7 @@ void CameraEditor::on_update(float delta_time)
         camera_component->pitch = -89.0f;
     camera_input_keys();
     update_euler_directions();
+    Logger::Debug("%f %f %f",camera_component->position.x,camera_component->position.y,camera_component->position.z);
 }
 
 void CameraEditor::camera_input_keys()

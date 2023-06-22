@@ -8,7 +8,7 @@ namespace Canella
     {
         namespace VulkanBackend
         {
-            class VulkanRender;
+    
             class AsynchronousLoader
             {
             public:

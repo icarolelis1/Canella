@@ -33,6 +33,11 @@ namespace Canella
         void init_systems();
         void update_systems(float frame_time);
         void setup_project_folder(nlohmann::json& data);
+        /**
+         * @brief sub a mesh to renderer. After being submited Renderer will dispatch a event to rebuild the resources buffers
+         * @param mesh Mesh object to be submited
+        */
+        void submit_loaded_model(ModelMesh& mesh);
         Time application_time;
         float frame_time;
         entt::registry registry;
@@ -41,6 +46,8 @@ namespace Canella
         Canella::Render* render;
         Canella::GlfwWindow* window;
         Canella::Serializer serializer;
+
+        friend class Editor;
     };
 
 }
