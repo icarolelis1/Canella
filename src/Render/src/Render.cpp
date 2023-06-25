@@ -120,7 +120,7 @@ void Canella::load_meshlet(Canella::Meshlet &canellaMeshlet, Canella::ModelMesh 
         bounds.push_back(meshletBound);
     }
 
-    model.meshes[mesh_index].meshlet_vertex_offset = canellaMeshlet.meshlet_vertices.size();
+    model.meshes[mesh_index].meshlet_vertex_offset   = canellaMeshlet.meshlet_vertices.size();
     model.meshes[mesh_index].meshlet_triangle_offset = canellaMeshlet.meshlet_triangles.size();
     model.meshes[mesh_index].meshlet_count           = meshlet_count;
     model.meshes[mesh_index].meshlet_offset          = canellaMeshlet.meshlets.size();

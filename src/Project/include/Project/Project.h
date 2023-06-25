@@ -39,7 +39,7 @@ namespace Canella
         */
         void submit_loaded_model(ModelMesh& mesh);
         Time application_time;
-        float frame_time;
+        double frame_time;
         entt::registry registry;
         bool playing = true;
 

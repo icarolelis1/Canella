@@ -81,7 +81,7 @@ namespace Canella
                  * @brief Enqueue a semaphore to be waited before submitting graphics comands
                  * @param semaphore the semaphore to wait
                  */
-                void enqueue_waits(VkSemaphore &semaphore);
+                void enqueue_waits(VkSemaphore semaphore);
                 /**
                  * @brief Add a semaphore to wait before submiting graphics commands
                  * @param semaphore the semaphore to wait
@@ -104,7 +104,7 @@ namespace Canella
                 Pipelines cachedPipelines;
                 PipelineLayouts cachedPipelineLayouts;
                 DescriptorSetLayouts cachedDescriptorSetLayouts;
-
+                bool dispatch_on_enqueue = false;
                 RenderpassManager renderpassManager;
                 std::vector<FrameData> frames;
                 std::vector<VkDescriptorSet> global_descriptors;

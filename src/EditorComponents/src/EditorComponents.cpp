@@ -10,19 +10,18 @@ void CameraEditor::on_start()
     auto &window = Canella::GlfwWindow::get_instance();
     auto extent = window.getExtent();
     // Initialize camera_component projection matrix usign window width and height
-    camera_component->projection = glm::perspective(glm::radians(70.0f),
+    camera_component->projection = glm::perspective(glm::radians(60.0f),
                                                     float(extent.width) / extent.height,
-                                                    .01f, 100.f);
+                                                    .01f, 1000.f);
     // Attach Window Resize Event Callback.
     // Reconstruct the projection matrix when the window resizes
     std::function<void(Extent)> resize_callback = [&](Extent extent)
     {
-        Canella::Logger::Info("Resizing Window");
         if (extent.width == 0 || extent.height == 0)
             return;
-        camera_component->projection = glm::perspective(glm::radians(70.0f),
+        camera_component->projection = glm::perspective(glm::radians(60.0f),
                                                         float(extent.width) / extent.height,
-                                                        .01f, 100.f);
+                                                        .01f, 1000.f);
     };
     // Create the event handler and register
     Event_Handler<Extent> resize_handler(resize_callback);
@@ -36,6 +35,7 @@ void CameraEditor::on_start()
  */
 void CameraEditor::on_update(float delta_time)
 {
+    time = delta_time;
     auto &camera_position = camera_component->position;
     auto &camera_euler = camera_component->euler;
     auto &mouse = Mouse::instance();
@@ -49,7 +49,21 @@ void CameraEditor::on_update(float delta_time)
         camera_component->pitch = -89.0f;
     camera_input_keys();
     update_euler_directions();
-    Logger::Debug("%f %f %f",camera_component->position.x,camera_component->position.y,camera_component->position.z);
+
+    if (keyboard.getKeyPressed(GLFW_KEY_W))
+        camera_component->position += camera_component->euler.front * speed * delta_time;
+    if (keyboard.getKeyPressed(GLFW_KEY_S))
+        camera_component->position -= camera_component->euler.front * speed * delta_time;
+    if (keyboard.getKeyPressed(GLFW_KEY_A))
+        camera_component->position -= camera_component->euler.right * speed * delta_time;
+    if (keyboard.getKeyPressed(GLFW_KEY_D))
+        camera_component->position += camera_component->euler.right * speed * delta_time;
+    if (keyboard.getKeyPressed(GLFW_KEY_SPACE))
+        camera_component->position += camera_component->euler.up * speed * delta_time;
+    if (keyboard.getKeyPressed(GLFW_KEY_C))
+        camera_component->position -= camera_component->euler.up * speed * delta_time;
+
+   // Logger::Debug("%lf %lf %lf", camera_component->position.x, camera_component->position.y, camera_component->position.z);
 }
 
 void CameraEditor::camera_input_keys()
@@ -57,20 +71,20 @@ void CameraEditor::camera_input_keys()
     auto key_callbacks = [=](int key, InputAction action)
     {
         if (key == GLFW_KEY_W && action == InputAction::HOLD)
-            camera_component->position += camera_component->euler.front * speed;
+            camera_component->position += camera_component->euler.front * speed * time;
         if (key == GLFW_KEY_S && action == InputAction::HOLD)
-            camera_component->position -= camera_component->euler.front * speed;
+            camera_component->position -= camera_component->euler.front * speed * time;
         if (key == GLFW_KEY_A && action == InputAction::HOLD)
-            camera_component->position -= camera_component->euler.right * speed;
+            camera_component->position -= camera_component->euler.right * speed * time;
         if (key == GLFW_KEY_D && action == InputAction::HOLD)
-            camera_component->position += camera_component->euler.right * speed;
+            camera_component->position += camera_component->euler.right * speed * time;
         if (key == GLFW_KEY_SPACE && action == InputAction::HOLD)
-            camera_component->position += camera_component->euler.up * speed;
+            camera_component->position += camera_component->euler.up * speed * time;
         if (key == GLFW_KEY_C && action == InputAction::HOLD)
-            camera_component->position -= camera_component->euler.up * speed;
+            camera_component->position -= camera_component->euler.up * speed * time;
     };
 
-    KeyBoard::instance().OnKeyInput += Event_Handler<int, InputAction>(key_callbacks);
+    // KeyBoard::instance().OnKeyInput += Event_Handler<int, InputAction>(key_callbacks);
 }
 
 void CameraEditor::update_euler_directions()

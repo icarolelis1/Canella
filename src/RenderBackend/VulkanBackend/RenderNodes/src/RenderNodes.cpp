@@ -123,12 +123,6 @@ void Canella::RenderSystem::VulkanBackend::GeomtryPass::execute(
     if (begin_render_pass)
         render_pass->beginRenderPass(command_buffer, clear_values, current_frame);
 
-    const VkViewport viewport = swapchain.get_view_port();
-    const VkRect2D rect_2d = swapchain.get_rect2d();
-    vkCmdSetViewport(command_buffer, 0, 1, &viewport);
-    vkCmdSetScissor(command_buffer, 0, 1, &rect_2d);
-    vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-                      pipelines[pipeline_name]->getPipelineHandle());
     if (debug_statics)
     {
         vkCmdWriteTimestamp(command_buffer,
@@ -137,6 +131,13 @@ void Canella::RenderSystem::VulkanBackend::GeomtryPass::execute(
                             0);
         vkCmdBeginQuery(command_buffer, queries.statistics_pool, 0, 0);
     }
+
+    const VkViewport viewport = swapchain.get_view_port();
+    const VkRect2D rect_2d = swapchain.get_rect2d();
+    vkCmdSetViewport(command_buffer, 0, 1, &viewport);
+    vkCmdSetScissor(command_buffer, 0, 1, &rect_2d);
+    vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                      pipelines[pipeline_name]->getPipelineHandle());
 
     auto draw_indirect = [&]()
     {
@@ -311,20 +312,21 @@ void Canella::RenderSystem::VulkanBackend::GeomtryPass::create_resource_buffers(
                                                                                drawable.meshlet_compositions.meshlet_triangles.data());
 
         std::vector<StaticMeshData> mesh_data;
-        auto sphere = compute_sphere_bounding_volume(drawables[i].meshes[0], drawables[0].positions);
         for (auto j = 0; j < drawables[i].meshes.size(); ++j)
         {
+
+            auto sphere = compute_sphere_bounding_volume(drawables[i].meshes[j], drawables[i].positions);
 
             StaticMeshData mesh;
             mesh.center = glm::vec3(sphere.x, sphere.w, sphere.z);
             mesh.radius = sphere.w;
-            mesh.vertex_offset = drawables[i].meshes[0].vertex_offset;
-            mesh.meshlet_triangles_offset = drawables[0].meshes[0].meshlet_triangle_offset;
-            mesh.meshlet_offset = drawables[i].meshes[0].meshlet_offset;
-            mesh.meshlet_vertices_offset = drawables[0].meshes[0].meshlet_vertex_offset;
-            mesh.index_offset = drawables[i].meshes[0].index_offset;
+            mesh.vertex_offset = drawables[i].meshes[j].vertex_offset;
+            mesh.meshlet_triangles_offset = drawables[i].meshes[j].meshlet_triangle_offset;
+            mesh.meshlet_offset = drawables[i].meshes[j].meshlet_offset;
+            mesh.meshlet_vertices_offset = drawables[i].meshes[j].meshlet_vertex_offset;
+            mesh.index_offset = drawables[i].meshes[j].index_offset;
             mesh.mesh_id = i;
-            mesh.meshlet_count = drawables[i].meshes[0].meshlet_count;
+            mesh.meshlet_count = drawables[i].meshes[j].meshlet_count;
             mesh_data.push_back(mesh);
         }
 

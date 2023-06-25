@@ -5,7 +5,7 @@
 #include "memory"
 #include "Components/Components.h"
 #include "AssetSystem/AssetSystem.h"
-
+#include <random>
 Canella::Logger::Priority Canella::Logger::log_priority = Canella::Logger::Priority::Error_LOG;
 std::mutex Canella::Logger::logger_mutex;
 
@@ -37,6 +37,19 @@ Canella::Editor::Editor()
     bind_shortcuts();
 }
 
+float RandomFloat(float min, float max)
+{
+    // this  function assumes max > min, you may want 
+    // more robust error checking for a non-debug build
+    assert(max > min); 
+    float random = ((float) rand()) / (float) RAND_MAX;
+
+    // generate (in your case) a float between 0 and (4.5-.78)
+    // then add .78, giving you a float between .78 and 4.5
+    float range = max - min;  
+    return (random*range) + min;
+}
+
 void Canella::Editor::bind_shortcuts()
 {
     auto &keyboard = KeyBoard::instance();
@@ -60,7 +73,7 @@ void Canella::Editor::bind_shortcuts()
             //Todo put all this process in a clean api
             Entity model_entity = application->scene->CreateEntity();
             auto& trans = model_entity.get_component<TransformComponent>();
-            trans.position = glm::vec3(0,0,4);
+            trans.position = glm::vec3(RandomFloat(-20.0f,20.0f),0,RandomFloat(0.f,5.0f));
             auto asset = model_entity.add_component<ModelAssetComponent>();
             asset.source = "model_test/mario.glb";
             AssetSystem::instance().load_asset(asset);

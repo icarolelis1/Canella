@@ -502,6 +502,11 @@ namespace Canella
                 return transferQueue;
             }
 
+             VkQueue Device::getComputeQueueHandle() const
+            {
+                return computeQueue;
+            }
+
             VkFormat
                 Device::get_depth_supported_format(const std::vector<VkFormat>&candidates,
                                                VkImageTiling tiling,

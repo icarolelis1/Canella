@@ -1,6 +1,6 @@
 #ifndef ASYNC_LOADER
 #define ASYNC_LOADER
-#include "Resources/Resources.h"
+#include "Device/Device.h"
 
 namespace Canella
 {
@@ -8,17 +8,15 @@ namespace Canella
     {
         namespace VulkanBackend
         {
-    
+
             class AsynchronousLoader
             {
             public:
                 /**
                  *@brief Loads ressources asyncronously
-                 * @param device Pointer to renderer Device
-                 * @param resource_manager resource manager. Contains the stored gpu resources.
                  * @param transfer_queue queue with transfer capabilities
                  */
-                AsynchronousLoader(Device *device, ResourcesManager *resource_manager, VkQueue transfer_queue);
+                AsynchronousLoader(Device *device);
                 ~AsynchronousLoader() = default;
                 /**
                  * @brief setup the Pools and semaphores for resources
@@ -28,14 +26,15 @@ namespace Canella
                  * @brief destroys the associated semaphores and fence
                  */
                 void destroy();
-            
-                void submit_request();
 
-            private:
+                void submit_request();
                 VkSemaphore semaphore;
+                VkSemaphore wait_semaphore;
                 VkQueue queue;
                 VkFence fence;
                 Device *device;
+
+            private:
             };
 
         }

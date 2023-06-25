@@ -9,10 +9,10 @@ void Descriptorpool::build_descriptor_pool(Device* device)
     build_global_descriptor_pool(*device);
     build_bindless_descriptor_pool(*device);
 }
-
+//TODO REBUILD THE DESCRIPTOR WHEN REACHIN MAXIMUM AMMOUNT OF ALOCATIONS    
 void Descriptorpool::build_global_descriptor_pool(Device& device)
 {
-    static constexpr uint32_t k_global_pool_elements = 128;
+    static constexpr uint32_t k_global_pool_elements = 612;
     constexpr VkDescriptorPoolSize pool_sizes[] =
     {
         {VK_DESCRIPTOR_TYPE_SAMPLER, k_global_pool_elements},
@@ -126,9 +126,7 @@ void Descriptorpool::allocate_descriptor_set(Device& device, std::shared_ptr<Des
                                                             &allocInfo,
                                                            &set);
     result != VK_SUCCESS)
-
         Logger::Debug("Failed to Allocated DescriptorSet");
-    Logger::Debug("Allocated DescriptorSet");
 }
 
 void Descriptorpool::build(Device* _device)

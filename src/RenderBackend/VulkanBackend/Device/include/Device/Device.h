@@ -112,6 +112,7 @@ namespace Canella
                 uint32_t getGraphicsQueueIndex() const;
                 VkQueue getGraphicsQueueHandle() const;
                 VkQueue  getTransferQueueHandle() const;
+                VkQueue getComputeQueueHandle() const;
                 uint32_t getPresentQueueIndex()  const;
                 const VkAllocationCallbacks* getAllocator();
                 uint32_t getTransferQueueIndex() const;

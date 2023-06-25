@@ -2,12 +2,13 @@
 
 using namespace Canella::RenderSystem::VulkanBackend;
 
-AsynchronousLoader::AsynchronousLoader(Device *_device, ResourcesManager *manager, VkQueue transfer_queue) : device(_device), queue(transfer_queue) {}
+AsynchronousLoader::AsynchronousLoader(Device *_device) : device(_device) {}
 
 void AsynchronousLoader::destroy()
 {
     vkDestroySemaphore(device->getLogicalDevice(), semaphore, device->getAllocator());
-    vkDestroyFence(device->getLogicalDevice(),fence,device->getAllocator());
+    vkDestroySemaphore(device->getLogicalDevice(), wait_semaphore, device->getAllocator());
+    vkDestroyFence(device->getLogicalDevice(), fence, device->getAllocator());
 }
 
 void AsynchronousLoader::build()
@@ -20,6 +21,8 @@ void AsynchronousLoader::build()
 
     if (vkCreateSemaphore(device->getLogicalDevice(),
                           &semaphore_info, nullptr, &semaphore) != VK_SUCCESS ||
+        vkCreateSemaphore(device->getLogicalDevice(),
+                          &semaphore_info, nullptr, &wait_semaphore) != VK_SUCCESS ||
         vkCreateFence(device->getLogicalDevice(), &fence_info, nullptr, &fence))
         Logger::Error("Failed to create synchronization objects for Resource Loader");
 }

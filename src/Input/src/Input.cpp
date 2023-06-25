@@ -23,7 +23,7 @@ bool Canella::KeyBoard::getKeyPressed(int key)
 
 void Canella::KeyBoard::key_callback(GLFWwindow *window, int button, int scancode, int action, int mods)
 {
-    InputAction input_action;
+    InputAction input_action =  InputAction::HOLD;
     if (action == GLFW_PRESS && !key_pressing)
     {
         input_action = InputAction::PRESS;

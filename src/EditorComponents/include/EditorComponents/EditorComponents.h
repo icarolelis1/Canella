@@ -20,7 +20,7 @@ namespace Canella{
         void camera_input_keys();
 
         float sensitivity = 0.005f;
-        float speed = 0.50f;
+        float speed = 0.050f;
         float drag_speed = 0.01f;
         glm::quat orientation = glm::quat(glm::vec3(0.f,0.f,0.f));
         double last_x;
@@ -31,7 +31,7 @@ namespace Canella{
         float rotating_y;
         bool dragging_position = false;
         bool camera_rotating = false;
-
+        float time = 0.0f;
         void set_mouse_callbacks();
         void update_euler_directions();
         double last_yaw,last_pich;
