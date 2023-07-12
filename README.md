@@ -24,7 +24,6 @@ Experiments on crafting a 3D vulkan game engine.
 - and the list will go on forever...
 
 # Dependencies
-## Dependencies
 - Vulkan SDK - https://vulkan.lunarg.com/doc/view/latest/windows/getting_started.html
 - Cmake https://cmake.org 
 - ImGui https://github.com/ocornut/imgui
