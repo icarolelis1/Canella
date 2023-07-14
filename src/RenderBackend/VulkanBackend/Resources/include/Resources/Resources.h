@@ -118,7 +118,7 @@ namespace Canella
                 RefImage get_image_cached(uint64_t);
 
                 explicit ResourcesManager(Device *device);
-
+                AsynchronousLoader async_loader;
                 /**
                  * @brief late setup. Builds the AsyncronousLoader
                  */
@@ -178,7 +178,6 @@ namespace Canella
 
                 // Events
                 Event<VkSemaphore&> OnTransferCommand;
-                AsynchronousLoader async_loader;
 
             private:
                 std::unordered_map<ResourceAccessor, RefGPUResource> resource_cache;

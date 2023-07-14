@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\IALCProjects\metis\build\windows\CMakeFiles\efb11e95f59b39a7ee9c2e7e7a90c23d\INSTALL_force.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{DF6F1DFA-E11A-3D02-8284-D11DC35A6DAA}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

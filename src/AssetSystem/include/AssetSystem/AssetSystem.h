@@ -1,6 +1,6 @@
 #pragma once
 #ifndef ASSET_SYSTEM
-#define ASSET_SYSTEm
+#define ASSET_SYSTEM
 #include "VulkanRender/VulkanRender.h"
 #include <Eventsystem/Eventsystem.hpp>
 #include "Components/Components.h"

@@ -1,6 +1,6 @@
 #include "AssetSystem/AssetSystem.h"
 #include "Render/Render.h"
-
+#include "Mesh/Mesh.h"
 
 Canella::AssetSystem &Canella::AssetSystem::instance()
 {
@@ -16,6 +16,6 @@ void Canella::AssetSystem::set_project_src(const char *src)
 void Canella::AssetSystem::load_asset(ModelAssetComponent &asset)
 {
     // Load mesh data and computes the meshlets
-    load_asset_mesh(asset.mesh, project_src, asset.source);
+    Canella::MeshProcessing::load_asset_mesh(asset.mesh, project_src, asset.source);
     OnLoadedModel.invoke(asset.mesh);
 }

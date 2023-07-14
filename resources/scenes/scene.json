@@ -25,7 +25,7 @@
           {
             "type": "MeshAsset",
             "Static": true,
-            "Source": "model_test/sponza.obj"
+            "Source": "model_test/cube.glb"
           }
         ]
       },

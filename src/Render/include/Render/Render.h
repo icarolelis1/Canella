@@ -90,8 +90,6 @@ namespace Canella
     
 
     glm::vec4 compute_sphere_bounding_volume(Mesh &mesh, std::vector<Vertex> &vertices);
-    void load_asset_mesh(ModelMesh &mesh, const ::std::string &assetsPath, const std::string &source);
-    void load_meshlet(Canella::Meshlet &canellaMeshlet, Canella::ModelMesh &mesh, int mesh_index);
     using Drawables = std::vector<ModelMesh>;
 
     class LoseSwapchainEvent : public Event<Canella::Render *>{};

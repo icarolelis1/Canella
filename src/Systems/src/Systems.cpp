@@ -1,6 +1,6 @@
 #include "Systems/Systems.h"
 #include "Window/Window.h"
-
+#include "Mesh/Mesh.h"
 #include "Render/Render.h"
 using namespace Canella;
 
@@ -17,7 +17,7 @@ void Canella::load_meshes_from_scene(const std::string &assets_folder, Scene *co
 
 void Canella::load_mesh_from_disk(const std::string &assets_folder, ModelAssetComponent &mesh_asset_component)
 {
-    load_asset_mesh(mesh_asset_component.mesh, assets_folder, mesh_asset_component.source);
+    Canella::MeshProcessing::load_asset_mesh(mesh_asset_component.mesh, assets_folder, mesh_asset_component.source);
 }
 
 /**

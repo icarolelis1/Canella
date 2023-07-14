@@ -22,6 +22,7 @@ add_library(
     RenderBackend/VulkanBackend/DescriptorSet/src/DescriptorSet.cpp
     RenderBackend/VulkanBackend/RenderGraph/src/RenderGraph.cpp
     RenderBackend/VulkanBackend/AsynchronousLoader/src/AsynchronousLoader.cpp
+        RenderBackend/VulkanBackend/Mesh/src/Mesh.cpp
 
     Render/src/Render.cpp
     SpirV/spirv_reflect.c
@@ -47,7 +48,8 @@ target_include_directories(
     RenderBackend/VulkanBackend/Descriptorpool/include
     RenderBackend/VulkanBackend/DescriptorSet/include
     RenderBackend/VulkanBackend/RenderGraph/include
-    RenderBackend/VulkanBackend/AsynchronousLoader/include
+    RenderBackend/VulkanBackend/AsynchronousLoader/include RenderBackend/VulkanBackend/AsynchronousLoader/include
+        RenderBackend/VulkanBackend/Mesh/include RenderBackend/VulkanBackend/Mesh/include
 
     SpirV/
     Window/include
