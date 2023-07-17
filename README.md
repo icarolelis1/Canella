@@ -15,10 +15,11 @@ Experiments on crafting a 3D vulkan game engine.
 - ImGui Implementation
 - Graphic setup serialization (Creation of Renderpass and Pipelines) in json FORMAT.
 - RenderGraph to automatically create the render passes and write attachments (WORK IN PROGRESS).
+- GPU driven indirect Drawing.
 
 ### Features To be done
-- Use DrawMeshtaksIndirect and more advanced culling (Frustum Culling and triangle culling)
-- Vertex Skinning and
+- Add Virtual Texture
+- Vertex Skinning and IK Rig.
 - Implement more render nodes (PBR path with indirect diffuse, HBAO+,Bloom etc...)
 - Multhread command buffer generation
 - and the list will go on forever...
