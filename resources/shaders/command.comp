@@ -1,0 +1,62 @@
+#version 450
+#extension GL_EXT_shader_16bit_storage: require
+#extension GL_EXT_shader_8bit_storage: require
+#extension GL_EXT_shader_atomic_float: require
+
+layout(local_size_x = 32 ,local_size_y = 1 , local_size_z = 1 ) in;
+
+#include "common.glsl"
+
+layout(set = 0 ,binding = 0) writeonly  buffer CommandsRead
+{
+	IndirectDrawDispatch processed_commands[];
+};
+
+
+layout(set = 0 ,binding = 1) readonly  buffer MeshData
+{
+	StaticMeshData static_meshes[];
+};
+
+layout(set = 0 ,binding = 2)  buffer CountBuffer
+{
+	uint commands_count;
+};
+
+
+layout(std430,set = 1 ,binding = 0) readonly  buffer Model_Matrices
+{
+	mat4 model_matrices[];
+};
+
+layout( push_constant ) uniform Frustums
+{
+   vec4 frustums[6];
+};
+
+void main(){
+   
+   uint gi = gl_WorkGroupID.x;   
+   uint ti = gl_LocalInvocationID.x; 
+   uint di = gi * 32 + ti;
+
+
+    StaticMeshData mesh = static_meshes[di];
+   vec4 center = model_matrices[mesh.mesh_id] *vec4(mesh.center,1);
+   //Inflates the radius.
+   float radius = mesh.radius *  model_matrices[mesh.mesh_id][0][0].x *1.5; 
+    
+   bool visible = true;
+	for (int i = 0; i < 6; ++i)
+		visible = visible && dot(frustums[i], vec4(center.xyz, 1)) > -radius;
+   
+   
+   if(visible)
+   {
+      uint command_index = atomicAdd(commands_count, 1);
+      processed_commands[command_index].groupCountX              = (mesh.meshlet_count + 31)/32 ;
+      processed_commands[command_index].groupCountY              = 1;
+      processed_commands[command_index].groupCountZ              = 1;
+      processed_commands[command_index].draw_id                  = di;
+   }
+}

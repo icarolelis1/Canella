@@ -174,9 +174,9 @@ public:
     /*! @brief Vertex type of a task graph defined as an adjacency list. */
     struct vertex {
         /**
-         * @brief Constructs a vertex of the task graph.
-         * @param vtype True if the vertex is a top-level one, false otherwise.
-         * @param data The data associated with the vertex.
+         * @brief Constructs a position of the task graph.
+         * @param vtype True if the position is a top-level one, false otherwise.
+         * @param data The data associated with the position.
          * @param edges The indices of the children in the adjacency list.
          */
         vertex(const bool vtype, vertex_data data, std::vector<std::size_t> edges)
@@ -186,7 +186,7 @@ public:
 
         /**
          * @brief Fills a buffer with the type info objects for the writable
-         * resources of a vertex.
+         * resources of a position.
          * @param buffer A buffer pre-allocated by the user.
          * @param length The length of the user-supplied buffer.
          * @return The number of type info objects written to the buffer.
@@ -197,7 +197,7 @@ public:
 
         /**
          * @brief Fills a buffer with the type info objects for the read-only
-         * resources of a vertex.
+         * resources of a position.
          * @param buffer A buffer pre-allocated by the user.
          * @param length The length of the user-supplied buffer.
          * @return The number of type info objects written to the buffer.
@@ -207,31 +207,31 @@ public:
         }
 
         /**
-         * @brief Returns the number of read-only resources of a vertex.
-         * @return The number of read-only resources of the vertex.
+         * @brief Returns the number of read-only resources of a position.
+         * @return The number of read-only resources of the position.
          */
         size_type ro_count() const noexcept {
             return node.ro_count;
         }
 
         /**
-         * @brief Returns the number of writable resources of a vertex.
-         * @return The number of writable resources of the vertex.
+         * @brief Returns the number of writable resources of a position.
+         * @return The number of writable resources of the position.
          */
         size_type rw_count() const noexcept {
             return node.rw_count;
         }
 
         /**
-         * @brief Checks if a vertex is also a top-level one.
-         * @return True if the vertex is a top-level one, false otherwise.
+         * @brief Checks if a position is also a top-level one.
+         * @return True if the position is a top-level one, false otherwise.
          */
         bool top_level() const noexcept {
             return is_top_level;
         }
 
         /**
-         * @brief Returns a type info object associated with a vertex.
+         * @brief Returns a type info object associated with a position.
          * @return A properly initialized type info object.
          */
         const type_info &info() const noexcept {
@@ -239,32 +239,32 @@ public:
         }
 
         /**
-         * @brief Returns a user defined name associated with a vertex, if any.
-         * @return The user defined name associated with the vertex, if any.
+         * @brief Returns a user defined name associated with a position, if any.
+         * @return The user defined name associated with the position, if any.
          */
         const char *name() const noexcept {
             return node.name;
         }
 
         /**
-         * @brief Returns the function associated with a vertex.
-         * @return The function associated with the vertex.
+         * @brief Returns the function associated with a position.
+         * @return The function associated with the position.
          */
         function_type *callback() const noexcept {
             return node.callback;
         }
 
         /**
-         * @brief Returns the payload associated with a vertex, if any.
-         * @return The payload associated with the vertex, if any.
+         * @brief Returns the payload associated with a position, if any.
+         * @return The payload associated with the position, if any.
          */
         const void *data() const noexcept {
             return node.payload;
         }
 
         /**
-         * @brief Returns the list of nodes reachable from a given vertex.
-         * @return The list of nodes reachable from the vertex.
+         * @brief Returns the list of nodes reachable from a given position.
+         * @return The list of nodes reachable from the position.
          */
         const std::vector<std::size_t> &children() const noexcept {
             return reachable;

@@ -90,7 +90,7 @@ namespace Canella
 				return properties.vk_swapChain;
 			}
 
-			uint32_t Swapchain::get_number_of_images()
+			int8_t Swapchain::get_number_of_images()
 			{
 				return static_cast<uint32_t>(vk_images.size());
 			}

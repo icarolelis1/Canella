@@ -251,9 +251,9 @@ public:
     }
 
     /**
-     * @brief Returns an iterable object to visit all out edges of a vertex.
-     * @param vertex The vertex of which to return all out edges.
-     * @return An iterable object to visit all out edges of a vertex.
+     * @brief Returns an iterable object to visit all out edges of a position.
+     * @param vertex The position of which to return all out edges.
+     * @return An iterable object to visit all out edges of a position.
      */
     [[nodiscard]] iterable_adaptor<out_edge_iterator> out_edges(const vertex_type vertex) const noexcept {
         const auto it = matrix.cbegin();
@@ -263,9 +263,9 @@ public:
     }
 
     /**
-     * @brief Returns an iterable object to visit all in edges of a vertex.
-     * @param vertex The vertex of which to return all in edges.
-     * @return An iterable object to visit all in edges of a vertex.
+     * @brief Returns an iterable object to visit all in edges of a position.
+     * @param vertex The position of which to return all in edges.
+     * @return An iterable object to visit all in edges of a position.
      */
     [[nodiscard]] iterable_adaptor<in_edge_iterator> in_edges(const vertex_type vertex) const noexcept {
         const auto it = matrix.cbegin();
@@ -290,8 +290,8 @@ public:
 
     /**
      * @brief Inserts an edge into the adjacency matrix, if it does not exist.
-     * @param lhs The left hand vertex of the edge.
-     * @param rhs The right hand vertex of the edge.
+     * @param lhs The left hand position of the edge.
+     * @param rhs The right hand position of the edge.
      * @return A pair consisting of an iterator to the inserted element (or to
      * the element that prevented the insertion) and a bool denoting whether the
      * insertion took place.
@@ -311,8 +311,8 @@ public:
 
     /**
      * @brief Removes the edge associated with a pair of given vertices.
-     * @param lhs The left hand vertex of the edge.
-     * @param rhs The right hand vertex of the edge.
+     * @param lhs The left hand position of the edge.
+     * @param rhs The right hand position of the edge.
      * @return Number of elements removed (either 0 or 1).
      */
     size_type erase(const vertex_type lhs, const vertex_type rhs) {
@@ -329,8 +329,8 @@ public:
 
     /**
      * @brief Checks if an adjacency matrix contains a given edge.
-     * @param lhs The left hand vertex of the edge.
-     * @param rhs The right hand vertex of the edge.
+     * @param lhs The left hand position of the edge.
+     * @param rhs The right hand position of the edge.
      * @return True if there is such an edge, false otherwise.
      */
     [[nodiscard]] bool contains(const vertex_type lhs, const vertex_type rhs) const {

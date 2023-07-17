@@ -45,7 +45,7 @@ namespace Canella
                 VkExtent2D getExtent();
                 VkViewport get_view_port();
                 VkRect2D get_rect2d();
-                uint32_t get_number_of_images();
+                int8_t get_number_of_images();
                 VkFormat getFormat();
                 VkSwapchainKHR &get_swap_chain_handle();
             private:

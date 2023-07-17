@@ -187,7 +187,7 @@ struct ASSIMP_API aiNode {
 /**
  * This flag is set by the validation postprocess-step (aiPostProcess_ValidateDS)
  * if the validation is successful. In a validated scene you can be sure that
- * any cross references in the data structure (e.g. vertex indices) are valid.
+ * any cross references in the data structure (e.g. position indices) are valid.
  */
 #define AI_SCENE_FLAGS_VALIDATED    0x2
 
@@ -195,7 +195,7 @@ struct ASSIMP_API aiNode {
  * This flag is set by the validation postprocess-step (aiPostProcess_ValidateDS)
  * if the validation is successful but some issues have been found.
  * This can for example mean that a texture that does not exist is referenced
- * by a material or that the bone weights for a vertex don't sum to 1.0 ... .
+ * by a material or that the bone weights for a position don't sum to 1.0 ... .
  * In most cases you should still be able to use the import. This flag could
  * be useful for applications which don't capture Assimp's log output.
  */
@@ -205,13 +205,13 @@ struct ASSIMP_API aiNode {
  * This flag is currently only set by the aiProcess_JoinIdenticalVertices step.
  * It indicates that the vertices of the output meshes aren't in the internal
  * verbose format anymore. In the verbose format all vertices are unique,
- * no vertex is ever referenced by more than one face.
+ * no position is ever referenced by more than one face.
  */
 #define AI_SCENE_FLAGS_NON_VERBOSE_FORMAT   0x8
 
  /**
  * Denotes pure height-map terrain data. Pure terrains usually consist of quads,
- * sometimes triangles, in a regular grid. The x,y coordinates of all vertex
+ * sometimes triangles, in a regular grid. The x,y coordinates of all position
  * positions refer to the x,y coordinates on the terrain height map, the z-axis
  * stores the elevation at a specific point.
  *
@@ -225,7 +225,7 @@ struct ASSIMP_API aiNode {
 
  /**
  * Specifies that the scene data can be shared between structures. For example:
- * one vertex in few faces. \ref AI_SCENE_FLAGS_NON_VERBOSE_FORMAT can not be
+ * one position in few faces. \ref AI_SCENE_FLAGS_NON_VERBOSE_FORMAT can not be
  * used for this because \ref AI_SCENE_FLAGS_NON_VERBOSE_FORMAT has internal
  * meaning about postprocessing steps.
  */

@@ -6,15 +6,15 @@
 #include "Device/Device.h"
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 #include "json.hpp"
 
-/**
- * THIS IS A HUGE TOPIC AND WILL INCREASE EXPONENTIALLY ON THE GO
- */
+
 namespace Canella {
 	namespace RenderSystem {
 		namespace VulkanBackend {
+			class GeomtryPass;
             enum NodeType{
                 Compute,
                 Render,
@@ -41,8 +41,9 @@ namespace Canella {
                 RenderNode(const std::string&,NodeType);
                 RenderNode(const RenderNode& other) = delete;
                 ~RenderNode() = default;
+				//Todo try to improve this using Variants or no inheritance  mechanism
                 //execute the work of tthe render node
-                virtual void execute(Canella::Render*, VkCommandBuffer, int ) ;
+                virtual void execute(Canella::Render*, VkCommandBuffer&, int ) ;
                 //Give the node the resource loading logic
                 virtual void load_transient_resources(Canella::Render*);
                 //Parse the json file with the configuration for each node
@@ -50,7 +51,7 @@ namespace Canella {
                 //write the outputs
                 virtual void write_outputs();
                 std::vector<std::shared_ptr<RenderNode>> descedent_nodes;
-                TimeQueryData timeQuery;
+                std::vector<TimeQueries> timeQuery;
                 bool debug_statics = true;
                 NodeType type;
 
@@ -79,15 +80,15 @@ namespace Canella {
                 RenderGraph(const RenderGraph&other) = delete;
                 static NodeType convert_from_string(const std::string&);
                 void load_render_graph(const char*,Canella::Render*);
-                void execute(VkCommandBuffer,Canella::Render*,int);
-                void execute_descendent(const RefRenderNode&,VkCommandBuffer,Canella::Render*,int);
+                void execute(VkCommandBuffer&,Canella::Render*,int);
+                void execute_descendent(const RefRenderNode&,VkCommandBuffer&,Canella::Render*,int);
                 void load_render_node(const nlohmann::json &, const RefRenderNode &,
                                       Canella::Render *render);
                 void load_resources(Canella::Render*);
                 void destroy_render_graph();
                 void destroy_render_node(const RefRenderNode &);
                 void load_node_transient_resources(RefRenderNode ,Canella::Render*);
-                std::vector<TimeQueryData*> time_queries;
+                std::vector<TimeQueries*> time_queries;
             private:
                 RefRenderNode start;
             };

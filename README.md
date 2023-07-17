@@ -42,4 +42,3 @@ cmake ..
 ```
 
 ### Currently not building on Linux.
-

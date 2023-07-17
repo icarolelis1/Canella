@@ -111,7 +111,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 // ---------------------------------------------------------------------------
-/** @brief  Specifies the maximum angle that may be between two vertex tangents
+/** @brief  Specifies the maximum angle that may be between two position tangents
  *         that their tangents and bi-tangents are smoothed.
  *
  * This applies to the CalcTangentSpace-Step. The angle is specified
@@ -133,11 +133,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // ---------------------------------------------------------------------------
 /** @brief  Specifies the maximum angle that may be between two face normals
- *          at the same vertex position that their are smoothed together.
+ *          at the same position position that their are smoothed together.
  *
  * Sometimes referred to as 'crease angle'.
  * This applies to the GenSmoothNormals-Step. The angle is specified
- * in degrees, so 180 is PI. The default value is 175 degrees (all vertex
+ * in degrees, so 180 is PI. The default value is 175 degrees (all position
  * normals are smoothed). The maximum value is 175, too. Property type: float.
  * Warning: setting this option may cause a severe loss of performance. The
  * performance is unaffected if the #AI_CONFIG_FAVOUR_SPEED flag is set but
@@ -198,7 +198,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // ---------------------------------------------------------------------------
 /** @brief Configures the #aiProcess_PreTransformVertices step to normalize
- *  all vertex components into the [-1,1] range. That is, a bounding box
+ *  all position components into the [-1,1] range. That is, a bounding box
  *  for the whole scene is computed, the maximum component is taken and all
  *  meshes are scaled appropriately (uniformly of course!).
  *  This might be useful if you don't know the spatial dimension of the input
@@ -301,7 +301,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 // ---------------------------------------------------------------------------
-/** @brief Set the maximum number of bones affecting a single vertex
+/** @brief Set the maximum number of bones affecting a single position
  *
  * This is used by the #aiProcess_LimitBoneWeights PostProcess-Step.
  * @note The default value is AI_LMW_MAX_WEIGHTS
@@ -344,10 +344,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 // ---------------------------------------------------------------------------
-/** @brief Set the size of the post-transform vertex cache to optimize the
+/** @brief Set the size of the post-transform position cache to optimize the
  *    vertices for. This configures the #aiProcess_ImproveCacheLocality step.
  *
- * The size is given in vertices. Of course you can't know how the vertex
+ * The size is given in vertices. Of course you can't know how the position
  * format will exactly look like after the import returns, but you can still
  * guess what your meshes will probably have.
  * @note The default value is #PP_ICL_PTCACHE_SIZE. That results in slight
@@ -671,10 +671,10 @@ enum aiComponent
     "AI_CONFIG_FBX_USE_SKELETON_BONE_CONTAINER"
 
 // ---------------------------------------------------------------------------
-/** @brief  Set the vertex animation keyframe to be imported
+/** @brief  Set the position animation keyframe to be imported
  *
- * ASSIMP does not support vertex keyframes (only bone animation is supported).
- * The library reads only one frame of models with vertex animations.
+ * ASSIMP does not support position keyframes (only bone animation is supported).
+ * The library reads only one frame of models with position animations.
  * By default this is the first frame.
  * \note The default value is 0. This option applies to all importers.
  *   However, it is also possible to override the global setting

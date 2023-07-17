@@ -11,6 +11,7 @@
   </component>
   <component name="CMakeRunConfigurationManager">
     <generated>
+      <config projectName="Canella" targetName="copy-files" />
       <config projectName="Canella" targetName="ImGUI" />
       <config projectName="Canella" targetName="Systems" />
       <config projectName="Canella" targetName="Canella" />
@@ -20,24 +21,36 @@
       <config projectName="Canella" targetName="shaders" />
     </generated>
   </component>
-  <component name="CMakeSettings">
+  <component name="CMakeSettings" AUTO_RELOAD="true">
     <configurations>
       <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" />
+      <configuration PROFILE_NAME="RelWithDebInfo" ENABLED="true" CONFIG_NAME="RelWithDebInfo" />
+      <configuration PROFILE_NAME="x64-release" ENABLED="true" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/x64-release" />
       <configuration PROFILE_NAME="x64-debug" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/x64-debug" />
-      <configuration PROFILE_NAME="x64-release" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/x64-release" />
       <configuration PROFILE_NAME="x86-debug" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/x86-debug" />
       <configuration PROFILE_NAME="x86-release" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/x86-release" />
       <configuration PROFILE_NAME="CMakeLists.txt" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/out/build/CMakeLists.txt" />
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f3fc5e0f-8f89-4e41-a906-50d83f14594e" name="Changes" comment="" />
+    <list default="true" id="f3fc5e0f-8f89-4e41-a906-50d83f14594e" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/scenes/scene.json" beforeDir="false" afterPath="$PROJECT_DIR$/resources/scenes/scene.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/AssetSystem/include/AssetSystem/AssetSystem.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/AssetSystem/include/AssetSystem/AssetSystem.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/AssetSystem/src/AssetSystem.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/AssetSystem/src/AssetSystem.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Render/include/Render/Render.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Render/include/Render/Render.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Render/src/Render.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Render/src/Render.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Resources/include/Resources/Resources.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Resources/include/Resources/Resources.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Systems/src/Systems.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Systems/src/Systems.cpp" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="ClangdSettings">
+    <option name="clangTidyViaClangd" value="false" />
     <option name="formatViaClangd" value="false" />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
@@ -52,7 +65,7 @@
     <option name="stateVersion" value="1" />
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="ProjectErrors" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectApplicationVersion">
     <option name="ide" value="CLion" />
@@ -81,13 +94,23 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;CMakeSettings&quot;,
     &quot;settings.editor.splitter.proportion&quot;: &quot;0.24922441&quot;,
     &quot;structure.view.defaults.are.configured&quot;: &quot;true&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\IALCProjects\Canella\src\EditorComponents\include\EditorComponents" />
+    </key>
+  </component>
   <component name="RunManager" selected="CMake Application.Canella">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="Canella" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Canella" TARGET_NAME="Canella" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Canella" RUN_TARGET_NAME="Canella">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -118,6 +141,11 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
+    <configuration name="copy-files" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Canella" TARGET_NAME="copy-files" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="shaders" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Canella" TARGET_NAME="shaders" CONFIG_NAME="Debug">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -125,6 +153,7 @@
     </configuration>
     <list>
       <item itemvalue="CMake Application.Canella" />
+      <item itemvalue="CMake Application.copy-files" />
       <item itemvalue="CMake Application.shaders" />
       <item itemvalue="CMake Application.Engine" />
       <item itemvalue="CMake Application.ImGUI" />
@@ -134,6 +163,9 @@
     </list>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SvnConfiguration">
+    <configuration>C:\Users\icaro\AppData\Roaming\Subversion</configuration>
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="f3fc5e0f-8f89-4e41-a906-50d83f14594e" name="Changes" comment="" />
@@ -191,7 +223,40 @@
       <workItem from="1685661031640" duration="4758000" />
       <workItem from="1685710492255" duration="1974000" />
       <workItem from="1685713115152" duration="11697000" />
-      <workItem from="1685745838060" duration="7000" />
+      <workItem from="1685745838060" duration="8612000" />
+      <workItem from="1685793387104" duration="10845000" />
+      <workItem from="1685811110473" duration="3268000" />
+      <workItem from="1685814427433" duration="1331000" />
+      <workItem from="1685881277768" duration="20395000" />
+      <workItem from="1685915918922" duration="1079000" />
+      <workItem from="1685923852543" duration="34000" />
+      <workItem from="1685967815761" duration="5707000" />
+      <workItem from="1686000969420" duration="5555000" />
+      <workItem from="1686006931048" duration="1454000" />
+      <workItem from="1686060973681" duration="12239000" />
+      <workItem from="1686088099065" duration="6266000" />
+      <workItem from="1686144845072" duration="4954000" />
+      <workItem from="1686151163663" duration="387000" />
+      <workItem from="1686153845575" duration="7882000" />
+      <workItem from="1686225957891" duration="15687000" />
+      <workItem from="1686266735486" duration="4745000" />
+      <workItem from="1686323769771" duration="18457000" />
+      <workItem from="1686399957174" duration="11733000" />
+      <workItem from="1686420115543" duration="11361000" />
+      <workItem from="1686435483082" duration="8476000" />
+      <workItem from="1686503079602" duration="140000" />
+      <workItem from="1686519744219" duration="287000" />
+      <workItem from="1686573185508" duration="131000" />
+      <workItem from="1686612467545" duration="4905000" />
+      <workItem from="1686664674675" duration="144000" />
+      <workItem from="1686934776806" duration="213000" />
+      <workItem from="1686934999981" duration="71000" />
+      <workItem from="1686935095973" duration="138000" />
+      <workItem from="1686935263189" duration="2078000" />
+      <workItem from="1686939767764" duration="774000" />
+      <workItem from="1686953744687" duration="506000" />
+      <workItem from="1687100032152" duration="1805000" />
+      <workItem from="1687298992294" duration="2223000" />
     </task>
     <servers />
   </component>
@@ -219,29 +284,24 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/ImGUI/imgui.cpp</url>
-          <line>7030</line>
-          <option name="timeStamp" value="532" />
+          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/RenderNodes.cpp</url>
+          <line>236</line>
+          <option name="timeStamp" value="29" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/ImGUI/imgui.cpp</url>
-          <line>7031</line>
-          <option name="timeStamp" value="533" />
+          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/RenderNodes.cpp</url>
+          <line>238</line>
+          <option name="timeStamp" value="30" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/ImGUI/imgui.cpp</url>
-          <line>7032</line>
-          <option name="timeStamp" value="534" />
+          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/RenderNodes.cpp</url>
+          <line>240</line>
+          <option name="timeStamp" value="31" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/ImGUI/imgui.cpp</url>
-          <line>7034</line>
-          <option name="timeStamp" value="535" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/ImGUI/imgui.cpp</url>
-          <line>7040</line>
-          <option name="timeStamp" value="536" />
+          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/RenderNodes.cpp</url>
+          <line>453</line>
+          <option name="timeStamp" value="32" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

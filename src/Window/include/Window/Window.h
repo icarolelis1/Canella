@@ -19,15 +19,17 @@
 
 namespace Canella
 {
-    class WidowResizeEvent: public Event<>{};
+    class WidowResizeEvent: public Event<Extent>{};
     class WidowFocusEvent: public Event<>{};
 
     class GlfwWindow : public Windowing
     {
     
     public:
+        static GlfwWindow & get_instance();
         void initialize(nlohmann::json& config);
-        GlfwWindow() = default;
+        GlfwWindow(GlfwWindow&) = delete;
+        void operator=(const GlfwWindow&) = delete;
         ~GlfwWindow();
         void getSurface(VkInstance instance, VkSurfaceKHR* surface);
         void set_title_data() override;
@@ -35,8 +37,9 @@ namespace Canella
         void wait_idle();
         void update();
 
+        //Singleton
+        static GlfwWindow* instance;
         //Window Events
-
         WidowResizeEvent OnWindowResize;
         WidowFocusEvent OnWindowFocus;
 
@@ -45,10 +48,8 @@ namespace Canella
         GLFWwindow* getHandle();
 
     private:
+        GlfwWindow() = default;
         std::string title;
-        Mouse mouse;
-        KeyBoard keyboard;
-
     };
 }
 

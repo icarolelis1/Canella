@@ -4,12 +4,12 @@
 using namespace Canella::RenderSystem::VulkanBackend;
 
 Pipeline::Pipeline(Device* _device,
-                   PipelineLayout _pipelienLayout,
+                   PipelineLayout* _pipelienLayout,
                    std::vector<Shader> shaders,
                    PipelineProperties& info,
                    uint32_t bindingCount)
     : device(_device),
-      pipelineLayout(std::move(_pipelienLayout))
+      pipelineLayout((_pipelienLayout))
 {
     VertexLayout vertex_layout(info.atributes, info.vertexOffsets, info.vertexBindingCount);
 
@@ -101,7 +101,7 @@ Pipeline::Pipeline(Device* _device,
 
     VkGraphicsPipelineCreateInfo pipelineCI{};
     pipelineCI.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-    pipelineCI.layout = pipelineLayout.getHandle();
+    pipelineCI.layout = pipelineLayout->getHandle();
     pipelineCI.renderPass = *info.renderpass;
     pipelineCI.flags = 0;
     pipelineCI.basePipelineIndex = -1;
@@ -134,6 +134,23 @@ Pipeline::Pipeline(Device* _device,
 
     delete[] color_blends;
 }
+Canella::RenderSystem::VulkanBackend::Pipeline::Pipeline(Device *_device,
+                                                         PipelineLayout* _pipeline_layout,
+                                                         Shader compute_shader)
+        :device(_device),pipelineLayout(_pipeline_layout)
+{
+    VkComputePipelineCreateInfo  create_info{create_info.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO};
+    create_info.stage = compute_shader.getShaderStageInfo();
+    create_info.layout = pipelineLayout->getHandle();
+    VK_CHECK(vkCreateComputePipelines(_device->getLogicalDevice(),
+                                      nullptr,
+                                      1,
+                                      &create_info,
+                                      device->getAllocator(),
+                                      &vk_pipeline),"failed to create compute Pipeline");
+    compute_shader.destroyModule();
+
+}
 
 VkPipeline& Pipeline::getPipelineHandle()
 {
@@ -142,10 +159,11 @@ VkPipeline& Pipeline::getPipelineHandle()
 
 PipelineLayout Pipeline::getPipelineLayoutHandle()
 {
-    return pipelineLayout;
+    return *pipelineLayout;
 }
 
-void Pipeline::destroy() {
+void Pipeline::destroy()
+{
     vkDestroyPipeline(device->getLogicalDevice(), vk_pipeline, device->getAllocator());
 }
 
@@ -161,8 +179,8 @@ VkPipelineShaderStageCreateInfo Shader::getShaderStageInfo()
     createInfo.codeSize = code.size();
     createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
 
-    VkResult result = vkCreateShaderModule(device->getLogicalDevice(), &createInfo, device->getAllocator(),
-                                           &vk_shaderModule);
+    VK_CHECK(vkCreateShaderModule(device->getLogicalDevice(), &createInfo, device->getAllocator(),
+                                           &vk_shaderModule),"Failed to crete shader module");
 
     VkPipelineShaderStageCreateInfo stageCreateInfo = {};
     stageCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -282,8 +300,8 @@ PipelineLayout::PipelineLayout(
 
     if (!_pushConstants.empty())
     {
-        pipelineLayoutCreateInfo.pushConstantRangeCount = static_cast<uint32_t>(pushConstants.size());
-        pipelineLayoutCreateInfo.pPushConstantRanges = pushConstants.data();
+        pipelineLayoutCreateInfo.pushConstantRangeCount = static_cast<uint32_t>(_pushConstants.size());
+        pipelineLayoutCreateInfo.pPushConstantRanges = _pushConstants.data();
     }
 
     if (const VkResult result = vkCreatePipelineLayout(device->getLogicalDevice(), &pipelineLayoutCreateInfo,
@@ -301,32 +319,4 @@ VkPipelineLayout PipelineLayout::getHandle()
 void PipelineLayout::destroy(Device* device)
 {
     vkDestroyPipelineLayout(device->getLogicalDevice(), vk_pipelineLayout, device->getAllocator());
-}
-
-ComputePipeline::ComputePipeline(Device* _device, PipelineLayout _pipelienLayout,
-                                 std::unique_ptr<Shader> _computeShader)
-    : device(_device), pipelineLayout(std::move(pipelineLayout)), computeShader(std::move(_computeShader))
-{
-    VkComputePipelineCreateInfo computePipelineCreateInfo{};
-    computePipelineCreateInfo.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
-    computePipelineCreateInfo.layout = pipelineLayout.getHandle();
-    computePipelineCreateInfo.flags = 0;
-
-    std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
-    shaderStages.resize(1);
-
-    shaderStages = {computeShader->getShaderStageInfo()};
-
-    computePipelineCreateInfo.stage = shaderStages[0];
-
-    if ((vkCreateComputePipelines(device->getLogicalDevice(), vk_cache, 1, &computePipelineCreateInfo,
-                                  device->getAllocator(), &vk_pipeline) != VK_SUCCESS))
-    {
-        std::cout << "Failed to create compute pipeline\n\n";
-    }
-}
-
-ComputePipeline::~ComputePipeline()
-{
-    vkDestroyPipeline(device->getLogicalDevice(), vk_pipeline, device->getAllocator());
 }

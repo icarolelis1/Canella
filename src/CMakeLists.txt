@@ -21,7 +21,8 @@ add_library(
     RenderBackend/VulkanBackend/Pipeline/src/Pipeline.cpp
     RenderBackend/VulkanBackend/DescriptorSet/src/DescriptorSet.cpp
     RenderBackend/VulkanBackend/RenderGraph/src/RenderGraph.cpp
-
+    RenderBackend/VulkanBackend/AsynchronousLoader/src/AsynchronousLoader.cpp
+        RenderBackend/VulkanBackend/Mesh/src/Mesh.cpp
 
     Render/src/Render.cpp
     SpirV/spirv_reflect.c
@@ -47,6 +48,9 @@ target_include_directories(
     RenderBackend/VulkanBackend/Descriptorpool/include
     RenderBackend/VulkanBackend/DescriptorSet/include
     RenderBackend/VulkanBackend/RenderGraph/include
+    RenderBackend/VulkanBackend/AsynchronousLoader/include RenderBackend/VulkanBackend/AsynchronousLoader/include
+        RenderBackend/VulkanBackend/Mesh/include RenderBackend/VulkanBackend/Mesh/include
+
     SpirV/
     Window/include
     Input/include
@@ -63,7 +67,7 @@ add_library(
 )
 
 target_include_directories(
-    Systems 
+    Systems
     PUBLIC Window/include
     Threadpool/include
     Input/include
@@ -71,39 +75,39 @@ target_include_directories(
     Containers/include
 )
 
-
-file (GLOB MESHOPT_SRC
+file(GLOB MESHOPT_SRC
     "Meshoptimizer_/*.cpp"
 )
 
 add_library(
-   Meshoptimizer
-   ${MESHOPT_SRC}
-
+    Meshoptimizer
+    ${MESHOPT_SRC}
 )
 
 target_include_directories(Meshoptimizer
-PUBLIC Meshoptimizer/include)
+    PUBLIC Meshoptimizer/include)
 target_link_libraries(Render PUBLIC Meshoptimizer)
 
 add_library(
-Engine 
-Project/src/Project.cpp     
-Components/src/Components.cpp
-Scene/src/Scene.cpp
-Entity/src/Entity.cpp
-Systems/src/Systems.cpp
-Serializer/src/Serializer.cpp
+    Engine
+    Project/src/Project.cpp
+    Components/src/Components.cpp
+    Scene/src/Scene.cpp
+    Entity/src/Entity.cpp
+    Systems/src/Systems.cpp
+    Serializer/src/Serializer.cpp
+    AssetSystem/src/AssetSystem.cpp
+
 )
 
-target_include_directories(Engine PUBLIC 
-Entity/include
-Project/include    
-Components/include
-Systems/include
-Scene/include
-Serializer/include
+target_include_directories(Engine PUBLIC
+    Entity/include
+    Project/include
+    Components/include
+    Systems/include
+    Scene/include
+    Serializer/include
+    AssetSystem/include
 )
 
 target_link_libraries(Engine PUBLIC Render Systems)
-

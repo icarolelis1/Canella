@@ -4,4 +4,5 @@ cmake-build-debug/
 BUILD/
 .vs/
 .vscode/
+cmake-build-relwithdebinfo/
 CmakePresets.json

@@ -1,5 +1,5 @@
 {
-    "Scene": {
+  "Scene": {
     "Entities": [
       {
         "Parent": "Root",
@@ -7,16 +7,32 @@
           {
             "type": "Transform",
             "Position": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "Scale": {
+              "x": 0.05,
+              "y": 0.05,
+              "z": 0.05
+            },
+            "Rotation": {
               "x": 0,
               "y": 0,
               "z": 0
             }
           },
           {
-            "type" : "MeshAsset",
-            "Static":true,
-            "Source" : "model_test/samus.glb"
-          },
+            "type": "MeshAsset",
+            "Static": true,
+            "Source": "model_test/cube.glb"
+          }
+        ]
+      },
+     
+      {
+        "Parent": "Root",
+        "Components": [
           {
             "type": "Camera",
             "Position": {
@@ -24,14 +40,20 @@
               "y": 0,
               "z": 0
             },
+            "Yaw": 0,
+            "Pitch": 0,
+            "Roll": 0,
             "Target": {
-              "x": 0,
-              "y": 0,
-              "z": 0
+              "x":0,
+              "y":0,
+              "z":0
             },
-            "Fovy": 45,
+            "Fovy": 0,
             "Znear": 0.1,
             "Zfar": 100
+          },
+          {
+            "type": "CameraEditor"
           }
         ]
       }

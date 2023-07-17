@@ -16,34 +16,34 @@ namespace Canella
         Entity(entt::entity entity,std::weak_ptr<Scene> scene) : m_Scene(scene),handle(entity){}
 
         template<typename T,typename... Args>
-        T& AddComponent(Args&&... args)
+        T& add_component(Args&&... args)
         {
-            assert(!HasComponent<T>());
+            assert(!has_component<T>());
             assert(!m_Scene.expired());
             auto scene =  m_Scene.lock();
             return scene->m_registry.emplace<T>(handle,std::forward<Args>(args)...);
         }
 
         template<typename T>
-        T& GetComponent()
+        T& get_component()
         {
-            assert(HasComponent<T>());
+            assert(has_component<T>());
             assert(!m_Scene.expired());
             auto scene = m_Scene.lock();
             return scene->m_registry.get<T>(handle);
         }
 
         template<typename  T>
-        void RemoveComponent()
+        void remove_component()
         {
-            assert(HasComponent<T>());
+            assert(has_component<T>());
             auto scene = m_Scene.lock();
             assert(m_Scene.expired());
             scene->m_registry.remove<T>(handle);
         }
 
         template<typename T>
-        bool HasComponent()
+        bool has_component()
         {
             auto scene =  m_Scene.lock();
             if(scene)
@@ -51,11 +51,11 @@ namespace Canella
             return false;
         }
 
-        entt::entity RawId()
+        entt::entity raw_id()
         {
             return handle;
         }
-        
+
     private:
         std::weak_ptr<Scene> m_Scene;
         entt::entity handle;

@@ -4,6 +4,12 @@
 #include "Eventsystem/Eventsystem.hpp"
 
 struct Extent {
+    Extent()  = default;
+    Extent(unsigned int w,unsigned int h)
+    {
+        width = w;
+        height = h;
+    }
     unsigned int width, height;
 };
 

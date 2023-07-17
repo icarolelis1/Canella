@@ -203,7 +203,7 @@ void meshopt_optimizeVertexCacheTable(unsigned int* destination, const unsigned 
 	unsigned char* emitted_flags = allocator.allocate<unsigned char>(face_count);
 	memset(emitted_flags, 0, face_count);
 
-	// compute initial vertex scores
+	// compute initial position scores
 	float* vertex_scores = allocator.allocate<float>(vertex_count);
 
 	for (size_t i = 0; i < vertex_count; ++i)
@@ -300,20 +300,20 @@ void meshopt_optimizeVertexCacheTable(unsigned int* destination, const unsigned 
 		unsigned int best_triangle = ~0u;
 		float best_score = 0;
 
-		// update cache positions, vertex scores and triangle scores, and find next best triangle
+		// update cache positions, position scores and triangle scores, and find next best triangle
 		for (size_t i = 0; i < cache_write; ++i)
 		{
 			unsigned int index = cache[i];
 
 			int cache_position = i >= cache_size ? -1 : int(i);
 
-			// update vertex score
+			// update position score
 			float score = vertexScore(table, cache_position, live_triangles[index]);
 			float score_diff = score - vertex_scores[index];
 
 			vertex_scores[index] = score;
 
-			// update scores of vertex triangles
+			// update scores of position triangles
 			const unsigned int* neighbors_begin = &adjacency.data[0] + adjacency.offsets[index];
 			const unsigned int* neighbors_end = neighbors_begin + adjacency.counts[index];
 
@@ -404,7 +404,7 @@ void meshopt_optimizeVertexCacheFifo(unsigned int* destination, const unsigned i
 	unsigned int current_vertex = 0;
 
 	unsigned int timestamp = cache_size + 1;
-	unsigned int input_cursor = 1; // vertex to restart from in case of dead-end
+	unsigned int input_cursor = 1; // position to restart from in case of dead-end
 
 	unsigned int output_triangle = 0;
 
@@ -412,7 +412,7 @@ void meshopt_optimizeVertexCacheFifo(unsigned int* destination, const unsigned i
 	{
 		const unsigned int* next_candidates_begin = &dead_end[0] + dead_end_top;
 
-		// emit all vertex neighbors
+		// emit all position neighbors
 		const unsigned int* neighbors_begin = &adjacency.data[0] + adjacency.offsets[current_vertex];
 		const unsigned int* neighbors_end = neighbors_begin + adjacency.counts[current_vertex];
 
@@ -442,7 +442,7 @@ void meshopt_optimizeVertexCacheFifo(unsigned int* destination, const unsigned i
 				live_triangles[c]--;
 
 				// update cache info
-				// if vertex is not in cache, put it in cache
+				// if position is not in cache, put it in cache
 				if (timestamp - cache_timestamps[a] > cache_size)
 					cache_timestamps[a] = timestamp++;
 
@@ -460,7 +460,7 @@ void meshopt_optimizeVertexCacheFifo(unsigned int* destination, const unsigned i
 		// next candidates are the ones we pushed to dead-end stack just now
 		const unsigned int* next_candidates_end = &dead_end[0] + dead_end_top;
 
-		// get next vertex
+		// get next position
 		current_vertex = getNextVertexNeighbor(next_candidates_begin, next_candidates_end, &live_triangles[0], &cache_timestamps[0], timestamp, cache_size);
 
 		if (current_vertex == ~0u)

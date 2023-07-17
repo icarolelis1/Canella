@@ -6,17 +6,17 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec4.hpp>
 
-
-namespace Canella {
+namespace Canella
+{
 	namespace RenderSystem
 	{
 		namespace VulkanBackend
 		{
-			
-			struct ViewProjection{
-				glm::mat4 projection;
-				glm::mat4 model;
-				glm::mat4 view;
+
+			struct ViewProjection
+			{
+				glm::mat4 view_projection;
+				glm::vec4 eye;
 			};
 
 			enum class ATRIBUTES
@@ -29,7 +29,8 @@ namespace Canella {
 				VEC3
 			};
 
-			enum class ShaderResourceType {
+			enum class ShaderResourceType
+			{
 				IMAGE_SAMPLER,
 				UNIFORM_BUFFER,
 				PUSH_CONSTANT,
@@ -39,29 +40,33 @@ namespace Canella {
 				UNIFORM_DYNAMIC
 			};
 
-			struct ShaderBindingResource {
+			struct ShaderBindingResource
+			{
 				ShaderResourceType type;
 				uint32_t binding;
 				uint32_t size;
 				VkShaderStageFlags stages;
 			};
 
-			struct VertexLayout {
+			struct VertexLayout
+			{
 
 			public:
 				std::vector<std::vector<ATRIBUTES>> atributes;
-				VertexLayout(std::vector<std::vector<ATRIBUTES> >atribs_, std::vector<uint32_t>  vertexOffsets, uint32_t vertexBindingCount = 1) :numberOfBindings(vertexBindingCount) {
-					//todo ??
+				VertexLayout(std::vector<std::vector<ATRIBUTES>> atribs_, std::vector<uint32_t> vertexOffsets, uint32_t vertexBindingCount = 1) : numberOfBindings(vertexBindingCount)
+				{
+					// todo ??
 					atributes.resize(vertexBindingCount);
 					atributes = (atribs_);
 				}
 				uint32_t numberOfBindings;
-				uint32_t getVertexStride(uint32_t binding) {
+				uint32_t getVertexStride(uint32_t binding)
+				{
 
 					uint32_t res = 0;
 
 					uint32_t firstOffset = 0;
-					for (auto& component : atributes[binding])
+					for (auto &component : atributes[binding])
 					{
 						switch (component)
 						{
@@ -77,13 +82,13 @@ namespace Canella {
 						case ATRIBUTES::VEC4SI:
 							res += 4 * sizeof(int);
 							break;
-
 						}
 					}
 
 					return res;
 				}
-				VkVertexInputBindingDescription getBinding(int bindingNumber) {
+				VkVertexInputBindingDescription getBinding(int bindingNumber)
+				{
 
 					VkVertexInputBindingDescription binding;
 					binding.binding = static_cast<uint32_t>(bindingNumber);
@@ -92,7 +97,8 @@ namespace Canella {
 
 					return binding;
 				}
-				void getAttributeDescription(uint32_t bindingNumber, std::vector<VkVertexInputAttributeDescription>& atributeDescriptions) {
+				void getAttributeDescription(uint32_t bindingNumber, std::vector<VkVertexInputAttributeDescription> &atributeDescriptions)
+				{
 
 					uint32_t offset = 0;
 					size_t i;
@@ -100,17 +106,20 @@ namespace Canella {
 					if (bindingNumber > 0)
 						i = atributes[bindingNumber - 1].size();
 
-					else {
+					else
+					{
 						i = 0;
 					}
 
-					for (auto& attb : atributes[bindingNumber]) {
+					for (auto &attb : atributes[bindingNumber])
+					{
 						VkVertexInputAttributeDescription atribute{};
 						atribute.binding = bindingNumber;
 
-						switch (attb) {
+						switch (attb)
+						{
 
-						case(ATRIBUTES::VEC2):
+						case (ATRIBUTES::VEC2):
 							atribute.format = VK_FORMAT_R32G32_SFLOAT;
 							atribute.location = static_cast<uint32_t>(i++);
 							atribute.offset = offset;
@@ -118,7 +127,7 @@ namespace Canella {
 							offset += sizeof(float) * 2;
 							break;
 
-						case(ATRIBUTES::VEC3):
+						case (ATRIBUTES::VEC3):
 							atribute.format = VK_FORMAT_R32G32B32_SFLOAT;
 							atribute.location = static_cast<uint32_t>(i++);
 							atribute.offset = offset;
@@ -126,29 +135,31 @@ namespace Canella {
 							offset += sizeof(float) * 3;
 							break;
 
-						case(ATRIBUTES::VEC4):
+						case (ATRIBUTES::VEC4):
 							atribute.format = VK_FORMAT_R32G32B32A32_SFLOAT;
 							atribute.location = static_cast<uint32_t>(i++);
 							atribute.offset = offset;
 							atributeDescriptions.push_back(atribute);
 							offset += sizeof(float) * 4;
 							break;
-						case(ATRIBUTES::VEC4SI):
+						case (ATRIBUTES::VEC4SI):
 							atribute.format = VK_FORMAT_R32G32B32A32_SINT;
 							atribute.location = static_cast<uint32_t>(i++);
 							atribute.offset = offset;
 							atributeDescriptions.push_back(atribute);
 							offset += sizeof(int) * 4;
 							break;
-						default: break;
+						default:
+							break;
 						}
 					}
 					offset = 0;
 				}
 			};
 
-			struct PipelineProperties {
-				VkRenderPass* renderpass;
+			struct PipelineProperties
+			{
+				VkRenderPass *renderpass;
 				uint32_t subpass = 0;
 				VkCullModeFlagBits cullMode = VK_CULL_MODE_NONE;
 				VkBool32 dephTest = VK_TRUE;
@@ -161,15 +172,16 @@ namespace Canella {
 				uint32_t vertexBindingCount = 0;
 				uint32_t colorAttachmentsCount = 1;
 				uint32_t pushConstanteCount = 0;
-				const char* fragmentShaderPath;
-				const char* vertexShaderPath;
-				std::vector<std::vector<ATRIBUTES> >atributes;
+				const char *fragmentShaderPath;
+				const char *vertexShaderPath;
+				std::vector<std::vector<ATRIBUTES>> atributes;
 				bool depthBias = 0;
 				std::vector<uint32_t> vertexOffsets;
 				bool alphablending = false;
 			};
 
-			enum class SHADER_TYPE {
+			enum class SHADER_TYPE
+			{
 				FRAGMENT_SHADER,
 				VERTEX_SHADER,
 				GEOMETRY_SHADER,
@@ -178,96 +190,101 @@ namespace Canella {
 				TASK_SHADER
 			};
 
-			class Shader {
+			class Shader
+			{
 
 			public:
-				Shader(Device* _device, SHADER_TYPE _type, const std::vector<char> _code);
+				Shader(Device *_device, SHADER_TYPE _type, const std::vector<char> _code);
 				VkPipelineShaderStageCreateInfo getShaderStageInfo();
 				void destroyModule();
-				static  SHADER_TYPE convert_from_string_shader_type(const char* type)
+				static SHADER_TYPE convert_from_string_shader_type(const char *type)
 				{
 					{
-						if (strcmp( type,"Mesh") == 0)
+						if (strcmp(type, "Mesh") == 0)
 							return SHADER_TYPE::MESH_SHADER;
-						if (strcmp(type , "Fragment")==0)
+						if (strcmp(type, "Fragment") == 0)
 							return SHADER_TYPE::FRAGMENT_SHADER;
-						if (strcmp(type,"Task") ==0)
+						if (strcmp(type, "Task") == 0)
 							return SHADER_TYPE::TASK_SHADER;
+						if (strcmp(type, "Compute") == 0)
+							return SHADER_TYPE::COMPUTE_SHADER;
 						return SHADER_TYPE::VERTEX_SHADER;
 					}
 				}
-		
+
 			private:
 				const std::vector<char> code;
-				Device* device;
+				Device *device;
 				SHADER_TYPE type;
 				VkShaderModule vk_shaderModule;
 			};
 
-			class DescriptorSetLayout {
+			class DescriptorSetLayout
+			{
 
 			public:
-				DescriptorSetLayout(Device* _device, const std::vector<ShaderBindingResource> _resources, const char* description = "GenericSet");
+				DescriptorSetLayout(Device *_device, const std::vector<ShaderBindingResource> _resources, const char *description = "GenericSet");
 				~DescriptorSetLayout() = default;
-                std::vector< VkDescriptorSetLayoutBinding> getBindings() const;
-				VkDescriptorSetLayout& getDescriptorLayoutHandle();
-				void destroy(Device*);
+				std::vector<VkDescriptorSetLayoutBinding> getBindings() const;
+				VkDescriptorSetLayout &getDescriptorLayoutHandle();
+				void destroy(Device *);
 
 			private:
 				VkDescriptorSetLayout vk_descriptorSetLayout;
 				VkDescriptorType getDescriptorType(ShaderResourceType type);
-				std::vector< VkDescriptorSetLayoutBinding> bindings;
+				std::vector<VkDescriptorSetLayoutBinding> bindings;
 
-                void foo(const std::vector<ShaderBindingResource> &_resources);
-            };
+				void foo(const std::vector<ShaderBindingResource> &_resources);
+			};
 
-			class PipelineLayout {
+			class PipelineLayout
+			{
 
 			public:
-				PipelineLayout(Device* _device,
-					std::vector<std::shared_ptr<DescriptorSetLayout>> _descriptors,
-					std::vector<VkPushConstantRange> _pushConstants);
-                ~PipelineLayout() = default;
+				PipelineLayout(Device *_device,
+							   std::vector<std::shared_ptr<DescriptorSetLayout>> _descriptors,
+							   std::vector<VkPushConstantRange> _pushConstants);
+				PipelineLayout(const PipelineLayout& other) = default;
+				~PipelineLayout() = default;
 				VkPipelineLayout getHandle();
-				void destroy(Device * device);
+				void destroy(Device *device);
 
 			private:
 				std::vector<DescriptorSetLayout> descriptors;
-				std::vector<VkPushConstantRange> pushConstants;
 				VkPipelineLayout vk_pipelineLayout;
-
 			};
 
-			class Pipeline {
+			class Pipeline
+			{
 
 			public:
-				Pipeline(Device* _device, PipelineLayout _pipelienLayout, std::vector<Shader> shaders, PipelineProperties& info, uint32_t bindingCount =0);
+                /**
+                 * @brief Create a renderer pipeline
+                 * @param _device
+                 * @param pipeline_layout
+                 * @param shaders
+                 * @param info
+                 * @param bindingCount
+                 */
+				Pipeline(Device *_device, PipelineLayout *pipeline_layout, std::vector<Shader> shaders, PipelineProperties &info, uint32_t bindingCount = 0);
+				/**
+				 * @brief Creates a compute pipeline
+				 * @param device Wrapper for the logical Device
+				 * @param pipelineLayout Compute pipeline pipelineLayout
+				 * @param Shader for the compute pipeline
+				*/
+				Pipeline(Device *device, PipelineLayout *pipeline_layout, Shader compute_shader);
 				~Pipeline() = default;
-                void destroy();
-				VkPipeline& getPipelineHandle();
+				void destroy();
+				VkPipeline &getPipelineHandle();
 				PipelineLayout getPipelineLayoutHandle();
-				const char* id;
+				const char *id;
 			private:
-				Device* device;
+                VkPipelineCache pipeline_cache = 0 ;
+                Device *device;
 				VkPipeline vk_pipeline;
 				VkPipelineCache vk_cache;
-				PipelineLayout pipelineLayout;
-			};
-
-
-			class ComputePipeline {
-
-			public:
-				ComputePipeline(Device* _device, PipelineLayout _pipelienLayout, std::unique_ptr<Shader> _computeShader);
-				~ComputePipeline();
-
-			private:
-				std::unique_ptr<Shader> computeShader;
-				Device* device;
-				VkPipeline vk_pipeline;
-				VkPipelineCache vk_cache;
-				PipelineLayout pipelineLayout;
-
+				PipelineLayout* pipelineLayout;
 			};
 
 		}

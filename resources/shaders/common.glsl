@@ -22,12 +22,45 @@ struct MeshletBound{
 	vec4 cone_apex;
 	vec4 cone_axis;
 	vec4 cone_cutoff;
+	vec4 center;
 };
 
+struct FrustumCamera
+{
+	vec3 camera_right;
+	vec3 camera_front;
+	vec3 camera_up;
+	vec3 camera_pos;
+	vec3 near_far_fovy;
+};
+
+struct IndirectDrawDispatch{
+	uint groupCountX;
+	uint groupCountY;
+	uint groupCountZ;
+	uint draw_id;
+};
+
+struct StaticMeshData{
+    vec3 center;
+    float radius;
+	uint mesh_id;
+    uint vertex_offset;
+    uint index_offset;
+    uint meshlet_offset;
+    uint meshlet_vertices_offset;
+    uint meshlet_triangles_offset;
+	uint meshlet_count;
+};
 
 struct Vertex
 {
 	vec4 position;
 };
+
+vec3 rotateQuat(vec3 v, vec4 q)
+{
+	return v + 2.0 * cross(q.xyz, cross(q.xyz, v) + q.w * v);
+}
 
 #endif

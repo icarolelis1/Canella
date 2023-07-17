@@ -3,13 +3,11 @@
 #include <filesystem>
 #include <fstream>
 
+#include "EditorComponents/EditorComponents.h"
 
 Canella::Serializer::Serializer(const std::string& project): m_ProjectFolder(project) {}
 
-/**
- * \brief Serialize the scene to a file
- * \param scene
- */
+
 void Canella::Serializer::Serialize(std::weak_ptr<Scene> scene, const std::string &projectPath)
 {
     if (const auto sceneRef = scene.lock())
@@ -44,15 +42,10 @@ void Canella::Serializer::LoadEntities(std::shared_ptr<Scene> scene, const std::
     for (auto entity_meta : scene_data["Entities"])
     {
         Entity created_entity = scene->CreateEntity();
-        LoadComponents(scene, created_entity.RawId(), entity_meta["Components"]);
+        LoadComponents(scene, created_entity.raw_id(), entity_meta["Components"]);
     }
 }
 
-/**
- * \brief Builds the components for each entity in the config File
- * \param entity entity the component is associated to
- * \param components_data Data Serialized for each component
- */
 void Canella::Serializer::LoadComponents(
     std::shared_ptr<Scene> scene,
     const entt::entity entity,
@@ -67,6 +60,8 @@ void Canella::Serializer::LoadComponents(
             SerializeCamera(component_data,scene->m_registry,entity);
         else if(type == "MeshAsset")
             SerializeMeshAsset(component_data,scene->m_registry,entity);
+        else if( type == "CameraEditor")
+            SerializeCameraEditor(component_data,scene->m_registry,entity);
     }
 }
 
@@ -92,24 +87,31 @@ void Canella::Serializer::DeserializeEntities(
         nlohmann::json& components = entity["Components"];
         
         auto view = scene->m_registry.view<TransformComponent,CameraComponent,ModelAssetComponent>();
-        if(iterator->second->HasComponent<CameraComponent>())
+        if(iterator->second->has_component<CameraComponent>())
         {
             nlohmann::json component;
             DeserializeCamera(component,view.get<CameraComponent>(iterator->first));
             components.push_back(component);
         }
 
-        if(iterator->second->HasComponent<TransformComponent>())
+        if(iterator->second->has_component<TransformComponent>())
         {
             nlohmann::json component;
             DeserializeTransform(component,view.get<TransformComponent>(iterator->first));
             components.push_back(component);
         }
 
-        if(iterator->second->HasComponent<ModelAssetComponent>())
+        if(iterator->second->has_component<ModelAssetComponent>())
         {
             nlohmann::json component;
             DeserializeMeshAsset(component,view.get<ModelAssetComponent>(iterator->first));
+            components.push_back(component);
+        }
+
+        if(iterator->second->has_component<CameraEditor>())
+        {
+            nlohmann::json component;
+            DeserializeCameraEditor(component,view.get<ModelAssetComponent>(iterator->first));
             components.push_back(component);
         }
         

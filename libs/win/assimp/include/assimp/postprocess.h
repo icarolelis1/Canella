@@ -85,11 +85,11 @@ enum aiPostProcessSteps
     aiProcess_CalcTangentSpace = 0x1,
 
     // -------------------------------------------------------------------------
-    /** <hr>Identifies and joins identical vertex data sets within all
+    /** <hr>Identifies and joins identical position data sets within all
      *  imported meshes.
      *
      * After this step is run, each mesh contains unique vertices,
-     * so a vertex may be used by multiple faces. You usually want
+     * so a position may be used by multiple faces. You usually want
      * to use this post processing step. If your application deals with
      * indexed geometry, this step is compulsory or you'll just waste rendering
      * time. <b>If this flag is not specified</b>, no vertices are referenced by
@@ -131,7 +131,7 @@ enum aiPostProcessSteps
 
     // -------------------------------------------------------------------------
     /** <hr>Removes some parts of the data structure (animations, materials,
-     *  light sources, cameras, textures, vertex components).
+     *  light sources, cameras, textures, position components).
      *
      * The  components to be removed are specified in a separate
      * importer property, <tt>#AI_CONFIG_PP_RVC_FLAGS</tt>. This is quite useful
@@ -146,9 +146,9 @@ enum aiPostProcessSteps
      *
      * This flag is a poor one, mainly because its purpose is usually
      * misunderstood. Consider the following case: a 3D model has been exported
-     * from a CAD app, and it has per-face vertex colors. Vertex positions can't be
+     * from a CAD app, and it has per-face position colors. Vertex positions can't be
      * shared, thus the #aiProcess_JoinIdenticalVertices step fails to
-     * optimize the data because of these nasty little vertex colors.
+     * optimize the data because of these nasty little position colors.
      * Most apps don't even process them, so it's all for nothing. By using
      * this step, unneeded components are excluded as early as possible
      * thus opening more room for internal optimizations.
@@ -191,9 +191,9 @@ enum aiPostProcessSteps
     *
     * This is quite useful for real-time rendering, where the number of triangles
     * which can be maximally processed in a single draw-call is limited
-    * by the video driver/hardware. The maximum vertex buffer is usually limited
+    * by the video driver/hardware. The maximum position buffer is usually limited
     * too. Both requirements can be met with this step: you may specify both a
-    * triangle and vertex limit for a single mesh.
+    * triangle and position limit for a single mesh.
     *
     * The split limits can (and should!) be set through the
     * <tt>#AI_CONFIG_PP_SLM_VERTEX_LIMIT</tt> and <tt>#AI_CONFIG_PP_SLM_TRIANGLE_LIMIT</tt>
@@ -232,11 +232,11 @@ enum aiPostProcessSteps
     aiProcess_PreTransformVertices = 0x100,
 
     // -------------------------------------------------------------------------
-    /** <hr>Limits the number of bones simultaneously affecting a single vertex
+    /** <hr>Limits the number of bones simultaneously affecting a single position
     *  to a maximum value.
     *
-    * If any vertex is affected by more than the maximum number of bones, the least
-    * important vertex weights are removed and the remaining vertex weights are
+    * If any position is affected by more than the maximum number of bones, the least
+    * important position weights are removed and the remaining position weights are
     * renormalized so that the weights still sum up to 1.
     * The default bone weight limit is 4 (defined as <tt>#AI_LMW_MAX_WEIGHTS</tt> in
     * config.h), but you can use the <tt>#AI_CONFIG_PP_LBW_MAX_WEIGHTS</tt> importer
@@ -276,9 +276,9 @@ enum aiPostProcessSteps
     aiProcess_ValidateDataStructure = 0x400,
 
     // -------------------------------------------------------------------------
-    /** <hr>Reorders triangles for better vertex cache locality.
+    /** <hr>Reorders triangles for better position cache locality.
      *
-     * The step tries to improve the ACMR (average post-transform vertex cache
+     * The step tries to improve the ACMR (average post-transform position cache
      * miss ratio) for all meshes. The implementation runs in O(n) and is
      * roughly based on the 'tipsify' algorithm (see <a href="
      * http://www.cs.princeton.edu/gfx/pubs/Sander_2007_%3ETR/tipsy.pdf">this
@@ -439,7 +439,7 @@ enum aiPostProcessSteps
      * transformations, so you will probably want to specify this step.
      *
      * @note UV transformations are usually implemented in real-time apps by
-     * transforming texture coordinates at vertex shader stage with a 3x3
+     * transforming texture coordinates at position shader stage with a 3x3
      * (homogeneous) transformation matrix.
     */
     aiProcess_TransformUVCoords = 0x80000,

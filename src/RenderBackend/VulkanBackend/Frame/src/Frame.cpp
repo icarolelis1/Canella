@@ -6,13 +6,6 @@ namespace Canella
 	{
 		namespace VulkanBackend
 		{
-			/**
-			 * @brief
-			 * FrameData object corresponds to a swapchain image
-			 * Each FrameData has a collection of syncronization primitives that allow
-			 * Record overlapping between frames and a set of commandspools
-			 * @param device
-			 */
 			void FrameData::build(Device *device)
 			{
 				this->device = device;
@@ -39,18 +32,6 @@ namespace Canella
 				secondaryPool.build(device, POOL_TYPE::GRAPHICS, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 				commandBuffer = commandPool.requestCommandBuffer(device, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
                 editor_command = secondaryPool.requestCommandBuffer(device, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-			}
-
-			/**
-			 * \brief 
-			 * \param device 
-			 * \param swapChain 
-			 * \param usageFlags 
-			 * \return 
-			 */
-			uint32_t FrameData::begin_command(Device& device,Swapchain* swapChain, VkCommandBufferUsageFlags usageFlags)
-			{
-				return 0;
 			}
 
 			void FrameData::destroy()
