@@ -65,7 +65,7 @@ endif()
 
 add_executable(${PROJECT_NAME}  main.cpp src/Editor/src/Editor.cpp src/EditorComponents/src/EditorComponents.cpp)
 
-target_link_directories(${PROJECT_NAME} PUBLIC $ENV{VULKAN_SDK}/Lib ${GLFW_LIB}  ${OS_LIBS_DIR}/assimp/lib/)
+target_link_directories(${PROJECT_NAME} PUBLIC $ENV{VULKAN_SDK}/Lib ${GLFW_LIB}  ${OS_LIBS_DIR}/assimp/lib/ ${OS_LIBS_DIR}/metis/lib/)
 
 
 #Setup Imgui
@@ -83,6 +83,7 @@ include_directories(${PROJECT_NAME} PUBLIC
   $ENV{VULKAN_SDK}/Include
   ${LIBS_DIR}/interface
   ${OS_LIBS_DIR}/assimp/include
+  ${OS_LIBS_DIR}/metis/include
   src/Eventsystem/include
   src/Editor/include
   src/Logger/include
@@ -99,6 +100,7 @@ IF(WIN32)
     vulkan-1
     assimp-vc143-mtd
     ImGUI
+    metis
     )
 
 ELSEIF(UNIX)

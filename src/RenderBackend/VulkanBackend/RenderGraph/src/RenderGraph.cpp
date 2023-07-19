@@ -51,7 +51,7 @@ void Canella::RenderSystem::VulkanBackend::RenderGraph::load_render_node(const n
     //Load the renderGraph recursively from the json file.
     for(const auto& descendent : entry["Descendents"])
     {
-        auto render_node = std::make_shared<GeomtryPass>();
+        auto render_node = std::make_shared<GeometryPass>();
         //Deserialize the render_node data from the json file
         render_node->load_render_node(descendent);
         //add to the descendent vector

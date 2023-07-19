@@ -5,8 +5,11 @@
 #include <Logger/Logger.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <set>
+#include <metis.h>
+#include <list>
 
 using namespace Canella;
+//TODO FINISH THE HIERARCHY OF LODS by doing a proper implementation the current one is just for learning prototype
 
 struct Vec4Hash {
     std::size_t operator()(const glm::vec4& v) const {
@@ -43,8 +46,9 @@ void MeshProcessing::simplify_indices( std::vector<Vertex>& vertices, std::vecto
     indices = std::move(simplified_indices);
 }
 
-MeshProcessing::Mesh::Mesh(std::vector<uint32_t>indices)
+MeshProcessing::Mesh::Mesh(std::vector<Vertex>& _vertices, std::vector<uint32_t>& indices)
 {
+    simplify_indices(_vertices,indices);
     for(int i = 0 ; i < indices.size(); i+= 3)
     {
         auto v1 = VertexHe{indices[i]};
@@ -126,8 +130,8 @@ int MeshProcessing::count_boundaries(MeshProcessing::Mesh& mesh)
 
     for (auto& he : mesh.edges)
     {
-      if(he.second->twin == nullptr)
-          boundaries++;
+        if(he.second->twin == nullptr)
+            boundaries++;
     }
     return boundaries;
 }
@@ -146,7 +150,7 @@ void MeshProcessing::load_asset_mesh(ModelMesh &model, const ::std::string &asse
     meshes.resize(assimpScene->mNumMeshes);
     uint32_t index_offset = 0;
     uint32_t vertex_offset = 0;
-    for (unsigned int i = 0; i < model.meshes.size(); ++i)
+    for (unsigned int i = 0; i < meshes.size(); ++i)
     {
         const aiMesh *assimp_mesh = assimpScene->mMeshes[i];
         meshes[i].index_offset    = index_offset;
@@ -169,20 +173,20 @@ void MeshProcessing::load_asset_mesh(ModelMesh &model, const ::std::string &asse
         index_offset = indices.size();
         vertex_offset = positions.size();
 
-    /*    size_t index_count = indices.size();
+        /*    size_t index_count = indices.size();
 
-        std::vector<uint32_t> remap(index_count);
-        size_t vertex_count = meshopt_generateVertexRemap(remap.data(), 0, index_count, positions.data(), index_count, sizeof(Vertex));
+            std::vector<uint32_t> remap(index_count);
+            size_t vertex_count = meshopt_generateVertexRemap(remap.data(), 0, index_count, positions.data(), index_count, sizeof(Vertex));
 
-        std::vector<Vertex> vertices(vertex_count);
-        std::vector<uint32_t> new_indices(index_count);
+            std::vector<Vertex> vertices(vertex_count);
+            std::vector<uint32_t> new_indices(index_count);
 
-        meshopt_remapVertexBuffer(vertices.data(), positions.data(), index_count, sizeof(Vertex), remap.data());
-        meshopt_remapIndexBuffer(new_indices.data(), indices.data(), index_count, remap.data());
+            meshopt_remapVertexBuffer(vertices.data(), positions.data(), index_count, sizeof(Vertex), remap.data());
+            meshopt_remapIndexBuffer(new_indices.data(), indices.data(), index_count, remap.data());
 
-        meshopt_optimizeVertexCache(new_indices.data(), indices.data(), index_count, vertex_count);
-        meshopt_optimizeVertexFetch(vertices.data(), indices.data(), index_count, vertices.data(), vertex_count, sizeof(Vertex));
-*/
+            meshopt_optimizeVertexCache(new_indices.data(), indices.data(), index_count, vertex_count);
+            meshopt_optimizeVertexFetch(vertices.data(), indices.data(), index_count, vertices.data(), vertex_count, sizeof(Vertex));
+    */
         MeshProcessing::build_meshlets(meshlet_composition, model, i);
     }
 }
@@ -223,7 +227,7 @@ void MeshProcessing::build_meshlets(Canella::Meshlet &canellaMeshlet, Canella::M
     meshlets.resize(meshlet_count);
 
 
-    classify_triangle_group(indices,meshlets,meshlet_vertices,meshlet_triangles);
+    //classify_triangle_group(positions,indices,meshlets,meshlet_vertices,meshlet_triangles);
     while (meshlets.size() % 32 != 0)
         meshlets.push_back(meshopt_Meshlet());
 
@@ -256,74 +260,139 @@ void MeshProcessing::build_meshlets(Canella::Meshlet &canellaMeshlet, Canella::M
 }
 
 void
-MeshProcessing::classify_triangle_group(std::vector<unsigned int> indices,
-                                        std::vector<meshopt_Meshlet>& meshlets,
-                                        std::vector<unsigned int> meshlet_vertices,
-                                        std::vector<unsigned char> meshlet_triangles)
-{
+MeshProcessing::classify_triangle_group(
+        std::vector<Vertex>&vertices,
+        std::vector<unsigned int>& indices,
+        std::vector<meshopt_Meshlet>& meshlets,
+        std::vector<unsigned int>& meshlet_vertices,
+        std::vector<unsigned char>& meshlet_triangles) {
     //Create the MeshProcessing object for the cluster
-    auto myMesh = MeshProcessing::Mesh(indices);
-    std::map<uint32_t,uint32_t> counter;
+    auto                         myMesh = MeshProcessing::Mesh( vertices, indices );
+    std::map<uint32_t, uint32_t> counter;
 
-    auto contains_vertex = [&](uint32_t index,Face& face)
-    {
-        for(auto& vertex : face.vertices)
-        {
-            if(vertex.id == index)
+    auto contains_vertex = [&]( uint32_t index, Face &face ) {
+        for ( auto &vertex: face.vertices ) {
+            if ( vertex.id == index )
                 return true;
         }
         return false;
     };
 
-    for(int c = 0 ; c < meshlets.size(); c++)
-    {
-        auto& meshlet = meshlets[c];
-        auto local_vertices = std::vector<unsigned int>(meshlet_vertices.begin() + meshlet.vertex_offset,meshlet_vertices.begin() + meshlet.vertex_offset + meshlet.vertex_count);
-        auto local_tris = std::vector<unsigned char>(meshlet_triangles.begin() + meshlet.triangle_offset,meshlet_triangles.begin() + meshlet.triangle_offset + meshlet.triangle_count *3);
+    for ( int c = 0; c < meshlets.size(); c++ ) {
+        auto &meshlet = meshlets[c];
+        auto local_vertices = std::vector<unsigned int>( meshlet_vertices.begin() + meshlet.vertex_offset,
+                                                         meshlet_vertices.begin() + meshlet.vertex_offset +
+                                                         meshlet.vertex_count );
+        auto local_tris     = std::vector<unsigned char>( meshlet_triangles.begin() + meshlet.triangle_offset,
+                                                          meshlet_triangles.begin() + meshlet.triangle_offset +
+                                                          meshlet.triangle_count * 3 );
 
         std::vector<uint32_t> cluster_indices;
 
-
         //Get cluster indices inside the mesh
-        cluster_indices.resize(local_tris.size());
+        cluster_indices.resize( local_tris.size());
         auto index = 0;
-        for(auto& tri: local_tris)
-        {
+        for ( auto &tri: local_tris ) {
             cluster_indices[index] = local_vertices[tri];
             index++;
         }
 
-        for(auto i = 0 ; i < cluster_indices.size(); i+= 3)
-        {
-            for(auto j = 0 ; j < myMesh.triangles.size(); ++j)
-            {
+        for ( auto i = 0; i < cluster_indices.size(); i += 3 ) {
+            for ( auto j = 0; j < myMesh.triangles.size(); ++j ) {
                 //test if cluster triangle is contained in each face
-                auto& triangle = myMesh.triangles[j];
-                if((contains_vertex(cluster_indices[i],triangle))
-                && (contains_vertex(cluster_indices[i + 1],triangle))
-                & (contains_vertex(cluster_indices[i + 2],triangle)))
-                {
+                auto &triangle = myMesh.triangles[j];
+                if ((contains_vertex( cluster_indices[i], triangle ))
+                    && (contains_vertex( cluster_indices[i + 1], triangle ))
+                       & (contains_vertex( cluster_indices[i + 2], triangle ))) {
                     triangle.id = c;
                 }
             }
         }
     }
 
-    std::map<std::pair<int,int>,int>adjacency;
-    for(auto& tri1 : myMesh.triangles)
-    {
-        for(auto& tri2 :myMesh.triangles)
-        {
-            auto shared_edge = 0;
-            if(tri1.id == tri2.id )continue;
-            shared_edge = contains_vertex(tri1.vertices[0].id,tri2)? shared_edge +1: shared_edge;
-            shared_edge = contains_vertex(tri1.vertices[1].id,tri2)? shared_edge + 1: shared_edge;
-            shared_edge = contains_vertex(tri1.vertices[2].id,tri2)? shared_edge + 1: shared_edge;
-            if(shared_edge >=2)
-                adjacency[std::pair(tri1.id,tri2.id)] ++;
+    std::map<std::pair<int, int>, int> shared_edges;
+    std::map<uint32_t, std::set<int>>  edges_edges;
+
+    for ( auto &tri1: myMesh.triangles ) {
+        for ( auto &tri2: myMesh.triangles ) {
+            auto shared_vertex = 0;
+            if ( tri1.id == tri2.id )continue;
+            shared_vertex = contains_vertex( tri1.vertices[0].id, tri2 ) ? shared_vertex + 1 : shared_vertex;
+            shared_vertex = contains_vertex( tri1.vertices[1].id, tri2 ) ? shared_vertex + 1 : shared_vertex;
+            shared_vertex = contains_vertex( tri1.vertices[2].id, tri2 ) ? shared_vertex + 1 : shared_vertex;
+            //This means that this triangle from cluster tri1.id shares edge with tri2.id(Different cluster)
+            //In the graph this means that noe tri.id connects to cluster tri2.id
+            if ( shared_vertex > 1 ) {
+                shared_edges[std::pair( tri1.id, tri2.id )]++;
+                edges_edges[tri1.id].insert( tri2.id );
+            }
         }
     }
-    adjacency;
-    Logger::Info("%d ",counter[0]);
+    //Build the graph
+    //Each cluster is a node
+    //Each edge is a connectivity between two clusters
+    //The cost of each edge is the number of shared boundries between two clusters
+    idx_t      edges_number = shared_edges.size();
+    idx_t      nodes_number = edges_edges.size();
+    idx_t ncon              = 1;
+    std::vector<idx_t> xadj;
+    std::vector<idx_t> adjacency;
+    std::vector<idx_t> wgts;
+    idx_t nparts = 2;
+    std::vector<idx_t> parts(nodes_number);
+    std::vector<idx_t> obj_val;
+    auto i = 0;
+    idx_t vsize = 0;
+    for(auto& val : shared_edges)
+    {
+        vsize += val.second;
+    }
+    xadj.push_back(0);
+    for ( auto &node: edges_edges ) {
+
+        for ( auto &node_connected: node.second ) {
+            adjacency.push_back( node_connected );
+            i++;
+        }
+        xadj.push_back( adjacency.size());
+    }
+
+    for ( auto i = 0 ; i < meshlets.size(); ++i) {
+            if(edges_edges[i].size() == 0)
+                Logger::Info("%d is an Island",i);
+    }
+    for ( auto &node: edges_edges )
+    {
+        for ( auto &node_connected: node.second )
+            wgts.push_back(shared_edges[std::pair(node.first,node_connected)]);
+    }
+
+    while(xadj.size() +1 != nodes_number + 1)
+    {
+        xadj.push_back(xadj.size());
+    }
+
+    idx_t options[METIS_NOPTIONS];
+    METIS_SetDefaultOptions(options);
+    options[METIS_OPTION_OBJTYPE] = METIS_OBJTYPE_CUT;
+    options[METIS_OPTION_CTYPE] = METIS_CTYPE_RM;
+
+
+    auto r =  METIS_PartGraphKway(
+            &nodes_number,
+            &ncon,
+            xadj.data(),
+            adjacency.data(),
+            NULL,
+            NULL,
+            wgts.data(),
+            &nparts,
+            NULL,
+            NULL,
+            options,
+            obj_val.data(),
+            parts.data());
+
+    parts;
 }
 

@@ -4,6 +4,41 @@
 
 using namespace Canella::RenderSystem::VulkanBackend;
 
+//Utility
+VkBufferMemoryBarrier Canella::RenderSystem::VulkanBackend::bufferBarrier(VkBuffer buffer, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask)
+{
+    VkBufferMemoryBarrier result = {VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER};
+
+    result.srcAccessMask = srcAccessMask;
+    result.dstAccessMask = dstAccessMask;
+    result.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    result.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    result.buffer = buffer;
+    result.offset = 0;
+    result.size = VK_WHOLE_SIZE;
+    return result;
+}
+
+VkImageMemoryBarrier Canella::RenderSystem::VulkanBackend::imageBarrier(VkImage image, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkImageLayout oldLayout, VkImageLayout newLayout, VkImageAspectFlags aspectMask)
+{
+    VkImageMemoryBarrier result = { VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER };
+
+    result.srcAccessMask = srcAccessMask;
+    result.dstAccessMask = dstAccessMask;
+    result.oldLayout = oldLayout;
+    result.newLayout = newLayout;
+    result.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    result.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    result.image = image;
+    result.subresourceRange.aspectMask = aspectMask;
+    result.subresourceRange.levelCount = VK_REMAINING_MIP_LEVELS;
+    result.subresourceRange.layerCount = VK_REMAINING_ARRAY_LAYERS;
+
+    return result;
+}
+
+
+
 uint32_t Canella::RenderSystem::VulkanBackend::find_memory_type(Device *device,
                                                                 uint32_t typeFilter,
                                                                 VkMemoryPropertyFlags properties)
@@ -216,11 +251,21 @@ Image::Image(Device *_device,
              VkSampleCountFlagBits samples) : GPUResource(ResourceType::ImageResource)
 {
     uint32_t numMips = 1;
+    auto get_image_mips_count = [=](uint32_t w,uint32_t h)
+    {
+        auto count = 0;
+        while(h > 1 || w > 1)
+        {
+            count++;
+            h /= 2;
+            w /=2;
+        }
+        return count;
+    };
 
     if (useMaxNumMips)
     {
-
-        // numMips = getMaximumMips();
+        numMips = get_image_mips_count(Width,Height);
     }
     extent.width = Width;
     extent.height = Height;
@@ -239,9 +284,8 @@ Image::Image(Device *_device,
     imageInfo.usage = usage;
     imageInfo.samples = samples;
     imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-    imageInfo.flags = flags;
 
-    if (vkCreateImage(device->getLogicalDevice(), &imageInfo, nullptr, &image) != VK_SUCCESS)
+    if (vkCreateImage(device->getLogicalDevice(), &imageInfo, device->getAllocator(), &image) != VK_SUCCESS)
     {
         throw std::runtime_error("Failed to create image\n");
     }
@@ -279,6 +323,8 @@ Image::Image(Device *_device,
 
 Image::~Image()
 {
+
+    on_before_release.invoke();
     vkDestroyImageView(device->getLogicalDevice(), view, device->getAllocator());
     vkDestroyImage(device->getLogicalDevice(), image, device->getAllocator());
     vkFreeMemory(device->getLogicalDevice(), memory, device->getAllocator());

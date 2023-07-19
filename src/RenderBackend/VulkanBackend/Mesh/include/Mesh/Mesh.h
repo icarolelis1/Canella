@@ -40,7 +40,7 @@ namespace Canella{
         class Mesh
         {
         public:
-            Mesh(std::vector<uint32_t>indices);
+            Mesh(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices);
             std::map<std::pair<uint32_t ,uint32_t>, HalfEdge* > edges;
             std::vector<VertexHe> vertices;
             std::vector<Face>   triangles;
@@ -52,10 +52,11 @@ namespace Canella{
         };
         using cluster_adjacency_edges = std::map<std::pair<int,int>,int>;
 
-        void classify_triangle_group(std::vector<unsigned int> indices,
-                                                        std::vector<meshopt_Meshlet>& meshlets,
-                                                        std::vector<unsigned int> meshlet_vertices,
-                                                        std::vector<unsigned char> meshlet_triangles);
+        void classify_triangle_group(std::vector<Vertex>&vertices,
+                                     std::vector<unsigned int>& indices,
+                                     std::vector<meshopt_Meshlet>& meshlets,
+                                     std::vector<unsigned int>& meshlet_vertices,
+                                     std::vector<unsigned char>& meshlet_triangles);
 
         void simplify_indices(std::vector<Vertex>& vertices,std::vector<uint32_t>& indices);
         int count_boundaries(MeshProcessing::Mesh& mesh);

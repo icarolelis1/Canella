@@ -20,6 +20,15 @@ namespace Canella
     {
         namespace VulkanBackend
         {
+            struct SupportedExtensions
+            {
+                bool mesh_shader;
+                bool storage_16_bit;
+                bool min_max_sampler;
+                bool push_descriptor;
+                bool bindless_suported;
+            };
+
             struct SwapchainQueryProperties
             {
                 VkSurfaceCapabilitiesKHR capabilities;
@@ -123,6 +132,7 @@ namespace Canella
                 float timestamp_period;
 
             private:
+                SupportedExtensions supported_extensions;
                 bool bindless_suported;
                 bool mesh_shader_supported;
                 VkDevice logicalDevice;
@@ -137,19 +147,18 @@ namespace Canella
                 VkPhysicalDeviceFeatures vk_PhysicalDevicefeatures;
                 VkPhysicalDeviceFeatures2 vk_PhysicalDevicefeatures2;
                 VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;
+
                 void choosePhysicalDevice(Instance instance, Surface surface);
                 bool checkDeviceExtensions(VkPhysicalDevice device);
                 VkSampleCountFlagBits getMaxUsableSampleCount();
                 int scorePhysicalDevice(VkPhysicalDevice device, VkPhysicalDeviceFeatures features, VkPhysicalDeviceMemoryProperties memProperties, Surface surface);
+                void chain_extensions(VkPhysicalDeviceFeatures2& features);
                 bool getQueuFamilieIndex(VkQueueFamilyProperties props, VkQueueFlagBits queueFlags);
                 bool querySwapChainProperties(VkPhysicalDevice device, Surface surface);
-                void enableMeshShaderExtension();
                 void createLogicalDevice();
                 VkFormat  depth_format;
                 size_t getMinimumBufferAligment();
                 std::vector<const char*> deviceExtensions;
-                VkPhysicalDeviceDescriptorIndexingFeatures indexing_features{};
-                VkPhysicalDeviceMeshShaderFeaturesEXT enabledMeshShaderFeatures{};
 
             };
         }

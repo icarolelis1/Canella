@@ -10,7 +10,7 @@ namespace Canella
     {
         namespace VulkanBackend
         {
-            class GeomtryPass : public RenderNode
+            class GeometryPass : public RenderNode
             {
             public:
                 struct IndirectCommandToCull
@@ -19,6 +19,13 @@ namespace Canella
                     uint32_t groupCountY;
                     uint32_t groupCountZ;
                     uint32_t draw_id;
+                };
+
+                struct alignas(16) CullingData
+                {
+                    glm::vec4 frustumPlanes[6];
+                    glm::vec4 coefficients_width_znear;
+                    glm::vec4 width_height_padding;
                 };
 
                 struct alignas(16) StaticMeshData
@@ -41,8 +48,18 @@ namespace Canella
                     std::vector<VkDescriptorSet> indices_descriptorset;
                 };
 
-                GeomtryPass();
-                ~GeomtryPass();
+                struct HIZDepth
+                {
+                    ResourceAccessor pyramidImage;
+                    std::array<VkImageView,16> mip_views;
+                    uint32_t mip_count;
+                    bool visibility_first_cleared = false;
+                    uint32_t base_width;
+                    uint32_t base_height;
+                };
+
+                GeometryPass();
+                ~GeometryPass();
                 void execute(Canella::Render *render, VkCommandBuffer &, int) override;
                 void load_transient_resources(Canella::Render *render) override;
 
@@ -61,7 +78,7 @@ namespace Canella
                  * Writes the Descriptorset
                  * @param render
                  */
-                void write_descriptorsets_geomtry(Canella::Render *render);
+                void write_descriptorsets_geometry( Canella::Render *render);
                 /**
                  * @brief Writes the descriptorsets used in the culling pass
                  * @param render
@@ -97,20 +114,42 @@ namespace Canella
                                              Drawables &drawables,
                                              int image_index);
 
+                /**
+                 * @brief Render to the HIZ chain
+                 * @param render
+                 * @param command
+                 */
+                void update_hiz_chain(Canella::Render *render,
+                                      VkCommandBuffer &command,
+                                      int image_index);
+
+
+                //Temp
+                //To do remove this from here
+                void create_push_descriptor(Canella::Render* render);
+
+                /**
+                 * @brief Builds a hierarchical depth of mips to be used in  occlusion  culling
+                 * @params width Frame Width
+                 * @params height Frame Height
+                 */
+                void build_hierarchical_depth(Canella::Render* render);
+
+                std::vector<ResourceAccessor> occlusion_visibility_buffer;
                 std::vector<ResourceAccessor> resource_meshlet_buffers;
                 std::vector<ResourceAccessor> resource_meshlet_triangles;
                 std::vector<ResourceAccessor> resource_meshlet_vertices;
                 std::vector<ResourceAccessor> resource_vertices_buffers;
                 std::vector<ResourceAccessor> resource_bounds_buffers;
                 std::vector<ResourceAccessor> draw_indirect_buffers;
-                std::vector<ResourceAccessor> command_count_buffers;
-                std::vector<DescriptorPerDrawable> frustum_culling_descriptors;
+                std::vector<ResourceAccessor>      command_count_buffers;
+                std::vector<DescriptorPerDrawable> geometry_data_descriptors;
                 std::vector<DescriptorPerDrawable> descriptors;
                 std::vector<ResourceAccessor> resource_static_meshes;
-                
+
                 // debug commands
                 std::vector<IndirectCommandToCull> commands;
-
+                HIZDepth hiz_depth;
                 RenderQueries queries;
                 bool post_first_load = false;
                 Device *device;

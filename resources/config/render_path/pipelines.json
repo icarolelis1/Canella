@@ -1,11 +1,12 @@
 ﻿{
   "PipelineData": {
-    "DescriptorSetLayoutCounts": 4,
-    "PipelinesCount": 2,
+    "DescriptorSetLayoutCounts":5,
+    "PipelinesCount": 3,
     "DescriptorSetLayouts": [
       {
         "Key": "ViewProjection",
         "ResourceCount": 1,
+        "PushDescriptor" : false,
         "BindingResources": [
           {
             "Key": "ViewProjection",
@@ -21,6 +22,7 @@
       {
         "Key": "Transforms",
         "ResourceCount": 1,
+        "PushDescriptor" : false,
         "BindingResources": [
           {
             "Key": "Transforms",
@@ -37,6 +39,7 @@
       {
         "Key": "Meshlets",
         "ResourceCount": 7,
+        "PushDescriptor" : false,
         "BindingResources": [
           {
             "Key": "Meshlets",
@@ -101,7 +104,8 @@
       },
       {
         "Key": "CommandProcessor",
-        "ResourceCount": 3,
+        "ResourceCount": 4,
+        "PushDescriptor" : false,
         "BindingResources": [
           {
             "Key": "CommandProcessor",
@@ -126,11 +130,66 @@
             ],
             "Type": "STORAGE_BUFFER",
             "Binding": 2
+          },
+          {
+            "Key": "CommandProcessor",
+            "Stage": [
+              "COMPUTE_STAGE"
+            ],
+            "Type": "STORAGE_BUFFER",
+            "Binding": 3
+          }
+        ]
+      },
+      {
+        "Key": "OcclusionCulling",
+        "ResourceCount": 4,
+        "PushDescriptor" : true,
+        "BindingResources": [
+          {
+            "Key": "OcclusionCulling",
+            "Stage": [
+              "COMPUTE_STAGE"
+            ],
+            "Type": "STORAGE_BUFFER",
+            "Binding": 0
+          },
+          {
+            "Key": "OcclusionCulling",
+            "Stage": [
+              "COMPUTE_STAGE"
+            ],
+            "Type": "STORAGE_BUFFER",
+            "Binding": 1
+          },
+          {
+            "Key": "OcclusionCulling",
+            "Stage": [
+              "COMPUTE_STAGE"
+            ],
+            "Type": "STORAGE_BUFFER",
+            "Binding": 2
+          },
+          {
+            "Key": "Visibility",
+            "Stage": [
+              "COMPUTE_STAGE"
+            ],
+            "Type": "STORAGE_BUFFER",
+            "Binding": 3
+          },
+          {
+            "Key": "ModelMatrices",
+            "Stage": [
+              "COMPUTE_STAGE"
+            ],
+            "Type": "STORAGE_BUFFER",
+            "Binding": 4
           }
         ]
       }
     ],
-    "Pipelines": [
+    "Pipelines":    [
       {
         "Key": "MeshShaderPipeline",
         "IsCompute": false,
@@ -174,7 +233,7 @@
         ],
         "PushConstants": {
           "StageFlags" : "COMPUTE_STAGE",
-          "Size" : 96,
+          "Size" : 128,
           "Offset" : 0
         },
         "Builtin": true,
@@ -182,6 +241,26 @@
           "Type": "Compute",
           "ResourcesCount": 1,
           "Source": "resources\\Shaders\\spirv\\command.comp.spv"
+        }
+      },
+      {
+        "Key": "OcclusionCulling",
+        "IsCompute": true,
+        "PushConstantRangesCount": 1,
+        "NumerOfDescriptorSets": 1,
+        "PipelineLayoutDescriptors": [
+          "OcclusionCulling"
+        ],
+        "PushConstants": {
+          "StageFlags" : "COMPUTE_STAGE",
+          "Size" : 128,
+          "Offset" : 0
+        },
+        "Builtin": true,
+        "Shader": {
+          "Type": "Compute",
+          "ResourcesCount": 1,
+          "Source": "resources\\Shaders\\spirv\\occlusion.comp.spv"
         }
       }
     ]

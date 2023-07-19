@@ -58,7 +58,9 @@ namespace Canella
 						bindingResource.binding = bindings["Binding"].get<std::uint32_t>();
 						bindingResources[i] = bindingResource;
 					}
-					auto descriptor = std::make_shared<DescriptorSetLayout>(device, std::move(bindingResources));
+                    auto is_push_descriptor = resources["PushDescriptor"].get<bool>();
+					auto descriptor = std::make_shared<DescriptorSetLayout>(device,
+                                                                            std::move(bindingResources),is_push_descriptor);
 					return descriptor;
 				}
 

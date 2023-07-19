@@ -17,14 +17,18 @@ namespace Canella
     {
         namespace VulkanBackend
         {
+
+            VkBufferMemoryBarrier bufferBarrier(VkBuffer buffer, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask);
+            VkImageMemoryBarrier imageBarrier(VkImage image, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkImageLayout oldLayout, VkImageLayout newLayout, VkImageAspectFlags aspectMask);
+
+
             enum ResourceType
             {
                 BufferResource,
                 ImageResource
             };
 
-       
-            using ResourceAccessor = uint64_t;
+           using ResourceAccessor = uint64_t;
 
             class GPUResource
             {
@@ -34,6 +38,7 @@ namespace Canella
                 explicit GPUResource(ResourceType type);
                 virtual ~GPUResource() = default;
                 ResourceType type;
+                Event<> on_before_release;
             };
 
             class Buffer : public GPUResource
@@ -96,10 +101,12 @@ namespace Canella
                       VkImageTiling tiling,
                       VkImageUsageFlags usage,
                       VkMemoryPropertyFlags properties,
-                      VkImageCreateFlags flags, VkImageAspectFlags aspectFlags,
+                      uint32_t num_mips,
+                      VkImageAspectFlags aspectFlags,
                       uint32_t arrayLayers = 1,
-                      bool useMaxNumMips = true,
+                      bool useMaxNumMips = false,
                       VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT);
+
                 ~Image() override;
                 VkImage image;
                 VkDeviceMemory memory;
@@ -143,13 +150,23 @@ namespace Canella
                                               VkImageTiling tilling,
                                               VkImageUsageFlags usage,
                                               VkMemoryPropertyFlags properties,
-                                              VkImageCreateFlags flags, VkImageAspectFlags aspectFlags,
+                                              uint32_t num_mips,
+                                              VkImageAspectFlags aspectFlags,
                                               uint32_t arrayLayers = 1,
-                                              bool useMaxNumMips = true,
+                                              bool useMaxNumMips = false,
                                               VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT);
 
                 ~ResourcesManager() = default;
                 template <typename Data>
+                /**
+                 * @brief Creates a Device Local Buffer
+                 * @tparam Data
+                 * @param size
+                 * @param flags
+                 * @param transfer_pool
+                 * @param data
+                 * @return
+                 */
                 uint64_t create_storage_buffer(size_t size, VkBufferUsageFlags flags, VulkanBackend::Commandpool *transfer_pool, Data *data)
                 {
 

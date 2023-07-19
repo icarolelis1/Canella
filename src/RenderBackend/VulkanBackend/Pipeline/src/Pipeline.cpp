@@ -206,13 +206,10 @@ void Shader::destroyModule()
     vkDestroyShaderModule(device->getLogicalDevice(), vk_shaderModule, nullptr);
 }
 
-/**
- * \brief Wrapper for a VkDescriptorSetLayout
- * \param device Vulkan device
- * \param _resources *shaderBidings resources
- * \param description description of descriptorset layout
- */
-DescriptorSetLayout::DescriptorSetLayout(Device* device, const std::vector<ShaderBindingResource> _resources,
+
+DescriptorSetLayout::DescriptorSetLayout(Device* device,
+                                         const std::vector<ShaderBindingResource> _resources,
+                                         bool push_descriptor,
                                          const char* description)
 {
     foo(_resources);
@@ -220,14 +217,16 @@ DescriptorSetLayout::DescriptorSetLayout(Device* device, const std::vector<Shade
     VkDescriptorSetLayoutCreateInfo create_info{VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO};
     create_info.bindingCount = static_cast<uint32_t>(bindings.size());
     create_info.pBindings = bindings.data();
+    if(push_descriptor)
+        create_info.flags = VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR;
 
-    VkResult result = vkCreateDescriptorSetLayout(device->getLogicalDevice(), &create_info, device->getAllocator(),
+    VkResult result = vkCreateDescriptorSetLayout(device->getLogicalDevice(),
+                                                  &create_info,
+                                                  device->getAllocator(),
                                                   &vk_descriptorSetLayout);
 
     if (result != VK_SUCCESS)
         Canella::Logger::Error("Failed to create DescriptorSetLayout\n");
-    if (result == VK_SUCCESS)
-        Canella::Logger::Error("Successfully Created DescriptorSetLayout");
 }
 
 void DescriptorSetLayout::foo(const std::vector<ShaderBindingResource> &_resources) {

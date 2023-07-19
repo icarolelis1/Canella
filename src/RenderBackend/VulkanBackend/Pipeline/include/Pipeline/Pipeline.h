@@ -223,7 +223,17 @@ namespace Canella
 			{
 
 			public:
-				DescriptorSetLayout(Device *_device, const std::vector<ShaderBindingResource> _resources, const char *description = "GenericSet");
+                /**
+                 * \brief Wrapper for a VkDescriptorSetLayout
+                 * \param device Vulkan device
+                 * \param _resources *shaderBidings resources
+                 * \param description description of descriptorset layout
+                 */
+				DescriptorSetLayout(Device *_device,
+                                    const std::vector<ShaderBindingResource> _resources,
+                                    bool push_descriptor = false,
+                                    const char *description = "GenericSet");
+
 				~DescriptorSetLayout() = default;
 				std::vector<VkDescriptorSetLayoutBinding> getBindings() const;
 				VkDescriptorSetLayout &getDescriptorLayoutHandle();

@@ -10,6 +10,14 @@ namespace Canella
         {
             Device::Device()
             {
+                deviceExtensions.push_back("VK_KHR_swapchain");
+                deviceExtensions.push_back("VK_KHR_push_descriptor");
+                deviceExtensions.push_back("VK_KHR_16bit_storage");
+                deviceExtensions.push_back("VK_KHR_draw_indirect_count");
+                deviceExtensions.push_back("VK_EXT_sampler_filter_minmax");
+                deviceExtensions.push_back("VK_EXT_mesh_shader");
+                deviceExtensions.push_back("VK_KHR_spirv_1_4");
+                deviceExtensions.push_back("VK_KHR_shader_float_controls");
             };
 
             void Device::choosePhysicalDevice(Instance instance, Surface surface)
@@ -19,12 +27,10 @@ namespace Canella
 
                 if (deviceCount == 0)
                     Logger::Error("Failed to find a proper Graphics Card");
-                
 
                 std::vector<VkPhysicalDevice> devices(deviceCount);
                 vkEnumeratePhysicalDevices(instance.handle, &deviceCount, devices.data());
 
-                // Score of the GPU
                 VkBool32 findSuitableGPU = false;
 
                 int currentScore = 0;
@@ -35,53 +41,24 @@ namespace Canella
                 {
                     VkPhysicalDeviceProperties physicalDeviceProps;
                     VkPhysicalDeviceFeatures features;
-                    VkPhysicalDeviceMeshShaderFeaturesEXT mesh_shader_feature{};
-                    mesh_shader_feature.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_NV;
-                    mesh_shader_feature.meshShader = VK_TRUE;
-                    mesh_shader_feature.taskShader = VK_TRUE;
-
-                    VkPhysicalDeviceDescriptorIndexingFeatures indexing_features{
-                        VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES, &mesh_shader_feature
-                    };
-
-                    VkPhysicalDeviceFeatures2 features2{
-                        VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2, &enabledMeshShaderFeatures
-                    };
                     VkPhysicalDeviceMemoryProperties props;
-
                     // Query physical device properties
                     vkGetPhysicalDeviceProperties(device, &physicalDeviceProps);
                     vkGetPhysicalDeviceMemoryProperties(device, &props);
                     vkGetPhysicalDeviceFeatures(device, &features);
-
-                    vkGetPhysicalDeviceFeatures2(device, &features2);
                     timestamp_period = physicalDeviceProps.limits.timestampPeriod;
-
-                    bindless_suported = indexing_features.descriptorBindingPartiallyBound && indexing_features.
-                        runtimeDescriptorArray;
-
-                    mesh_shader_supported = mesh_shader_feature.taskShader && mesh_shader_feature.meshShader;
-
-                    if (!bindless_suported)currentScore = 0;
-                    currentScore = scorePhysicalDevice(device, features, props, surface);
-                    // currentScore >=100. means that the device have all the minimum demanded capabilities
-                    if (currentScore >= 100.)
+                    currentScore = scorePhysicalDevice(device, features, props, surface);;
+                    if (currentScore >=200)
                     {
                         findSuitableGPU = true;
                         bestDevice = device;
-                        bestScore = currentScore;
-                    }
-                    // If we find any better device we pick it
-                    if (currentScore > bestScore)
-                    {
-                        bestDevice = device;
-                        bestScore = currentScore;
+                        break;
                     }
                 }
 
                 if (!findSuitableGPU)
                 {
-                    Logger::Error("Failed to find a  Graphics Card that suits the requirements");
+                    Logger::Error("Device don't support required extensions or is not a discrete GPU");
                     return;
                 }
 
@@ -91,10 +68,8 @@ namespace Canella
                 vkGetPhysicalDeviceMemoryProperties(physicalDevice, &vk_MemoryProperties);
                 vkGetPhysicalDeviceFeatures(physicalDevice, &vk_PhysicalDevicefeatures);
 
-
                 physicalDevice = bestDevice;
                 msaaSamples = getMaxUsableSampleCount();
-                Logger::Info("MaxSamples Count %d ", msaaSamples);
                 Logger::Info("Device %s ", vk_physicalDeviceProperties.deviceName);
             }
 
@@ -104,16 +79,24 @@ namespace Canella
                 vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionsCount, nullptr);
 
                 std::vector<VkExtensionProperties> extensions(extensionsCount);
-                vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionsCount, extensions.data());
+                vkEnumerateDeviceExtensionProperties(device, nullptr,
+                                                     &extensionsCount, extensions.data());
 
-                std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
+                auto required_ext_count = 0;
+                auto contains_extension = [&](const char* ext)
+                {
+                    for(auto& required_ext: deviceExtensions)
+                        if(strcmp(required_ext,ext) == 0)
+                            return true;
+                    return false;
+                };
 
                 for (const auto& extension : extensions)
                 {
-                    requiredExtensions.erase(extension.extensionName);
+                    required_ext_count = contains_extension(extension.extensionName)? required_ext_count+1:required_ext_count;
                 }
 
-                return requiredExtensions.empty();
+                return required_ext_count == deviceExtensions.size();
             }
 
             VkSampleCountFlagBits Device::getMaxUsableSampleCount()
@@ -154,14 +137,9 @@ namespace Canella
             int Device::scorePhysicalDevice(VkPhysicalDevice device, VkPhysicalDeviceFeatures features,
                                             VkPhysicalDeviceMemoryProperties memProperties, Surface surface)
             {
-                /*this is not really good yet ,
-                But for now It just take a suitable device with the largest heap
-                */
                 int score = 200;
-
                 auto properties = VkPhysicalDeviceProperties{};
                 vkGetPhysicalDeviceProperties(device, &properties);
-
                 uint32_t queueFamilityCount = 0;
 
                 vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilityCount, nullptr);
@@ -173,19 +151,13 @@ namespace Canella
                 VkBool32 foundTransfer = false;
                 VkBool32 foundPresent = false;
 
-                // If we can't find unique index for each queue, we use the back index
-
                 std::vector<uint32_t> graphicsSupportedQueues;
                 std::vector<uint32_t> transferSupportedQueues;
                 std::vector<uint32_t> computeSupportedQueues;
                 std::vector<uint32_t> presentSupportedQueues;
-                //todo what is this??
-                auto unique_queues = [](uint32_t graphics, uint32_t transfer, uint32_t compute, uint32_t present)
-                {
-                };
 
                 if (!properties.deviceType & VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
-                    score -= 100;
+                    score  = 0;
                 for (uint32_t i = 0; i < queueFamilyProperties.size(); i++)
                 {
                     if (getQueuFamilieIndex(queueFamilyProperties[i], VK_QUEUE_GRAPHICS_BIT))
@@ -233,30 +205,14 @@ namespace Canella
                 };
                 queueFamilies.graphics = getUniqueQueueIndex(usedQueues, graphicsSupportedQueues);
                 queueFamilies.transfer = getUniqueQueueIndex(usedQueues, transferSupportedQueues);
-                queueFamilies.compute = getUniqueQueueIndex(usedQueues, computeSupportedQueues);
-                queueFamilies.present = getUniqueQueueIndex(usedQueues, presentSupportedQueues);
+                queueFamilies.compute  = getUniqueQueueIndex(usedQueues, computeSupportedQueues);
+                queueFamilies.present  = getUniqueQueueIndex(usedQueues, presentSupportedQueues);
 
-                // if device has no graphics neither presentation capabilities, the device is not suitable (score = 0)
-                if (!foundGraphics)
-                    score = 0;
-                if (!foundPresent)
-                    score = 0;
-                if (!foundTransfer)
-                    score = 0; // means that the device doesn't have dedicated queue to transfer operations
-                if (!foundCompute)
-                    score -= 40; // means that the device doesn't have dedicated queue to compute operations
-
+                // check if the device have the required extensions
                 if (!checkDeviceExtensions(device))
-                    score = 0; // check if the device have the required extensions
+                    score = 0;
                 if (!querySwapChainProperties(device, surface))
                     score = 0; // check if the device is suitable for the swapChain
-
-                if (memProperties.memoryHeaps->size > 2000)
-                    score += 10;
-                if (memProperties.memoryHeaps->size > 4000)
-                    score += 10;
-                if (memProperties.memoryHeaps->size > 8000)
-                    score += 10;
 
                 bool featuresQuery = features.samplerAnisotropy && features.shaderClipDistance && features.
                     fillModeNonSolid;
@@ -315,18 +271,6 @@ namespace Canella
                 return nullptr;
             }
 
-            void Device::enableMeshShaderExtension()
-            {
-                enabledMeshShaderFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_NV;
-                enabledMeshShaderFeatures.meshShader = VK_TRUE;
-                enabledMeshShaderFeatures.taskShader = VK_TRUE;
-                enabledMeshShaderFeatures.pNext = nullptr;
-
-                deviceExtensions.push_back(VK_EXT_MESH_SHADER_EXTENSION_NAME);
-                deviceExtensions.push_back(VK_KHR_SPIRV_1_4_EXTENSION_NAME);
-                deviceExtensions.push_back(VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME);
-            }
-
             void Device::createLogicalDevice()
             {
                 std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
@@ -346,24 +290,23 @@ namespace Canella
                     queueCreateInfos.push_back(QcreateInfo);
                 }
 
-                deviceExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
                 VkPhysicalDeviceFeatures features{};
                 features.samplerAnisotropy = VK_TRUE;
                 features.fillModeNonSolid = VK_TRUE;
-                if (bindless_suported)
-                    indexing_features.sType =
-                        VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;
 
-                if (mesh_shader_supported)
-                    enableMeshShaderExtension();
+                VkPhysicalDeviceMeshShaderFeaturesEXT mesh_shader_feature{};
+                mesh_shader_feature.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_NV;
+                mesh_shader_feature.meshShader = VK_TRUE;
+                mesh_shader_feature.taskShader = VK_TRUE;
+                vk_PhysicalDevicefeatures2.pNext = &mesh_shader_feature;
 
-                vk_PhysicalDevicefeatures2 = {VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
-                    &enabledMeshShaderFeatures};
-
+                //Chain StorageBuffer16BitAccess
                 VkPhysicalDeviceVulkan11Features features11 = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES };
                 features11.storageBuffer16BitAccess = true;
                 features11.shaderDrawParameters = true;
+                mesh_shader_feature.pNext = &features11;
 
+                //Chain Vulkan_1_2 Features
                 VkPhysicalDeviceVulkan12Features features12 = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES };
                 features12.drawIndirectCount = true;
                 features12.storageBuffer8BitAccess = true;
@@ -372,12 +315,10 @@ namespace Canella
                 features12.shaderInt8 = true;
                 features12.samplerFilterMinmax = true;
                 features12.scalarBlockLayout = true;
-
                 features11.pNext = &features12;
-                enabledMeshShaderFeatures.pNext  = &features11;
                 VkPhysicalDeviceFeatures deviceFeatures{};
                 deviceFeatures.pipelineStatisticsQuery = VK_TRUE;
-                
+
                 VkDeviceCreateInfo deviceInfo = {};
                 deviceInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
                 deviceInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
@@ -392,7 +333,7 @@ namespace Canella
                 VkResult result = vkCreateDevice(physicalDevice, &deviceInfo, nullptr, &logicalDevice);
 
                 if (result != VK_SUCCESS)
-                    Logger::Error("Failed god to find a suitable device");
+                    Logger::Error("Failed to find a suitable device");
 
                 if (result == VK_SUCCESS)
                 {

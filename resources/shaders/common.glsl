@@ -1,6 +1,13 @@
 #ifndef CANELLA_SHADER_COMMOM
 #define CANELLA_SHADER_COMMOM
 
+struct CullingData
+{
+    vec4 frustumPlanes[6];
+    vec4 coefficients_width_znear;
+    vec4 width_height_padding;
+};
+
 struct MeshDrawInstance{
   mat4 model;
 };

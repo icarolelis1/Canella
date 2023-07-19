@@ -96,10 +96,11 @@ if( ti < meshlet.vertex_count )
   	uint vertex_indice = uint(meshlet_vertices[meshlet.vertex_offset + ti + mesh.meshlet_vertices_offset]);
 	vec3 fragPos = vec3(model * vec4(vertices[vertex_indice + mesh.vertex_offset].position.xyz,1.0));
   	gl_MeshVerticesEXT[ti].gl_Position = mvp * vec4(fragPos,1.0)  ;
-
-	uint mhash = hash(mi);
+	
+	uint mhash = hash(ti);
 	vec3 mcolor = vec3(float(mhash & 255), float((mhash >> 8) & 255), float((mhash >> 16) & 255)) / 255.0;
 	vertexOutput[ti].color = vec4(mcolor,1);
+
 }
 
 if (ti < meshlet.triangle_count)
@@ -110,6 +111,7 @@ if (ti < meshlet.triangle_count)
 	 											uint(meshlet_indices[index_offset + meshlet.triangle_offset + ti*3 + 1 ]) ,
 	 											uint(meshlet_indices[index_offset + meshlet.triangle_offset + ti*3 + 2 ])  
 	 											);
+
 }
 
  if(gl_LocalInvocationID.x == 0 );
