@@ -72,8 +72,12 @@ namespace Canella
             {
                 if (strcmp(type, "UNIFORM_BUFFER") == 0)
                     return ShaderResourceType::UNIFORM_BUFFER;
-                if (strcmp(type, "STORAGE_BUFFER") == 0)
+                else if (strcmp(type, "STORAGE_BUFFER") == 0)
                     return ShaderResourceType::STORAGE_BUFFER;
+                else if (strcmp(type, "SAMPLER_2D") == 0)
+                    return ShaderResourceType::IMAGE_SAMPLER;
+                else if (strcmp(type, "IMAGE_STORAGE") == 0)
+                    return ShaderResourceType::IMAGE_STORAGE;
                 return ShaderResourceType::STORAGE_BUFFER;
             }
 

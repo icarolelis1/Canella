@@ -60,7 +60,8 @@ namespace Canella
 					}
                     auto is_push_descriptor = resources["PushDescriptor"].get<bool>();
 					auto descriptor = std::make_shared<DescriptorSetLayout>(device,
-                                                                            std::move(bindingResources),is_push_descriptor);
+                                                                            std::move(bindingResources),
+                                                                            is_push_descriptor);
 					return descriptor;
 				}
 
@@ -72,22 +73,23 @@ namespace Canella
 					PipelineLayouts &pipelineLayouts,
 					Renderpasses &renderpasses)
 				{
-					for (auto i = 0; i < pipelineData["PipelineData"]["PipelinesCount"].get<int32_t>(); ++i)
+                    auto pipeline_count = pipelineData["PipelineData"]["PipelinesCount"].get<int32_t>();
+					for (auto i = 0; i <pipeline_count ; ++i)
 					{
 						const auto &pipelines_json = pipelineData["PipelineData"]["Pipelines"][i];
 
 						if (pipelines_json["IsCompute"].get<bool>())
 						{
 							create_compute_pipeline(device, pipelines_json, pipelines, pipelineLayouts);
-							return;
+                            continue;
 						}
 						auto renderpass_key = pipelines_json["Renderpass"].get<std::string>();
 						auto pipeline_key = pipelines_json["Key"].get<std::string>();
 						auto shader_count = pipelines_json["ShaderCount"].get<std::int32_t>();
 						std::vector<Shader> shaders;
-						for (auto i = 0; i < shader_count; ++i)
+						for (auto x = 0; x < shader_count; ++x)
 						{
-							const auto shader_json = pipelines_json["Shaders"][i];
+							const auto shader_json = pipelines_json["Shaders"][x];
 							auto type_string = shader_json["Type"].get<std::string>();
 							SHADER_TYPE type = Shader::convert_from_string_shader_type(type_string.c_str());
 							auto code = readFile(shader_json["Source"].get<std::string>());

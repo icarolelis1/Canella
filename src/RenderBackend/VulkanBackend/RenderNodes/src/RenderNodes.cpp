@@ -181,6 +181,10 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
     }
     if (end_render_pass)
         renderpasses[renderpass_name]->endRenderPass(command_buffer);
+
+
+    update_hiz_chain(render,command_buffer,index);
+
     if (debug_statics)
     {
         vkGetQueryPoolResults(
@@ -227,6 +231,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::load_transient_resource
     {
         setup_reload_resource_event(render);
     }
+
     resource_vertices_buffers.resize(drawables.size());
     resource_bounds_buffers.resize(drawables.size());
     resource_meshlet_buffers.resize(drawables.size());
@@ -245,12 +250,13 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::load_transient_resource
 
     //Destroy the HI-Z mips before reloading
     if(post_first_load) //Is true after the initial load. Executed again when swapchain resizes
+    {
         //Destroy HI-Z mips
         if(hiz_depth.pyramidImage)
             for(auto i = 0 ; i < hiz_depth.mip_count; ++i)
-                vkDestroyImageView(device->getLogicalDevice(),
-                                   hiz_depth.mip_views[i],
-                                   device->getAllocator());
+                vkDestroyImageView(device->getLogicalDevice(),hiz_depth.mip_views[i],device->getAllocator());
+        vkDestroySampler(device->getLogicalDevice(),hiz_depth.sampler,device->getAllocator());
+    }
 
     //Create Hierarchical Depth Buffer
     build_hierarchical_depth(render);
@@ -258,6 +264,12 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::load_transient_resource
     if (debug_statics && !post_first_load)
         create_render_query(queries, &vulkan_renderer->device);
     post_first_load = true;
+}
+
+
+void Canella::RenderSystem::VulkanBackend::GeometryPass::create_push_descriptor(Canella::Render* render)
+{
+
 }
 
 void Canella::RenderSystem::VulkanBackend::GeometryPass::write_outputs()
@@ -521,24 +533,13 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::create_indirect_command
 
 }
 
-Canella::RenderSystem::VulkanBackend::GeometryPass::~GeometryPass()
-{
-    if(hiz_depth.pyramidImage)
-        for(auto i = 0 ; i < hiz_depth.mip_count; ++i)
-            vkDestroyImageView(device->getLogicalDevice(),
-                               hiz_depth.mip_views[i],
-                               device->getAllocator());
-
-    vkDestroyQueryPool(device->getLogicalDevice(), queries.timestamp_pool, device->getAllocator());
-    vkDestroyQueryPool(device->getLogicalDevice(), queries.statistics_pool, device->getAllocator());
-}
-
 void Canella::RenderSystem::VulkanBackend::GeometryPass::build_hierarchical_depth( Canella::Render* render) {
 
     auto vulkan_renderer = (VulkanBackend::VulkanRender *)render;
     auto &swapchain = vulkan_renderer->swapChain;
-    auto &device = vulkan_renderer->device;
     auto &resources = vulkan_renderer->resources_manager;
+    auto& layouts = vulkan_renderer->cachedPipelineLayouts;
+    hiz_depth.sampler = create_sampler(device->getLogicalDevice(),VK_SAMPLER_REDUCTION_MODE_MIN_EXT);
 
     //Returns the Last power of two before V
     auto previous_pow = [](uint32_t v)
@@ -569,7 +570,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::build_hierarchical_dept
     };
     auto num_mips = get_image_mips_count(base_width,base_height);
     hiz_depth.mip_count = num_mips;
-    hiz_depth.pyramidImage = resources.create_image(&device,
+    hiz_depth.pyramidImage = resources.create_image(device,
                              base_width,
                              base_height,
                              VK_FORMAT_R32_SFLOAT,
@@ -593,9 +594,42 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::build_hierarchical_dept
         createInfo.subresourceRange.levelCount = 1;
         createInfo.subresourceRange.layerCount = 1;
 
-        VK_CHECK( vkCreateImageView(device.getLogicalDevice(),&createInfo,device.getAllocator(),&hiz_depth.mip_views[i])
+        VK_CHECK( vkCreateImageView(device->getLogicalDevice(),
+                                    &createInfo,device->getAllocator(),
+                                    &hiz_depth.mip_views[i])
         ,"Failed to create HIZ-Depth mip view");
     }
+
+    //Create the push descriptor template
+
+    std::array<VkDescriptorUpdateTemplateEntry,2> entries;
+    entries[0].descriptorCount = 1;
+    entries[0].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+    entries[0].dstBinding = 0;
+    entries[0].stride = sizeof(VkDescriptorImageInfo);
+    entries[0].offset = 0;
+    entries[0].dstArrayElement = 0;
+
+    entries[1].descriptorCount = 1;
+    entries[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    entries[1].dstBinding = 1;
+    entries[1].stride = sizeof(VkDescriptorImageInfo);
+    entries[1].offset = sizeof(VkDescriptorImageInfo);
+    entries[1].dstArrayElement = 0;
+
+    VkDescriptorUpdateTemplateCreateInfo create_info = { VK_STRUCTURE_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_CREATE_INFO };
+
+    create_info.descriptorUpdateEntryCount = uint32_t(entries.size());
+    create_info.pDescriptorUpdateEntries = entries.data();
+    create_info.templateType = VK_DESCRIPTOR_UPDATE_TEMPLATE_TYPE_PUSH_DESCRIPTORS_KHR;
+    create_info.pipelineBindPoint = VK_PIPELINE_BIND_POINT_COMPUTE;
+    create_info.pipelineLayout = layouts["OcclusionWrite"]->getHandle();
+
+    VK_CHECK(vkCreateDescriptorUpdateTemplate(device->getLogicalDevice(),
+                                     &create_info,
+                                     0,
+                                     &hiz_depth.updateTemplate),"Failed to create VkDescriptorUpdateTemplateCreateInfo");
+
 
 }
 
@@ -605,20 +639,15 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::update_hiz_chain( Canel
     auto vulkan_renderer = (VulkanBackend::VulkanRender *)render;
     auto& renderpasses = vulkan_renderer->renderpassManager;
     auto& resource_manager = vulkan_renderer->resources_manager;
-
+    auto& layouts = vulkan_renderer->cachedPipelineLayouts;
+    auto& pipelines = vulkan_renderer->cachedPipelines;
     //This is main depth image. renderpasses stores all the renderpasses and image attachments.
     auto main_depth_target =
-            resource_manager.get_image_cached(renderpasses.renderpasses["basic"]->image_accessors[1][image_index]);
+            resource_manager.get_image_cached(renderpasses.renderpasses["basic"]->image_accessors[0][image_index]);
     auto pyramid_image = resource_manager.get_image_cached(hiz_depth.pyramidImage);
 
     VkImageMemoryBarrier read_barriers[] =
      {
-        imageBarrier(main_depth_target->image,
-                     VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
-                     VK_ACCESS_SHADER_READ_BIT,
-                     VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-                     VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-                     VK_IMAGE_ASPECT_DEPTH_BIT),
 
         imageBarrier(
                      pyramid_image->image,
@@ -627,6 +656,14 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::update_hiz_chain( Canel
                      VK_IMAGE_LAYOUT_UNDEFINED,
                      VK_IMAGE_LAYOUT_GENERAL,
                      VK_IMAGE_ASPECT_COLOR_BIT),
+
+        imageBarrier(
+                main_depth_target->image,
+                0,
+                VK_ACCESS_SHADER_READ_BIT,
+                VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL,
+                VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                VK_IMAGE_ASPECT_DEPTH_BIT),
      };
 
     vkCmdPipelineBarrier(command,
@@ -637,18 +674,122 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::update_hiz_chain( Canel
                          0,
                          sizeof(read_barriers)/sizeof(read_barriers[0]), read_barriers);
 
+    //Calculate the groupcount for given dimension in 2D
+    auto group_size = [](uint32_t dimension)
+    {
+        return (dimension + 32 - 1) / 32;
+    };
+
+    vkCmdBindPipeline(command,
+                      VK_PIPELINE_BIND_POINT_COMPUTE,
+                      pipelines["OcclusionWrite"]->getPipelineHandle());
+
     for(auto i = 0; i < hiz_depth.mip_count; i++)
     {
-        //First level use the main_depth_target
+        std::array<VkDescriptorImageInfo,2> image_infos;
+
+        //if i ==0 use the depth buffer as target
+        //if i != 0 use the previous mip level from hiz
+        auto source_depth = i == 0 ? main_depth_target->view : hiz_depth.mip_views[i -1];
+
+        image_infos[0].sampler = VK_NULL_HANDLE;
+        image_infos[0].imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+        image_infos[0].imageView = hiz_depth.mip_views[i];
+
+        image_infos[1].sampler = hiz_depth.sampler;
+        image_infos[1].imageLayout =  i == 0 ? VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL : VK_IMAGE_LAYOUT_GENERAL;
+        image_infos[1].imageView = source_depth;
+
+        vulkan_renderer->vkCmdPushDescriptorSetWithTemplateKHR(command,
+                                              hiz_depth.updateTemplate,
+                                              layouts["OcclusionWrite"]->getHandle(),
+                                              0, image_infos.data());
+
+        //Divide by 2 for each mip
+        uint32_t current_width = std::max(1u, hiz_depth.base_width >> i);
+        uint32_t current_height = std::max(1u, hiz_depth.base_width >> i);
+
+        struct CurrentMipSize {glm::vec2 size; }push_data;
+
+        push_data.size = glm::vec2(current_width,current_height);
+
+        vkCmdPushConstants(command,
+                           layouts["OcclusionWrite"]->getHandle(),
+                           VK_SHADER_STAGE_COMPUTE_BIT,
+                           0, sizeof(push_data),
+                           &push_data);
+
+        vkCmdDispatch(command,
+                      group_size(current_width),
+                      group_size(current_height)
+                , 1);
+
+        //Wait for the image to be written in the comptue shader
+        VkImageMemoryBarrier wait_barrier = imageBarrier(pyramid_image->image,
+                                                          VK_ACCESS_SHADER_WRITE_BIT,
+                                                          VK_ACCESS_SHADER_READ_BIT,
+                                                          VK_IMAGE_LAYOUT_GENERAL,
+                                                          VK_IMAGE_LAYOUT_GENERAL,
+                                                          VK_IMAGE_ASPECT_COLOR_BIT);
+
+        vkCmdPipelineBarrier(command,
+                             VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
+                             VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
+                             VK_DEPENDENCY_BY_REGION_BIT,
+                             0,
+                             0, 0,
+                             0, 1,
+                             &wait_barrier);
+
     }
 
+    //Reset the image layout
+    VkImageMemoryBarrier depthWriteBarrier = imageBarrier(main_depth_target->image,
+                                                          VK_ACCESS_SHADER_READ_BIT,
+                                                          VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+                                                          VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                                                          VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                                                          VK_IMAGE_ASPECT_DEPTH_BIT);
+    vkCmdPipelineBarrier(command,
+                         VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
+                         VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+                         VK_DEPENDENCY_BY_REGION_BIT,
+                         0, 0,
+                         0, 0,
+                         1, &depthWriteBarrier);
+
+
+    /*uint32_t levelWidth = std::max(1u, depthPyramidWidth >> debugPyramidLevel);
+    uint32_t levelHeight = std::max(1u, depthPyramidHeight >> debugPyramidLevel);
+
+    VkImageBlit blitRegion = {};
+    blitRegion.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    blitRegion.srcSubresource.mipLevel = debugPyramidLevel;
+    blitRegion.srcSubresource.layerCount = 1;
+    blitRegion.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    blitRegion.dstSubresource.layerCount = 1;
+    blitRegion.srcOffsets[0] = { 0, 0, 0 };
+    blitRegion.srcOffsets[1] = { int32_t(levelWidth), int32_t(levelHeight), 1 };
+    blitRegion.dstOffsets[0] = { 0, 0, 0 };
+    blitRegion.dstOffsets[1] = { int32_t(swapchain.width), int32_t(swapchain.height), 1 };
+
+    vkCmdBlitImage(commandBuffer, depthPyramid.image, VK_IMAGE_LAYOUT_GENERAL, swapchain.images[imageIndex], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &blitRegion, VK_FILTER_NEAREST);
+*/
 }
 
-void Canella::RenderSystem::VulkanBackend::GeometryPass::create_push_descriptor( Canella::Render *render ) {
+Canella::RenderSystem::VulkanBackend::GeometryPass::~GeometryPass()
+{
+    if(hiz_depth.pyramidImage)
+        for(auto i = 0 ; i < hiz_depth.mip_count; ++i)
+            vkDestroyImageView(device->getLogicalDevice(),
+                               hiz_depth.mip_views[i],
+                               device->getAllocator());
 
+    vkDestroyDescriptorUpdateTemplate(device->getLogicalDevice(), hiz_depth.updateTemplate, device->getAllocator());
+    vkDestroySampler(device->getLogicalDevice(), hiz_depth.sampler,device->getAllocator());
+    vkDestroyQueryPool(device->getLogicalDevice(), queries.timestamp_pool, device->getAllocator());
+    vkDestroyQueryPool(device->getLogicalDevice(), queries.statistics_pool, device->getAllocator());
 }
-
-
 
 
 

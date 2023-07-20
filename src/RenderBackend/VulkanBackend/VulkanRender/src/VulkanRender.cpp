@@ -15,10 +15,6 @@ void VulkanRender::set_windowing(Windowing *windowing)
  */
 VulkanRender::VulkanRender() : resources_manager(&this->device) {}
 
-/**
- * @brief Creates the vulkan renderer and initialize dependencies
- * @param config metadata containing information about how to build pipelines/descriptors etc
- */
 void VulkanRender::build(nlohmann::json &config)
 {
     init_vulkan_instance();
@@ -58,25 +54,11 @@ void VulkanRender::build(nlohmann::json &config)
 
     vkCmdDrawMeshTasksIndirectCountEXT = reinterpret_cast<PFN_vkCmdDrawMeshTasksIndirectCountEXT>(vkGetDeviceProcAddr(device.getLogicalDevice(),
                                                                                                                       "vkCmdDrawMeshTasksIndirectCountEXT"));
+    vkCmdPushDescriptorSetWithTemplateKHR = reinterpret_cast<PFN_vkCmdPushDescriptorSetWithTemplateKHR>(vkGetDeviceProcAddr(device.getLogicalDevice(),
+                                                                                                                         "vkCmdPushDescriptorSetWithTemplateKHR"));
     transfer_pool.build(&device, POOL_TYPE::TRANSFER, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
     command_pool.build(&device, POOL_TYPE::GRAPHICS, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
-
-    // Get device push descriptor properties (to display them)
-    PFN_vkGetPhysicalDeviceProperties2KHR vkGetPhysicalDeviceProperties2KHR =
-            reinterpret_cast<PFN_vkGetPhysicalDeviceProperties2KHR>(vkGetInstanceProcAddr(instance->handle, "vkGetPhysicalDeviceProperties2KHR"));
-    if (!vkGetPhysicalDeviceProperties2KHR) {
-        Logger::Error("Could not get a valid function pointer for vkGetPhysicalDeviceProperties2KHR", -1);
-    }
-
-    VkPhysicalDevicePushDescriptorPropertiesKHR pushDescriptorProps{};
-    VkPhysicalDeviceProperties2KHR deviceProps2{};
-    pushDescriptorProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PUSH_DESCRIPTOR_PROPERTIES_KHR;
-    deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
-    deviceProps2.pNext = &pushDescriptorProps;
-    vkGetPhysicalDeviceProperties2KHR(device.getPhysicalDevice(), &deviceProps2);
-    pushDescriptorProps.maxPushDescriptors;
-    int breakl;
 }
 
 /**
@@ -215,7 +197,7 @@ void VulkanRender::render(glm::mat4 &view, glm::mat4 &projection)
     present_info.swapchainCount        = 1;
     present_info.pSwapchains           = swap_chains;
     present_info.pImageIndices         = &next_image_index;
-    
+
 
     result = vkQueuePresentKHR(device.getGraphicsQueueHandle(), &present_info);
 

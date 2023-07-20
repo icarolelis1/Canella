@@ -68,9 +68,10 @@ namespace Canella
                  * @param windowing 
                  */
                 void set_windowing(Windowing *window);
+
                 /**
-                 * @brief Builds the renderer with data serialized in the json
-                 * @param data
+                 * @brief Creates the vulkan renderer and initialize dependencies
+                 * @param data metadata containing information about how to build pipelines/descriptors etc
                  */
                 void build(nlohmann::json &data) override;
                 /**
@@ -100,6 +101,7 @@ namespace Canella
                 PFN_vkCmdDrawMeshTasksEXT vkCmdDrawMeshTasksEXT;
                 PFN_vkCmdDrawMeshTasksIndirectEXT vkCmdDrawMeshTasksIndirectEXT;
                 PFN_vkCmdDrawMeshTasksIndirectCountEXT vkCmdDrawMeshTasksIndirectCountEXT;
+                PFN_vkCmdPushDescriptorSetWithTemplateKHR vkCmdPushDescriptorSetWithTemplateKHR;
                 Device device;
                 Pipelines cachedPipelines;
                 PipelineLayouts cachedPipelineLayouts;

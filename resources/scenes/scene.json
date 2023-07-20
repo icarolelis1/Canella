@@ -25,39 +25,10 @@
           {
             "type": "MeshAsset",
             "Static": true,
-            "Source": "model_test/many_girls.glb"
+            "Source": "model_test/mario.glb"
           }
         ]
       },
-      {
-        "Parent": "Root",
-        "Components": [
-          {
-            "type": "Transform",
-            "Position": {
-              "x": 180.0,
-              "y": 10.0,
-              "z": 0.0
-            },
-            "Scale": {
-              "x": 20,
-              "y": 20,
-              "z": 20
-            },
-            "Rotation": {
-              "x": 0,
-              "y": 0,
-              "z": 0
-            }
-          },
-          {
-            "type": "MeshAsset",
-            "Static": true,
-            "Source": "model_test/many_girls.glb"
-          }
-        ]
-      },
-     
       {
         "Parent": "Root",
         "Components": [

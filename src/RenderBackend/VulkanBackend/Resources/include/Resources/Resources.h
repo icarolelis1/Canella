@@ -20,7 +20,7 @@ namespace Canella
 
             VkBufferMemoryBarrier bufferBarrier(VkBuffer buffer, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask);
             VkImageMemoryBarrier imageBarrier(VkImage image, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkImageLayout oldLayout, VkImageLayout newLayout, VkImageAspectFlags aspectMask);
-
+            VkSampler create_sampler(VkDevice device, VkSamplerReductionModeEXT reductionMode);
 
             enum ResourceType
             {

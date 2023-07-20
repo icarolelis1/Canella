@@ -1,6 +1,6 @@
 ﻿{
   "PipelineData": {
-    "DescriptorSetLayoutCounts":5,
+    "DescriptorSetLayoutCounts":6,
     "PipelinesCount": 3,
     "DescriptorSetLayouts": [
       {
@@ -187,6 +187,29 @@
             "Binding": 4
           }
         ]
+      },
+      {
+        "Key": "OcclusionWrite",
+        "ResourceCount": 2,
+        "PushDescriptor" : true,
+        "BindingResources": [
+          {
+            "Key": "OcclusionWrite",
+            "Stage": [
+              "COMPUTE_STAGE"
+            ],
+            "Type": "IMAGE_STORAGE",
+            "Binding": 0
+          },
+          {
+            "Key": "OcclusionWrite",
+            "Stage": [
+              "COMPUTE_STAGE"
+            ],
+            "Type": "SAMPLER_2D",
+            "Binding": 1
+          }
+        ]
       }
     ],
     "Pipelines":    [
@@ -241,6 +264,26 @@
           "Type": "Compute",
           "ResourcesCount": 1,
           "Source": "resources\\Shaders\\spirv\\command.comp.spv"
+        }
+      },
+      {
+        "Key": "OcclusionWrite",
+        "IsCompute": true,
+        "PushConstantRangesCount": 1,
+        "NumerOfDescriptorSets": 1,
+        "PipelineLayoutDescriptors": [
+          "OcclusionWrite"
+        ],
+        "PushConstants": {
+          "StageFlags" : "COMPUTE_STAGE",
+          "Size" : 8,
+          "Offset" : 0
+        },
+        "Builtin": true,
+        "Shader": {
+          "Type": "Compute",
+          "ResourcesCount": 1,
+          "Source": "resources\\Shaders\\spirv\\occlusionwrite.comp.spv"
         }
       },
       {

@@ -56,6 +56,8 @@ namespace Canella
                     bool visibility_first_cleared = false;
                     uint32_t base_width;
                     uint32_t base_height;
+                    VkSampler sampler;
+                    VkDescriptorUpdateTemplate updateTemplate;
                 };
 
                 GeometryPass();
@@ -125,7 +127,6 @@ namespace Canella
 
 
                 //Temp
-                //To do remove this from here
                 void create_push_descriptor(Canella::Render* render);
 
                 /**

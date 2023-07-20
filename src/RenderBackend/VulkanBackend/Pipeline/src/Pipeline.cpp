@@ -217,8 +217,7 @@ DescriptorSetLayout::DescriptorSetLayout(Device* device,
     VkDescriptorSetLayoutCreateInfo create_info{VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO};
     create_info.bindingCount = static_cast<uint32_t>(bindings.size());
     create_info.pBindings = bindings.data();
-    if(push_descriptor)
-        create_info.flags = VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR;
+    if(push_descriptor)  create_info.flags = VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR;
 
     VkResult result = vkCreateDescriptorSetLayout(device->getLogicalDevice(),
                                                   &create_info,
@@ -263,21 +262,16 @@ VkDescriptorType DescriptorSetLayout::getDescriptorType(ShaderResourceType type)
     {
     case ShaderResourceType::UNIFORM_BUFFER:
         return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        break;
-
     case ShaderResourceType::IMAGE_SAMPLER:
         return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        break;
-
     case ShaderResourceType::INPUT_ATTACHMENT:
         return VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
-        break;
     case ShaderResourceType::STORAGE_BUFFER:
         return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-        break;
+    case ShaderResourceType::IMAGE_STORAGE:
+        return VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
     default:
         return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
-        break;
     }
 }
 
