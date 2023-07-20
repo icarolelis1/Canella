@@ -39,24 +39,24 @@ layout( push_constant ) uniform block
 };
 
 void main(){
-   
-   uint gi = gl_WorkGroupID.x;   
-   uint ti = gl_LocalInvocationID.x; 
+
+   uint gi = gl_WorkGroupID.x;
+   uint ti = gl_LocalInvocationID.x;
    uint di = gi * 32 + ti;
 
-    //if(occlusion_vibility_buffer[di] == 0)
-    //    return;
+   if(occlusion_vibility_buffer[di] == 0)
+        return;
 
    StaticMeshData mesh = static_meshes[di];
    vec4 center = model_matrices[mesh.mesh_id] *vec4(mesh.center,1);
    //Inflates the radius.
-   float radius = mesh.radius *  model_matrices[mesh.mesh_id][0][0].x *1.5; 
-    
+   float radius = mesh.radius *  model_matrices[mesh.mesh_id][0][0].x *1.5;
+
    bool visible = true;
 	for (int i = 0; i < 6; ++i)
 		visible = visible && dot(culling_data.frustumPlanes[i], vec4(center.xyz, 1)) > -radius;
-   
-   
+
+
    if(visible)
    {
       uint command_index = atomicAdd(commands_count, 1);

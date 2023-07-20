@@ -28,7 +28,7 @@ namespace Canella
                     glm::vec4 width_height_padding;
                 };
 
-                struct alignas(16) StaticMeshData
+                    struct alignas(16) StaticMeshData
                 {
                     glm::vec3 center;
                     float radius;
@@ -46,6 +46,8 @@ namespace Canella
                     std::vector<VkDescriptorSet> descriptor_sets;
                     std::vector<VkDescriptorSet> vertex_descriptorset;
                     std::vector<VkDescriptorSet> indices_descriptorset;
+                    std::vector<VkDescriptorSet> culling_descriptorset;
+
                 };
 
                 struct HIZDepth
@@ -58,6 +60,7 @@ namespace Canella
                     uint32_t base_height;
                     VkSampler sampler;
                     VkDescriptorUpdateTemplate updateTemplate;
+                    CullingData  culling_data;
                 };
 
                 GeometryPass();
@@ -128,6 +131,8 @@ namespace Canella
 
                 //Temp
                 void create_push_descriptor(Canella::Render* render);
+
+                void execute_occlusion_culling(Canella::Render* render,VkCommandBuffer comamnd,int image_index);
 
                 /**
                  * @brief Builds a hierarchical depth of mips to be used in  occlusion  culling

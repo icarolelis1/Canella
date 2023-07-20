@@ -7,29 +7,29 @@ layout(local_size_x = 32 ,local_size_y = 1 , local_size_z = 1 ) in;
 
 #include "common.glsl"
 
-layout(binding = 0) writeonly  buffer CommandsRead
+layout(set = 0 ,binding = 0) writeonly  buffer CommandsRead
 {
 	IndirectDrawDispatch processed_commands[];
 };
 
-
-layout(binding = 1) readonly  buffer MeshData
+layout(set = 0 ,binding = 1) readonly  buffer MeshData
 {
 	StaticMeshData static_meshes[];
 };
 
-layout(binding = 2)  buffer CountBuffer
+layout(set = 0 ,binding = 2)  buffer CountBuffer
 {
 	uint commands_count;
 };
 
-layout(binding = 3)  buffer Occlusion_Buffer
+layout(set = 0 ,binding = 3)  buffer Occlusion_Buffer
 {
 	uint occlusion_vibility_buffer[];
 };
 
+layout (set = 0 , binding = 4) uniform sampler2D depthPyramid;
 
-layout(binding = 4) readonly  buffer Model_Matrices
+layout(std430,set = 1 ,binding = 0) readonly  buffer Model_Matrices
 {
 	mat4 model_matrices[];
 };
@@ -39,7 +39,10 @@ layout( push_constant ) uniform block
    CullingData culling_data;
 };
 
+
+
 // 2D Polyhedral Bounds of a Clipped, Perspective-Projected 3D Sphere. Michael Mara, Morgan McGuire. 2013
+// adjusted by Arseny in his streams
 bool projectSphere(vec3 C, float r, float znear, float P00, float P11, out vec4 aabb)
 {
 	if (C.z < r + znear)
@@ -60,14 +63,12 @@ bool projectSphere(vec3 C, float r, float znear, float P00, float P11, out vec4 
 	return true;
 }
 
+
 void main(){
 
    uint gi = gl_WorkGroupID.x;
    uint ti = gl_LocalInvocationID.x;
    uint di = gi * 32 + ti;
-
-    if(occlusion_vibility_buffer[di] == 0)
-        return;
 
    StaticMeshData mesh = static_meshes[di];
    vec4 center = model_matrices[mesh.mesh_id] *vec4(mesh.center,1);
@@ -78,6 +79,24 @@ void main(){
 	for (int i = 0; i < 6; ++i)
 		visible = visible && dot(culling_data.frustumPlanes[i], vec4(center.xyz, 1)) > -radius;
 
+    //Perform Occlusion Cullin Test
+    if(visible)
+    {
+         vec4 coefficients_width_znear;
+         vec4 width_height_padding;
+         //Projects the sphere in a boundingbox 2D
+         vec4 aabb;
+         if(projectSphere(center.xyz,radius,culling_data.coefficients_width_znear.z,coefficients_width_znear.x,coefficients_width_znear.y,aabb))
+         {
+                float w = (aabb.z - aabb.x)* culling_data.width_height_padding.x;
+                float h = (aabb.w - aabb.y) * culling_data.width_height_padding.y;
+                float level = floor(log2(max(w,h)));
+
+                float d = textureLod(depthPyramid,(aabb.x + aabb.zw)*0.5,level).x;
+                float distance = culling_data.coefficients_width_znear.z/(center.z - radius);
+                visible = visible && distance > d;
+         }
+    }
 
    if(visible)
    {
@@ -87,4 +106,6 @@ void main(){
       processed_commands[command_index].groupCountZ              = 1;
       processed_commands[command_index].draw_id                  = di;
    }
+
+   occlusion_vibility_buffer[di] = visible? 1 :0;
 }

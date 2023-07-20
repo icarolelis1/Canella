@@ -1,7 +1,7 @@
 ﻿{
   "PipelineData": {
     "DescriptorSetLayoutCounts":6,
-    "PipelinesCount": 3,
+    "PipelinesCount": 4,
     "DescriptorSetLayouts": [
       {
         "Key": "ViewProjection",
@@ -143,11 +143,11 @@
       },
       {
         "Key": "OcclusionCulling",
-        "ResourceCount": 4,
-        "PushDescriptor" : true,
+        "ResourceCount": 5,
+        "PushDescriptor" : false,
         "BindingResources": [
           {
-            "Key": "OcclusionCulling",
+            "Key": "CommandRead",
             "Stage": [
               "COMPUTE_STAGE"
             ],
@@ -155,7 +155,7 @@
             "Binding": 0
           },
           {
-            "Key": "OcclusionCulling",
+            "Key": "MeshData",
             "Stage": [
               "COMPUTE_STAGE"
             ],
@@ -163,7 +163,7 @@
             "Binding": 1
           },
           {
-            "Key": "OcclusionCulling",
+            "Key": "CountBuffer",
             "Stage": [
               "COMPUTE_STAGE"
             ],
@@ -171,7 +171,7 @@
             "Binding": 2
           },
           {
-            "Key": "Visibility",
+            "Key": "VisibilityBuffer",
             "Stage": [
               "COMPUTE_STAGE"
             ],
@@ -179,11 +179,11 @@
             "Binding": 3
           },
           {
-            "Key": "ModelMatrices",
+            "Key": "VisibilityBuffer",
             "Stage": [
               "COMPUTE_STAGE"
             ],
-            "Type": "STORAGE_BUFFER",
+            "Type": "SAMPLER_2D",
             "Binding": 4
           }
         ]
@@ -290,9 +290,10 @@
         "Key": "OcclusionCulling",
         "IsCompute": true,
         "PushConstantRangesCount": 1,
-        "NumerOfDescriptorSets": 1,
+        "NumerOfDescriptorSets": 2,
         "PipelineLayoutDescriptors": [
-          "OcclusionCulling"
+          "OcclusionCulling",
+          "Transforms"
         ],
         "PushConstants": {
           "StageFlags" : "COMPUTE_STAGE",

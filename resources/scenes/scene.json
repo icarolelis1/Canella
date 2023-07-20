@@ -25,7 +25,7 @@
           {
             "type": "MeshAsset",
             "Static": true,
-            "Source": "model_test/mario.glb"
+            "Source": "model_test/many_girls.glb"
           }
         ]
       },
