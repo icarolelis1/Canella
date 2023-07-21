@@ -176,11 +176,8 @@ namespace Canella
 			{
 
 				uint32_t imageCount;
-
 				vkGetSwapchainImagesKHR(device.getLogicalDevice(), properties.vk_swapChain, &imageCount, nullptr);
-
 				vk_images.resize(imageCount);
-
 				vkGetSwapchainImagesKHR(device.getLogicalDevice(), properties.vk_swapChain, &imageCount, vk_images.data());
 			}
 
@@ -198,7 +195,7 @@ namespace Canella
 				createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 				createInfo.presentMode = properties.presentMode;
 				createInfo.imageExtent = properties.extent;
-				createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+				createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 				createInfo.preTransform = properties.capabilities.currentTransform;
 
 				if (queueSharingMode.queueFamiliyIndexCount > 1)
@@ -242,6 +239,10 @@ namespace Canella
 			{
 				return vk_imageViews;
 			}
-		}
+
+            std::vector<VkImage> &Swapchain::get_images() {
+                return vk_images;
+            }
+        }
 	}
 }

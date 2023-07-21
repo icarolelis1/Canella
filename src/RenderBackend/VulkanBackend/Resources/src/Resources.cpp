@@ -8,28 +8,26 @@ using namespace Canella::RenderSystem::VulkanBackend;
 
 VkSampler Canella::RenderSystem::VulkanBackend::create_sampler(VkDevice device, VkSamplerReductionModeEXT reductionMode)
 {
-    VkSamplerCreateInfo createInfo = { VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO };
+    VkSamplerCreateInfo create_info = { VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO };
 
-    createInfo.magFilter = VK_FILTER_LINEAR;
-    createInfo.minFilter = VK_FILTER_LINEAR;
-    createInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
-    createInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-    createInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-    createInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-    createInfo.minLod = 0;
-    createInfo.maxLod = 16.f;
+    create_info.magFilter    = VK_FILTER_LINEAR;
+    create_info.minFilter    = VK_FILTER_LINEAR;
+    create_info.mipmapMode   = VK_SAMPLER_MIPMAP_MODE_NEAREST;
+    create_info.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+    create_info.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+    create_info.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+    create_info.minLod       = 0;
+    create_info.maxLod       = 16.f;
 
     VkSamplerReductionModeCreateInfoEXT createInfoReduction = { VK_STRUCTURE_TYPE_SAMPLER_REDUCTION_MODE_CREATE_INFO_EXT };
 
     if (reductionMode != VK_SAMPLER_REDUCTION_MODE_WEIGHTED_AVERAGE_EXT)
     {
         createInfoReduction.reductionMode = reductionMode;
-
-        createInfo.pNext = &createInfoReduction;
+        create_info.pNext                 = &createInfoReduction;
     }
-
-    VkSampler sampler = 0;
-    VK_CHECK(vkCreateSampler(device, &createInfo, 0, &sampler),"Failed to Create Sampler");
+    VkSampler sampler ;
+    VK_CHECK( vkCreateSampler( device, &create_info, 0, &sampler), "Failed to Create Sampler");
     return sampler;
 }
 
@@ -216,14 +214,13 @@ ResourceAccessor ResourcesManager::create_image(
     VkImageUsageFlags usage,
     VkMemoryPropertyFlags properties,
     VkImageCreateFlags flags,
+    uint32_t num_mips,
     VkImageAspectFlags aspectFlags,
     uint32_t arrayLayers,
-    bool useMaxNumMips,
     VkSampleCountFlagBits samples)
 {
     auto unique_resource_id = uuid();
-    resource_cache[unique_resource_id] = std::make_shared<Image>(device, width, height, format, tilling, usage, properties,
-                                                                 flags, aspectFlags, arrayLayers, useMaxNumMips, samples);
+    resource_cache[unique_resource_id] = std::make_shared<Image>(device,width,height,format,tilling,usage,properties,num_mips,aspectFlags);
 
     return unique_resource_id;
 }
@@ -266,35 +263,17 @@ void ResourcesManager::destroy_resources()
 }
 
 Image::Image(Device *_device,
-             uint32_t Width,
-             uint32_t Height,
+             uint32_t Width, uint32_t Height,
              VkFormat format,
              VkImageTiling tiling,
              VkImageUsageFlags usage,
              VkMemoryPropertyFlags properties,
-             VkImageCreateFlags flags,
+             uint32_t num_mips,
              VkImageAspectFlags aspectFlags,
              uint32_t arrayLayers,
-             bool useMaxNumMips,
-             VkSampleCountFlagBits samples) : GPUResource(ResourceType::ImageResource)
+             VkSampleCountFlagBits samples ) : GPUResource(ResourceType::ImageResource)
 {
-    uint32_t numMips = 1;
-    auto get_image_mips_count = [=](uint32_t w,uint32_t h)
-    {
-        auto count = 0;
-        while(h > 1 || w > 1)
-        {
-            count++;
-            h /= 2;
-            w /=2;
-        }
-        return count;
-    };
 
-    if (useMaxNumMips)
-    {
-        numMips = get_image_mips_count(Width,Height);
-    }
     extent.width = Width;
     extent.height = Height;
     device = _device;
@@ -304,7 +283,7 @@ Image::Image(Device *_device,
     imageInfo.extent.width = Width;
     imageInfo.extent.height = Height;
     imageInfo.extent.depth = 1;
-    imageInfo.mipLevels = numMips;
+    imageInfo.mipLevels = num_mips;
     imageInfo.arrayLayers = arrayLayers;
     imageInfo.format = format;
     imageInfo.tiling = tiling;
@@ -340,7 +319,7 @@ Image::Image(Device *_device,
     viewInfo.format = format;
     viewInfo.subresourceRange.aspectMask = aspectFlags;
     viewInfo.subresourceRange.baseMipLevel = 0;
-    viewInfo.subresourceRange.levelCount = numMips;
+    viewInfo.subresourceRange.levelCount = num_mips;
     viewInfo.subresourceRange.baseArrayLayer = 0;
     viewInfo.subresourceRange.layerCount = 1;
     VkResult result;

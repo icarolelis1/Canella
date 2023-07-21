@@ -42,6 +42,7 @@ namespace Canella
 
                 void destroy_swapchain(Device &device);
                 std::vector<VkImageView> &getViews();
+                std::vector<VkImage>& get_images();
                 VkExtent2D getExtent();
                 VkViewport get_view_port();
                 VkRect2D get_rect2d();
@@ -50,7 +51,6 @@ namespace Canella
                 VkSwapchainKHR &get_swap_chain_handle();
             private:
                 SwapchainProperties properties;
-
                 void create_swapchain(Device &device, Surface &surface, QueueSharingMode &queueSharingMode);
                 void aquire_swapchain_images(Device &device);
                 void create_swapchain_views(Device &device);

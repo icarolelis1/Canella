@@ -96,7 +96,8 @@ namespace Canella
 
             public:
                 Image(Device *_device,
-                      uint32_t Width, uint32_t Height,
+                      uint32_t Width,
+                      uint32_t Height,
                       VkFormat format,
                       VkImageTiling tiling,
                       VkImageUsageFlags usage,
@@ -104,7 +105,6 @@ namespace Canella
                       uint32_t num_mips,
                       VkImageAspectFlags aspectFlags,
                       uint32_t arrayLayers = 1,
-                      bool useMaxNumMips = false,
                       VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT);
 
                 ~Image() override;
@@ -143,18 +143,18 @@ namespace Canella
                  * @brief Wrapper for Image Resource
                  * params...
                  */
-                ResourceAccessor create_image(Device *device,
-                                              uint32_t width,
-                                              uint32_t height,
-                                              VkFormat format,
-                                              VkImageTiling tilling,
-                                              VkImageUsageFlags usage,
-                                              VkMemoryPropertyFlags properties,
-                                              uint32_t num_mips,
-                                              VkImageAspectFlags aspectFlags,
-                                              uint32_t arrayLayers = 1,
-                                              bool useMaxNumMips = false,
-                                              VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT);
+                ResourceAccessor create_image(   Device *device,
+                                                 uint32_t width,
+                                                 uint32_t height,
+                                                 VkFormat format,
+                                                 VkImageTiling tilling,
+                                                 VkImageUsageFlags usage,
+                                                 VkMemoryPropertyFlags properties,
+                                                 VkImageCreateFlags flags,
+                                                 uint32_t num_mips =1 ,
+                                                 VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT,
+                                                 uint32_t arrayLayers =1 ,
+                                                 VkSampleCountFlagBits samples= VK_SAMPLE_COUNT_1_BIT);
 
                 ~ResourcesManager() = default;
                 template <typename Data>

@@ -28,10 +28,11 @@ namespace Canella
                     glm::vec4 width_height_padding;
                 };
 
-                    struct alignas(16) StaticMeshData
+                struct alignas(16) StaticMeshData
                 {
                     glm::vec3 center;
                     float radius;
+                    glm::vec3 pos;
                     uint32_t mesh_id;
                     uint32_t vertex_offset;
                     uint32_t index_offset;

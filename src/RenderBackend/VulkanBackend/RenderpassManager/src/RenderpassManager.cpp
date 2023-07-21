@@ -169,7 +169,8 @@ namespace Canella
                                      managerdescription.renderpasses_descriptions[descriptions_index].attachements,
                                      managerdescription.renderpasses_descriptions[descriptions_index].subpasses,
                                      resource_manager,
-                                     frameBufferAttachments);
+                                     frameBufferAttachments,
+                                     *this);
             }
 
             VkFormat RenderpassManager::get_attachment_format(const char *format_str,Swapchain* swapchain) {

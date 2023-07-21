@@ -51,6 +51,7 @@ struct IndirectDrawDispatch{
 struct StaticMeshData{
     vec3 center;
     float radius;
+    vec3 pos;
 	uint mesh_id;
     uint vertex_offset;
     uint index_offset;

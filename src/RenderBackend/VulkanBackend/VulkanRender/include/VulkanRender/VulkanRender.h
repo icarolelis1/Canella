@@ -19,7 +19,7 @@
 #include "Eventsystem/Eventsystem.hpp"
 
 #define MAX_OBJECTS_TRANSFORM 500
-#define RENDER_EDITOR_LAYOUT 1
+#define RENDER_EDITOR_LAYOUT 0
 
 namespace Canella
 {

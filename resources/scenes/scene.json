@@ -17,7 +17,7 @@
               "z": 20
             },
             "Rotation": {
-              "x": 0,
+              "x": 180,
               "y": 0,
               "z": 0
             }
@@ -25,7 +25,7 @@
           {
             "type": "MeshAsset",
             "Static": true,
-            "Source": "model_test/many_girls.glb"
+            "Source": "model_test/just_a_girl.glb"
           }
         ]
       },

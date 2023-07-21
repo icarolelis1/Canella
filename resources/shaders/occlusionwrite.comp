@@ -14,6 +14,6 @@ void main()
 {
 	uvec2 pos = gl_GlobalInvocationID.xy;
 	float depth = texture(depth, (vec2(pos) + vec2(0.5)) / imageSize).x;
-
+    depth.x = depth.x == 0 ? 0.0 :1;
 	imageStore(HIzMip, ivec2(pos), vec4(depth));
 }

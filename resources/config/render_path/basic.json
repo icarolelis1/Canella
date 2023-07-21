@@ -1,12 +1,12 @@
 {
     "Passes": {
-        "Number_of_passes": 2,
+        "Number_of_passes": 3,
         "Renderpass": [
             {
+                "Key": "basic",
                 "Attachment_count": 2,
                 "Subpasses_count": 1,
                 "Description": "basic color output",
-                "Key": "basic",
                 "index": 0,
                 "Format": 44,
                 "Extent": {
@@ -19,8 +19,8 @@
                         "Samples": "VK_SAMPLE_COUNT_1_BIT",
                         "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
                         "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE",
-                        "InitialLayout": "VK_IMAGE_LAYOUT_UNDEFINED",
-                        "FinalLayout": "VK_IMAGE_LAYOUT_PRESENT_SRC_KHR",
+                        "InitialLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
+                        "FinalLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
                         "Attachment": 0,
                         "AttachmentLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL"
                     },
@@ -30,7 +30,7 @@
                         "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
                         "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE",
                         "InitialLayout": "VK_IMAGE_LAYOUT_UNDEFINED",
-                        "FinalLayout": "VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL",
+                        "FinalLayout": "VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL",
                         "Attachment": 1,
                         "AttachmentLayout": "VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL"
                     }
@@ -57,6 +57,12 @@
                     "ResourcesToCreate" :
                     [
                         {
+                            "ColorImage" : true,
+                            "Format" : "SwapchainFormat",
+                            "Id" : "ColorImage",
+                            "NumberOfImages" : -1
+                        },
+                        {
                             "ColorImage" : false,
                             "Format" : "SupportedDepth",
                             "Id" : "DepthImage",
@@ -68,22 +74,23 @@
                         {
                             "ColorImage" : true,
                             "Key" : "SwapchainImage",
-                            "ResourceIndex" : -1
+                            "ResourceIndex" : 0,
+                            "GrabResourceFrom" : "Self"
                         },
                         {
                             "ColorImage" : false,
                             "Key" : "DepthImage",
-                            "ResourceIndex" : 0
+                            "ResourceIndex" : 1,
+                            "GrabResourceFrom" : "Self"
                         }
                     ]
                 }
             },
-
             {
-                "Attachment_count": 1,
+                "Key": "LatePass",
+                "Attachment_count": 2,
                 "Subpasses_count": 1,
-                "Description": "imgui stuff",
-                "Key": "imgui",
+                "Description": "Late pass of occlusion culling",
                 "index": 0,
                 "Format": 44,
                 "Extent": {
@@ -96,8 +103,79 @@
                         "Samples": "VK_SAMPLE_COUNT_1_BIT",
                         "LoadOp": "VK_ATTACHMENT_LOAD_OP_LOAD",
                         "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE",
-                        "InitialLayout": "VK_IMAGE_LAYOUT_PRESENT_SRC_KHR",
-                        "FinalLayout": "VK_IMAGE_LAYOUT_PRESENT_SRC_KHR",
+                        "InitialLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
+                        "FinalLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
+                        "Attachment": 0,
+                        "AttachmentLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL"
+                    },
+                    "1": {
+                        "Format": "SUPPORTED_DEPTH",
+                        "Samples": "VK_SAMPLE_COUNT_1_BIT",
+                        "LoadOp": "VK_ATTACHMENT_LOAD_OP_LOAD",
+                        "StoreOp": "VK_ATTACHMENT_STORE_OP_DONT_CARE",
+                        "InitialLayout": "VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL",
+                        "FinalLayout": "VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL",
+                        "Attachment": 1,
+                        "AttachmentLayout": "VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL"
+                    }
+                },
+                "Subpasses_descriptions": {
+                    "Subpasses_count": 1,
+                    "0": {
+                        "PipelineBindPoint": "VK_PIPELINE_BIND_POINT_GRAPHICS",
+                        "ColorAttachmentCount": 1,
+                        "HasDepthAttachment" : true,
+                        "DepthAttachmentIndex" : 1,
+                        "ColorAttachemntIndex": [
+                            0
+                        ],
+                        "SrcSubpass": "VK_SUBPASS_EXTERNAL",
+                        "DstSubpass": 0,
+                        "SrcStageMask": "VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT",
+                        "DstStageMask": "VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT",
+                        "SrcAccessMask": "VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT",
+                        "DstAccessMask": "VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT"
+                    }
+                },
+                "FrameBufferRessources"  : {
+                    "ResourcesToCreate" :
+                    [],
+                    "FrameBufferAttachments" :
+                    [
+                        {
+                            "ColorImage" : true,
+                            "Key" : "ColorImage",
+                            "ResourceIndex" : 0,
+                            "GrabResourceFrom" : "basic"
+                        },
+                        {
+                            "ColorImage" : false,
+                            "Key" : "DepthImage",
+                            "GrabResourceFrom" : "basic",
+                            "ResourceIndex" : 1
+                        }
+                    ]
+                }
+            },
+            {
+                "Key": "imgui",
+                "Attachment_count": 1,
+                "Subpasses_count": 1,
+                "Description": "imgui stuff",
+                "index": 0,
+                "Format": 44,
+                "Extent": {
+                    "Width": -1,
+                    "Height": -1
+                },
+                "Attachments_descriptions": {
+                    "0": {
+                        "Format": "SWAPCHAIN",
+                        "Samples": "VK_SAMPLE_COUNT_1_BIT",
+                        "LoadOp": "VK_ATTACHMENT_LOAD_OP_LOAD",
+                        "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE",
+                        "InitialLayout": "VK_IMAGE_LAYOUT_PRESENT_SRC_KHR.",
+                        "FinalLayout": "VK_IMAGE_LAYOUT_PRESENT_SRC_KHR.",
                         "Attachment": 0,
                         "AttachmentLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL"
                     }
@@ -125,11 +203,13 @@
                         {
                             "ColorImage" : true,
                             "Key" : "SwapchainImage",
-                            "ResourceIndex" : -1
+                            "ResourceIndex" : -1,
+                            "GrabResourceFrom" : "StandardOutput"
                         }
                     ]
                 }
             }
+
         ]
     }
 }

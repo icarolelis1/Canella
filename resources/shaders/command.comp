@@ -48,14 +48,13 @@ void main(){
         return;
 
    StaticMeshData mesh = static_meshes[di];
-   vec4 center = model_matrices[mesh.mesh_id] *vec4(mesh.center,1);
+   vec4 center = model_matrices[mesh.mesh_id] *vec4(mesh.center + mesh.pos,1) ;
    //Inflates the radius.
    float radius = mesh.radius *  model_matrices[mesh.mesh_id][0][0].x *1.5;
 
    bool visible = true;
 	for (int i = 0; i < 6; ++i)
 		visible = visible && dot(culling_data.frustumPlanes[i], vec4(center.xyz, 1)) > -radius;
-
 
    if(visible)
    {

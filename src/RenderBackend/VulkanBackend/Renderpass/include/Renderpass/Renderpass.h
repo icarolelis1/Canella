@@ -22,7 +22,7 @@ namespace Canella
                 std::vector<VkSubpassDependency> dependencies;
                 std::vector<VkSubpassDescription> description;
             };
-
+            class RenderpassManager;
             class RenderPass
             {
                 Device *device;
@@ -51,7 +51,8 @@ namespace Canella
                     std::vector<RenderAttachment> &attachments, 
                     std::vector<Subpass> &subpasses,
                     ResourcesManager* resource_manager,
-                    nlohmann::json& framebufferRessources);
+                    nlohmann::json& framebufferRessources,
+                    RenderpassManager& renderpass_manager);
                 ~RenderPass();
 
                 /**
@@ -61,7 +62,8 @@ namespace Canella
                  */
                 void create_frame_buffer(Swapchain* swapchain,
                                          ResourcesManager* resource_manager,
-                                         nlohmann::json& frame_buffers_meta);
+                                         nlohmann::json& frame_buffers_meta,
+                                         RenderpassManager& renderpass_manager);
 
                 /**
                  * @brief creates the image output attachments for the renderpass

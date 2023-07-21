@@ -182,7 +182,7 @@ void VulkanRender::render(glm::mat4 &view, glm::mat4 &projection)
     submit_info.pCommandBuffers = &commands[0];
 #else
     submit_info.commandBufferCount = 1;
-    submit_info.pCommandBuffers = &cmd;
+    submit_info.pCommandBuffers = &frame_data.commandBuffer;
 #endif
     submit_info.signalSemaphoreCount = 1;
     submit_info.pSignalSemaphores = &frame_data.renderFinishedSemaphore;

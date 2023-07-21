@@ -1,7 +1,7 @@
 #include "Renderpass/Renderpass.h"
 #include "Resources/Resources.h"
 #include "CanellaUtility/CanellaUtility.h"
-
+#include "RenderpassManager/RenderpassManager.h"
 
 namespace Canella
 {
@@ -16,7 +16,8 @@ namespace Canella
                                    std::vector<RenderAttachment>& _attachemnts,
                                     std::vector<Subpass>& _subpasses,
                                    ResourcesManager* resource_manager,
-                                   nlohmann::json& framebufferRessources
+                                   nlohmann::json& framebufferRessources,
+                                   RenderpassManager& renderpass_manager
                                    ) : device(_device),
                                                                        extent(_extent),
                                                                        key(_key),
@@ -47,7 +48,7 @@ namespace Canella
 
                 create_images(swapchain,resource_manager,framebufferRessources["ResourcesToCreate"]);
 
-                create_frame_buffer(swapchain,resource_manager,framebufferRessources["FrameBufferAttachments"]);
+                create_frame_buffer(swapchain,resource_manager,framebufferRessources["FrameBufferAttachments"],renderpass_manager);
             };
 
 
@@ -76,7 +77,8 @@ namespace Canella
 
             void RenderPass::create_frame_buffer(Swapchain* swapchain,
                                                  ResourcesManager* resource_manager,
-                                                 nlohmann::json& frame_buffers_meta)
+                                                 nlohmann::json& frame_buffers_meta,
+                                                 RenderpassManager& renderpass_manager)
             {
                 auto targets = swapchain->getViews();
                 std::vector<VkImageView> views(frame_buffers_meta.size());
@@ -88,11 +90,22 @@ namespace Canella
                     // The field ResourceIndex refers to an image from the images created in create_images
                     for(auto view_index = 0 ; view_index < views.size(); ++view_index){
                         auto img_index = frame_buffers_meta[view_index]["ResourceIndex"].get<std::uint32_t>();
+                        auto steal_resource_from = frame_buffers_meta[view_index]["GrabResourceFrom"].get<std::string>();
                         //If index -1. It means that it will use the stardard output
-                        if( img_index == -1 )
+                        if( strcmp(steal_resource_from.c_str(),"StandardOutput") == 0 )
                             views[view_index] = view;
-                        else
+                        else if(strcmp(steal_resource_from.c_str(),"Self") == 0)
                             views[view_index] = resource_manager->get_image_cached(image_accessors[img_index][i])->view;
+
+                        //This renderpass is referencing a framebuffer that was already created by another renderpass
+                        else
+                        {
+                            //Other renderpass key
+                            auto key = frame_buffers_meta[view_index]["GrabResourceFrom"].get<std::string>();
+                            auto image_accessor =  renderpass_manager.renderpasses[key]->image_accessors[img_index][i];
+                            //Grab the resource from another renderpass
+                            views[view_index] = resource_manager->get_image_cached(image_accessor)->view;
+                        }
                     }
 
                     VkFramebufferCreateInfo fbuf_create_info{};
@@ -128,9 +141,10 @@ namespace Canella
                     if(number_of_images == -1) number_of_images = swapchain->get_number_of_images();
                     auto format_str = image_meta["Format"].get<std::string>();
                     VkFormat format;
-
                     if(strcmp(format_str.c_str(),"SupportedDepth") == 0)
                         format = device->get_depth_format();
+                    if(strcmp(format_str.c_str(),"SwapchainFormat") == 0)
+                        format = swapchain->getFormat();
                     for(auto i  =0 ; i < number_of_images; ++i)
                     {
                         //Todo properly refactor this just using the flagsbit
@@ -141,10 +155,11 @@ namespace Canella
                                                                format,
                                                                VK_IMAGE_TILING_OPTIMAL,
                                                                VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT|
-                                                               VK_IMAGE_USAGE_SAMPLED_BIT ,
+                                                               VK_IMAGE_USAGE_SAMPLED_BIT   ,
                                                                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
                                                                0,
-                                                               VK_IMAGE_ASPECT_DEPTH_BIT));
+                                                               1,
+                                                               VK_IMAGE_ASPECT_DEPTH_BIT,1));
                         //Create a Color Image
                         else {
                             image_accessors[image_index].push_back(
@@ -152,7 +167,7 @@ namespace Canella
                                                                    format,
                                                                    VK_IMAGE_TILING_OPTIMAL,
                                                                    VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT|
-                                                                   VK_IMAGE_USAGE_SAMPLED_BIT ,
+                                                                   VK_IMAGE_USAGE_SAMPLED_BIT |VK_IMAGE_USAGE_TRANSFER_SRC_BIT ,
                                                                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
                                                                    0,
                                                                    VK_IMAGE_ASPECT_COLOR_BIT));

@@ -295,10 +295,14 @@ namespace Canella
                 features.fillModeNonSolid = VK_TRUE;
 
                 VkPhysicalDeviceMeshShaderFeaturesEXT mesh_shader_feature{};
-                mesh_shader_feature.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_NV;
+                mesh_shader_feature.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_EXT;
                 mesh_shader_feature.meshShader = VK_TRUE;
                 mesh_shader_feature.taskShader = VK_TRUE;
-                vk_PhysicalDevicefeatures2.pNext = &mesh_shader_feature;
+
+                vk_PhysicalDevicefeatures2 = {VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,&mesh_shader_feature} ;
+                vk_PhysicalDevicefeatures2.features.pipelineStatisticsQuery = true;
+                vk_PhysicalDevicefeatures2.features.multiDrawIndirect = true;
+
 
                 //Chain StorageBuffer16BitAccess
                 VkPhysicalDeviceVulkan11Features features11 = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES };
@@ -316,6 +320,7 @@ namespace Canella
                 features12.samplerFilterMinmax = true;
                 features12.scalarBlockLayout = true;
                 features11.pNext = &features12;
+
                 VkPhysicalDeviceFeatures deviceFeatures{};
                 deviceFeatures.pipelineStatisticsQuery = VK_TRUE;
 
@@ -323,7 +328,6 @@ namespace Canella
                 deviceInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
                 deviceInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
                 deviceInfo.pQueueCreateInfos = queueCreateInfos.data();
-                deviceInfo.pEnabledFeatures = &deviceFeatures;
                 deviceInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
                 deviceInfo.ppEnabledExtensionNames = deviceExtensions.data();
                 deviceInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
