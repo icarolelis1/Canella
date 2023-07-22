@@ -14,65 +14,27 @@ Pipeline::Pipeline(Device* _device,
     VertexLayout vertex_layout(info.atributes, info.vertexOffsets, info.vertexBindingCount);
 
     // Pipeline
-    VkPipelineInputAssemblyStateCreateInfo input_assembly_state = initializers::pipelineInputAssemblyStateCreateInfo(
-        info.topology, 0, VK_FALSE);
-    VkPipelineRasterizationStateCreateInfo rasterization_state = initializers::pipelineRasterizationStateCreateInfo(
-        info.polygonMode, info.cullMode, info.frontFaceClock);
+    VkPipelineInputAssemblyStateCreateInfo input_assembly_state = initializers::pipelineInputAssemblyStateCreateInfo(info.topology, 0, VK_FALSE);
+    VkPipelineRasterizationStateCreateInfo rasterization_state = initializers::pipelineRasterizationStateCreateInfo(info.polygonMode, info.cullMode, info.frontFaceClock);
 
-    if (info.depthBias)
-    {
-        rasterization_state.depthBiasEnable = 1;
-        rasterization_state.depthBiasConstantFactor = 4.0f;
-        rasterization_state.depthBiasSlopeFactor = 1.50f;
-    }
-
-    auto* color_blends = new VkPipelineColorBlendAttachmentState[info.
-        colorAttachmentsCount];
-    VkPipelineColorBlendAttachmentState blend_attachment_state;
-
-    for (unsigned int i = 0; i < info.colorAttachmentsCount; i++)
-    {
-        if (!info.alphablending)
-            blend_attachment_state = initializers::pipelineColorBlendAttachmentState(0xf, VK_FALSE);
-        else
-        {
-            // Premulitplied alpha
-            blend_attachment_state.blendEnable = VK_TRUE;
-            blend_attachment_state.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
-            blend_attachment_state.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-            blend_attachment_state.colorBlendOp = VK_BLEND_OP_ADD;
-            blend_attachment_state.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-            blend_attachment_state.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
-            blend_attachment_state.alphaBlendOp = VK_BLEND_OP_ADD;
-            blend_attachment_state.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
-                VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-        }
-        color_blends[i] = blend_attachment_state;
-    }
+    VkPipelineColorBlendAttachmentState blend_attachment_state {};
+    blend_attachment_state.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 
     VkPipelineColorBlendStateCreateInfo color_blend_state;
-    color_blend_state = initializers::pipelineColorBlendStateCreateInfo(
-        info.colorAttachmentsCount, color_blends);
-    VkPipelineDepthStencilStateCreateInfo depthStencilState = initializers::pipelineDepthStencilStateCreateInfo(
-        info.dephTest, VK_TRUE, VK_COMPARE_OP_LESS_OR_EQUAL);
+    color_blend_state = initializers::pipelineColorBlendStateCreateInfo(info.colorAttachmentsCount, &blend_attachment_state);
 
-    if (info.alphablending)
-    {
-        depthStencilState.depthWriteEnable = VK_FALSE;
-    }
+    VkPipelineDepthStencilStateCreateInfo depthStencilState = initializers::pipelineDepthStencilStateCreateInfo(info.dephTest, VK_TRUE, VK_COMPARE_OP_GREATER_OR_EQUAL);
 
-    VkPipelineViewportStateCreateInfo viewportState = initializers::pipelineViewportStateCreateInfo(
-        1, 1, VK_DYNAMIC_STATE_VIEWPORT);
+    VkPipelineViewportStateCreateInfo viewportState = initializers::pipelineViewportStateCreateInfo(1, 1, VK_DYNAMIC_STATE_VIEWPORT);
     VkPipelineMultisampleStateCreateInfo multisample_state;
     multisample_state = initializers::pipelineMultisampleStateCreateInfo(info.samples);
     std::vector<VkDynamicState> dynamic_state_enables;
-    dynamic_state_enables = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
+    dynamic_state_enables = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
     VkPipelineDynamicStateCreateInfo dynamic_state;
     dynamic_state = initializers::pipelineDynamicStateCreateInfo(dynamic_state_enables);
 
     // Vertex input state
     std::vector<VkVertexInputBindingDescription> bds;
-
     VkPipelineVertexInputStateCreateInfo vertex_input_state{};
     std::vector<VkVertexInputAttributeDescription> atrib_description;
 
@@ -115,24 +77,25 @@ Pipeline::Pipeline(Device* _device,
     pipelineCI.pDynamicState = &dynamic_state;
     pipelineCI.stageCount = static_cast<int32_t>(shaders.size());
     pipelineCI.pStages = shader_stages.data();
+
     if (!vertex_layout.atributes.empty())
         pipelineCI.pVertexInputState = &vertex_input_state;
     else
         pipelineCI.pVertexInputState = nullptr;
     pipelineCI.subpass = info.subpass;
-    
+
     /*
-        TODO cache pipeline 
+        TODO cache pipeline
         ref https://medium.com/@zeuxcg/creating-a-robust-pipeline-cache-with-vulkan-961d09416cda
     */
-    if (VkResult r = vkCreateGraphicsPipelines(device->getLogicalDevice(), VK_NULL_HANDLE, 1, &pipelineCI,
+    if (VkResult r = vkCreateGraphicsPipelines(device->getLogicalDevice(),
+                                               VK_NULL_HANDLE,
+                                               1,
+                                               &pipelineCI,
                                                device->getAllocator(),
                                                &vk_pipeline); r == VK_SUCCESS)
-        Logger::Debug("Successfully created pipeline\n");
     for (auto& shader : shaders)
         shader.destroyModule();
-
-    delete[] color_blends;
 }
 Canella::RenderSystem::VulkanBackend::Pipeline::Pipeline(Device *_device,
                                                          PipelineLayout* _pipeline_layout,

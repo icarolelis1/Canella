@@ -98,7 +98,7 @@ void main(){
          }
     }
 
-   if(visible)
+   if(visible && occlusion_vibility_buffer[di] == 0)
    {
       uint command_index = atomicAdd(commands_count, 1);
       processed_commands[command_index].groupCountX              = (mesh.meshlet_count + 31)/32 ;

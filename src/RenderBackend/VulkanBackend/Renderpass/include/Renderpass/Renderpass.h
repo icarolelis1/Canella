@@ -74,6 +74,8 @@ namespace Canella
                 void create_images(Swapchain* swapchain,ResourcesManager* resource_manager,nlohmann::json& images_meta);
 
                 std::vector<VkFramebuffer> vk_framebuffers;
+                // In case Renderpass uses the same framebuffer created from other renderpass
+                std::vector<VkFramebuffer*> external_frame_buffers;
                 std::vector<std::vector<ResourceAccessor>> image_accessors;
 
                 /**
@@ -100,6 +102,9 @@ namespace Canella
                  * @param cmd the command in which the renderpass has begun
                  */
                 void endRenderPass(VkCommandBuffer cmd);
+
+            private:
+                bool use_external_framebuffer = false;
 
             };
         }

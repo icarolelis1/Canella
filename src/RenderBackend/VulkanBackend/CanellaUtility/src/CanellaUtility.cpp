@@ -29,9 +29,9 @@ namespace Canella
 
             VkAttachmentLoadOp convert_from_string_loadOp(const char *loadOp)
             {
-                if (strcmp(loadOp, "VK_ATTACHMENT_LOAD_OP_LOAD") == 0)
+                if (strcmp(loadOp, "VK_ATTACHMENT_LOAD_OP_LOAD") == 0 )
                     return VK_ATTACHMENT_LOAD_OP_LOAD;
-                if (strcmp(loadOp, "VK_ATTACHMENT_LOAD_OP_DONT_CARE") == 0)
+                if (strcmp(loadOp, "VK_ATTACHMENT_LOAD_OP_DONT_CARE") == 0 )
                     return VK_ATTACHMENT_LOAD_OP_DONT_CARE;
                 return VK_ATTACHMENT_LOAD_OP_CLEAR;
             }

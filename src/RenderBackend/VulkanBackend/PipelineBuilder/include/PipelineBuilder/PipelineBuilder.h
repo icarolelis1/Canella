@@ -100,14 +100,15 @@ namespace Canella
 						std::vector<std::vector<ATRIBUTES>> atributes;
 						pipelineInfo.atributes = atributes;
 						pipelineInfo.colorAttachmentsCount = 1;
-						pipelineInfo.cullMode = VK_CULL_MODE_FRONT_BIT;
-						pipelineInfo.dephTest = 1;
+						pipelineInfo.cullMode = VK_CULL_MODE_BACK_BIT;
+						pipelineInfo.dephTest = VK_TRUE;
 						pipelineInfo.depthBias = 0;
 						pipelineInfo.renderpass = &renderpasses[renderpass_key]->get_vk_render_pass();
-						pipelineInfo.frontFaceClock = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+						pipelineInfo.frontFaceClock = VK_FRONT_FACE_CLOCKWISE;
 						pipelineInfo.vertexOffsets = {0};
 						pipelineInfo.subpass = 0;
-						pipelines[pipeline_key] = std::make_unique<Pipeline>(device, pipelineLayouts[pipeline_key].get(), shaders, pipelineInfo);
+						pipelines[pipeline_key] = std::make_unique<Pipeline>(device,
+                                                                             pipelineLayouts[pipeline_key].get(), shaders, pipelineInfo);
 					}
 				}
 

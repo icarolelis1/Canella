@@ -44,7 +44,7 @@ void main(){
    uint ti = gl_LocalInvocationID.x;
    uint di = gi * 32 + ti;
 
-   if(occlusion_vibility_buffer[di] == 0)
+  if(occlusion_vibility_buffer[di] == 0)
         return;
 
    StaticMeshData mesh = static_meshes[di];

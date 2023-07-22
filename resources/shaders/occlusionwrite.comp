@@ -7,13 +7,13 @@ layout(binding = 1) uniform sampler2D depth;
 
 layout(push_constant) uniform block
 {
-	vec2 imageSize;
+	vec4 imageSize;
 };
 
 void main()
 {
 	uvec2 pos = gl_GlobalInvocationID.xy;
-	float depth = texture(depth, (vec2(pos) + vec2(0.5)) / imageSize).x;
-    depth.x = depth.x == 0 ? 0.0 :1;
+	//Why add 0.5?
+	float depth = texture(depth, (vec2(pos) + vec2(0.5)) / imageSize.xy).x;
 	imageStore(HIzMip, ivec2(pos), vec4(depth));
 }

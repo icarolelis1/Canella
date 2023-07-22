@@ -1,7 +1,5 @@
 #include "VulkanRender/VulkanRender.h"
 #include <core/compressed_pair.hpp>
-#include <glm/ext/matrix_clip_space.hpp>
-#include <glm/ext/matrix_transform.hpp>
 #include <functional>
 
 using namespace Canella::RenderSystem::VulkanBackend;
@@ -197,7 +195,6 @@ void VulkanRender::render(glm::mat4 &view, glm::mat4 &projection)
     present_info.swapchainCount        = 1;
     present_info.pSwapchains           = swap_chains;
     present_info.pImageIndices         = &next_image_index;
-
 
     result = vkQueuePresentKHR(device.getGraphicsQueueHandle(), &present_info);
 

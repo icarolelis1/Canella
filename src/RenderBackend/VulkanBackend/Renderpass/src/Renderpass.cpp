@@ -40,23 +40,26 @@ namespace Canella
                 renderPassInfo.flags = 0;
                 renderPassInfo.pNext = VK_NULL_HANDLE;
 
-                VK_CHECK (vkCreateRenderPass(device->getLogicalDevice(),
-                                             &renderPassInfo,
-                                             device->getAllocator(),
-                                           &vk_renderpass),
-                                                     "failed to create render pass!");
+                VK_CHECK (vkCreateRenderPass(device->getLogicalDevice(),&renderPassInfo,device->getAllocator(),&vk_renderpass),"failed to create render pass!");
 
                 create_images(swapchain,resource_manager,framebufferRessources["ResourcesToCreate"]);
+                use_external_framebuffer = framebufferRessources["StealFrameBuffers"].get<bool>();
 
-                create_frame_buffer(swapchain,resource_manager,framebufferRessources["FrameBufferAttachments"],renderpass_manager);
+                if(use_external_framebuffer)
+                {
+                    auto other_renderpass_key = framebufferRessources["ExternalFrameBufferAttachments"].get<std::string>();
+                    auto& framebuffers = renderpass_manager.renderpasses[other_renderpass_key]->vk_framebuffers;
+                    for(auto& fb : framebuffers)
+                        external_frame_buffers.push_back(&fb);
+                }
+                else
+                    create_frame_buffer(swapchain,resource_manager,framebufferRessources["FrameBufferAttachments"],renderpass_manager);
             };
-
 
             VkRenderPass& RenderPass::get_vk_render_pass()
             {
                 return vk_renderpass;
             }
-
 
             void RenderPass::beginRenderPass(
                 VkCommandBuffer& commandBuffer,
@@ -66,11 +69,17 @@ namespace Canella
             {
                 VkRenderPassBeginInfo info = {};
                 info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-                info.framebuffer = vk_framebuffers[imageIndex];
+                if(use_external_framebuffer)
+                    info.framebuffer = *external_frame_buffers[imageIndex];
+                else
+                    info.framebuffer = vk_framebuffers[imageIndex];
                 info.renderArea.extent.width = extent.width;
                 info.renderArea.extent.height = extent.height;
-                info.clearValueCount = static_cast<uint32_t>(clearValues.size());
-                info.pClearValues = clearValues.data();
+                if(clearValues.size()> 0 )
+                {
+                    info.clearValueCount = static_cast<uint32_t>(clearValues.size());
+                    info.pClearValues = clearValues.data();
+                }
                 info.renderPass = vk_renderpass;
                 vkCmdBeginRenderPass(commandBuffer, &info, contents);
             }
@@ -88,9 +97,11 @@ namespace Canella
                 {
                     //Get the image views that the renderpass uses
                     // The field ResourceIndex refers to an image from the images created in create_images
-                    for(auto view_index = 0 ; view_index < views.size(); ++view_index){
+                    for(auto view_index = 0 ; view_index < views.size(); ++view_index)
+                    {
                         auto img_index = frame_buffers_meta[view_index]["ResourceIndex"].get<std::uint32_t>();
                         auto steal_resource_from = frame_buffers_meta[view_index]["GrabResourceFrom"].get<std::string>();
+
                         //If index -1. It means that it will use the stardard output
                         if( strcmp(steal_resource_from.c_str(),"StandardOutput") == 0 )
                             views[view_index] = view;
@@ -172,7 +183,6 @@ namespace Canella
                                                                    0,
                                                                    VK_IMAGE_ASPECT_COLOR_BIT));
                         }
-
 
                     }
                     image_index++;

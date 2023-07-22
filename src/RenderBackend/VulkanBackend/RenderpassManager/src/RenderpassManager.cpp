@@ -77,7 +77,6 @@ namespace Canella
                         attachment.description.flags = 0;
                         attachment.reference.attachment = renderAttachmentDescriptionJson["Attachment"].get<
                             std::uint32_t>();
-
                         attachment.reference.layout = convert_from_string_image_layout(
                                 renderAttachmentDescriptionJson["AttachmentLayout"].get<std::string>().c_str());
                         render_attachments_descriptions.push_back(attachment);
@@ -120,16 +119,13 @@ namespace Canella
                             dependency.dstSubpass = 0;
                             dependency.srcStageMask = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
                             dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-
                             dependency.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-                            dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+                            dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
                             subpass.dependencies.push_back(dependency);
-                            Canella::Logger::Info("testing stuff");
                         }
                         subpasses.push_back(subpass);
                     }
                     // Move the vector of attachment description to the renderpassmanager
-                    auto zzz = i ;
                     renderpassManagerDescription.renderpasses_descriptions[i].attachements = std::move(
                         render_attachments_descriptions);
                     renderpassManagerDescription.renderpasses_descriptions[i].subpasses = std::move(subpasses);

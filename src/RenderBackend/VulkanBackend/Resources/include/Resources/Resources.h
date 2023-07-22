@@ -89,12 +89,11 @@ namespace Canella
 
             class Image : public GPUResource
             {
-            private:
+            public:
                 int num_layers;
                 Device *device;
                 VkExtent2D extent;
 
-            public:
                 Image(Device *_device,
                       uint32_t Width,
                       uint32_t Height,
@@ -102,8 +101,8 @@ namespace Canella
                       VkImageTiling tiling,
                       VkImageUsageFlags usage,
                       VkMemoryPropertyFlags properties,
-                      uint32_t num_mips,
-                      VkImageAspectFlags aspectFlags,
+                      uint32_t num_mips = 1,
+                      VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT,
                       uint32_t arrayLayers = 1,
                       VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT);
 

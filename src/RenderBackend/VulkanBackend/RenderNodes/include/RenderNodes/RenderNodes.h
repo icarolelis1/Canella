@@ -32,7 +32,9 @@ namespace Canella
                 {
                     glm::vec3 center;
                     float radius;
-                    glm::vec3 pos;
+                    glm::vec3 pos = glm::vec3(0,0,0);
+                    float padd00;
+                    float padd01;
                     uint32_t mesh_id;
                     uint32_t vertex_offset;
                     uint32_t index_offset;

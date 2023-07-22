@@ -52,6 +52,8 @@ struct StaticMeshData{
     vec3 center;
     float radius;
     vec3 pos;
+	float padd00;
+	float padd01;
 	uint mesh_id;
     uint vertex_offset;
     uint index_offset;

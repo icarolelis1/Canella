@@ -89,7 +89,7 @@ void main()
  Meshlet meshlet = meshlets[mi];
  
  mat4 model = model_Matrices[mesh.mesh_id];
- mat4 mvp = ubo.view_projection; 
+ mat4 mvp = ubo.view_projection;
 
 if( ti < meshlet.vertex_count )
 {
@@ -109,8 +109,7 @@ if (ti < meshlet.triangle_count)
 	gl_PrimitiveTriangleIndicesEXT[ti] = uvec3(	
 	 											uint(meshlet_indices[index_offset + meshlet.triangle_offset + ti*3 + 0 ]) , 
 	 											uint(meshlet_indices[index_offset + meshlet.triangle_offset + ti*3 + 1 ]) ,
-	 											uint(meshlet_indices[index_offset + meshlet.triangle_offset + ti*3 + 2 ])  
-	 											);
+	 											uint(meshlet_indices[index_offset + meshlet.triangle_offset + ti*3 + 2 ])  );
 
 }
 

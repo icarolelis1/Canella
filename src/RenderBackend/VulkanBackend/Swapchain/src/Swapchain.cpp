@@ -70,10 +70,12 @@ namespace Canella
 			VkViewport Swapchain::get_view_port()
 			{
 				VkViewport vk_viewport{};
+                vk_viewport.x = 0;
 				vk_viewport.width = properties.extent.width;
 				vk_viewport.height = properties.extent.height;
-				vk_viewport.maxDepth = 1;
-				return vk_viewport;
+                vk_viewport.minDepth = 1;
+				vk_viewport.maxDepth = 0;
+ 				return vk_viewport;
 			}
 
 			VkRect2D Swapchain::get_rect2d()
@@ -197,6 +199,7 @@ namespace Canella
 				createInfo.imageExtent = properties.extent;
 				createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 				createInfo.preTransform = properties.capabilities.currentTransform;
+                createInfo.preTransform =VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
 
 				if (queueSharingMode.queueFamiliyIndexCount > 1)
 				{

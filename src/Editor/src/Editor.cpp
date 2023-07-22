@@ -55,20 +55,17 @@ void Canella::Editor::bind_shortcuts()
     auto &keyboard = KeyBoard::instance();
     std::function<void(int, InputAction)> short_cuts = [=](int key, InputAction action)
     {
-        Canella::Logger::Debug("%d key_code ", key);
         if (key == GLFW_KEY_F1 && action == InputAction::PRESS)
         {
             display_statistics = !display_statistics;
-            Canella::Logger::Debug("%d key_code ", display_statistics);
         }
 
         if (key == GLFW_KEY_P && action == InputAction::PRESS)
         {
             game_mode = !game_mode;
-            Canella::Logger::Debug("%d key_code ", display_statistics);
         }
 
-        if (key == GLFW_KEY_Y && action == InputAction::RELEASE)
+        if (key == GLFW_KEY_Y && action == InputAction::RELEASE && false)
         {
             //Todo put all this process in a clean api
             Entity model_entity = application->scene->CreateEntity();
@@ -92,8 +89,7 @@ void Canella::Editor::run_editor()
     while (true)
     {
         playing = ~window.shouldCloseWindow();
-        if (game_mode)
-            application->run();
+        if (game_mode) application->run();
         window.update();
         render.render(application->scene->main_camera->view, application->scene->main_camera->projection);
         if (KeyBoard::instance().getKeyPressed(GLFW_KEY_ESCAPE))

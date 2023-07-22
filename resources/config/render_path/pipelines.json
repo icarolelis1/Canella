@@ -276,7 +276,7 @@
         ],
         "PushConstants": {
           "StageFlags" : "COMPUTE_STAGE",
-          "Size" : 8,
+          "Size" : 16,
           "Offset" : 0
         },
         "Builtin": true,

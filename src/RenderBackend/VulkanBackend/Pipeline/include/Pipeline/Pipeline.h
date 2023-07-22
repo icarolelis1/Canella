@@ -161,9 +161,9 @@ namespace Canella
 			{
 				VkRenderPass *renderpass;
 				uint32_t subpass = 0;
-				VkCullModeFlagBits cullMode = VK_CULL_MODE_NONE;
+				VkCullModeFlagBits cullMode = VK_CULL_MODE_BACK_BIT;
 				VkBool32 dephTest = VK_TRUE;
-				VkFrontFace frontFaceClock = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+				VkFrontFace frontFaceClock = VK_FRONT_FACE_CLOCKWISE;
 				VkPrimitiveTopology topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 				VkPolygonMode polygonMode = VK_POLYGON_MODE_FILL;
 				VkShaderModule vertShaderModule;
