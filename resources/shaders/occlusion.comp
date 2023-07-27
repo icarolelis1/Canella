@@ -34,35 +34,121 @@ layout(std430,set = 1 ,binding = 0) readonly  buffer Model_Matrices
 	mat4 model_matrices[];
 };
 
+layout (set = 2 ,binding = 0) uniform UBO
+{
+    mat4 view_projection;
+    vec4 eye;
+    mat4 projection;
+    mat4 view;
+} ubo;
+
 layout( push_constant ) uniform block
 {
    CullingData culling_data;
 };
 
-
-
-// 2D Polyhedral Bounds of a Clipped, Perspective-Projected 3D Sphere. Michael Mara, Morgan McGuire. 2013
-// adjusted by Arseny in his streams
-bool projectSphere(vec3 C, float r, float znear, float P00, float P11, out vec4 aabb)
-{
-	if (C.z < r + znear)
-		return false;
-
-	vec2 cx = -C.xz;
-	vec2 vx = vec2(sqrt(dot(cx, cx) - r * r), r) / length(cx);
-	vec2 minx = mat2(vx.x, vx.y, -vx.y, vx.x) * cx;
-	vec2 maxx = mat2(vx.x, -vx.y, vx.y, vx.x) * cx;
-
-	vec2 cy = -C.yz;
-	vec2 vy = vec2(sqrt(dot(cy, cy) - r * r), r) / length(cy);
-	vec2 miny = mat2(vy.x, -vy.y, vy.y, vy.x) * cy;
-	vec2 maxy = mat2(vy.x, vy.y, -vy.y, vy.x) * cy;
-
-	aabb = vec4(minx.x / minx.y * P00, miny.x / miny.y * P11, maxx.x / maxx.y * P00, maxy.x / maxy.y * P11) * vec4(0.5f, -0.5f, 0.5f, -0.5f) + vec4(0.5f);
-
-	return true;
+vec3 getClosestPointOnSphere(vec3 sphereCenter, float sphereRadius, vec3 cameraPosition) {
+    vec3 cameraToCenter = sphereCenter - cameraPosition;
+    vec3 closestPoint = normalize(cameraToCenter) * sphereRadius + sphereCenter;
+    return closestPoint;
 }
 
+vec2 projectToScreen(vec3 point, mat4 viewProjectionMatrix) {
+    vec4 clipSpace = viewProjectionMatrix * vec4(point, 1.0);
+    vec2 screenSpace = clipSpace.xy / clipSpace.w;
+    return 0.5 * screenSpace + 0.5;
+}
+
+// Function to get the four corners of the AABB for a 3D sphere
+void getSphereAABBCorners(vec3 sphereCenter, float sphereRadius, mat4 viewProjectionMatrix, out vec2[4] corners) {
+    // Calculate AABB in world space
+    vec3 aabbMin = sphereCenter - vec3(sphereRadius);
+    vec3 aabbMax = sphereCenter + vec3(sphereRadius);
+
+    // Project AABB corners to 2D screen space
+    corners[0] = projectToScreen(vec3(aabbMin.x, aabbMin.y, aabbMin.z), viewProjectionMatrix);
+    corners[1] = projectToScreen(vec3(aabbMax.x, aabbMin.y, aabbMin.z), viewProjectionMatrix);
+    corners[2] = projectToScreen(vec3(aabbMax.x, aabbMax.y, aabbMin.z), viewProjectionMatrix);
+    corners[3] = projectToScreen(vec3(aabbMin.x, aabbMax.y, aabbMin.z), viewProjectionMatrix);
+}
+
+bool occlusion_test(mat4 view, mat4 projection, vec3 center,float radius)
+{
+    //Sphere center in view space
+    vec4 view_center = view * vec4(center,1.);
+    vec4 eye_pos = ubo.eye;
+    float distance_to_sphere = distance(eye_pos,vec4(center,1));
+    vec3 sphere_to_eye = normalize(center - eye_pos.xyz);
+
+    //Compute Camera Coordinate System
+    vec3 camera_up    =  -normalize(view[1].xyz);
+    vec3 camera_front =  -normalize(view[2].xyz);
+    vec3 camera_right =  normalize(cross(sphere_to_eye, camera_up));
+
+    //math mytery
+    //float f_radius =  distance_to_sphere * tan(asin(radius / distance_to_sphere));;
+    float f_radius =  radius;
+
+    vec3 v_up_radius    = camera_up * f_radius;
+    vec3 v_right_radius = camera_right * f_radius;
+
+    //Compute AABB Corners
+    vec4 project_center  = projection * vec4(center,1.0);
+    vec4 world_corner_0 = vec4( center.xyz + v_up_radius - v_right_radius, 1 ); // Top-Left
+    vec4 world_corner_1 = vec4( center.xyz + v_up_radius + v_right_radius, 1 ); // Top-Right
+    vec4 world_corner_2 = vec4( center.xyz - v_up_radius - v_right_radius, 1 ); // Bottom-Left
+    vec4 world_corner_3 = vec4( center.xyz - v_up_radius + v_right_radius, 1 ); // Bottom-Right
+
+    mat4 view_projection = ubo.view_projection;
+
+    //Project to Clip
+    vec4 clip_corner_0 = view_projection * world_corner_0; // Top-Left
+    vec4 clip_corner_1 = view_projection * world_corner_1; // Top-Right
+    vec4 clip_corner_2 = view_projection * world_corner_2; // Bottom-Left
+    vec4 clip_corner_3 = view_projection * world_corner_3; // Bottom-Right
+
+    //NDC Corners
+    vec2 ndc_corner_0 = clip_corner_0.xy/clip_corner_0.w; // Top-Left
+    vec2 ndc_corner_1 = clip_corner_1.xy/clip_corner_1.w; // Top-Right
+    vec2 ndc_corner_2 = clip_corner_2.xy/clip_corner_2.w; // Bottom-Left
+    vec2 ndc_corner_3 = clip_corner_3.xy/clip_corner_3.w; // Bottom-Right
+
+    //Convert to viewportspace (invert Y)
+    ndc_corner_0 = ndc_corner_0 * vec2(0.5,-0.5) + vec2(0.5) ; // Top-Left
+    ndc_corner_1 = ndc_corner_1 * vec2(0.5,-0.5) + vec2(0.5) ; // Top-Right
+    ndc_corner_2 = ndc_corner_2 * vec2(0.5,-0.5) + vec2(0.5) ; // Bottom-Left
+    ndc_corner_3 = ndc_corner_3 * vec2(0.5,-0.5) + vec2(0.5) ; // Bottom-Right
+
+    vec2[4] aabb_corners;
+    getSphereAABBCorners(center.xyz,radius,ubo.view_projection,aabb_corners);
+    float width =   distance(ndc_corner_0,ndc_corner_3) * 1920;
+
+    /**
+        In view space the origin is the camera.
+        the vector view_center starts at camera and goes until the center of the sphere,
+        scalling by the radius is the closes point in sphere to the camera.
+    */
+    vec3 nearest_point_on_sphere = (view_center.xyz  -  normalize(view_center.xyz))* radius;
+    vec4 projected_nearest_point = projection * vec4(nearest_point_on_sphere.xyz,1);
+    float level = ceil(log2((width)* 0.5));
+
+    //Get 4 samples from Hi-Z
+    vec4 samples;
+    vec2 avg = ndc_corner_0 + ndc_corner_1 + ndc_corner_2 + ndc_corner_3;
+    avg /=4.0;
+    samples.x = textureLod( depthPyramid,ndc_corner_0, level ).x;
+    samples.y = textureLod( depthPyramid,ndc_corner_1, level ).x;
+    samples.z = textureLod( depthPyramid,ndc_corner_2, level ).x;
+    samples.w = textureLod( depthPyramid,ndc_corner_3, level ).x;
+
+    float min_sample   = min(min(samples.x,samples.y),min(samples.z,samples.w));
+    vec3 closest_point = getClosestPointOnSphere(center,radius,eye_pos.xyz);
+    vec4 projected_closest_point = view * (projection*vec4(closest_point,1));
+
+    float sphere_depth = projected_nearest_point.z/projected_nearest_point.w;
+    //float sphere_depth = projected_closest_point.z/projected_closest_point.w ;
+    return sphere_depth < min_sample;
+}
 
 void main(){
 
@@ -73,30 +159,13 @@ void main(){
    StaticMeshData mesh = static_meshes[di];
    vec4 center = model_matrices[mesh.mesh_id] *vec4(mesh.center + mesh.pos,1);
    //Inflates the radius.
-   float radius = mesh.radius *  model_matrices[mesh.mesh_id][0][0].x *1.5;
+   float radius = mesh.radius *  max(model_matrices[mesh.mesh_id][0][0].x,max(model_matrices[mesh.mesh_id][1][1].x,model_matrices[mesh.mesh_id][2][2].x)) ;
 
    bool visible = true;
-	for (int i = 0; i < 6; ++i)
-		visible = visible && dot(culling_data.frustumPlanes[i], vec4(center.xyz, 1)) > -radius;
-
-    //Perform Occlusion Cullin Test
+    for (int i = 0; i < 6; ++i)
+		visible = visible && dot(culling_data.frustumPlanes[i], vec4(center.xyz, 1)) > -radius * 1.5;
     if(visible)
-    {
-         vec4 coefficients_width_znear;
-         vec4 width_height_padding;
-         //Projects the sphere in a boundingbox 2D
-         vec4 aabb;
-         if(projectSphere(center.xyz,radius,culling_data.coefficients_width_znear.z,coefficients_width_znear.x,coefficients_width_znear.y,aabb))
-         {
-                float w = (aabb.z - aabb.x)* culling_data.width_height_padding.x;
-                float h = (aabb.w - aabb.y) * culling_data.width_height_padding.y;
-                float level = floor(log2(max(w,h)));
-
-                float d = textureLod(depthPyramid,(aabb.x + aabb.zw)*0.5,level).x;
-                float distance = culling_data.coefficients_width_znear.z/(center.z - radius);
-                visible = visible && distance > d;
-         }
-    }
+        visible = visible && occlusion_test(ubo.view,ubo.projection,center.xyz,radius * 1.5);
 
    if(visible && occlusion_vibility_buffer[di] == 0)
    {
@@ -107,5 +176,5 @@ void main(){
       processed_commands[command_index].draw_id                  = di;
    }
 
-   occlusion_vibility_buffer[di] = visible? 1 :0;
+   occlusion_vibility_buffer[di] = visible ? 1 :0;
 }

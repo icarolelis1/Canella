@@ -13,11 +13,6 @@
 namespace Canella
 {
 
-    struct SphereBoundingVolume
-    {
-        glm::vec4 center_radius;
-    };
-
     struct Time
     {
         Time(float t) : time(t){};
@@ -79,7 +74,9 @@ namespace Canella
         std::vector<Mesh> meshes;
         glm::mat4 *model_matrix;
         Meshlet meshlet_compositions;
+        uint32_t instance_count;
     };
+
 
     struct TimeQueries
     {
@@ -92,9 +89,10 @@ namespace Canella
     glm::vec4 compute_sphere_bounding_volume(Mesh &mesh, std::vector<Vertex> &vertices);
     using Drawables = std::vector<ModelMesh>;
 
-    class LoseSwapchainEvent : public Event<Canella::Render *>{};
-    class RenderEvent : public Event<Canella::Render *>{};
-    class DrawableEnqueueEvent : public Event<Canella::Render *>  {};
+    class OnLoseSwapchainEvent : public Event<Canella::Render *>{};
+    class OnRenderEvent : public Event<Canella::Render *>{};
+    class OnDrawableEnqueueEvent : public Event<Canella::Render *>  {};
+    class OnOutputStatsEvent : public Event<> {};
 
 
     class Render
@@ -102,16 +100,17 @@ namespace Canella
     public:
         Render() = default;
         virtual ~Render(){};
-        virtual void build(nlohmann::json &json) = 0;
+        virtual void build( nlohmann::json &data, OnOutputStatsEvent* display_stats) = 0;
         virtual void enqueue_drawables(Drawables &) = 0;
         virtual void enqueue_drawable(ModelMesh& ) = 0;
         virtual void render(glm::mat4 &, glm::mat4 &) = 0;
         virtual Drawables &get_drawables() = 0;
+        OnOutputStatsEvent * display_render_stats_event;
 
         // Render Events`
-        Canella::LoseSwapchainEvent OnLostSwapchain;
-        Canella::DrawableEnqueueEvent OnEnqueueDrawable;
-        Canella::RenderEvent OnRender;
+        Canella::OnLoseSwapchainEvent   OnLostSwapchain;
+        Canella::OnDrawableEnqueueEvent OnEnqueueDrawable;
+        Canella::OnRenderEvent          OnRender;
     };
 }
 

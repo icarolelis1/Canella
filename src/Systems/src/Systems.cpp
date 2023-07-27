@@ -38,7 +38,7 @@ void Canella::get_static_meshes_on_scene(Drawables &drawables, Scene *const scen
     for (auto [key, value] : scene->m_EntityLibrary)
         if (value->has_component<ModelAssetComponent>())
         {
-            const auto &[mesh, source, isStatic] = value->get_component<ModelAssetComponent>();
+            const auto &[mesh, source, isStatic,instance_count] = value->get_component<ModelAssetComponent>();
             if (isStatic)
                 drawables.push_back(mesh);
         }

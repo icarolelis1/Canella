@@ -42,6 +42,7 @@ void Application::run()
     render->render(scene->main_camera->view, scene->main_camera->projection);
     frame_time = application_time.time_in_milli();
     application_time.last_time_frame = time;
+
 }
 
 void Application::close()

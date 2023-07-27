@@ -72,8 +72,9 @@ namespace Canella
                 /**
                  * @brief Creates the vulkan renderer and initialize dependencies
                  * @param data metadata containing information about how to build pipelines/descriptors etc
+                 * @param display_event Event bound to editor UI that is used to display rendernode statistics and timers
                  */
-                void build(nlohmann::json &data) override;
+                void build( nlohmann::json &data, OnOutputStatsEvent* display_event = nullptr) override;
                 /**
                  * @brief Return all the drawables enqueued
                  */
@@ -94,9 +95,10 @@ namespace Canella
                 */
                 void enqueue_drawable(ModelMesh& mesh) override;
 
-                Event<VkCommandBuffer &, uint32_t, FrameData &> OnRecordCommandEvent;
+                Event<VkCommandBuffer &, uint32_t &> OnRecordCommandEvent;
 #if RENDER_EDITOR_LAYOUT
                 std::vector<TimeQueries *> get_render_graph_timers();
+
 #endif
                 PFN_vkCmdDrawMeshTasksEXT vkCmdDrawMeshTasksEXT;
                 PFN_vkCmdDrawMeshTasksIndirectEXT vkCmdDrawMeshTasksIndirectEXT;
@@ -137,11 +139,13 @@ namespace Canella
                 void write_global_descriptorsets();
                 void create_transform_buffers();
                 void destroy_pipeline_layouts();
-                void setup_renderer_events();
+                void setup_internal_renderer_events();
                 void init_descriptor_pool();
                 void init_vulkan_instance();
                 void destroy_pipelines();
                 void setup_frames();
+
+                void get_device_proc();
             };
         }
     }

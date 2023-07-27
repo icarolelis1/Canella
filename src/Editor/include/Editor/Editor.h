@@ -51,13 +51,13 @@ namespace Canella
         VkDescriptorPool imguiPool;
         std::vector<Canella::TimeQueries *> time_queries;
         bool custom_font_pushed = false;
-        void render_editor_gui(VkCommandBuffer &, uint32_t, RenderSystem::VulkanBackend::FrameData &);
+        void render_editor_gui(VkCommandBuffer &, uint32_t);
         void setup_imgui();
         bool scene_mode = true;
         void editor_layout();
         void bind_shortcuts();
         bool playing = true;
-
+        OnOutputStatsEvent out_put_stats;
         //Windows
         bool display_statistics = true;
         bool game_mode = true;

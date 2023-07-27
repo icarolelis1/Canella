@@ -62,16 +62,19 @@ namespace Canella
                     uint32_t base_width;
                     uint32_t base_height;
                     VkSampler sampler;
+                    VkSampler regular_sampler;
                     VkDescriptorUpdateTemplate updateTemplate;
                     CullingData  culling_data;
                 };
 
-                GeometryPass();
+                GeometryPass() = default;
                 ~GeometryPass();
                 void execute(Canella::Render *render, VkCommandBuffer &, int) override;
                 void load_transient_resources(Canella::Render *render) override;
 
             private:
+
+                std::array<glm::vec2,4> occlusion_test(glm::mat4 view, glm::mat4 projection, glm::vec3 center,float radius);
                 /**
                  * @brief creates the resource used by this node
                  * @param render Application Renderer
@@ -132,10 +135,18 @@ namespace Canella
                                       int image_index);
 
 
-                //Temp
-                void create_push_descriptor(Canella::Render* render);
-
+                /**
+                 * @brief performs occlusion culling in compute shader
+                 * @param render
+                 * @param command
+                 * @param image_index
+                 */
                 void execute_occlusion_culling(Canella::Render* render,VkCommandBuffer comamnd,int image_index);
+
+                /**
+                 * @brief Call Event from editor UI to display internal stats of render node
+                 */
+                void output_stats() override;
 
                 /**
                  * @brief Builds a hierarchical depth of mips to be used in  occlusion  culling
@@ -162,6 +173,9 @@ namespace Canella
                 RenderQueries queries;
                 bool post_first_load = false;
                 Device *device;
+
+                bool debug_depth = false;
+                void reset_queries( VkCommandBuffer &command_buffer ) const;
             };
         }
     }

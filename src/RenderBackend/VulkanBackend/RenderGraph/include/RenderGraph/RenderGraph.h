@@ -51,11 +51,13 @@ namespace Canella {
                 //write the outputs
                 virtual void write_outputs();
                 std::vector<std::shared_ptr<RenderNode>> descedent_nodes;
-                std::vector<TimeQueries> timeQuery;
                 bool debug_statics = true;
                 NodeType type;
 
             protected:
+
+                virtual void output_stats();
+                void bind_editor_event( OnOutputStatsEvent* event);
                 ResourcesRef inputs;
                 ResourcesRef outputs;
                 ResourcesRef transients;
@@ -69,13 +71,22 @@ namespace Canella {
                 std::string pipeline_layout_name;
                 bool final_output = false;
                 std::string name;
+
+                friend class RenderGraph;
 			};
 
             using RefRenderNode =  std::shared_ptr<RenderNode>;
 			class RenderGraph{
             public:
 
+                /**
+                 * @brief Constructs the Rendergraph
+                 */
                 RenderGraph();
+                /**
+                 * @brief Constructs the Rendergraph
+                 * @param event A event to be called by the editor to output stats for each rendernode
+                 */
                 ~RenderGraph()=default;
                 RenderGraph(const RenderGraph&other) = delete;
                 static NodeType convert_from_string(const std::string&);
@@ -88,6 +99,7 @@ namespace Canella {
                 void destroy_render_graph();
                 void destroy_render_node(const RefRenderNode &);
                 void load_node_transient_resources(RefRenderNode ,Canella::Render*);
+
                 std::vector<TimeQueries*> time_queries;
             private:
                 RefRenderNode start;

@@ -23,10 +23,10 @@ Canella::Editor::Editor()
     // set the renderer window
     render.set_windowing(&window);
     // Pass the metadata configuration for the render to load all the ressources (renderpass/pipelines...)
-    render.build(config["Render"]);
+    render.build(config["Render"],&out_put_stats);
     // Loads the application scenes and systems
     application = std::make_unique<Application>(&window, &render);
-    //
+    //load data from metada
     application->load(config);
     // Setup ImGui codee
 #if RENDER_EDITOR_LAYOUT
@@ -201,38 +201,36 @@ void Canella::Editor::setup_imgui()
                   1,
                   &submit_info, VK_NULL_HANDLE);
 
-    std::function<void(VkCommandBuffer &, uint32_t, FrameData &)> render_editor = [=](VkCommandBuffer &cmd,
-                                                                                      uint32_t image_index,
-                                                                                      FrameData &frame)
+    std::function<void(VkCommandBuffer &, uint32_t&)> render_editor = [=](VkCommandBuffer &cmd,
+                                                                                      uint32_t image_index)
     {
-        render_editor_gui(cmd, image_index, frame);
+        render_editor_gui(cmd, image_index);
     };
     render.OnRecordCommandEvent += Event_Handler(render_editor);
 }
 
-void Canella::Editor::render_editor_gui(VkCommandBuffer &dsds, uint32_t image_index, FrameData &current_frame)
+void Canella::Editor::render_editor_gui(VkCommandBuffer &command_buffer, uint32_t image_index)
 {
 
     auto &render_passes = render.renderpassManager.renderpasses;
     auto &swapchain = render.swapChain;
 
-    std ::vector<VkClearValue> clearValues(1);
-    clearValues[0].color = {.0f, .0f, .0f, 0.f};
+    std ::vector<VkClearValue> clearValues;
     const VkViewport viewport = swapchain.get_view_port();
     const VkRect2D rect_2d = swapchain.get_rect2d();
-    current_frame.secondaryPool.begin_command_buffer(&render.device, current_frame.editor_command, true);
-    render_passes["imgui"]->beginRenderPass(current_frame.editor_command, clearValues, image_index);
-    vkCmdSetViewport(current_frame.editor_command, 0, 1, &viewport);
-    vkCmdSetScissor(current_frame.editor_command, 0, 1, &rect_2d);
+    //current_frame.secondaryPool.begin_command_buffer(&render.device, command_buffer true);
+    render_passes["imgui"]->beginRenderPass(command_buffer, clearValues, image_index);
+    vkCmdSetViewport(command_buffer, 0, 1, &viewport);
+    vkCmdSetScissor(command_buffer, 0, 1, &rect_2d);
     ImGui_ImplGlfw_NewFrame();
     ImGui_ImplVulkan_NewFrame();
     ImGui ::NewFrame();
     editor_layout();
 
     ImGui ::Render();
-    ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), current_frame.editor_command);
-    render_passes["imgui"]->endRenderPass(current_frame.editor_command);
-    current_frame.secondaryPool.endCommandBuffer(current_frame.editor_command);
+        ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), command_buffer);
+    render_passes["imgui"]->endRenderPass(command_buffer);
+  //  current_frame.secondaryPool.endCommandBuffer(command_buffer);
 }
 
 void Canella::Editor::editor_layout()
@@ -261,16 +259,7 @@ void Canella::Editor::editor_layout()
         //     ImGui::EndMainMenuBar();
         // }
         auto i = 0;
-
-        for (auto *timer : time_queries)
-        {
-            ImGui::PushID(i);
-            ImGui::Text("%s %lf", timer->name.c_str(), timer->time);
-            ImGui::Separator();
-            ImGui::PopID();
-            i++;
-        }
-
+        out_put_stats.invoke();
         ImGui::End();
     }
     ImGui::ShowDemoWindow();

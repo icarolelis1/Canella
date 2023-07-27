@@ -63,7 +63,7 @@ void CameraEditor::on_update(float delta_time)
     if (keyboard.getKeyPressed(GLFW_KEY_C))
         camera_component->position -= camera_component->euler.up * speed * delta_time;
 
-   // Logger::Debug("%lf %lf %lf", camera_component->position.x, camera_component->position.y, camera_component->position.z);
+   //Logger::Debug("%f %f %f", camera_component->euler.front.x, camera_component->euler.front.y, camera_component->euler.front.z);
 }
 
 void CameraEditor::camera_input_keys()
@@ -92,7 +92,7 @@ void CameraEditor::update_euler_directions()
     // FPS camera:  RotationX(pitch) * RotationY(yaw)
     glm::quat qPitch = glm::angleAxis(camera_component->pitch, glm::vec3(1, 0, 0));
     glm::quat qYaw = glm::angleAxis(camera_component->yaw, glm::vec3(0, 1, 0));
-    glm::quat qRoll = glm::angleAxis(camera_component->roll, glm::vec3(0, 0, 1));
+    glm::quat qRoll = glm::angleAxis(camera_component->roll, glm::vec3(0, 0, -1));
 
     // For a FPS camera we can omit roll
     orientation = qPitch * qYaw * qRoll;

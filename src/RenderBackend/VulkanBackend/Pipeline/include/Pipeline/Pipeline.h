@@ -13,10 +13,12 @@ namespace Canella
 		namespace VulkanBackend
 		{
 
-			struct ViewProjection
+			struct alignas(16) ViewProjection
 			{
 				glm::mat4 view_projection;
 				glm::vec4 eye;
+                glm::mat4 projection;
+                glm::mat4 view;
 			};
 
 			enum class ATRIBUTES
@@ -161,7 +163,7 @@ namespace Canella
 			{
 				VkRenderPass *renderpass;
 				uint32_t subpass = 0;
-				VkCullModeFlagBits cullMode = VK_CULL_MODE_BACK_BIT;
+				VkCullModeFlagBits cullMode = VK_CULL_MODE_FRONT_BIT;
 				VkBool32 dephTest = VK_TRUE;
 				VkFrontFace frontFaceClock = VK_FRONT_FACE_CLOCKWISE;
 				VkPrimitiveTopology topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;

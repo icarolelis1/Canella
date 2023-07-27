@@ -96,7 +96,7 @@ if( ti < meshlet.vertex_count )
   	uint vertex_indice = uint(meshlet_vertices[meshlet.vertex_offset + ti + mesh.meshlet_vertices_offset]);
 	vec3 fragPos = vec3(model * vec4(vertices[vertex_indice + mesh.vertex_offset].position.xyz + mesh.pos,1.0));
   	gl_MeshVerticesEXT[ti].gl_Position = mvp * vec4(fragPos,1.0)  ;
-	
+
 	uint mhash = hash(mi);
 	vec3 mcolor = vec3(float(mhash & 255), float((mhash >> 8) & 255), float((mhash >> 16) & 255)) / 255.0;
 	vertexOutput[ti].color = vec4(mcolor,1);

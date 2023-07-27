@@ -302,6 +302,7 @@ namespace Canella
                 vk_PhysicalDevicefeatures2 = {VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,&mesh_shader_feature} ;
                 vk_PhysicalDevicefeatures2.features.pipelineStatisticsQuery = true;
                 vk_PhysicalDevicefeatures2.features.multiDrawIndirect = true;
+                vk_PhysicalDevicefeatures2.features.depthBounds = true;
 
 
                 //Chain StorageBuffer16BitAccess

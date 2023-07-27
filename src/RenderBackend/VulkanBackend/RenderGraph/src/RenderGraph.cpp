@@ -1,6 +1,7 @@
 #include "RenderGraph/RenderGraph.h"
-#include "fstream"
+#include <fstream>
 #include "RenderNodes/RenderNodes.h"
+#include "imgui.h"
 
 void Canella::RenderSystem::VulkanBackend::RenderNode::load_render_node(const nlohmann::json& node_json)
 {
@@ -24,6 +25,17 @@ Canella::RenderSystem::VulkanBackend::RenderNode::RenderNode(const std::string &
                                                              name(node_name),
                                                              type(node_type)
 {}
+
+void Canella::RenderSystem::VulkanBackend::RenderNode::output_stats() {
+    ImGui::Text("Hello from render  node");
+}
+
+void Canella::RenderSystem::VulkanBackend::RenderNode::bind_editor_event( OnOutputStatsEvent* event) {
+    if(event == nullptr) return;
+    std::function<void()> display_stats_lambda = [&](){ output_stats(); };
+    Event_Handler<>event_handler(display_stats_lambda);
+    *event += event_handler;
+}
 
 Canella::RenderSystem::VulkanBackend::RenderGraph::RenderGraph()
 {
@@ -52,13 +64,12 @@ void Canella::RenderSystem::VulkanBackend::RenderGraph::load_render_node(const n
     for(const auto& descendent : entry["Descendents"])
     {
         auto render_node = std::make_shared<GeometryPass>();
+        render_node->bind_editor_event(render->display_render_stats_event);
         //Deserialize the render_node data from the json file
         render_node->load_render_node(descendent);
         //add to the descendent vector
         ref_node->descedent_nodes.push_back(render_node);
         //store the timequery reference for the node in case of logging data
-        for(auto& query : render_node->timeQuery)
-            time_queries.push_back(&query);
     }
 }
 

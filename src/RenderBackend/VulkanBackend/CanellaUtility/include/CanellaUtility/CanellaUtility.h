@@ -56,7 +56,7 @@ namespace Canella
                 std::vector< uint64_t> time_stamps;
             };
 
-            void create_render_query(RenderQueries& renderQueries,Device* device);
+            void create_render_query(RenderQueries& renderQueries,Device* device,uint32_t time_stamps_count);
 
 			namespace initializers
 			{

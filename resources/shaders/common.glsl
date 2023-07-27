@@ -73,4 +73,10 @@ vec3 rotateQuat(vec3 v, vec4 q)
 	return v + 2.0 * cross(q.xyz, cross(q.xyz, v) + q.w * v);
 }
 
+
+float linearize_depth(float depth)
+{
+	return (2.0 * 0.01 * 1000)/(0.01 + 1000 - (depth * 2.0 -1.0) * (1000 - 0.01));
+}
+
 #endif

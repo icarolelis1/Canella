@@ -7,17 +7,17 @@
           {
             "type": "Transform",
             "Position": {
-              "x": 180.0,
+              "x": 0.0,
               "y": 0.0,
               "z": 0.0
             },
             "Scale": {
-              "x": 20,
-              "y": 20,
-              "z": 20
+              "x": 1,
+              "y": 1,
+              "z": 1
             },
             "Rotation": {
-              "x": 180,
+              "x": 0,
               "y": 0,
               "z": 0
             }
@@ -25,7 +25,66 @@
           {
             "type": "MeshAsset",
             "Static": true,
-            "Source": "model_test/just_a_girl.glb"
+            "Source": "model_test/mario.glb",
+            "InstanceCount" : 6400
+          }
+        ]
+      },
+      {
+        "Parent": "Root",
+        "Components": [
+          {
+            "type": "Transform",
+            "Position": {
+              "x": 3.0,
+              "y": 0.0,
+              "z": 7.0
+            },
+            "Scale": {
+              "x": 3,
+              "y": 3,
+              "z": 3
+            },
+            "Rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            }
+          },
+          {
+            "type": "MeshAsset",
+            "Static": true,
+            "Source": "model_test/wall.glb",
+            "InstanceCount" : 1
+          }
+        ]
+      },
+      {
+        "Parent": "Root",
+        "Components": [
+          {
+            "type": "Transform",
+            "Position": {
+              "x": 15.0,
+              "y": 0.0,
+              "z": 26.0
+            },
+            "Scale": {
+              "x": 3,
+              "y": 3,
+              "z": 3
+            },
+            "Rotation": {
+              "x": 0,
+              "y": 45,
+              "z": 0
+            }
+          },
+          {
+            "type": "MeshAsset",
+            "Static": true,
+            "Source": "model_test/wall.glb",
+            "InstanceCount" : 1
           }
         ]
       },
@@ -37,7 +96,7 @@
             "Position": {
               "x": 0,
               "y": 0,
-              "z": 0
+              "z": 3
             },
             "Yaw": 0,
             "Pitch": 0,

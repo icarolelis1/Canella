@@ -1,101 +1,123 @@
 #include "RenderNodes/RenderNodes.h"
 #include "VulkanRender/VulkanRender.h"
 #include "CanellaUtility/CanellaUtility.h"
+#include <imgui.h>
 
-#define DRAW_COUNT 1600
 
-//Todo inject callbacks for rendernodes display stats in the editor UI
-Canella::RenderSystem::VulkanBackend::GeometryPass::GeometryPass()
+
+std::array<glm::vec2,4> Canella::RenderSystem::VulkanBackend::GeometryPass::occlusion_test(glm::mat4 view, glm::mat4 projection, glm::vec3 center,float radius)
 {
-    // Setup Query Pools for debugging
-    timeQuery.resize(6);
-    timeQuery[0].name = "DrawMeshTasks (ms)";
-    timeQuery[0].description = "Time for rendering the meshes using mesh shaders and taskshaders";
-    timeQuery[1].name = "Task Shader invocations ";
-    timeQuery[2].name = "Mesh Shader invocations ";
-    timeQuery[3].name = "Clipping Primitives ";
-    timeQuery[4].name = "Fragment Shader invocations";
+    //Sphere center in view space
+    glm::vec4 view_center = view * glm::vec4(center,1.);
+
+    glm::vec4 eye_pos = -view[3];
+    float distance_to_sphere = distance(eye_pos,glm::vec4(center,1));
+    glm::vec3 sphere_to_eye = glm::normalize(center -  (glm::vec3(eye_pos.x,eye_pos.y,eye_pos.z)));
+
+    //Compute Camera Coordinate System
+    glm::vec3 camera_up    =  -glm::normalize(glm::vec3(view[1].x,view[1].y,view[1].z));
+    glm::vec3 camera_front =  -glm::normalize(glm::vec3(view[2].x,view[2].y,view[2].z));
+    glm::vec3 camera_right =   glm::normalize(glm::cross(sphere_to_eye, camera_up));
+
+    //math mytery
+    float f_radius =  distance_to_sphere * glm::tan(glm::asin(radius / distance_to_sphere));
+
+    glm::vec3 v_up_radius    =   camera_up    * f_radius;
+    glm::vec3 v_right_radius =   camera_right * f_radius;
+
+    //Compute AABB Corners
+    glm::vec4 world_corner_0 = glm::vec4( glm::vec3(center.x,center.y,center.z) + v_up_radius - v_right_radius, 1 ); // Top-Left
+    glm::vec4 world_corner_1 = glm::vec4( glm::vec3(center.x,center.y,center.z) + v_up_radius + v_right_radius, 1 ); // Top-Right
+    glm::vec4 world_corner_2 = glm::vec4( glm::vec3(center.x,center.y,center.z) - v_up_radius - v_right_radius, 1 ); // Bottom-Left
+    glm::vec4 world_corner_3 = glm::vec4( glm::vec3(center.x,center.y,center.z) - v_up_radius + v_right_radius, 1 ); // Bottom-Right
+
+    glm::mat4 view_projection = projection * view ;
+
+    //Project to Clip
+    glm::vec4 clip_corner_0 = view_projection * world_corner_0; // Top-Left
+    glm::vec4 clip_corner_1 = view_projection * world_corner_1; // Top-Right
+    glm::vec4 clip_corner_2 = view_projection * world_corner_2; // Bottom-Left
+    glm::vec4 clip_corner_3 = view_projection * world_corner_3; // Bottom-Right
+
+    //NDC Corners
+    glm::vec2 ndc_corner_0 = glm::vec2(clip_corner_0.x,clip_corner_0.y)/clip_corner_0.w;
+    glm::vec2 ndc_corner_1 = glm::vec2(clip_corner_1.x,clip_corner_1.y)/clip_corner_1.w;
+    glm::vec2 ndc_corner_2 = glm::vec2(clip_corner_2.x,clip_corner_2.y)/clip_corner_2.w;
+    glm::vec2 ndc_corner_3 = glm::vec2(clip_corner_3.x,clip_corner_3.y)/clip_corner_3.w;
+
+    //Convert to viewportspace (invert Y)
+    ndc_corner_0 = glm::vec2(ndc_corner_0.x *0.5 + 0.5,ndc_corner_0.y * -0.5 + 0.5); // Top-Left
+    ndc_corner_1 = glm::vec2(ndc_corner_1.x *0.5 + 0.5,ndc_corner_1.y * -0.5 + 0.5); // Top-Right
+    ndc_corner_2 = glm::vec2(ndc_corner_2.x *0.5 + 0.5,ndc_corner_2.y * -0.5 + 0.5); // Bottom-Left
+    ndc_corner_3 = glm::vec2(ndc_corner_3.x *0.5 + 0.5,ndc_corner_3.y * -0.5 + 0.5); // Bottom-Right
+
+    std::array<glm::vec2,4>r =  {ndc_corner_0,ndc_corner_1,ndc_corner_2,ndc_corner_3};
+
+    float width  = distance(ndc_corner_0,ndc_corner_3);
+    float height = distance(ndc_corner_0,ndc_corner_3);
+
+
+    /**
+        In view space the origin is the camera.
+        the vector view_center starts at camera and goes until the center of the sphere,
+        scalling by the radius is the closes point in sphere to the camera.
+    */
+    glm::vec3 nearest_point_on_sphere = glm::vec3(view_center.x,view_center.y,view_center.z) - normalize(glm::vec3(view_center.x,view_center.y,view_center.z)) * radius;
+    glm::vec4 projected_nearest_point = projection * glm::vec4(glm::vec3(nearest_point_on_sphere.x,nearest_point_on_sphere.y,nearest_point_on_sphere.z),1);
+
+    //Compute the mip
+    float w = width * std::max(1920,1080) ;
+    float level = floor(log2(w));
+    float sphere_depth = projected_nearest_point.z/ projected_nearest_point.w;
+    return r;
+
+    //Get 4 samples from Hi-Z
+    glm::vec4 samples;
+/*    samples.x = textureLod( depthPyramid,ndc_corner_0* 0.5, level ).x;
+    samples.y = textureLod( depthPyramid,ndc_corner_1* 0.5, level ).x;
+    samples.z = textureLod( depthPyramid,ndc_corner_2* 0.5, level ).x;
+    samples.w = textureLod( depthPyramid,ndc_corner_3* 0.5, level ).x;*/
+/*
+    //Get the max
+    float min_sample   = min(min(samples.x,samples.y),min(samples.z,samples.w));
+    float sphere_depth = projected_nearest_point.z/ projected_nearest_point.w;
+
+    return sphere_depth < min_sample  ;*/
 }
 
-void Canella::RenderSystem::VulkanBackend::GeometryPass::compute_frustum_culling( Canella::Render *render,
-                                                                                  VkCommandBuffer &command,
-                                                                                  VkPipeline &compute_pipeline,
-                                                                                  Drawables &drawables,
-                                                                                  int image_index)
+void Canella::RenderSystem::VulkanBackend::GeometryPass::load_transient_resources( Canella::Render *render)
 {
     auto vulkan_renderer = (VulkanBackend::VulkanRender *)render;
-    auto &transform_descriptors = vulkan_renderer->transform_descriptors;
-    auto &render_camera_data = vulkan_renderer->render_camera_data;
-    auto &pipeline_layouts = vulkan_renderer->cachedPipelineLayouts;
-    auto &resource_manager = vulkan_renderer->resources_manager;
-    auto &device = vulkan_renderer->device;
-    auto& swapchain = vulkan_renderer->swapChain;
+    const auto &drawables = render->get_drawables();
+    device = &vulkan_renderer->device;
 
-    auto projection_view = render_camera_data.projection * render_camera_data.view;
-    glm::mat4 projection_view_transposed = glm::transpose(projection_view);
-    auto compute_pipeline_layout = pipeline_layouts["CommandProcessor"]->getHandle();
+    if (post_first_load)
+        clear_render_node(render);
 
-    auto normalize_plane = [](glm::vec4 p)
-    { return p / length(glm::vec3(p)); };
+    if (!post_first_load)
+        setup_reload_resource_event(render);
 
-    CullingData& culling_data = hiz_depth.culling_data;
-    culling_data.frustumPlanes[0] = normalize_plane(projection_view_transposed[3] + projection_view_transposed[0]);
-    culling_data.frustumPlanes[1] = normalize_plane(projection_view_transposed[3] - projection_view_transposed[0]);
-    culling_data.frustumPlanes[2] = normalize_plane(projection_view_transposed[3] + projection_view_transposed[1]);
-    culling_data.frustumPlanes[3] = normalize_plane(projection_view_transposed[3] - projection_view_transposed[1]);
-    culling_data.frustumPlanes[4] = normalize_plane(projection_view_transposed[3] + projection_view_transposed[2]);
-    culling_data.frustumPlanes[5] = normalize_plane(projection_view_transposed[3] - projection_view_transposed[2]);
+    resource_vertices_buffers.resize(drawables.size());
+    resource_bounds_buffers.resize(drawables.size());
+    resource_meshlet_buffers.resize(drawables.size());
+    resource_meshlet_triangles.resize(drawables.size());
+    resource_meshlet_vertices.resize(drawables.size());
+    resource_static_meshes.resize(drawables.size());
 
-    auto extent = swapchain.getExtent();
-    auto f = 1.0f / tanf(70 / 2.0f);
-    auto c1 = f/( float(extent.height) / float(extent.width) );
-    culling_data.width_height_padding = glm::vec4(float(hiz_depth.base_width),float(hiz_depth.base_height),0,0);
-    culling_data.coefficients_width_znear = glm::vec4(projection_view[0][0],0.0f,0.01f,0.0f);
+    // Create the buffer used by this node
+    create_resource_buffers(render);
+    // Create the indirect draw commands
+    create_indirect_commands(render);
+    // Writes the descriptorset
+    write_descriptorsets_geometry( render );
+    //Create Hierarchical Depth Buffer
+    build_hierarchical_depth(render);
+    // writes descriptorsets for culling pass
+    write_descriptorsets_culling(render);
 
-    auto total_geometry_count = 0;
-    std::for_each(drawables.begin(),drawables.end(),[&total_geometry_count](auto& d)
-    {
-        total_geometry_count +=d.meshes.size();
-    });
-    total_geometry_count*= DRAW_COUNT;
-
-    //Clear Visibility  First at first call of compute_frustum_culling
-    if(!hiz_depth.visibility_first_cleared)
-    {
-        auto occlusion_buffer = resource_manager.get_buffer_cached(occlusion_visibility_buffer[image_index]);
-        auto& buffer_handle = occlusion_buffer->getBufferHandle();
-        vkCmdFillBuffer(command, buffer_handle, 0, 4 * total_geometry_count, 0);
-        VkBufferMemoryBarrier fillBarrier = VulkanBackend::bufferBarrier(buffer_handle, VK_ACCESS_TRANSFER_WRITE_BIT,VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT);
-        vkCmdPipelineBarrier(command, VK_PIPELINE_STAGE_TRANSFER_BIT,
-                             VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, 0, 0,
-                             0, 1, &fillBarrier, 0,
-                             0);
-
-        hiz_depth.visibility_first_cleared = true;
-    }
-
-    for (auto i = 0; i < drawables.size(); ++i)
-    {
-        auto count_buffer = resource_manager.get_buffer_cached(command_count_buffers[i]);
-
-        VkBufferMemoryBarrier prefill_barrier = bufferBarrier(count_buffer->getBufferHandle(), VK_ACCESS_INDIRECT_COMMAND_READ_BIT, VK_ACCESS_TRANSFER_WRITE_BIT);
-        vkCmdPipelineBarrier(command, VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, 0, 1, &prefill_barrier, 0, 0);
-
-        vkCmdFillBuffer(command, count_buffer->getBufferHandle(), 0, sizeof(uint32_t), 0);
-
-        VkBufferMemoryBarrier fill_barrier = VulkanBackend::bufferBarrier(count_buffer->getBufferHandle(), VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT);
-        vkCmdPipelineBarrier(command, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, 0, 0, 0, 1, &fill_barrier, 0, 0);
-
-        auto processed_buffer = resource_manager.get_buffer_cached(draw_indirect_buffers[i]);
-        VkDescriptorSet descriptors[2] = { geometry_data_descriptors[i].descriptor_sets[image_index], transform_descriptors[image_index]};
-        vkCmdBindDescriptorSets(command, VK_PIPELINE_BIND_POINT_COMPUTE, compute_pipeline_layout, 0, 2, descriptors, 0, nullptr);
-        vkCmdPushConstants(command, compute_pipeline_layout, VK_SHADER_STAGE_COMPUTE_BIT, 0, sizeof(CullingData), &culling_data);
-        vkCmdBindPipeline(command, VK_PIPELINE_BIND_POINT_COMPUTE, compute_pipeline);
-        vkCmdDispatch(command, uint32_t((drawables[i].meshes.size()*DRAW_COUNT+ 31) / 32), 1, 1);
-
-        VkBufferMemoryBarrier cull = VulkanBackend::bufferBarrier(processed_buffer->getBufferHandle(), VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_INDIRECT_COMMAND_READ_BIT);
-        vkCmdPipelineBarrier(command, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT, 0, 0, 0, 1, &cull, 0, 0);
-    }
+    if (debug_statics && !post_first_load)
+        create_render_query(queries, &vulkan_renderer->device,10);
+    post_first_load = true;
 }
 
 void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
@@ -117,14 +139,20 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
     auto main_color = resource_manager.get_image_cached(renderpasses["basic"]->image_accessors[0][index]);
     auto main_depth = resource_manager.get_image_cached(renderpasses["basic"]->image_accessors[1][index]);
 
+    //Reset pools
+    reset_queries( command_buffer );
     // Compute Frustum culling
+    if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool,8);
     compute_frustum_culling(render, command_buffer, pipelines["CommandProcessor"]->getPipelineHandle(), drawables, current_frame);
+    if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool, 9);
 
     //Move attachemnts layout to optimal layouts
     VkImageMemoryBarrier renderBeginBarriers[] =
     {
-            imageBarrier(main_color->image, 0, 0, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,VK_IMAGE_ASPECT_COLOR_BIT),
-        imageBarrier(main_depth->image, 0, 0, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_IMAGE_ASPECT_DEPTH_BIT),
+
+    imageBarrier(main_color->image, 0, 0, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,VK_IMAGE_ASPECT_COLOR_BIT),
+
+    imageBarrier(main_depth->image, 0, 0, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_IMAGE_ASPECT_DEPTH_BIT),
     };
     vkCmdPipelineBarrier(command_buffer, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT, VK_DEPENDENCY_BY_REGION_BIT, 0, 0, 0, 0, 2, renderBeginBarriers);
 
@@ -136,35 +164,22 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
 
     auto draw_indirect = [&](RenderPass& current_renderpass,bool clear)
     {
-        /*if (debug_statics)
-        {
-            vkCmdResetQueryPool(command_buffer, queries.timestamp_pool, 0, 2);
-            vkCmdResetQueryPool(command_buffer, queries.statistics_pool, 0, 1);
-        }
-*/
         std::vector<VkClearValue> clear_values = {};
         if(clear)
         {
             clear_values.resize(2);
-            clear_values[0].color = {{NORMALIZE_COLOR(70), NORMALIZE_COLOR(70), NORMALIZE_COLOR(70), 0.0f}};
-            clear_values[1].depthStencil = {0.f,0};
+            clear_values[0].color = {{NORMALIZE_COLOR(133), NORMALIZE_COLOR(133), NORMALIZE_COLOR(255), 1.0f}};
+            clear_values[1].depthStencil = {1.f,0};
         }
 
         if (begin_render_pass)
             current_renderpass.beginRenderPass(command_buffer, clear_values, current_frame,VK_SUBPASS_CONTENTS_INLINE);
-/*
-        if (debug_statics)
-        {
-            vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,queries.timestamp_pool,0);
-            vkCmdBeginQuery(command_buffer, queries.statistics_pool, 0, 0);
-        }*/
 
         vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,pipelines[pipeline_name]->getPipelineHandle());
 
         for (auto i = 0; i < drawables.size(); ++i)
         {
             VkDescriptorSet desc[3] = {global_descriptors[index],transform_descriptors[index], descriptors[i].descriptor_sets[index]};
-
             vkCmdBindDescriptorSets(command_buffer,VK_PIPELINE_BIND_POINT_GRAPHICS,
                                     pipeline_layouts["MeshShaderPipeline"]->getHandle(),0,3,
                                     desc,0,nullptr);
@@ -174,47 +189,42 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
             auto indirect_size = sizeof(IndirectCommandToCull);
 
             vulkan_renderer->vkCmdDrawMeshTasksIndirectCountEXT(
-                    command_buffer,indirect_buffer->getBufferHandle(),0,command_count->getBufferHandle(),0,drawables[i].meshes.size() * DRAW_COUNT,indirect_size);
+                    command_buffer,indirect_buffer->getBufferHandle(),0,command_count->getBufferHandle(),0,drawables[i].meshes.size() * drawables[i].instance_count,indirect_size);
         }
 
         if (end_render_pass)
             current_renderpass.endRenderPass(command_buffer);
-
-        /*  if (debug_statics)
-          {
-              vkCmdEndQuery(command_buffer, queries.statistics_pool, 0);
-              vkCmdWriteTimestamp(command_buffer,
-                                  VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
-                                  queries.timestamp_pool, 1);
-          }*/
     };
 
     auto& early_pass = renderpasses["basic"];
     auto& late_pass = renderpasses["LatePass"];
 
+    //First Pass
+    vkCmdBeginQuery(command_buffer,queries.statistics_pool,0,0);
+    if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT ,queries.timestamp_pool,0);
     draw_indirect(*early_pass.get(), true);
+    vkCmdEndQuery(command_buffer,queries.statistics_pool,0);
+    if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool, 1);
+    //Update the Pyramid Depth
+    if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool,2);
     update_hiz_chain(render,command_buffer,index);
+    if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool, 3);
+    //Occlusion Culling
+    if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool,4);
     execute_occlusion_culling(render,command_buffer,index);
-    draw_indirect(*late_pass.get(), false);
+    if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool, 5);
+    //Late pass
+    if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool,6);
+    draw_indirect(*late_pass.get(), true);
+    if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool, 7);
 
-    if (debug_statics)
-    {
-        vkGetQueryPoolResults(device.getLogicalDevice(),queries.timestamp_pool,0,2,sizeof(uint64_t) * 2,queries.time_stamps.data(),sizeof(uint64_t),VK_QUERY_RESULT_64_BIT);
-        auto time = (queries.time_stamps[1] - queries.time_stamps[0]) *device.timestamp_period / 1000000.0f;
-        timeQuery[0].time = time;
-        vkGetQueryPoolResults(device.getLogicalDevice(),queries.statistics_pool,0,1,queries.statistics.size() * sizeof(uint64_t),queries.statistics.data(),sizeof(uint64_t),VK_QUERY_RESULT_64_BIT);
-        timeQuery[1].time = queries.statistics[0];
-        timeQuery[2].time = queries.statistics[1];
-        timeQuery[3].time = queries.statistics[2];
-        timeQuery[4].time = queries.statistics[3];
-    }
 
     auto pyramid = resource_manager.get_image_cached(hiz_depth.pyramidImage);
     VkImageMemoryBarrier copyBarriers[] =
-    {
-         imageBarrier(main_color->image, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,VK_IMAGE_ASPECT_COLOR_BIT),
-         imageBarrier(swapchain.get_images()[index], 0, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,VK_IMAGE_ASPECT_COLOR_BIT),
-    };
+                 {
+                         imageBarrier(main_color->image, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,VK_IMAGE_ASPECT_COLOR_BIT),
+                         imageBarrier(swapchain.get_images()[index], 0, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,VK_IMAGE_ASPECT_COLOR_BIT),
+                 };
 
     vkCmdPipelineBarrier(command_buffer, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_DEPENDENCY_BY_REGION_BIT, 0, 0, 0, 0, 2,copyBarriers);
     auto extent  = swapchain.getExtent();
@@ -253,6 +263,109 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
     VkImageMemoryBarrier presentBarrier = imageBarrier(swapchain.get_images()[index], VK_ACCESS_TRANSFER_WRITE_BIT, 0, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,VK_IMAGE_ASPECT_COLOR_BIT);
     vkCmdPipelineBarrier(command_buffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_DEPENDENCY_BY_REGION_BIT, 0, 0, 0, 0, 1, &presentBarrier);
 
+    vkGetQueryPoolResults(device.getLogicalDevice(),queries.timestamp_pool,0,queries.time_stamps.size(),sizeof(uint64_t) * queries.time_stamps.size(),queries.time_stamps.data(),sizeof(uint64_t),VK_QUERY_RESULT_64_BIT);
+
+    uint32_t count = static_cast<uint32_t>(queries.statistics.size());
+    vkGetQueryPoolResults(
+            device.getLogicalDevice(),
+            queries.statistics_pool,
+            0,
+            1,
+            count * sizeof(uint64_t),
+            queries.statistics.data(),
+            sizeof(uint64_t),
+            VK_QUERY_RESULT_64_BIT);
+
+
+
+}
+
+
+void Canella::RenderSystem::VulkanBackend::GeometryPass::compute_frustum_culling( Canella::Render *render,
+                                                                                  VkCommandBuffer &command,
+                                                                                  VkPipeline &compute_pipeline,
+                                                                                  Drawables &drawables,
+                                                                                  int image_index)
+{
+    auto vulkan_renderer = (VulkanBackend::VulkanRender *)render;
+    auto &transform_descriptors = vulkan_renderer->transform_descriptors;
+    auto &render_camera_data = vulkan_renderer->render_camera_data;
+    auto &pipeline_layouts = vulkan_renderer->cachedPipelineLayouts;
+    auto &resource_manager = vulkan_renderer->resources_manager;
+    auto &device = vulkan_renderer->device;
+    auto& swapchain = vulkan_renderer->swapChain;
+
+    auto projection_view = render_camera_data.projection * render_camera_data.view;
+    glm::mat4 projection_view_transposed = glm::transpose(projection_view);
+    auto p1 = projection_view_transposed[0][0];
+    auto p2 = projection_view_transposed[1][1];
+    auto compute_pipeline_layout = pipeline_layouts["CommandProcessor"]->getHandle();
+
+    auto normalize_plane = [](glm::vec4 p)
+    { return p / length(glm::vec3(p)); };
+
+    CullingData& culling_data = hiz_depth.culling_data;
+    culling_data.frustumPlanes[0] = normalize_plane(projection_view_transposed[3] + projection_view_transposed[0]);
+    culling_data.frustumPlanes[1] = normalize_plane(projection_view_transposed[3] - projection_view_transposed[0]);
+    culling_data.frustumPlanes[2] = normalize_plane(projection_view_transposed[3] + projection_view_transposed[1]);
+    culling_data.frustumPlanes[3] = normalize_plane(projection_view_transposed[3] - projection_view_transposed[1]);
+    culling_data.frustumPlanes[4] = normalize_plane(projection_view_transposed[3] + projection_view_transposed[2]);
+    culling_data.frustumPlanes[5] = normalize_plane(projection_view_transposed[3] - projection_view_transposed[2]);
+
+    auto extent = swapchain.getExtent();
+    auto f = 1.0f / tanf(70 / 2.0f);
+    auto c1 = f/( float(extent.height) / float(extent.width) );
+    culling_data.width_height_padding = glm::vec4(float(hiz_depth.base_width),float(hiz_depth.base_height),0,0);
+    culling_data.coefficients_width_znear = glm::vec4(c1,projection_view_transposed[1][1],0.01f,0.0f);
+
+    auto total_geometry_count = 0;
+    std::for_each(drawables.begin(),drawables.end(),[&total_geometry_count](auto& d)
+    {
+        total_geometry_count +=d.meshes.size() * d.instance_count;
+    });
+
+    //Clear Visibility  First at first call of compute_frustum_culling
+    auto occlusion_buffer = resource_manager.get_buffer_cached(occlusion_visibility_buffer[image_index]);
+    if(!hiz_depth.visibility_first_cleared)
+    {
+        auto& buffer_handle = occlusion_buffer->getBufferHandle();
+        vkCmdFillBuffer(command, buffer_handle, 0, 4 * total_geometry_count, 0);
+        VkBufferMemoryBarrier fillBarrier = VulkanBackend::bufferBarrier(buffer_handle, VK_ACCESS_TRANSFER_WRITE_BIT,VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT);
+        vkCmdPipelineBarrier(command, VK_PIPELINE_STAGE_TRANSFER_BIT,
+                             VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, 0, 0,
+                             0, 1, &fillBarrier, 0,
+                             0);
+
+        hiz_depth.visibility_first_cleared = true;
+    }
+
+    for (auto i = 0; i < drawables.size(); ++i)
+    {
+        auto count_buffer = resource_manager.get_buffer_cached(command_count_buffers[i]);
+
+        VkBufferMemoryBarrier prefill_barrier = bufferBarrier(count_buffer->getBufferHandle(), VK_ACCESS_INDIRECT_COMMAND_READ_BIT, VK_ACCESS_TRANSFER_WRITE_BIT);
+        vkCmdPipelineBarrier(command, VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, 0, 1, &prefill_barrier, 0, 0);
+
+        vkCmdFillBuffer(command, count_buffer->getBufferHandle(), 0, sizeof(uint32_t), 0);
+
+        VkBufferMemoryBarrier fill_barrier = VulkanBackend::bufferBarrier(count_buffer->getBufferHandle(), VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT);
+        vkCmdPipelineBarrier(command, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, 0, 0, 0, 1, &fill_barrier, 0, 0);
+
+        auto processed_buffer = resource_manager.get_buffer_cached(draw_indirect_buffers[i]);
+        VkDescriptorSet descriptors[2] = { geometry_data_descriptors[i].descriptor_sets[image_index], transform_descriptors[image_index]};
+        vkCmdBindDescriptorSets(command, VK_PIPELINE_BIND_POINT_COMPUTE, compute_pipeline_layout, 0, 2, descriptors, 0, nullptr);
+        vkCmdPushConstants(command, compute_pipeline_layout, VK_SHADER_STAGE_COMPUTE_BIT, 0, sizeof(CullingData), &culling_data);
+        vkCmdBindPipeline(command, VK_PIPELINE_BIND_POINT_COMPUTE, compute_pipeline);
+        vkCmdDispatch(command, uint32_t((drawables[i].meshes.size()*drawables[i].instance_count+ 31) / 32), 1, 1);
+
+        VkBufferMemoryBarrier cull = VulkanBackend::bufferBarrier(processed_buffer->getBufferHandle(), VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_INDIRECT_COMMAND_READ_BIT);
+        vkCmdPipelineBarrier(command, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT, 0, 0, 0, 1, &cull, 0, 0);
+    }
+}
+
+void Canella::RenderSystem::VulkanBackend::GeometryPass::reset_queries( VkCommandBuffer &command_buffer ) const {
+        vkCmdResetQueryPool( command_buffer, queries.timestamp_pool, 0, queries.time_stamps.size());
+        vkCmdResetQueryPool( command_buffer, queries.statistics_pool, 0, queries.statistics.size());
 }
 
 void Canella::RenderSystem::VulkanBackend::GeometryPass::execute_occlusion_culling(Canella::Render *render,VkCommandBuffer command,int image_index ) {
@@ -267,23 +380,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute_occlusion_culli
 
     auto& occlusion_pipeline = pipelines["OcclusionCulling"]->getPipelineHandle();
     auto occlusion_pipeline_layouts = layouts["OcclusionCulling"]->getHandle();
-
-/*    auto &render_camera_data = vulkan_renderer->render_camera_data;
-    glm::mat4 projection_view = glm::transpose(render_camera_data.projection * render_camera_data.view);
-
-    auto normalize_plane = [](glm::vec4 p)
-    { return p / length(glm::vec3(p)); };
-
-    CullingData& culling_data = hiz_depth.culling_data;
-    culling_data.frustumPlanes[0] = normalize_plane(projection_view[3] + projection_view[0]);
-    culling_data.frustumPlanes[1] = normalize_plane(projection_view[3] - projection_view[0]);
-    culling_data.frustumPlanes[2] = normalize_plane(projection_view[3] + projection_view[1]);
-    culling_data.frustumPlanes[3] = normalize_plane(projection_view[3] - projection_view[1]);
-    culling_data.frustumPlanes[4] = normalize_plane(projection_view[3] + projection_view[2]);
-    culling_data.frustumPlanes[5] = normalize_plane(projection_view[3] - projection_view[2]);
-
-    culling_data.width_height_padding = glm::vec4(float(hiz_depth.base_width),float(hiz_depth.base_height),0,0);
-    culling_data.coefficients_width_znear = glm::vec4(projection_view[0][0],projection_view[1][1],0.1f,0.0f);*/
+    auto& globaL_descriptors = vulkan_renderer->global_descriptors;
 
     for (auto i = 0; i < drawables.size(); ++i)
     {
@@ -299,55 +396,46 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute_occlusion_culli
         vkCmdPipelineBarrier(command,VK_PIPELINE_STAGE_TRANSFER_BIT,VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,0, 0, 0,1,&fill_barrier, 0,0);
 
         //Dispatch the Occlusion Culling pass2
-        VkDescriptorSet descriptors[2] = { geometry_data_descriptors[i].culling_descriptorset[image_index], transform_descriptors[image_index]};
-        vkCmdBindDescriptorSets(command, VK_PIPELINE_BIND_POINT_COMPUTE, occlusion_pipeline_layouts, 0, 2, descriptors, 0, nullptr);
+        VkDescriptorSet descriptors[3] = { geometry_data_descriptors[i].culling_descriptorset[image_index], transform_descriptors[image_index],globaL_descriptors[image_index]};
+        vkCmdBindDescriptorSets(command, VK_PIPELINE_BIND_POINT_COMPUTE, occlusion_pipeline_layouts, 0, 3, descriptors, 0, nullptr);
         vkCmdPushConstants(command, occlusion_pipeline_layouts, VK_SHADER_STAGE_COMPUTE_BIT, 0, sizeof(CullingData), &hiz_depth.culling_data);
         vkCmdBindPipeline(command, VK_PIPELINE_BIND_POINT_COMPUTE,occlusion_pipeline );
-        vkCmdDispatch(command, uint32_t((drawables[i].meshes.size() * DRAW_COUNT + 31) / 32), 1, 1);
+        vkCmdDispatch(command, uint32_t((drawables[i].meshes.size() * drawables[i].instance_count + 31) / 32), 1, 1);
 
         //Wait for the occlusion dispatch to finish writing on the draw_indirect_buffer
+        auto occlusion_buffer = resource_manager.get_buffer_cached(occlusion_visibility_buffer[image_index]);
         auto processed_buffer = resource_manager.get_buffer_cached(draw_indirect_buffers[i]);
-        VkBufferMemoryBarrier cull = VulkanBackend::bufferBarrier(processed_buffer->getBufferHandle(),VK_ACCESS_SHADER_WRITE_BIT,VK_ACCESS_INDIRECT_COMMAND_READ_BIT);
-        vkCmdPipelineBarrier(command, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT,0, 0, 0,1, &cull,0, 0);
+        VkBufferMemoryBarrier cull [] =
+        { VulkanBackend::bufferBarrier( processed_buffer->getBufferHandle(), VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_INDIRECT_COMMAND_READ_BIT ),
+          VulkanBackend::bufferBarrier( occlusion_buffer->getBufferHandle(), VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_INDIRECT_COMMAND_READ_BIT )
+        };
+        vkCmdPipelineBarrier(command, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT,0, 0, 0,2, &cull[0],0, 0);
     }
 }
 
-void Canella::RenderSystem::VulkanBackend::GeometryPass::load_transient_resources( Canella::Render *render)
+void Canella::RenderSystem::VulkanBackend::GeometryPass::output_stats()
 {
-    auto vulkan_renderer = (VulkanBackend::VulkanRender *)render;
-    const auto &drawables = render->get_drawables();
-    device = &vulkan_renderer->device;
+    /*
+     *     VK_QUERY_PIPELINE_STATISTIC_CLIPPING_INVOCATIONS_BIT|
+                        VK_QUERY_PIPELINE_STATISTIC_TASK_SHADER_INVOCATIONS_BIT_EXT|
+                        VK_QUERY_PIPELINE_STATISTIC_INPUT_ASSEMBLY_PRIMITIVES_BIT |
+                        VK_QUERY_PIPELINE_STATISTIC_CLIPPING_INVOCATIONS_BIT |
+                        VK_QUERY_PIPELINE_STATISTIC_CLIPPING_PRIMITIVES_BIT |
+                        VK_QUERY_PIPELINE_STATISTIC_FRAGMENT_SHADER_INVOCATIONS_BIT;
+     */
+    if (!debug_statics) return;
+    auto n_second_convert = device->timestamp_period / 1000000.0f;
+    ImGui::Text("Clipping Inv : %.1f  ",double(queries.statistics[0]));
+    ImGui::Text("Task Inv : %.1f  ",double(queries.statistics[1]));
+    ImGui::Text("Clipping Prim inv:  %.1f  ",double(queries.statistics[2]));
+    ImGui::Text("Frustum %.2f  ms",double((queries.time_stamps[9] - queries.time_stamps[8]) * n_second_convert));
+    ImGui::Text("Early pass %.2f ms",double( (queries.time_stamps[1] - queries.time_stamps[0] )* n_second_convert));
+   ImGui::Text("Pyramid Update Pass %.2f  ms", double((queries.time_stamps[3] - queries.time_stamps[2]) * n_second_convert));
+    ImGui::Text("Occlusion Culling %.2f ms",double((queries.time_stamps[5] - queries.time_stamps[4]) * n_second_convert));
+    ImGui::Text("Late pass%.2f ms",double((queries.time_stamps[7] - queries.time_stamps[6]) * n_second_convert));
 
-    if (post_first_load)
-        clear_render_node(render);
-
-    if (!post_first_load)
-    {
-        setup_reload_resource_event(render);
-    }
-
-    resource_vertices_buffers.resize(drawables.size());
-    resource_bounds_buffers.resize(drawables.size());
-    resource_meshlet_buffers.resize(drawables.size());
-    resource_meshlet_triangles.resize(drawables.size());
-    resource_meshlet_vertices.resize(drawables.size());
-    resource_static_meshes.resize(drawables.size());
-
-    // Create the buffer used by this node
-    create_resource_buffers(render);
-    // Create the indirect draw commands
-    create_indirect_commands(render);
-    // Writes the descriptorset
-    write_descriptorsets_geometry( render );
-    //Create Hierarchical Depth Buffer
-    build_hierarchical_depth(render);
-    // writes descriptorsets for culling pass
-    write_descriptorsets_culling(render);
-
-    if (debug_statics && !post_first_load)
-        create_render_query(queries, &vulkan_renderer->device);
-    post_first_load = true;
 }
+
 
 void Canella::RenderSystem::VulkanBackend::GeometryPass::write_outputs()
 {
@@ -421,35 +509,42 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::create_resource_buffers
                 &vulkan_renderer->transfer_pool,
                 drawable.meshlet_compositions.meshlet_triangles.data());
 
+        auto total_geometry_count = 0;
+        std::for_each(drawables.begin(),drawables.end(),[&total_geometry_count](auto& d)
+        {
+            total_geometry_count +=d.meshes.size() * d.instance_count;
+        });
+
         std::vector<glm::vec4>spheres;
-        for(auto& mesh : drawables[0].meshes)
-            spheres.push_back(compute_sphere_bounding_volume(mesh, drawables[0].positions));
 
-        std::vector<StaticMeshData> mesh_data(drawables[0].meshes.size() *DRAW_COUNT);
+        for(auto& mesh : drawable.meshes)
+            spheres.push_back(compute_sphere_bounding_volume(mesh, drawables[i].positions));
 
+        std::vector<StaticMeshData> mesh_data(total_geometry_count);
         auto generate_points = [&](const uint32_t draw_count)
         {
             std::vector<glm::vec3> points(draw_count);
-            auto sqrt = std::sqrt(DRAW_COUNT);
+            auto sqrt = std::floor(std::sqrt(drawable.instance_count));
             auto i = 0;
-            auto res = 3.0;
+            auto res =1.5;
             for(auto  x = 0; x < sqrt; x++)
                 for (auto z = 0 ; z < sqrt ; ++z)
                 {
-                    points[i] = (glm::vec3(x * res,0,z * res));
+                    points[i] = (glm::vec3(x * res, 0,z * res));
                     i++;
                 }
             return points;
         };
-        auto points = generate_points(DRAW_COUNT);
+        auto points = generate_points(drawable.instance_count * drawable.meshes.size());
         auto ind  = 0;
-        for(auto  rep = 0 ; rep < DRAW_COUNT; ++rep)
-            for (auto j = 0; j < drawables[i].meshes.size(); ++j)
+        for(auto  rep = 0 ; rep < drawable.instance_count ; ++rep)
+            for (auto j = 0; j < drawable.meshes.size(); ++j)
             {
-                auto sphere =spheres[j];
+                //auto sphere = compute_sphere_bounding_volume(drawables[i].meshes[j], drawables[i].positions);
+                auto sphere = spheres[j];
                 StaticMeshData mesh;
                 mesh.pos = points[rep];
-                mesh.center = glm::vec3(sphere.x, sphere.w, sphere.z);
+                mesh.center = glm::vec3(sphere.x, sphere.y, sphere.z);
                 mesh.radius = sphere.w;
                 mesh.vertex_offset = drawables[i].meshes[j].vertex_offset;
                 mesh.meshlet_triangles_offset = drawables[i].meshes[j].meshlet_triangle_offset;
@@ -551,7 +646,6 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::write_descriptorsets_cu
 
     geometry_data_descriptors.resize( drawables.size());
 
-    //TODO FIX THIS. Should loop through drawables makes no sense.
     for (auto i = 0; i < drawables.size(); ++i)
     {
         geometry_data_descriptors[i].descriptor_sets.resize( number_of_images);
@@ -592,14 +686,12 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::write_descriptorsets_cu
             buffer_infos[3].range  = occlusion_visibility->size;
 
             // write Descriptors for geometry pass
-            resource_manager.write_descriptor_sets( geometry_data_descriptors[i].descriptor_sets[j],
-                                                    buffer_infos,
-                                                    image_infos,
-                                                    true);
+            resource_manager.write_descriptor_sets( geometry_data_descriptors[i].descriptor_sets[j],buffer_infos,image_infos,true);
+
             image_infos.resize(1);
             auto pyramid = resource_manager.get_image_cached(hiz_depth.pyramidImage);
             VkDescriptorImageInfo image_info{};
-            image_info.sampler =    hiz_depth.sampler;
+            image_info.sampler =    hiz_depth.regular_sampler;
             image_info.imageView = pyramid->view;
             image_info.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
             image_infos[0] = image_info;
@@ -624,7 +716,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::create_indirect_command
     for (auto i = 0; i < drawables.size(); ++i)
     {
 
-        draw_indirect_buffers[i] = resource_manager.create_buffer(DRAW_COUNT * sizeof(IndirectCommandToCull) *drawables[i].meshes.size(),
+        draw_indirect_buffers[i] = resource_manager.create_buffer(drawables[i].instance_count * sizeof(IndirectCommandToCull) *drawables[i].meshes.size(),
                                                                   VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
                                                                   VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT,
                                                                   VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
@@ -644,11 +736,12 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::create_indirect_command
     auto total_geometry_count = 0;
     std::for_each(drawables.begin(),drawables.end(),[&total_geometry_count](auto& d)
     {
-        total_geometry_count +=d.meshes.size();
+        total_geometry_count +=d.meshes.size() * d.instance_count;
     });
 
+    //Create the visibility buffer for all -> drawables ->meshes
     for(auto i = 0 ; i < number_images; ++i )
-        occlusion_visibility_buffer[i] = resource_manager.create_buffer(4 * total_geometry_count *DRAW_COUNT,
+        occlusion_visibility_buffer[i] = resource_manager.create_buffer(4 * total_geometry_count ,
                                                                         VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
                                                                         VK_BUFFER_USAGE_TRANSFER_DST_BIT,
                                                                         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
@@ -661,7 +754,6 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::build_hierarchical_dept
     auto &swapchain = vulkan_renderer->swapChain;
     auto &resources = vulkan_renderer->resources_manager;
     auto& layouts = vulkan_renderer->cachedPipelineLayouts;
-    hiz_depth.sampler = create_sampler(device->getLogicalDevice(),VK_SAMPLER_REDUCTION_MODE_MIN_EXT);
 
     //Destroy the HI-Z mips before reloading
     if(post_first_load) //Is true after the initial load. Executed again when swapchain resizes
@@ -671,7 +763,12 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::build_hierarchical_dept
             for(auto i = 0 ; i < hiz_depth.mip_count; ++i)
                 vkDestroyImageView(device->getLogicalDevice(),hiz_depth.mip_views[i],device->getAllocator());
         vkDestroySampler(device->getLogicalDevice(),hiz_depth.sampler,device->getAllocator());
+        vkDestroySampler(device->getLogicalDevice(),hiz_depth.regular_sampler,device->getAllocator());
+        vkDestroyDescriptorUpdateTemplate(device->getLogicalDevice(), hiz_depth.updateTemplate, device->getAllocator());
     }
+    //Create Sampler
+    hiz_depth.sampler = create_sampler(device->getLogicalDevice(),VK_SAMPLER_REDUCTION_MODE_MAX_EXT);
+    hiz_depth.regular_sampler = create_sampler(device->getLogicalDevice(),VK_SAMPLER_REDUCTION_MODE_WEIGHTED_AVERAGE_EXT);
 
     //Returns the Last power of two before V
     auto previous_pow = [](uint32_t v)
@@ -700,20 +797,15 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::build_hierarchical_dept
         }
         return count;
     };
+
     uint32_t num_mips = get_image_mips_count(base_width,base_height);
     hiz_depth.mip_count = num_mips;
     hiz_depth.pyramidImage = resources.create_image(device,
                                                     base_width,
-                                                    base_height,
-                                                    VK_FORMAT_R32_SFLOAT,
-                                                    VK_IMAGE_TILING_OPTIMAL,
+                                                    base_height,VK_FORMAT_R32_SFLOAT,VK_IMAGE_TILING_OPTIMAL,
                                                     VK_IMAGE_USAGE_STORAGE_BIT|VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
-                                                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                                                    0,
-                                                    num_mips,
-                                                    VK_IMAGE_ASPECT_COLOR_BIT,
-                                                    1,
-                                                    VK_SAMPLE_COUNT_1_BIT);
+                                                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,0,num_mips,
+                                                    VK_IMAGE_ASPECT_COLOR_BIT,1,VK_SAMPLE_COUNT_1_BIT);
 
     //Create a view for each mip
     for(auto i = 0; i < num_mips; ++i)
@@ -772,16 +864,19 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::update_hiz_chain( Canel
     auto& resource_manager = vulkan_renderer->resources_manager;
     auto& layouts = vulkan_renderer->cachedPipelineLayouts;
     auto& pipelines = vulkan_renderer->cachedPipelines;
+    auto& render_data = vulkan_renderer->render_camera_data;
+
+    auto boundings = occlusion_test(render_data.view,render_data.projection,glm::vec3(-0.0 , 0 ,0),10  );
 
     //This is main depth image. renderpasses stores all the renderpasses and image attachments.
     auto main_depth_target = resource_manager.get_image_cached(renderpasses.renderpasses["basic"]->image_accessors[1][image_index]);
     auto pyramid_image = resource_manager.get_image_cached(hiz_depth.pyramidImage);
 
     VkImageMemoryBarrier read_barriers[] =
-                                 {
-                                         imageBarrier(pyramid_image->image,0,VK_ACCESS_SHADER_READ_BIT,VK_IMAGE_LAYOUT_UNDEFINED,VK_IMAGE_LAYOUT_GENERAL,VK_IMAGE_ASPECT_COLOR_BIT),
-                                         imageBarrier(main_depth_target->image,0,VK_ACCESS_SHADER_READ_BIT,VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,VK_IMAGE_ASPECT_DEPTH_BIT),
-                                 };
+     {
+     imageBarrier(pyramid_image->image,0,VK_ACCESS_SHADER_READ_BIT,VK_IMAGE_LAYOUT_UNDEFINED,VK_IMAGE_LAYOUT_GENERAL,VK_IMAGE_ASPECT_COLOR_BIT),
+     imageBarrier(main_depth_target->image,0,VK_ACCESS_SHADER_READ_BIT,VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,VK_IMAGE_ASPECT_DEPTH_BIT),
+     };
 
     vkCmdPipelineBarrier(command,VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,VK_DEPENDENCY_BY_REGION_BIT,0, 0, 0,0,2, read_barriers);
 
@@ -813,9 +908,16 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::update_hiz_chain( Canel
         uint32_t current_width = std::max(1u, hiz_depth.base_width >> i);
         uint32_t current_height = std::max(1u, hiz_depth.base_width >> i);
 
-        struct  CurrentMipSize {glm::vec4 size; }push_data;
+        struct  CurrentMipSize {
+            glm::vec4 size;
+            glm::vec2 aabb_min;
+            glm::vec2 aabb_max;
+
+        }push_data;
+
         push_data.size.x = current_width;
         push_data.size.y = current_height;
+
         auto g1 = group_size(current_width);
         auto g2 = group_size(current_height);
         vkCmdPushConstants(command,layouts["OcclusionWrite"]->getHandle(),VK_SHADER_STAGE_COMPUTE_BIT,0, sizeof(push_data),&push_data);
@@ -828,6 +930,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::update_hiz_chain( Canel
     //Reset the image layout
     VkImageMemoryBarrier depthWriteBarrier = imageBarrier(main_depth_target->image,VK_ACCESS_SHADER_READ_BIT,VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,VK_IMAGE_ASPECT_DEPTH_BIT);
     vkCmdPipelineBarrier(command,VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,VK_DEPENDENCY_BY_REGION_BIT,0, 0,0, 0,1, &depthWriteBarrier);
+
 }
 
 Canella::RenderSystem::VulkanBackend::GeometryPass::~GeometryPass()
@@ -840,6 +943,7 @@ Canella::RenderSystem::VulkanBackend::GeometryPass::~GeometryPass()
 
     vkDestroyDescriptorUpdateTemplate(device->getLogicalDevice(), hiz_depth.updateTemplate, device->getAllocator());
     vkDestroySampler(device->getLogicalDevice(), hiz_depth.sampler,device->getAllocator());
+    vkDestroySampler(device->getLogicalDevice(), hiz_depth.regular_sampler,device->getAllocator());
     vkDestroyQueryPool(device->getLogicalDevice(), queries.timestamp_pool, device->getAllocator());
     vkDestroyQueryPool(device->getLogicalDevice(), queries.statistics_pool, device->getAllocator());
 }

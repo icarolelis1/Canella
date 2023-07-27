@@ -23,7 +23,7 @@ Pipeline::Pipeline(Device* _device,
     VkPipelineColorBlendStateCreateInfo color_blend_state;
     color_blend_state = initializers::pipelineColorBlendStateCreateInfo(info.colorAttachmentsCount, &blend_attachment_state);
 
-    VkPipelineDepthStencilStateCreateInfo depthStencilState = initializers::pipelineDepthStencilStateCreateInfo(info.dephTest, VK_TRUE, VK_COMPARE_OP_GREATER_OR_EQUAL);
+    VkPipelineDepthStencilStateCreateInfo depthStencilState = initializers::pipelineDepthStencilStateCreateInfo(info.dephTest, VK_TRUE, VK_COMPARE_OP_LESS);
 
     VkPipelineViewportStateCreateInfo viewportState = initializers::pipelineViewportStateCreateInfo(1, 1, VK_DYNAMIC_STATE_VIEWPORT);
     VkPipelineMultisampleStateCreateInfo multisample_state;

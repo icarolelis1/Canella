@@ -112,7 +112,7 @@
                         "Format": "SUPPORTED_DEPTH",
                         "Samples": "VK_SAMPLE_COUNT_1_BIT",
                         "LoadOp": "VK_ATTACHMENT_LOAD_OP_LOAD",
-                        "StoreOp": "VK_ATTACHMENT_STORE_OP_DONT_CARE",
+                        "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE",
                         "InitialLayout": "VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL",
                         "FinalLayout": "VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL",
                         "Attachment": 1,

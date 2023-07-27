@@ -119,36 +119,30 @@ namespace Canella
                 return uniform_distribution(random_engine);
             }
 
-            void create_render_query(RenderQueries &renderQueries, Device *device)
+            void create_render_query(RenderQueries &renderQueries, Device *device,uint32_t time_stamps_count)
             {
                 VkQueryPoolCreateInfo info{};
                 info.sType = VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO;
                 info.queryType = VK_QUERY_TYPE_PIPELINE_STATISTICS;
                 info.pipelineStatistics =
-                    VK_QUERY_PIPELINE_STATISTIC_TASK_SHADER_INVOCATIONS_BIT_EXT |
-                    VK_QUERY_PIPELINE_STATISTIC_MESH_SHADER_INVOCATIONS_BIT_EXT |
-                    VK_QUERY_PIPELINE_STATISTIC_CLIPPING_INVOCATIONS_BIT |
-                    VK_QUERY_PIPELINE_STATISTIC_CLIPPING_PRIMITIVES_BIT |
-                    VK_QUERY_PIPELINE_STATISTIC_FRAGMENT_SHADER_INVOCATIONS_BIT;
-                info.queryCount = 1;
-                renderQueries.statistics.resize(5);
-                VK_CHECK(vkCreateQueryPool(device->getLogicalDevice(),
-                                           &info,
-                                           device->getAllocator(),
-                                           &renderQueries.statistics_pool),
-                         "Failed to create timestamp pool");
+                        VK_QUERY_PIPELINE_STATISTIC_CLIPPING_INVOCATIONS_BIT|
+                        VK_QUERY_PIPELINE_STATISTIC_TASK_SHADER_INVOCATIONS_BIT_EXT|
+                        VK_QUERY_PIPELINE_STATISTIC_INPUT_ASSEMBLY_PRIMITIVES_BIT |
+                        VK_QUERY_PIPELINE_STATISTIC_CLIPPING_INVOCATIONS_BIT |
+                        VK_QUERY_PIPELINE_STATISTIC_CLIPPING_PRIMITIVES_BIT |
+                        VK_QUERY_PIPELINE_STATISTIC_FRAGMENT_SHADER_INVOCATIONS_BIT;
+
+                info.queryCount = 6;
+                renderQueries.statistics.resize(6);
+                VK_CHECK(vkCreateQueryPool(device->getLogicalDevice(),&info,device->getAllocator(),&renderQueries.statistics_pool),"Failed to create timestamp pool");
+
                 VkQueryPoolCreateInfo timeInfo{};
                 timeInfo.sType = VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO;
                 timeInfo.queryType = VK_QUERY_TYPE_TIMESTAMP;
-                timeInfo.queryCount = 2;
-                renderQueries.time_stamps.resize(2);
-                VK_CHECK(vkCreateQueryPool(device->getLogicalDevice(),
-                                           &timeInfo,
-                                           device->getAllocator(),
-                                           &renderQueries.timestamp_pool),
-                         "Failed to create timestamp pool");
+                timeInfo.queryCount = time_stamps_count;
+                renderQueries.time_stamps.resize(time_stamps_count);
+                VK_CHECK(vkCreateQueryPool(device->getLogicalDevice(),&timeInfo,device->getAllocator(),&renderQueries.timestamp_pool),"Failed to create timestamp pool");
             }
-
         }
     };
 }

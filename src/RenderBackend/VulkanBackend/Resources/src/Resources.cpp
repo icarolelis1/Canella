@@ -26,6 +26,7 @@ VkSampler Canella::RenderSystem::VulkanBackend::create_sampler(VkDevice device, 
         createInfoReduction.reductionMode = reductionMode;
         create_info.pNext                 = &createInfoReduction;
     }
+
     VkSampler sampler ;
     VK_CHECK( vkCreateSampler( device, &create_info, 0, &sampler), "Failed to Create Sampler");
     return sampler;

@@ -13,50 +13,39 @@ void VulkanRender::set_windowing(Windowing *windowing)
  */
 VulkanRender::VulkanRender() : resources_manager(&this->device) {}
 
-void VulkanRender::build(nlohmann::json &config)
+void VulkanRender::build( nlohmann::json &config, OnOutputStatsEvent* display_event)
 {
     init_vulkan_instance();
+    display_render_stats_event = display_event;
     auto glfw_window = dynamic_cast<GlfwWindow *>(window);
     glfw_window->getSurface(instance->handle, &surface);
     const auto [width, height] = dynamic_cast<GlfwWindow *>(window)->getExtent();
     device.prepareDevice(surface, *instance);
-    swapChain.prepare_swapchain(width,
-                                height,
-                                device,
-                                surface,
-                                VK_FORMAT_B8G8R8A8_UNORM,
-                                dynamic_cast<GlfwWindow *>(window)->getHandle(),
-                                device.getQueueSharingMode());
-
+    swapChain.prepare_swapchain(width,height,device,surface,VK_FORMAT_B8G8R8A8_UNORM,dynamic_cast<GlfwWindow *>(window)->getHandle(),device.getQueueSharingMode());
     resources_manager.build();
-
-    renderpassManager.build(&device,
-                            &swapChain,
-                            config["RenderPath"].get<std::string>().c_str(),
-                            &resources_manager);
-
+    renderpassManager.build(&device,&swapChain,config["RenderPath"].get<std::string>().c_str(),&resources_manager);
     cache_pipelines(config["Pipelines"].get<std::string>().c_str());
     init_descriptor_pool();
     setup_frames();
     allocate_global_usage_buffers();
     allocate_global_descriptorsets();
     write_global_descriptorsets();
-    setup_renderer_events();
+    setup_internal_renderer_events();
     render_graph.load_render_graph(config["RenderGraph"].get<std::string>().c_str(), this);
-    vkCmdDrawMeshTasksEXT = reinterpret_cast<PFN_vkCmdDrawMeshTasksEXT>(vkGetDeviceProcAddr(
-        device.getLogicalDevice(),
-        "vkCmdDrawMeshTasksEXT"));
-
-    vkCmdDrawMeshTasksIndirectEXT = reinterpret_cast<PFN_vkCmdDrawMeshTasksIndirectEXT>(vkGetDeviceProcAddr(device.getLogicalDevice(),
-                                                                                                            "vkCmdDrawMeshTasksIndirectEXT"));
-
-    vkCmdDrawMeshTasksIndirectCountEXT = reinterpret_cast<PFN_vkCmdDrawMeshTasksIndirectCountEXT>(vkGetDeviceProcAddr(device.getLogicalDevice(),
-                                                                                                                      "vkCmdDrawMeshTasksIndirectCountEXT"));
-    vkCmdPushDescriptorSetWithTemplateKHR = reinterpret_cast<PFN_vkCmdPushDescriptorSetWithTemplateKHR>(vkGetDeviceProcAddr(device.getLogicalDevice(),
-                                                                                                                         "vkCmdPushDescriptorSetWithTemplateKHR"));
+    get_device_proc();
     transfer_pool.build(&device, POOL_TYPE::TRANSFER, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
     command_pool.build(&device, POOL_TYPE::GRAPHICS, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
+}
+
+void VulkanRender::get_device_proc() {
+    vkCmdDrawMeshTasksEXT                 = reinterpret_cast<PFN_vkCmdDrawMeshTasksEXT>(vkGetDeviceProcAddr( device.getLogicalDevice(), "vkCmdDrawMeshTasksEXT"));
+    vkCmdDrawMeshTasksIndirectEXT         = reinterpret_cast<PFN_vkCmdDrawMeshTasksIndirectEXT>(vkGetDeviceProcAddr(
+            device.getLogicalDevice(), "vkCmdDrawMeshTasksIndirectEXT"));
+    vkCmdDrawMeshTasksIndirectCountEXT    = reinterpret_cast<PFN_vkCmdDrawMeshTasksIndirectCountEXT>(vkGetDeviceProcAddr(
+            device.getLogicalDevice(), "vkCmdDrawMeshTasksIndirectCountEXT"));
+    vkCmdPushDescriptorSetWithTemplateKHR = reinterpret_cast<PFN_vkCmdPushDescriptorSetWithTemplateKHR>(vkGetDeviceProcAddr(
+            device.getLogicalDevice(), "vkCmdPushDescriptorSetWithTemplateKHR"));
 }
 
 /**
@@ -152,14 +141,13 @@ void VulkanRender::render(glm::mat4 &view, glm::mat4 &projection)
 
     ViewProjection view_projection{};
     view_projection.view_projection = projection * view;
-    view_projection.eye             = glm::vec4(view[3]);
+    view_projection.eye             = -glm::vec4(view[3]);
+    view_projection.view            = view;
+    view_projection.projection      = projection;
 
     refBuffer->udpate(view_projection);
     record_command_index(frame_data.commandBuffer, current_frame);
 
-#if RENDER_EDITOR_LAYOUT
-    OnRecordCommandEvent.invoke(frame_data.editor_command, current_frame, frame_data);
-#endif
     queued_semaphores.push_back(frame_data.imageAcquiredSemaphore);
     VkSubmitInfo submit_info = {};
     submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -174,14 +162,9 @@ void VulkanRender::render(glm::mat4 &view, glm::mat4 &projection)
     submit_info.pWaitSemaphores    = queued_semaphores.data();
     submit_info.pWaitDstStageMask  = wait_stages.data();
 
-#if RENDER_EDITOR_LAYOUT
-    submit_info.commandBufferCount = 2;
-    VkCommandBuffer commands[2] = {frame_data.commandBuffer, frame_data.editor_command};
-    submit_info.pCommandBuffers = &commands[0];
-#else
     submit_info.commandBufferCount = 1;
     submit_info.pCommandBuffers = &frame_data.commandBuffer;
-#endif
+
     submit_info.signalSemaphoreCount = 1;
     submit_info.pSignalSemaphores = &frame_data.renderFinishedSemaphore;
 
@@ -209,6 +192,8 @@ void VulkanRender::render(glm::mat4 &view, glm::mat4 &projection)
     }
     current_frame = (current_frame + 1) % 3;
     queued_semaphores.clear();
+
+
 }
 
 void VulkanRender::init_descriptor_pool()
@@ -271,6 +256,9 @@ void VulkanRender::record_command_index(VkCommandBuffer &commandBuffer, uint32_t
     // Execute the render graph
     frames[index].commandPool.begin_command_buffer(&device, commandBuffer, true);
     render_graph.execute(commandBuffer, this, index);
+#if RENDER_EDITOR_LAYOUT
+    OnRecordCommandEvent.invoke(commandBuffer, index);
+#endif
     frames[index].commandPool.endCommandBuffer(commandBuffer);
 }
 
@@ -343,7 +331,7 @@ Canella::Drawables &VulkanRender::get_drawables()
     return m_drawables;
 }
 
-void VulkanRender::setup_renderer_events()
+void VulkanRender::setup_internal_renderer_events()
 {
 
     // Handlers for the function events

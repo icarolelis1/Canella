@@ -276,7 +276,7 @@
         ],
         "PushConstants": {
           "StageFlags" : "COMPUTE_STAGE",
-          "Size" : 16,
+          "Size" : 32,
           "Offset" : 0
         },
         "Builtin": true,
@@ -290,10 +290,11 @@
         "Key": "OcclusionCulling",
         "IsCompute": true,
         "PushConstantRangesCount": 1,
-        "NumerOfDescriptorSets": 2,
+        "NumerOfDescriptorSets": 3,
         "PipelineLayoutDescriptors": [
           "OcclusionCulling",
-          "Transforms"
+          "Transforms",
+          "ViewProjection"
         ],
         "PushConstants": {
           "StageFlags" : "COMPUTE_STAGE",

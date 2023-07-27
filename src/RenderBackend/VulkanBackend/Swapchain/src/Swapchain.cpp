@@ -73,8 +73,8 @@ namespace Canella
                 vk_viewport.x = 0;
 				vk_viewport.width = properties.extent.width;
 				vk_viewport.height = properties.extent.height;
-                vk_viewport.minDepth = 1;
-				vk_viewport.maxDepth = 0;
+                vk_viewport.minDepth = 0;
+				vk_viewport.maxDepth = 1;
  				return vk_viewport;
 			}
 
@@ -118,7 +118,6 @@ namespace Canella
 
 			VkPresentModeKHR Swapchain::choosePresentationMode(std::vector<VkPresentModeKHR> &presentModes)
 			{
-				// We look for mailBox which is the one with highest FPS
 				for (const auto &presentMode : presentModes)
 				{
 					if (presentMode == VK_PRESENT_MODE_MAILBOX_KHR)

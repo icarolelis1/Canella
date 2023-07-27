@@ -46,9 +46,10 @@ void Canella::SerializeMeshAsset(nlohmann::json &data, entt::registry &registry,
 {
     registry.emplace<ModelAssetComponent>(entity);
     const auto view = registry.view<ModelAssetComponent>();
-    auto &[model, source, isStatic] = view.get<ModelAssetComponent>(entity);
+    auto &[model, source, isStatic,instance_count] = view.get<ModelAssetComponent>(entity);
     source = data["Source"].get<std::string>();
     isStatic = data["Static"].get<bool>();
+    model.instance_count = data["InstanceCount"].get<std::uint32_t>();
 
     // Pass the model matrix pointer to mesh comming from TransformComponent
     const auto view_transform = registry.view<TransformComponent>();
