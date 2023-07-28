@@ -125,15 +125,12 @@ namespace Canella
                 info.sType = VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO;
                 info.queryType = VK_QUERY_TYPE_PIPELINE_STATISTICS;
                 info.pipelineStatistics =
-                        VK_QUERY_PIPELINE_STATISTIC_CLIPPING_INVOCATIONS_BIT|
-                        VK_QUERY_PIPELINE_STATISTIC_TASK_SHADER_INVOCATIONS_BIT_EXT|
-                        VK_QUERY_PIPELINE_STATISTIC_INPUT_ASSEMBLY_PRIMITIVES_BIT |
-                        VK_QUERY_PIPELINE_STATISTIC_CLIPPING_INVOCATIONS_BIT |
-                        VK_QUERY_PIPELINE_STATISTIC_CLIPPING_PRIMITIVES_BIT |
-                        VK_QUERY_PIPELINE_STATISTIC_FRAGMENT_SHADER_INVOCATIONS_BIT;
+                        VK_QUERY_PIPELINE_STATISTIC_CLIPPING_INVOCATIONS_BIT;
+                        VK_QUERY_PIPELINE_STATISTIC_MESH_SHADER_INVOCATIONS_BIT_EXT |
+                        VK_QUERY_PIPELINE_STATISTIC_TASK_SHADER_INVOCATIONS_BIT_EXT;
 
-                info.queryCount = 6;
-                renderQueries.statistics.resize(6);
+                info.queryCount = 3;
+                renderQueries.statistics.resize(3);
                 VK_CHECK(vkCreateQueryPool(device->getLogicalDevice(),&info,device->getAllocator(),&renderQueries.statistics_pool),"Failed to create timestamp pool");
 
                 VkQueryPoolCreateInfo timeInfo{};

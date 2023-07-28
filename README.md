@@ -15,9 +15,12 @@ Experiments on crafting a 3D vulkan game engine.
 - ImGui Implementation
 - Graphic setup serialization (Creation of Renderpass and Pipelines) in json FORMAT.
 - RenderGraph to automatically create the render passes and write attachments (WORK IN PROGRESS).
+- Hierarchical Depth Pyramid for Occlusion Culling.
+
+
+  [![IMAGE ALT TEXT](http://img.youtube.com/vi/1xOx2P4L2v4/0.jpg)](http://www.youtube.com/watch?v=1xOx2P4L2v4 "Cluster Visualization")
 
 ### Features To be done
-- Use DrawMeshtaksIndirect and more advanced culling (Frustum Culling and triangle culling)
 - Vertex Skinning and
 - Implement more render nodes (PBR path with indirect diffuse, HBAO+,Bloom etc...)
 - Multhread command buffer generation

@@ -76,7 +76,6 @@ MeshProcessing::Mesh::Mesh(std::vector<Vertex>& _vertices, std::vector<uint32_t>
         face.vertices[1] = v2;
         face.vertices[2] = v3;
 
-
         triangles.push_back(face);
 
         edges[edge1]->next = edges[edge2];

@@ -230,7 +230,6 @@ void Canella::Editor::render_editor_gui(VkCommandBuffer &command_buffer, uint32_
     ImGui ::Render();
         ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), command_buffer);
     render_passes["imgui"]->endRenderPass(command_buffer);
-  //  current_frame.secondaryPool.endCommandBuffer(command_buffer);
 }
 
 void Canella::Editor::editor_layout()
@@ -238,6 +237,7 @@ void Canella::Editor::editor_layout()
     if (display_statistics)
     {
         ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0xff, 0xff, 0xff, 0xff));
+
         if (!ImGui::Begin("Canella"))
         {
             ImGui::End();
@@ -245,20 +245,21 @@ void Canella::Editor::editor_layout()
             return;
         }
         ImGui::PopStyleColor();
+        ImGui::Text("FPS %.2f",double(1.0/application->frame_time)* 2000);
+       // ImGui::Text("Frame Time %f (ms)",double(application->frame_time/2.0));
 
-        // if (ImGui::BeginMainMenuBar())
-        // {
-        //     if (ImGui::BeginMenu("Menu"))
-        //     {
-        //         if (ImGui::MenuItem("Quit"))
-        //         {
-        //             Canella::Logger::Info("Quit");
-        //         }
-        //         ImGui::EndMenu();
-        //     }
-        //     ImGui::EndMainMenuBar();
-        // }
-        auto i = 0;
+       if (ImGui::BeginMainMenuBar())
+       {
+           if (ImGui::BeginMenu("Menu"))
+           {
+               if (ImGui::MenuItem("Quit"))
+               {
+                   Canella::Logger::Info("Quit");
+               }
+               ImGui::EndMenu();
+           }
+           ImGui::EndMainMenuBar();
+       }
         out_put_stats.invoke();
         ImGui::End();
     }

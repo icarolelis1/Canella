@@ -203,8 +203,8 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
     vkCmdBeginQuery(command_buffer,queries.statistics_pool,0,0);
     if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT ,queries.timestamp_pool,0);
     draw_indirect(*early_pass.get(), true);
-    vkCmdEndQuery(command_buffer,queries.statistics_pool,0);
     if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool, 1);
+
     //Update the Pyramid Depth
     if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool,2);
     update_hiz_chain(render,command_buffer,index);
@@ -218,6 +218,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
     draw_indirect(*late_pass.get(), true);
     if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool, 7);
 
+    vkCmdEndQuery(command_buffer,queries.statistics_pool,0);
 
     auto pyramid = resource_manager.get_image_cached(hiz_depth.pyramidImage);
     VkImageMemoryBarrier copyBarriers[] =
@@ -315,7 +316,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::compute_frustum_culling
     auto extent = swapchain.getExtent();
     auto f = 1.0f / tanf(70 / 2.0f);
     auto c1 = f/( float(extent.height) / float(extent.width) );
-    culling_data.width_height_padding = glm::vec4(float(hiz_depth.base_width),float(hiz_depth.base_height),0,0);
+    culling_data.width_height_padding = glm::vec4(float(extent.width),float(extent.height),0,0);
     culling_data.coefficients_width_znear = glm::vec4(c1,projection_view_transposed[1][1],0.01f,0.0f);
 
     auto total_geometry_count = 0;
@@ -415,22 +416,14 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute_occlusion_culli
 
 void Canella::RenderSystem::VulkanBackend::GeometryPass::output_stats()
 {
-    /*
-     *     VK_QUERY_PIPELINE_STATISTIC_CLIPPING_INVOCATIONS_BIT|
-                        VK_QUERY_PIPELINE_STATISTIC_TASK_SHADER_INVOCATIONS_BIT_EXT|
-                        VK_QUERY_PIPELINE_STATISTIC_INPUT_ASSEMBLY_PRIMITIVES_BIT |
-                        VK_QUERY_PIPELINE_STATISTIC_CLIPPING_INVOCATIONS_BIT |
-                        VK_QUERY_PIPELINE_STATISTIC_CLIPPING_PRIMITIVES_BIT |
-                        VK_QUERY_PIPELINE_STATISTIC_FRAGMENT_SHADER_INVOCATIONS_BIT;
-     */
     if (!debug_statics) return;
     auto n_second_convert = device->timestamp_period / 1000000.0f;
-    ImGui::Text("Clipping Inv : %.1f  ",double(queries.statistics[0]));
-    ImGui::Text("Task Inv : %.1f  ",double(queries.statistics[1]));
-    ImGui::Text("Clipping Prim inv:  %.1f  ",double(queries.statistics[2]));
-    ImGui::Text("Frustum %.2f  ms",double((queries.time_stamps[9] - queries.time_stamps[8]) * n_second_convert));
+    ImGui::Text("Clipping Prim Inv : %.1f  ",double(queries.statistics[0]));
+    ImGui::Text("Mesh Shader inv:  %lf ",double(queries.statistics[1]));
+    ImGui::Text("Task Shader Inv : %lf  ",double(queries.statistics[2]));
     ImGui::Text("Early pass %.2f ms",double( (queries.time_stamps[1] - queries.time_stamps[0] )* n_second_convert));
-   ImGui::Text("Pyramid Update Pass %.2f  ms", double((queries.time_stamps[3] - queries.time_stamps[2]) * n_second_convert));
+    ImGui::Text("Frustum %.2f  ms",double((queries.time_stamps[9] - queries.time_stamps[8]) * n_second_convert));
+    ImGui::Text("Pyramid Update Pass %.2f  ms", double((queries.time_stamps[3] - queries.time_stamps[2]) * n_second_convert));
     ImGui::Text("Occlusion Culling %.2f ms",double((queries.time_stamps[5] - queries.time_stamps[4]) * n_second_convert));
     ImGui::Text("Late pass%.2f ms",double((queries.time_stamps[7] - queries.time_stamps[6]) * n_second_convert));
 
@@ -526,7 +519,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::create_resource_buffers
             std::vector<glm::vec3> points(draw_count);
             auto sqrt = std::floor(std::sqrt(drawable.instance_count));
             auto i = 0;
-            auto res =1.5;
+            auto res =2.5;
             for(auto  x = 0; x < sqrt; x++)
                 for (auto z = 0 ; z < sqrt ; ++z)
                 {

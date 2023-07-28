@@ -127,7 +127,8 @@ void VulkanRender::render(glm::mat4 &view, glm::mat4 &projection)
     {
         Canella::Logger::Info("--------- CALLING EVENT OnLostSwapchain ---------");
         OnLostSwapchain.invoke(this);
-        return;
+        queued_semaphores.clear();
+
     }
     if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
         throw std::runtime_error("failed to acquire swap chain image!");
@@ -146,7 +147,7 @@ void VulkanRender::render(glm::mat4 &view, glm::mat4 &projection)
     view_projection.projection      = projection;
 
     refBuffer->udpate(view_projection);
-    record_command_index(frame_data.commandBuffer, current_frame);
+    record_command_index(frame_data.commandBuffer, next_image_index);
 
     queued_semaphores.push_back(frame_data.imageAcquiredSemaphore);
     VkSubmitInfo submit_info = {};
@@ -192,7 +193,6 @@ void VulkanRender::render(glm::mat4 &view, glm::mat4 &projection)
     }
     current_frame = (current_frame + 1) % 3;
     queued_semaphores.clear();
-
 
 }
 
