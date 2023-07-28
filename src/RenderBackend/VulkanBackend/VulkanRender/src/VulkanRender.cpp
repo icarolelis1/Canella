@@ -113,87 +113,86 @@ void VulkanRender::render(glm::mat4 &view, glm::mat4 &projection)
 {
     FrameData &frame_data = frames[current_frame];
     vkWaitForFences(device.getLogicalDevice(), 1, &frame_data.imageAvaibleFence, VK_TRUE, UINT64_MAX);
-
-    if (dispatch_on_enqueue)
-        OnEnqueueDrawable.invoke(this);
-    dispatch_on_enqueue = false;
-
     uint32_t next_image_index;
-    VkResult result = vkAcquireNextImageKHR(device.getLogicalDevice(), swapChain.get_swap_chain_handle(), UINT64_MAX, frame_data.imageAcquiredSemaphore,
+    VkResult result = vkAcquireNextImageKHR(device.getLogicalDevice(),
+                                            swapChain.get_swap_chain_handle(),
+                                            UINT64_MAX,
+                                            frame_data.imageAcquiredSemaphore,
                                             VK_NULL_HANDLE,
                                             &next_image_index);
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR)
-    {
-        Canella::Logger::Info("--------- CALLING EVENT OnLostSwapchain ---------");
         OnLostSwapchain.invoke(this);
-        queued_semaphores.clear();
 
-    }
     if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
         throw std::runtime_error("failed to acquire swap chain image!");
 
     vkResetFences(device.getLogicalDevice(), 1, &frame_data.imageAvaibleFence);
-    auto refBuffer = resources_manager.get_buffer_cached(global_buffers[current_frame]);
+    update_view_projection( view, projection, next_image_index );
 
-    dispatch_on_enqueue             = false;
-    render_camera_data.projection   = projection;
-    render_camera_data.view         = view;
-
-    ViewProjection view_projection{};
-    view_projection.view_projection = projection * view;
-    view_projection.eye             = -glm::vec4(view[3]);
-    view_projection.view            = view;
-    view_projection.projection      = projection;
-
-    refBuffer->udpate(view_projection);
-    record_command_index(frame_data.commandBuffer, next_image_index);
-
+    //todo  add space between current frame and next. FIX The syncronization issue.
+    record_command_index(frame_data.commandBuffer, current_frame);
     queued_semaphores.push_back(frame_data.imageAcquiredSemaphore);
-    VkSubmitInfo submit_info = {};
-    submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
     std::vector<VkPipelineStageFlags> wait_stages;
     wait_stages.push_back(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
 
-    for (auto i = 1; i < queued_semaphores.size(); ++i)
-        wait_stages.push_back(VK_PIPELINE_STAGE_TRANSFER_BIT);
-
+    VkSubmitInfo submit_info = {};
+    submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
     submit_info.waitSemaphoreCount = uint32_t(queued_semaphores.size());
     submit_info.pWaitSemaphores    = queued_semaphores.data();
     submit_info.pWaitDstStageMask  = wait_stages.data();
-
     submit_info.commandBufferCount = 1;
     submit_info.pCommandBuffers = &frame_data.commandBuffer;
-
     submit_info.signalSemaphoreCount = 1;
     submit_info.pSignalSemaphores = &frame_data.renderFinishedSemaphore;
 
-    (vkQueueSubmit(device.getGraphicsQueueHandle(), 1, &submit_info, frame_data.imageAvaibleFence));
+    const VkSwapchainKHR swap_chains[] = {swapChain.get_swap_chain_handle()};
+    vkQueueSubmit(device.getGraphicsQueueHandle(), 1, &submit_info, frame_data.imageAvaibleFence);
 
     VkPresentInfoKHR present_info      = {};
     present_info.sType                 = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
     present_info.waitSemaphoreCount    = 1;
     present_info.pWaitSemaphores       = &frame_data.renderFinishedSemaphore;
-    const VkSwapchainKHR swap_chains[] = {swapChain.get_swap_chain_handle()};
     present_info.swapchainCount        = 1;
     present_info.pSwapchains           = swap_chains;
     present_info.pImageIndices         = &next_image_index;
-
     result = vkQueuePresentKHR(device.getGraphicsQueueHandle(), &present_info);
 
-    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
+    if(enqueue_new_mesh)
     {
-        Canella::Logger::Info("--------- CALLING EVENT OnLostSwapchain ---------");
+        for(auto& mesh : drawables_to_be_inserted)
+            m_drawables.push_back(mesh);
+        drawables_to_be_inserted.clear();
+        enqueue_new_mesh = false;
+        should_reload = 1;
+    }
+
+    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || should_reload != 0)
+    {
+        queued_semaphores.clear();
         OnLostSwapchain.invoke(this);
+        should_reload--;
     }
     else if (result != VK_SUCCESS)
-    {
         throw std::runtime_error("failed to present swap chain image!");
-    }
+
     current_frame = (current_frame + 1) % 3;
     queued_semaphores.clear();
+    enqueue_new_mesh = false;
 
+}
+
+void VulkanRender::update_view_projection( glm::mat4 &view, glm::mat4 &projection, uint32_t next_image_index ) {
+    auto refBuffer = resources_manager.get_buffer_cached( global_buffers[next_image_index]);
+    render_camera_data.projection = projection;
+    render_camera_data.view       = view;
+    ViewProjection view_projection{};
+    view_projection.view_projection = projection * view;
+    view_projection.eye             = -glm::vec4(view[3]);
+    view_projection.view            = view;
+    view_projection.projection      = projection;
+    refBuffer->udpate(view_projection);
 }
 
 void VulkanRender::init_descriptor_pool()
@@ -338,6 +337,7 @@ void VulkanRender::setup_internal_renderer_events()
     std::function<void(Canella::Render *)> reload_fn_pass_manager = [=](Canella::Render *)
     {
         vkDeviceWaitIdle(device.getLogicalDevice());
+
         // Get Window Surface
         auto glfw_window = dynamic_cast<GlfwWindow *>(window);
         glfw_window->getSurface(instance->handle, &surface);
@@ -364,8 +364,7 @@ void VulkanRender::setup_internal_renderer_events()
         global_descriptors.clear();
         transform_descriptors.clear();
         // Rebuild Frames command pool and semaphores
-        for (auto &frame : frames)
-            frame.rebuild();
+        for (auto &frame : frames)frame.rebuild();
         // Rebuild Renderpasses
         renderpassManager.rebuild(&device, &swapChain, &resources_manager);
         // Recreate the uniform buffers
@@ -377,7 +376,13 @@ void VulkanRender::setup_internal_renderer_events()
         // recreate the transform buffers
         create_transform_buffers();
     };
+    std::function<void(Extent)> resize_fn = [=](Extent extent)
+    {
+       this->should_reload = 1;
+    };
+
     Event_Handler<Canella::Render *> reload_renderpass_manager(reload_fn_pass_manager);
+    Event_Handler<Extent> reload_on_resize(resize_fn);
 
     std::function<void(VkSemaphore &)> submite_transfer = [=](VkSemaphore &semaphore)
     {
@@ -388,6 +393,8 @@ void VulkanRender::setup_internal_renderer_events()
     resources_manager.OnTransferCommand += submite_transfer_command_handler;
     OnLostSwapchain += reload_renderpass_manager;
     OnEnqueueDrawable += reload_fn_pass_manager;
+    auto glfw_window = dynamic_cast<GlfwWindow *>(window);
+    glfw_window->OnWindowResize += reload_on_resize;
 }
 
 void VulkanRender::enqueue_waits(VkSemaphore semaphore)
@@ -412,14 +419,7 @@ void VulkanRender::begin_command_buffer(VkCommandBuffer cmd)
 
 void Canella::RenderSystem::VulkanBackend::VulkanRender::enqueue_drawable(ModelMesh &mesh)
 {
-    m_drawables.push_back(mesh);
-    dispatch_on_enqueue = true;
+    drawables_to_be_inserted.push_back(mesh);
+    enqueue_new_mesh = true;
     Canella::Logger::Debug("%d drawables", m_drawables.size());
 }
-
-#if RENDER_EDITOR_LAYOUT
-std::vector<Canella::TimeQueries *> VulkanRender::get_render_graph_timers()
-{
-    return render_graph.time_queries;
-}
-#endif

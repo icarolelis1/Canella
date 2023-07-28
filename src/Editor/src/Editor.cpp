@@ -31,8 +31,6 @@ Canella::Editor::Editor()
     // Setup ImGui codee
 #if RENDER_EDITOR_LAYOUT
     setup_imgui();
-    // Get Time Queriries written by the render_graph
-    time_queries = render.get_render_graph_timers();
 #endif
     bind_shortcuts();
 }
@@ -65,14 +63,14 @@ void Canella::Editor::bind_shortcuts()
             game_mode = !game_mode;
         }
 
-        if (key == GLFW_KEY_Y && action == InputAction::RELEASE && false)
+        if (key == GLFW_KEY_Y && action == InputAction::RELEASE)
         {
             //Todo put all this process in a clean api
             Entity model_entity = application->scene->CreateEntity();
             auto& trans = model_entity.get_component<TransformComponent>();
-            trans.position = glm::vec3(RandomFloat(-20.0f,20.0f),0,RandomFloat(0.f,5.0f));
+            trans.position = glm::vec3(RandomFloat(-2.0f,2.0f),1,RandomFloat(0.f,5.0f));
             auto asset = model_entity.add_component<ModelAssetComponent>();
-            asset.source = "model_test/mario.glb";
+            asset.source = "model_test/just_a_girl.glb";
             AssetSystem::instance().load_asset(asset);
             asset.mesh.model_matrix = &trans.modelMatrix;
             application->submit_loaded_model(asset.mesh);

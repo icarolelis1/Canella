@@ -74,7 +74,7 @@ namespace Canella
         std::vector<Mesh> meshes;
         glm::mat4 *model_matrix;
         Meshlet meshlet_compositions;
-        uint32_t instance_count;
+        uint32_t instance_count = 1;
     };
 
 

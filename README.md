@@ -18,7 +18,7 @@ Experiments on crafting a 3D vulkan game engine.
 - Hierarchical Depth Pyramid for Occlusion Culling.
 
 
-  [![IMAGE ALT TEXT](http://img.youtube.com/vi/1xOx2P4L2v4/0.jpg)](http://www.youtube.com/watch?v=1xOx2P4L2v4 "Cluster Visualization")
+[![IMAGE ALT TEXT](http://img.youtube.com/vi/1xOx2P4L2v4/0.jpg)](http://www.youtube.com/watch?v=1xOx2P4L2v4 "Cluster Visualization")
 
 ### Features To be done
 - Vertex Skinning and

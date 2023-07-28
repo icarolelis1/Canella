@@ -261,6 +261,7 @@ void ResourcesManager::destroy_resources()
     auto it = resource_cache.begin();
     for (auto it = resource_cache.begin(); it != resource_cache.end(); ++it)
         it->second.reset();
+    resource_cache.clear();
 }
 
 Image::Image(Device *_device,

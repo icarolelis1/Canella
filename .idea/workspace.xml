@@ -36,32 +36,13 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/imgui.ini" beforeDir="false" afterPath="$PROJECT_DIR$/imgui.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/assets/model_test/blocker.glb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/assets/model_test/cube.glb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/assets/model_test/ferrari_550_barchetta_2000_azzurro_hyperion.glb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/assets/model_test/low_poly_tree_scene_free.glb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/assets/model_test/many_girls.glb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/assets/model_test/mario.glb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/assets/model_test/mc__dummy_monster.glb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/assets/model_test/mossygrassy_landscape.glb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/assets/model_test/samus.glb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/assets/model_test/spheres.glb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/assets/model_test/sponza.obj" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/assets/model_test/stage.glb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/assets/model_test/stream.glb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/assets/model_test/subsurface_scattering_sss_demo_lara.glb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/assets/model_test/super_sphere.glb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/assets/model_test/wall.glb" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/scenes/scene.json" beforeDir="false" afterPath="$PROJECT_DIR$/resources/scenes/scene.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/shaders/occlusion.comp" beforeDir="false" afterPath="$PROJECT_DIR$/resources/shaders/occlusion.comp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/shaders/spirv/occlusion.comp.spv" beforeDir="false" afterPath="$PROJECT_DIR$/resources/shaders/spirv/occlusion.comp.spv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Editor/src/Editor.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Editor/src/Editor.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Project/src/Project.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Project/src/Project.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/CanellaUtility/src/CanellaUtility.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/CanellaUtility/src/CanellaUtility.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Mesh/src/Mesh.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Mesh/src/Mesh.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Render/include/Render/Render.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Render/include/Render/Render.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/RenderNodes.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/RenderNodes.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Resources/src/Resources.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Resources/src/Resources.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/VulkanRender/include/VulkanRender/VulkanRender.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/VulkanRender/include/VulkanRender/VulkanRender.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/VulkanRender/src/VulkanRender.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/VulkanRender/src/VulkanRender.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Systems/src/Systems.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Systems/src/Systems.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -299,7 +280,9 @@
       <workItem from="1690390929029" duration="1638000" />
       <workItem from="1690399904791" duration="17057000" />
       <workItem from="1690456085818" duration="26038000" />
-      <workItem from="1690553969893" duration="743000" />
+      <workItem from="1690553969893" duration="4224000" />
+      <workItem from="1690558296613" duration="320000" />
+      <workItem from="1690570839795" duration="7875000" />
     </task>
     <servers />
   </component>
@@ -335,26 +318,6 @@
           <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Mesh/src/Mesh.cpp</url>
           <line>368</line>
           <option name="timeStamp" value="581" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/RenderNodes.cpp</url>
-          <line>516</line>
-          <option name="timeStamp" value="624" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/RenderNodes.cpp</url>
-          <line>540</line>
-          <option name="timeStamp" value="625" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/RenderNodes.cpp</url>
-          <line>541</line>
-          <option name="timeStamp" value="626" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/RenderNodes.cpp</url>
-          <line>425</line>
-          <option name="timeStamp" value="627" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

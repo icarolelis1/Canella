@@ -31,38 +31,6 @@
         ]
       },
       {
-        "Name" : "Wall1",
-        "Parent": "Root",
-        "Components": [
-          {
-            "type": "Transform",
-            "Position": {
-              "x": 3.0,
-              "y": 0.0,
-              "z": -80.0
-            },
-
-            "Scale": {
-              "x": 3,
-              "y": 3,
-              "z": 3
-            },
-            "Rotation": {
-              "x": 0,
-              "y": 0,
-              "z": 0
-            }
-          },
-          {
-            "type": "MeshAsset",
-            "Static": true,
-            "Source": "model_test/wall.glb",
-            "InstanceCount" : 1
-          }
-        ]
-      },
-
-      {
         "Parent": "Root",
         "Components": [
           {

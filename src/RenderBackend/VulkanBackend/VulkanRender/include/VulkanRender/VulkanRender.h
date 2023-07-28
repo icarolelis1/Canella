@@ -32,6 +32,28 @@ namespace Canella
 
             class VulkanRender : public Render
             {
+
+
+                struct AsyncTransferJob
+                {
+                    VkCommandBuffer              cmd         = VK_NULL_HANDLE;
+                    uint32_t                     frameSignal = 0;
+                    VkSemaphore                  semaphore   = VK_NULL_HANDLE;
+                    VkFence                      fence       = VK_NULL_HANDLE;
+                    bool                         print       = true;
+                    uint64_t                     purgeableResources;
+                };
+
+                struct TestTransfer
+                {
+                    AsyncTransferJob  transfer;
+                    Commandpool        transferCmdPool;
+                    VkFence            transferFence;
+                    VkSemaphore        transferSemaphore;
+
+                };
+
+
             public:
                 /**
                  * @brief Constructs a vulkan Renderer
@@ -96,10 +118,6 @@ namespace Canella
                 void enqueue_drawable(ModelMesh& mesh) override;
 
                 Event<VkCommandBuffer &, uint32_t &> OnRecordCommandEvent;
-#if RENDER_EDITOR_LAYOUT
-                std::vector<TimeQueries *> get_render_graph_timers();
-
-#endif
                 PFN_vkCmdDrawMeshTasksEXT vkCmdDrawMeshTasksEXT;
                 PFN_vkCmdDrawMeshTasksIndirectEXT vkCmdDrawMeshTasksIndirectEXT;
                 PFN_vkCmdDrawMeshTasksIndirectCountEXT vkCmdDrawMeshTasksIndirectCountEXT;
@@ -108,8 +126,8 @@ namespace Canella
                 Pipelines cachedPipelines;
                 PipelineLayouts cachedPipelineLayouts;
                 DescriptorSetLayouts cachedDescriptorSetLayouts;
-                bool dispatch_on_enqueue = false;
-                RenderpassManager renderpassManager;
+                bool                 enqueue_new_mesh = false;
+                RenderpassManager    renderpassManager;
                 std::vector<FrameData> frames;
                 std::vector<VkDescriptorSet> global_descriptors;
                 std::vector<VkDescriptorSet> transform_descriptors;
@@ -126,6 +144,7 @@ namespace Canella
                 std::vector<ResourceAccessor> global_buffers;
                 std::vector<ResourceAccessor> transform_buffers;
                 Drawables m_drawables;
+                Drawables drawables_to_be_inserted;
                 RenderGraph render_graph;
                 Windowing *window;
                 Commandpool command_pool;
@@ -144,8 +163,10 @@ namespace Canella
                 void init_vulkan_instance();
                 void destroy_pipelines();
                 void setup_frames();
-
+                int8_t should_reload =  0;
                 void get_device_proc();
+
+                void update_view_projection( glm::mat4 &view, glm::mat4 &projection, uint32_t next_image_index );
             };
         }
     }

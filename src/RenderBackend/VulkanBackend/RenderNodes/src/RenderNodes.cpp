@@ -3,7 +3,7 @@
 #include "CanellaUtility/CanellaUtility.h"
 #include <imgui.h>
 
-
+//todo please Icaro, I trust you to clean this file.
 
 std::array<glm::vec2,4> Canella::RenderSystem::VulkanBackend::GeometryPass::occlusion_test(glm::mat4 view, glm::mat4 projection, glm::vec3 center,float radius)
 {
@@ -72,7 +72,6 @@ std::array<glm::vec2,4> Canella::RenderSystem::VulkanBackend::GeometryPass::occl
     return r;
 
     //Get 4 samples from Hi-Z
-    glm::vec4 samples;
 /*    samples.x = textureLod( depthPyramid,ndc_corner_0* 0.5, level ).x;
     samples.y = textureLod( depthPyramid,ndc_corner_1* 0.5, level ).x;
     samples.z = textureLod( depthPyramid,ndc_corner_2* 0.5, level ).x;
@@ -636,7 +635,6 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::write_descriptorsets_cu
     auto &resource_manager = vulkan_renderer->resources_manager;
     auto number_of_images = vulkan_renderer->swapChain.get_number_of_images();
     auto &drawables = vulkan_renderer->get_drawables();
-
     geometry_data_descriptors.resize( drawables.size());
 
     for (auto i = 0; i < drawables.size(); ++i)
@@ -645,18 +643,13 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::write_descriptorsets_cu
         geometry_data_descriptors[i].culling_descriptorset.resize( number_of_images);
         for (auto j = 0; j < number_of_images; ++j)
         {
-            descriptor_pool.allocate_descriptor_set( vulkan_renderer->device,
-                                                     cached_descriptor_set_layouts["CommandProcessor"],
-                                                     geometry_data_descriptors[i].descriptor_sets[j]);
-
-            descriptor_pool.allocate_descriptor_set( vulkan_renderer->device,
-                                                     cached_descriptor_set_layouts["OcclusionCulling"],
-                                                     geometry_data_descriptors[i].culling_descriptorset[j]);
+            descriptor_pool.allocate_descriptor_set( vulkan_renderer->device,cached_descriptor_set_layouts["CommandProcessor"],geometry_data_descriptors[i].descriptor_sets[j]);
+            descriptor_pool.allocate_descriptor_set( vulkan_renderer->device,cached_descriptor_set_layouts["OcclusionCulling"],geometry_data_descriptors[i].culling_descriptorset[j]);
 
             auto draw_indirect = resource_manager.get_buffer_cached(draw_indirect_buffers[i]);
             auto meshes_buffer = resource_manager.get_buffer_cached(resource_static_meshes[i]);
             auto count_buffers = resource_manager.get_buffer_cached(command_count_buffers[i]);
-            auto occlusion_visibility = resource_manager.get_buffer_cached(occlusion_visibility_buffer[i]);
+            auto occlusion_visibility = resource_manager.get_buffer_cached(occlusion_visibility_buffer[j]);
 
             std::vector<VkDescriptorBufferInfo> buffer_infos;
             std::vector<VkDescriptorImageInfo> image_infos;
@@ -665,15 +658,12 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::write_descriptorsets_cu
             buffer_infos[0].buffer = draw_indirect->getBufferHandle();
             buffer_infos[0].offset = static_cast<uint32_t>(0);
             buffer_infos[0].range  = draw_indirect->size;
-
             buffer_infos[1].buffer = meshes_buffer->getBufferHandle();
             buffer_infos[1].offset = static_cast<uint32_t>(0);
             buffer_infos[1].range  = meshes_buffer->size;
-
             buffer_infos[2].buffer = count_buffers->getBufferHandle();
             buffer_infos[2].offset = static_cast<uint32_t>(0);
             buffer_infos[2].range  = count_buffers->size;
-
             buffer_infos[3].buffer = occlusion_visibility->getBufferHandle();
             buffer_infos[3].offset = static_cast<uint32_t>(0);
             buffer_infos[3].range  = occlusion_visibility->size;
@@ -682,6 +672,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::write_descriptorsets_cu
             resource_manager.write_descriptor_sets( geometry_data_descriptors[i].descriptor_sets[j],buffer_infos,image_infos,true);
 
             image_infos.resize(1);
+
             auto pyramid = resource_manager.get_image_cached(hiz_depth.pyramidImage);
             VkDescriptorImageInfo image_info{};
             image_info.sampler =    hiz_depth.regular_sampler;
