@@ -75,6 +75,7 @@ namespace Canella
         glm::mat4 *model_matrix;
         Meshlet meshlet_compositions;
         uint32_t instance_count = 1;
+        bool is_static = false;
     };
 
 

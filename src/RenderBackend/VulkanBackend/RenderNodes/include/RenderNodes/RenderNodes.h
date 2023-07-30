@@ -44,6 +44,12 @@ namespace Canella
                     uint32_t meshlet_count;
                 };
 
+                struct alignas(16) SpecializedDrawTasks
+                {
+                    glm::mat4 model_matrix;
+                    bool dyamic;
+                };
+
                 struct DescriptorPerDrawable
                 {
                     std::vector<VkDescriptorSet> descriptor_sets;

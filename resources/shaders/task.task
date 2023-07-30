@@ -48,6 +48,12 @@ layout( set = 2 ,binding = 6) readonly buffer MeshData
 	StaticMeshData static_meshes[];
 };
 
+ layout( push_constant ) uniform block
+ {
+    SpecializedDrawTasks specialize_mesh;
+ };
+
+
 
 struct Task
 {
@@ -71,8 +77,15 @@ void main()
    
   MeshletBound bound = bounds[thread_meshlet];
   vec3 cone_apex = bound.cone_apex.xyz;
-  vec4 cone =  model_matrices[mesh_data.mesh_id]*vec4(cone_apex.xyz/127 + mesh_data.pos,1);
-  vec4 cone_axis = model_matrices[mesh_data.mesh_id]* bound.cone_axis/127.f;
+
+ mat4 model;
+ if(specialize_mesh.dyamic == false)
+    model = model_matrices[mesh_data.mesh_id];
+ else
+    model = specialize_mesh.model_matrix;
+
+  vec4 cone =  model*vec4(cone_apex.xyz/127 + mesh_data.pos,1);
+  vec4 cone_axis = model * bound.cone_axis/127.f;
   vec3 direction = normalize( cone.xyz - ubo.eye.xyz);
   bool accept = !cone_cull(cone_axis.xyz,direction,bound.cone_cutoff.x);
    

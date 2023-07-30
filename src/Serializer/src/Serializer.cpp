@@ -55,13 +55,13 @@ void Canella::Serializer::LoadComponents(
     {
         const std::string type = component_data["type"].get<std::string>();
         if(type == "Transform")
-            SerializeTransform(component_data,scene->m_registry,entity);
+            SerializeTransform( component_data, scene->registry, entity);
         else if(type == "Camera")
-            SerializeCamera(component_data,scene->m_registry,entity);
+            SerializeCamera( component_data, scene->registry, entity);
         else if(type == "MeshAsset")
-            SerializeMeshAsset(component_data,scene->m_registry,entity);
+            SerializeMeshAsset( component_data, scene->registry, entity);
         else if( type == "CameraEditor")
-            SerializeCameraEditor(component_data,scene->m_registry,entity);
+            SerializeCameraEditor( component_data, scene->registry, entity);
     }
 }
 
@@ -79,14 +79,14 @@ void Canella::Serializer::DeserializeEntities(
     out_put["Scene"]["Entities"] =  nlohmann::json::array();
     nlohmann::json &entities =  out_put["Scene"]["Entities"] ;
     
-    auto iterator = scene->m_EntityLibrary.begin();
-    while(iterator != scene->m_EntityLibrary.end())
+    auto iterator = scene->entityLibrary.begin();
+    while(iterator != scene->entityLibrary.end())
     {
         nlohmann::json entity;
         entity["Components"] = nlohmann::json::array();
         nlohmann::json& components = entity["Components"];
         
-        auto view = scene->m_registry.view<TransformComponent,CameraComponent,ModelAssetComponent>();
+        auto view = scene->registry.view<TransformComponent,CameraComponent,ModelAssetComponent>();
         if(iterator->second->has_component<CameraComponent>())
         {
             nlohmann::json component;

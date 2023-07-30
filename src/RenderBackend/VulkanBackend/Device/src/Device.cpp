@@ -290,6 +290,8 @@ namespace Canella
                     queueCreateInfos.push_back(QcreateInfo);
                 }
 
+                VkPhysicalDeviceVulkan12Features features_12 = {VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES};
+
                 VkPhysicalDeviceFeatures features{};
                 features.samplerAnisotropy = VK_TRUE;
                 features.fillModeNonSolid = VK_TRUE;

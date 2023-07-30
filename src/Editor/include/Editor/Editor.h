@@ -7,7 +7,8 @@
 #include "Project/Project.h"
 #include "Logger/Logger.hpp"
 #include <Eventsystem/Eventsystem.hpp>
-
+#include "EditorLayer.h"
+#include <memory>
 #define BASE_CONFIG_FILE "resources\\config\\config.json"
 #define USE_BASE_SAMPLE 0
 
@@ -32,7 +33,6 @@ namespace Canella
     class StopPlayEvent : public Event<Canella::Editor &>
     {
     };
-
     class Editor
     {
     public:
@@ -42,8 +42,10 @@ namespace Canella
         void run_editor();
         void play();
         void stop();
-
+        std::weak_ptr<Entity> selected_entity;
     private:
+
+        Canella::EditorLayer layer;
         StartPlayEvent OnStartPlay;
         StopPlayEvent OnStopPlayEvent;
         std::unique_ptr<Canella::Application> application;
@@ -57,10 +59,13 @@ namespace Canella
         void editor_layout();
         void bind_shortcuts();
         bool playing = true;
-        OnOutputStatsEvent out_put_stats;
         //Windows
         bool display_statistics = true;
         bool game_mode = true;
+        //Editor Events
+        OnOutputStatsEvent out_put_stats;
+        OnSelectEntity on_select_entity;
+        OnDeselect on_deselect;
     };
 }
 

@@ -143,7 +143,10 @@ void MeshProcessing::load_asset_mesh(ModelMesh &model, const ::std::string &asse
     if (!assimpScene || assimpScene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !assimpScene->mRootNode)
         Logger::Error(importer.GetErrorString());
 
-    auto &[positions, normal, indices, meshes, matrix, meshlet_composition,instance_count] = model;
+    auto &[positions, normal, indices,
+           meshes,
+           matrix, meshlet_composition,
+           instance_count,is_static] = model;
     indices.clear();
     positions.clear();
     meshes.resize(assimpScene->mNumMeshes);

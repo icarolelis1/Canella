@@ -13,41 +13,41 @@ namespace Canella
     public:
         Entity() = default;
         ~Entity() = default;
-        Entity(entt::entity entity,std::weak_ptr<Scene> scene) : m_Scene(scene),handle(entity){}
+        Entity(entt::entity entity,std::weak_ptr<Scene> scene) : owner_scene( scene), handle( entity){}
 
         template<typename T,typename... Args>
         T& add_component(Args&&... args)
         {
             assert(!has_component<T>());
-            assert(!m_Scene.expired());
-            auto scene =  m_Scene.lock();
-            return scene->m_registry.emplace<T>(handle,std::forward<Args>(args)...);
+            assert(!owner_scene.expired());
+            auto scene =  owner_scene.lock();
+            return scene->registry.emplace<T>( handle, std::forward<Args>( args)...);
         }
 
         template<typename T>
         T& get_component()
         {
             assert(has_component<T>());
-            assert(!m_Scene.expired());
-            auto scene = m_Scene.lock();
-            return scene->m_registry.get<T>(handle);
+            assert(!owner_scene.expired());
+            auto scene = owner_scene.lock();
+            return scene->registry.get<T>( handle);
         }
 
         template<typename  T>
         void remove_component()
         {
             assert(has_component<T>());
-            auto scene = m_Scene.lock();
-            assert(m_Scene.expired());
-            scene->m_registry.remove<T>(handle);
+            auto scene = owner_scene.lock();
+            assert( owner_scene.expired());
+            scene->registry.remove<T>( handle);
         }
 
         template<typename T>
         bool has_component()
         {
-            auto scene =  m_Scene.lock();
+            auto scene =  owner_scene.lock();
             if(scene)
-                return scene->m_registry.any_of<T>(handle);
+                return scene->registry.any_of<T>( handle);
             return false;
         }
 
@@ -56,9 +56,14 @@ namespace Canella
             return handle;
         }
 
+        std::weak_ptr<Scene> get_owner_scene()
+        {
+            return owner_scene;
+        }
+
     private:
-        std::weak_ptr<Scene> m_Scene;
-        entt::entity handle;
+        std::weak_ptr<Scene> owner_scene;
+        entt::entity         handle;
     };
 }
 

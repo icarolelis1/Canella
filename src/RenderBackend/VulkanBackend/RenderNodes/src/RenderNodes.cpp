@@ -5,85 +5,6 @@
 
 //todo please Icaro, I trust you to clean this file.
 
-std::array<glm::vec2,4> Canella::RenderSystem::VulkanBackend::GeometryPass::occlusion_test(glm::mat4 view, glm::mat4 projection, glm::vec3 center,float radius)
-{
-    //Sphere center in view space
-    glm::vec4 view_center = view * glm::vec4(center,1.);
-
-    glm::vec4 eye_pos = -view[3];
-    float distance_to_sphere = distance(eye_pos,glm::vec4(center,1));
-    glm::vec3 sphere_to_eye = glm::normalize(center -  (glm::vec3(eye_pos.x,eye_pos.y,eye_pos.z)));
-
-    //Compute Camera Coordinate System
-    glm::vec3 camera_up    =  -glm::normalize(glm::vec3(view[1].x,view[1].y,view[1].z));
-    glm::vec3 camera_front =  -glm::normalize(glm::vec3(view[2].x,view[2].y,view[2].z));
-    glm::vec3 camera_right =   glm::normalize(glm::cross(sphere_to_eye, camera_up));
-
-    //math mytery
-    float f_radius =  distance_to_sphere * glm::tan(glm::asin(radius / distance_to_sphere));
-
-    glm::vec3 v_up_radius    =   camera_up    * f_radius;
-    glm::vec3 v_right_radius =   camera_right * f_radius;
-
-    //Compute AABB Corners
-    glm::vec4 world_corner_0 = glm::vec4( glm::vec3(center.x,center.y,center.z) + v_up_radius - v_right_radius, 1 ); // Top-Left
-    glm::vec4 world_corner_1 = glm::vec4( glm::vec3(center.x,center.y,center.z) + v_up_radius + v_right_radius, 1 ); // Top-Right
-    glm::vec4 world_corner_2 = glm::vec4( glm::vec3(center.x,center.y,center.z) - v_up_radius - v_right_radius, 1 ); // Bottom-Left
-    glm::vec4 world_corner_3 = glm::vec4( glm::vec3(center.x,center.y,center.z) - v_up_radius + v_right_radius, 1 ); // Bottom-Right
-
-    glm::mat4 view_projection = projection * view ;
-
-    //Project to Clip
-    glm::vec4 clip_corner_0 = view_projection * world_corner_0; // Top-Left
-    glm::vec4 clip_corner_1 = view_projection * world_corner_1; // Top-Right
-    glm::vec4 clip_corner_2 = view_projection * world_corner_2; // Bottom-Left
-    glm::vec4 clip_corner_3 = view_projection * world_corner_3; // Bottom-Right
-
-    //NDC Corners
-    glm::vec2 ndc_corner_0 = glm::vec2(clip_corner_0.x,clip_corner_0.y)/clip_corner_0.w;
-    glm::vec2 ndc_corner_1 = glm::vec2(clip_corner_1.x,clip_corner_1.y)/clip_corner_1.w;
-    glm::vec2 ndc_corner_2 = glm::vec2(clip_corner_2.x,clip_corner_2.y)/clip_corner_2.w;
-    glm::vec2 ndc_corner_3 = glm::vec2(clip_corner_3.x,clip_corner_3.y)/clip_corner_3.w;
-
-    //Convert to viewportspace (invert Y)
-    ndc_corner_0 = glm::vec2(ndc_corner_0.x *0.5 + 0.5,ndc_corner_0.y * -0.5 + 0.5); // Top-Left
-    ndc_corner_1 = glm::vec2(ndc_corner_1.x *0.5 + 0.5,ndc_corner_1.y * -0.5 + 0.5); // Top-Right
-    ndc_corner_2 = glm::vec2(ndc_corner_2.x *0.5 + 0.5,ndc_corner_2.y * -0.5 + 0.5); // Bottom-Left
-    ndc_corner_3 = glm::vec2(ndc_corner_3.x *0.5 + 0.5,ndc_corner_3.y * -0.5 + 0.5); // Bottom-Right
-
-    std::array<glm::vec2,4>r =  {ndc_corner_0,ndc_corner_1,ndc_corner_2,ndc_corner_3};
-
-    float width  = distance(ndc_corner_0,ndc_corner_3);
-    float height = distance(ndc_corner_0,ndc_corner_3);
-
-
-    /**
-        In view space the origin is the camera.
-        the vector view_center starts at camera and goes until the center of the sphere,
-        scalling by the radius is the closes point in sphere to the camera.
-    */
-    glm::vec3 nearest_point_on_sphere = glm::vec3(view_center.x,view_center.y,view_center.z) - normalize(glm::vec3(view_center.x,view_center.y,view_center.z)) * radius;
-    glm::vec4 projected_nearest_point = projection * glm::vec4(glm::vec3(nearest_point_on_sphere.x,nearest_point_on_sphere.y,nearest_point_on_sphere.z),1);
-
-    //Compute the mip
-    float w = width * std::max(1920,1080) ;
-    float level = floor(log2(w));
-    float sphere_depth = projected_nearest_point.z/ projected_nearest_point.w;
-    return r;
-
-    //Get 4 samples from Hi-Z
-/*    samples.x = textureLod( depthPyramid,ndc_corner_0* 0.5, level ).x;
-    samples.y = textureLod( depthPyramid,ndc_corner_1* 0.5, level ).x;
-    samples.z = textureLod( depthPyramid,ndc_corner_2* 0.5, level ).x;
-    samples.w = textureLod( depthPyramid,ndc_corner_3* 0.5, level ).x;*/
-/*
-    //Get the max
-    float min_sample   = min(min(samples.x,samples.y),min(samples.z,samples.w));
-    float sphere_depth = projected_nearest_point.z/ projected_nearest_point.w;
-
-    return sphere_depth < min_sample  ;*/
-}
-
 void Canella::RenderSystem::VulkanBackend::GeometryPass::load_transient_resources( Canella::Render *render)
 {
     auto vulkan_renderer = (VulkanBackend::VulkanRender *)render;
@@ -138,7 +59,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
     auto main_color = resource_manager.get_image_cached(renderpasses["basic"]->image_accessors[0][index]);
     auto main_depth = resource_manager.get_image_cached(renderpasses["basic"]->image_accessors[1][index]);
 
-    //Reset pools
+    //Reset Query
     reset_queries( command_buffer );
     // Compute Frustum culling
     if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool,8);
@@ -161,6 +82,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
     vkCmdSetViewport(command_buffer, 0, 1, &viewport);
     vkCmdSetScissor(command_buffer, 0, 1, &rect_2d);
 
+    //Indirect Draw Lambda
     auto draw_indirect = [&](RenderPass& current_renderpass,bool clear)
     {
         std::vector<VkClearValue> clear_values = {};
@@ -187,6 +109,12 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
             auto command_count = resource_manager.get_buffer_cached(command_count_buffers[i]);
             auto indirect_size = sizeof(IndirectCommandToCull);
 
+            SpecializedDrawTasks mesh_specialize;
+            mesh_specialize.dyamic  = !drawables[i].is_static;
+            mesh_specialize.model_matrix = *drawables[i].model_matrix;
+
+            vkCmdPushConstants(command_buffer,pipeline_layouts["MeshShaderPipeline"]->getHandle(),VK_SHADER_STAGE_TASK_BIT_EXT | VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_COMPUTE_BIT,0, sizeof(mesh_specialize),&mesh_specialize);
+
             vulkan_renderer->vkCmdDrawMeshTasksIndirectCountEXT(
                     command_buffer,indirect_buffer->getBufferHandle(),0,command_count->getBufferHandle(),0,drawables[i].meshes.size() * drawables[i].instance_count,indirect_size);
         }
@@ -195,6 +123,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
             current_renderpass.endRenderPass(command_buffer);
     };
 
+    //Grab the two renderpasses for early and Late pass
     auto& early_pass = renderpasses["basic"];
     auto& late_pass = renderpasses["LatePass"];
 
@@ -203,7 +132,6 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
     if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT ,queries.timestamp_pool,0);
     draw_indirect(*early_pass.get(), true);
     if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool, 1);
-
     //Update the Pyramid Depth
     if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool,2);
     update_hiz_chain(render,command_buffer,index);
@@ -216,9 +144,10 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
     if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool,6);
     draw_indirect(*late_pass.get(), true);
     if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool, 7);
-
+    //End the Query
     vkCmdEndQuery(command_buffer,queries.statistics_pool,0);
 
+    //Change Pyramid and Swapchain Image Layout
     auto pyramid = resource_manager.get_image_cached(hiz_depth.pyramidImage);
     VkImageMemoryBarrier copyBarriers[] =
                  {
@@ -250,6 +179,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
     }
     else
     {
+        //Copy the final renderpass output to swapchain image
         VkImageCopy copyRegion = {};
         copyRegion.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
         copyRegion.srcSubresource.layerCount = 1;
@@ -262,10 +192,10 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
 
     VkImageMemoryBarrier presentBarrier = imageBarrier(swapchain.get_images()[index], VK_ACCESS_TRANSFER_WRITE_BIT, 0, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,VK_IMAGE_ASPECT_COLOR_BIT);
     vkCmdPipelineBarrier(command_buffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_DEPENDENCY_BY_REGION_BIT, 0, 0, 0, 0, 1, &presentBarrier);
-
     vkGetQueryPoolResults(device.getLogicalDevice(),queries.timestamp_pool,0,queries.time_stamps.size(),sizeof(uint64_t) * queries.time_stamps.size(),queries.time_stamps.data(),sizeof(uint64_t),VK_QUERY_RESULT_64_BIT);
 
     uint32_t count = static_cast<uint32_t>(queries.statistics.size());
+    //Query the results from pool
     vkGetQueryPoolResults(
             device.getLogicalDevice(),
             queries.statistics_pool,
@@ -275,8 +205,6 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
             queries.statistics.data(),
             sizeof(uint64_t),
             VK_QUERY_RESULT_64_BIT);
-
-
 
 }
 
@@ -518,7 +446,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::create_resource_buffers
             std::vector<glm::vec3> points(draw_count);
             auto sqrt = std::floor(std::sqrt(drawable.instance_count));
             auto i = 0;
-            auto res =2.5;
+            auto res =0.0;
             for(auto  x = 0; x < sqrt; x++)
                 for (auto z = 0 ; z < sqrt ; ++z)
                 {
@@ -849,9 +777,6 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::update_hiz_chain( Canel
     auto& layouts = vulkan_renderer->cachedPipelineLayouts;
     auto& pipelines = vulkan_renderer->cachedPipelines;
     auto& render_data = vulkan_renderer->render_camera_data;
-
-    auto boundings = occlusion_test(render_data.view,render_data.projection,glm::vec3(-0.0 , 0 ,0),10  );
-
     //This is main depth image. renderpasses stores all the renderpasses and image attachments.
     auto main_depth_target = resource_manager.get_image_cached(renderpasses.renderpasses["basic"]->image_accessors[1][image_index]);
     auto pyramid_image = resource_manager.get_image_cached(hiz_depth.pyramidImage);

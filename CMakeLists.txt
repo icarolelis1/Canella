@@ -63,7 +63,10 @@ endif()
 #find_package(glm REQUIRED PATHS ${LIBS_DIR}/glm/lib/cmake/glm)
 
 
-add_executable(${PROJECT_NAME}  main.cpp src/Editor/src/Editor.cpp src/EditorComponents/src/EditorComponents.cpp)
+add_executable(${PROJECT_NAME}  main.cpp
+        src/Editor/src/Editor.cpp
+        src/Editor/src/EditorLayer.cpp
+        src/EditorComponents/src/EditorComponents.cpp)
 
 target_link_directories(${PROJECT_NAME} PUBLIC $ENV{VULKAN_SDK}/Lib ${GLFW_LIB}  ${OS_LIBS_DIR}/assimp/lib/ ${OS_LIBS_DIR}/metis/lib/)
 

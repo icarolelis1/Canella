@@ -12,9 +12,9 @@ void Canella::SerializeTransform(nlohmann::json &data, entt::registry &registry,
            parent] =
         view.get<TransformComponent>(entity);
 
-    position.x = data["Position"]["x"].get<float>();
+/*    position.x = data["Position"]["x"].get<float>();
     position.y = data["Position"]["y"].get<float>();
-    position.z = data["Position"]["z"].get<float>();
+    position.z = data["Position"]["z"].get<float>();*/
 
     scale.x = data["Scale"]["x"].get<float>();
     scale.y = data["Scale"]["y"].get<float>();
@@ -36,10 +36,11 @@ void Canella::SerializeCamera(nlohmann::json &data, entt::registry &registry, en
     auto pitch = data["Pitch"].get<float>();
     auto roll = data["Roll"].get<float>();
 
-    camera_component.position = glm::vec3(pos_x, pos_y, pos_z);
-    camera_component.yaw = yaw;
-    camera_component.pitch = pitch;
-    camera_component.roll = roll;
+
+    camera_component.transform.position = glm::vec3(pos_x, pos_y, pos_z);
+    camera_component.transform.rotation.y = yaw;
+    camera_component.transform.rotation.x = pitch;
+    camera_component.transform.rotation.z = roll;
 }
 
 void Canella::SerializeMeshAsset(nlohmann::json &data, entt::registry &registry, entt::entity entity)
@@ -53,7 +54,7 @@ void Canella::SerializeMeshAsset(nlohmann::json &data, entt::registry &registry,
 
     // Pass the model matrix pointer to mesh comming from TransformComponent
     const auto view_transform = registry.view<TransformComponent>();
-    model.model_matrix = &view_transform.get<TransformComponent>(entity).modelMatrix;
+    model.model_matrix = &view_transform.get<TransformComponent>(entity).model_matrix;
 }
 
 void Canella::SerializeCameraEditor(nlohmann::json &data, entt::registry &registry, entt::entity entity)

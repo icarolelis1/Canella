@@ -178,7 +178,7 @@ namespace Canella
 						{
 							auto &push_constants_data = pipeline["PushConstants"];
 							push_constant.size = push_constants_data["Size"].get<uint32_t>();
-							push_constant.stageFlags = convert_from_string_shader_stage(push_constants_data["StageFlags"].get<std::string>().c_str());
+							push_constant.stageFlags = read_shader_stage_from_json(push_constants_data["Stage"]);
 							push_constant.offset = 0;
 						}
 

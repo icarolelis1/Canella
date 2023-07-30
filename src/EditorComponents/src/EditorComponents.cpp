@@ -36,32 +36,32 @@ void CameraEditor::on_start()
 void CameraEditor::on_update(float delta_time)
 {
     time = delta_time;
-    auto &camera_position = camera_component->position;
+    auto &camera_position = camera_component->transform.position;
     auto &camera_euler = camera_component->euler;
     auto &mouse = Mouse::instance();
     auto pos = mouse.get_cursor_pos();
     auto &keyboard = KeyBoard::instance();
     last_x = pos.x;
     last_y = pos.y;
-    if (camera_component->pitch > 89.0f)
-        camera_component->pitch = 89.0f;
-    if (camera_component->pitch < -89.0f)
-        camera_component->pitch = -89.0f;
+    if (camera_component->transform.rotation.x > 89.0f)
+        camera_component->transform.rotation.x = 89.0f;
+    if (camera_component->transform.rotation.x < -89.0f)
+        camera_component->transform.rotation.x = -89.0f;
     camera_input_keys();
     update_euler_directions();
 
     if (keyboard.getKeyPressed(GLFW_KEY_W))
-        camera_component->position += camera_component->euler.front * speed * delta_time;
+        camera_component->transform.position += camera_component->euler.front * speed * delta_time;
     if (keyboard.getKeyPressed(GLFW_KEY_S))
-        camera_component->position -= camera_component->euler.front * speed * delta_time;
+        camera_component->transform.position -= camera_component->euler.front * speed * delta_time;
     if (keyboard.getKeyPressed(GLFW_KEY_A))
-        camera_component->position -= camera_component->euler.right * speed * delta_time;
+        camera_component->transform.position -= camera_component->euler.right * speed * delta_time;
     if (keyboard.getKeyPressed(GLFW_KEY_D))
-        camera_component->position += camera_component->euler.right * speed * delta_time;
+        camera_component->transform.position += camera_component->euler.right * speed * delta_time;
     if (keyboard.getKeyPressed(GLFW_KEY_SPACE))
-        camera_component->position += camera_component->euler.up * speed * delta_time;
+        camera_component->transform.position += camera_component->euler.up * speed * delta_time;
     if (keyboard.getKeyPressed(GLFW_KEY_C))
-        camera_component->position -= camera_component->euler.up * speed * delta_time;
+        camera_component->transform.position -= camera_component->euler.up * speed * delta_time;
 
    //Logger::Debug("%f %f %f", camera_component->euler.front.x, camera_component->euler.front.y, camera_component->euler.front.z);
 }
@@ -71,17 +71,17 @@ void CameraEditor::camera_input_keys()
     auto key_callbacks = [=](int key, InputAction action)
     {
         if (key == GLFW_KEY_W && action == InputAction::HOLD)
-            camera_component->position += camera_component->euler.front * speed * time;
+            camera_component->transform.position += camera_component->euler.front * speed * time;
         if (key == GLFW_KEY_S && action == InputAction::HOLD)
-            camera_component->position -= camera_component->euler.front * speed * time;
+            camera_component->transform.position -= camera_component->euler.front * speed * time;
         if (key == GLFW_KEY_A && action == InputAction::HOLD)
-            camera_component->position -= camera_component->euler.right * speed * time;
+            camera_component->transform.position -= camera_component->euler.right * speed * time;
         if (key == GLFW_KEY_D && action == InputAction::HOLD)
-            camera_component->position += camera_component->euler.right * speed * time;
+            camera_component->transform.position += camera_component->euler.right * speed * time;
         if (key == GLFW_KEY_SPACE && action == InputAction::HOLD)
-            camera_component->position += camera_component->euler.up * speed * time;
+            camera_component->transform.position += camera_component->euler.up * speed * time;
         if (key == GLFW_KEY_C && action == InputAction::HOLD)
-            camera_component->position -= camera_component->euler.up * speed * time;
+            camera_component->transform.position -= camera_component->euler.up * speed * time;
     };
 
     // KeyBoard::instance().OnKeyInput += Event_Handler<int, InputAction>(key_callbacks);
@@ -90,23 +90,22 @@ void CameraEditor::camera_input_keys()
 void CameraEditor::update_euler_directions()
 {
     // FPS camera:  RotationX(pitch) * RotationY(yaw)
-    glm::quat qPitch = glm::angleAxis(camera_component->pitch, glm::vec3(1, 0, 0));
-    glm::quat qYaw = glm::angleAxis(camera_component->yaw, glm::vec3(0, 1, 0));
-    glm::quat qRoll = glm::angleAxis(camera_component->roll, glm::vec3(0, 0, -1));
+    glm::quat qPitch = glm::angleAxis(camera_component->transform.rotation.x, glm::vec3(1, 0, 0));
+    glm::quat qYaw = glm::angleAxis(camera_component->transform.rotation.y, glm::vec3(0, 1, 0));
+    glm::quat qRoll = glm::angleAxis(camera_component->transform.rotation.z, glm::vec3(0, 0, -1));
 
     // For a FPS camera we can omit roll
     orientation = qPitch * qYaw * qRoll;
     orientation = glm::normalize(orientation);
     glm::mat4 rotate = glm::mat4_cast(orientation);
-
     glm::mat4 translate = glm::mat4(1.0f);
-
-    translate = glm::translate(translate, -camera_component->position);
+    translate = glm::translate(translate, -camera_component->transform.position);
 
     camera_component->euler.front = glm::normalize(glm::vec3(0.f, 0.f, -1.0f) * orientation);
     camera_component->euler.right = glm::normalize(glm::vec3(1.f, 0.f, 0.0f) * orientation);
-    camera_component->euler.up = glm::normalize(glm::vec3(0.f, 1.f, 0.0f) * orientation);
+    camera_component->euler.up = glm::normalize(glm::vec3(0.f,  1.f, 0.0f) * orientation);
     camera_component->view = rotate * translate;
+    camera_component->transform.model_matrix = glm::inverse(camera_component->view);
 }
 
 void CameraEditor::set_mouse_callbacks()
@@ -160,8 +159,8 @@ void CameraEditor::set_mouse_callbacks()
             auto horizontal_delta = drag_x - x;
             auto vertical_delta = drag_y - y;
 
-            camera_component->position += camera_component->euler.right * (float)horizontal_delta * drag_speed;
-            camera_component->position += camera_component->euler.up * (float)vertical_delta * drag_speed;
+            camera_component->transform.position += camera_component->euler.right * (float)horizontal_delta * drag_speed;
+            camera_component->transform.position += camera_component->euler.up * (float)vertical_delta * drag_speed;
             // Canella::Logger::Info("Event input is working %d %d",x,y);
             drag_x = x;
             drag_y = y;
@@ -173,8 +172,8 @@ void CameraEditor::set_mouse_callbacks()
             auto horizontal_delta = rotating_x - x;
             auto vertical_delta = rotating_y - y;
             // TODO investigate the camera orientation is messedup
-            camera_component->yaw -= (float)horizontal_delta * sensitivity;
-            camera_component->pitch += (float)vertical_delta * sensitivity;
+            camera_component->transform.rotation.y -= (float)horizontal_delta * sensitivity;
+            camera_component->transform.rotation.x += (float)vertical_delta * sensitivity;
             // Canella::Logger::Info("Event input is working %d %d",x,y);
             rotating_x = x;
             rotating_y = y;

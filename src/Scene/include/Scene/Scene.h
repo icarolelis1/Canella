@@ -35,8 +35,8 @@ namespace Canella {
          */
         void update_systems(float delta);
         CameraComponent * main_camera;
-        entt::registry m_registry;
-        EntityLibrary m_EntityLibrary;
+        entt::registry registry;
+        EntityLibrary  entityLibrary;
     private:
         std::vector<uint32_t> static_geometry;
         Canella::Render* render;

@@ -11,6 +11,11 @@ struct CullingData
 struct MeshDrawInstance{
   mat4 model;
 };
+struct SpecializedDrawTasks
+{
+	mat4 model_matrix;
+	bool dyamic;
+};
 
 struct Meshlet
 {

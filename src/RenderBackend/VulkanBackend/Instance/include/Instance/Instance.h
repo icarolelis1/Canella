@@ -57,7 +57,7 @@ namespace Canella {
                     const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
                     void* pUserData)
                 {
-                    Logger::Debug("Validation Layer: %s", pCallbackData->pMessage);
+                    Logger::Debug("Validation EditorLayer: %s", pCallbackData->pMessage);
 
                     return VK_FALSE;
                 }

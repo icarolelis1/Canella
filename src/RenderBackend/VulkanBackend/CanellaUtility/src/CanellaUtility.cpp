@@ -83,7 +83,6 @@ namespace Canella
 
             VkShaderStageFlagBits convert_from_string_shader_stage(const char *stage)
             {
-
                 if (strcmp(stage, "MESH_STAGE") == 0)
                     return VK_SHADER_STAGE_MESH_BIT_EXT;
                 else if (strcmp(stage, "TASK_STAGE") == 0)
@@ -100,11 +99,12 @@ namespace Canella
                 for (auto &stage : stages)
                     shader_stages.push_back(convert_from_string_shader_stage(stage.c_str()));
                 VkShaderStageFlagBits stages_mask = shader_stages[0];
-                // Todo implement this. I have no idea how to do this lol
+
                 if (shader_stages.size() > 1)
                     return VK_SHADER_STAGE_TASK_BIT_EXT | VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_COMPUTE_BIT;
                 return stages_mask;
             }
+
             size_t get_size_of_structure(const char *structure)
             {
                 if (strcmp(structure, "ViewProjection"))

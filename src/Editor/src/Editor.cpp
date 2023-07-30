@@ -6,6 +6,7 @@
 #include "Components/Components.h"
 #include "AssetSystem/AssetSystem.h"
 #include <random>
+#include <ImGuizmo.h>
 Canella::Logger::Priority Canella::Logger::log_priority = Canella::Logger::Priority::Error_LOG;
 std::mutex Canella::Logger::logger_mutex;
 
@@ -33,6 +34,7 @@ Canella::Editor::Editor()
     setup_imgui();
 #endif
     bind_shortcuts();
+    layer.setup_layer(on_select_entity);
 }
 
 float RandomFloat(float min, float max)
@@ -57,6 +59,25 @@ void Canella::Editor::bind_shortcuts()
         {
             display_statistics = !display_statistics;
         }
+        if (key == GLFW_KEY_2 && action == InputAction::PRESS)
+
+        {
+            auto it = application->scene->entityLibrary.begin();
+            while(it!= application->scene->entityLibrary.end())
+            {
+                if(it->second->has_component<ModelAssetComponent>())
+                {
+                    selected_entity = it->second;
+                    Logger::Error("I got the right entity");
+                }
+                it++;
+            }
+            if(!selected_entity.expired())
+            {
+                on_select_entity.invoke(selected_entity);
+            }
+
+        }
 
         if (key == GLFW_KEY_P && action == InputAction::PRESS)
         {
@@ -72,7 +93,7 @@ void Canella::Editor::bind_shortcuts()
             auto asset = model_entity.add_component<ModelAssetComponent>();
             asset.source = "model_test/just_a_girl.glb";
             AssetSystem::instance().load_asset(asset);
-            asset.mesh.model_matrix = &trans.modelMatrix;
+            asset.mesh.model_matrix = &trans.model_matrix;
             application->submit_loaded_model(asset.mesh);
         }
     };
@@ -147,9 +168,7 @@ void Canella::Editor::setup_imgui()
 
     ImGuiIO &io = ImGui::GetIO();
     // Add the custom font
-    io.Fonts->AddFontFromFileTTF(
-        R"(resources\Fonts\RobotoRegular-3m4L.ttf)",
-        30);
+    io.Fonts->AddFontFromFileTTF(R"(resources\Fonts\RobotoRegular-3m4L.ttf)",30);
 
     // Setup Dear ImGui style
     ImGuiStyle &style = ImGui ::GetStyle();
@@ -222,8 +241,18 @@ void Canella::Editor::render_editor_gui(VkCommandBuffer &command_buffer, uint32_
     vkCmdSetScissor(command_buffer, 0, 1, &rect_2d);
     ImGui_ImplGlfw_NewFrame();
     ImGui_ImplVulkan_NewFrame();
+
     ImGui ::NewFrame();
-    editor_layout();
+    ImGuizmo::BeginFrame();
+    ImGuizmo::SetDrawlist(ImGui::GetBackgroundDrawList());
+    ImVec2 size = ImGui::GetContentRegionAvail();
+
+    ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+    ImGuizmo::SetRect(cursorPos.x,cursorPos.y, size.x, size.y);
+
+    layer.draw_layer();
+
+   // editor_layout();
 
     ImGui ::Render();
         ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), command_buffer);
@@ -232,36 +261,21 @@ void Canella::Editor::render_editor_gui(VkCommandBuffer &command_buffer, uint32_
 
 void Canella::Editor::editor_layout()
 {
-    if (display_statistics)
-    {
-        ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0xff, 0xff, 0xff, 0xff));
+    if (true) {
 
-        if (!ImGui::Begin("Canella"))
-        {
-            ImGui::End();
-            ImGui::PopStyleColor();
-            return;
-        }
+        ImGui::PushStyleColor( ImGuiCol_Text, IM_COL32( 0xff, 0xff, 0xff, 0xff ));
         ImGui::PopStyleColor();
-        ImGui::Text("FPS %.2f",double(1.0/application->frame_time)* 2000);
-       // ImGui::Text("Frame Time %f (ms)",double(application->frame_time/2.0));
+        ImGui::Begin( "Canella" ) ;
+        ImGui::Text( "FPS %.2f", double( 1.0 / application->frame_time ) * 2000 );
+        // ImGui::Text("Frame Time %f (ms)",double(application->frame_time/2.0));
 
-       if (ImGui::BeginMainMenuBar())
-       {
-           if (ImGui::BeginMenu("Menu"))
-           {
-               if (ImGui::MenuItem("Quit"))
-               {
-                   Canella::Logger::Info("Quit");
-               }
-               ImGui::EndMenu();
-           }
-           ImGui::EndMainMenuBar();
-       }
-        out_put_stats.invoke();
+       // out_put_stats.invoke();
         ImGui::End();
+
+        layer.draw_layer();
+
     }
-    ImGui::ShowDemoWindow();
+   // ImGui::ShowDemoWindow();
 }
 
 Canella::Editor::~Editor()

@@ -5,11 +5,11 @@
 
 Canella::Entity Canella::Scene::CreateEntity()
 {
-    entt::entity entt_entity = m_registry.create();
+    entt::entity entt_entity = registry.create();
     auto shared_ptr = this->shared_from_this();
     auto entity =  std::make_shared<Entity>(entt_entity, shared_ptr);
     entity->add_component<TransformComponent>();
-    m_EntityLibrary[entt_entity] = entity;
+    entityLibrary[entt_entity] = entity;
     return *entity;
 }
 
@@ -25,7 +25,7 @@ void Canella::Scene::init_systems()
     //Send the meshes to be rendered by the renderer
     render->enqueue_drawables(meshes);
     //Gets the reference for the main Camera
-    main_camera = get_main_camera(this);
+     main_camera = get_main_camera(this);
     //todo Start scripts only on sceneplay when using Editor
     //starts the scripts calling on_start
     start_scripts(this);

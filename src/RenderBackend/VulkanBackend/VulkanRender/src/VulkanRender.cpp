@@ -355,10 +355,7 @@ void VulkanRender::setup_internal_renderer_events()
         global_buffers.clear();
         transform_buffers.clear();
         // Rebuld Swapchain
-        swapChain.prepare_swapchain(width, height, device, surface, VK_FORMAT_B8G8R8A8_UNORM,
-                                    dynamic_cast<GlfwWindow *>(window)->getHandle(),
-                                    device.getQueueSharingMode());
-
+        swapChain.prepare_swapchain(width, height, device, surface, VK_FORMAT_B8G8R8A8_UNORM,dynamic_cast<GlfwWindow *>(window)->getHandle(),device.getQueueSharingMode());
         // Free the descriptorsets
         descriptorPool.free_descriptorsets(device, global_descriptors.data(), static_cast<uint32_t>(global_descriptors.size()));
         global_descriptors.clear();

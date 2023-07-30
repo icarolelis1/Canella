@@ -216,7 +216,7 @@
       {
         "Key": "MeshShaderPipeline",
         "IsCompute": false,
-        "PushConstantRangesCount": 0,
+        "PushConstantRangesCount": 1,
         "NumerOfDescriptorSets": 3,
         "Renderpass": "basic",
         "VertexAttributeCount": 0,
@@ -225,6 +225,14 @@
           "Transforms",
           "Meshlets"
         ],
+        "PushConstants": {
+          "Stage": [
+            "MESH_STAGE",
+            "TASK_STAGE"
+          ],
+          "Size" : 80,
+          "Offset" : 0
+        },
         "Builtin": true,
         "ShaderCount": 3,
         "Shaders": [
@@ -255,7 +263,7 @@
           "Transforms"
         ],
         "PushConstants": {
-          "StageFlags" : "COMPUTE_STAGE",
+          "Stage" :["COMPUTE_STAGE"],
           "Size" : 128,
           "Offset" : 0
         },
@@ -275,7 +283,7 @@
           "OcclusionWrite"
         ],
         "PushConstants": {
-          "StageFlags" : "COMPUTE_STAGE",
+          "Stage" :["COMPUTE_STAGE"],
           "Size" : 32,
           "Offset" : 0
         },
@@ -297,7 +305,7 @@
           "ViewProjection"
         ],
         "PushConstants": {
-          "StageFlags" : "COMPUTE_STAGE",
+          "Stage" :["COMPUTE_STAGE"],
           "Size" : 128,
           "Offset" : 0
         },

@@ -32,8 +32,8 @@ namespace Canella
         TransformComponent() = default;
         glm::vec3 position = glm::vec3(0);
         glm::vec3 rotation;
-        glm::vec3 scale = glm::vec3(1);
-        glm::mat4 modelMatrix;
+        glm::vec3                     scale = glm::vec3(1);
+        glm::mat4                     model_matrix;
         std::list<TransformComponent> children;
         TransformComponent *parent = nullptr;
     };
@@ -43,25 +43,17 @@ namespace Canella
         CameraComponent() = default;
         ~CameraComponent() = default;
         Euler euler;
-        glm::vec3 position = glm::vec3(0, 3, -3);
+       // glm::vec3 position = glm::vec3(0, 3, -3);
         glm::mat4 projection;
-        float yaw = 90;
+  /*      float yaw = 90;
         float pitch = 0;
-        float roll;
+        float roll;*/
+        TransformComponent transform;
         glm::mat4 view;
         glm::vec3 target;
         float fovy;
         float zNear;
         float zFar;
-    };
-
-    class CameraControllerComponent
-    {
-        float velocity = .04f;
-        float YAW = 90;
-        float PITCH = 0;
-        float ROLL;
-        CameraComponent *camera_component;
     };
 
     struct ModelAssetComponent

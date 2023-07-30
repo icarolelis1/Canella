@@ -69,6 +69,12 @@ struct Task
 taskPayloadSharedEXT Task IN;
 
 
+layout( push_constant ) uniform block
+ {
+    SpecializedDrawTasks specialize_mesh;
+ };
+
+
 uint hash(uint a)
 {
    a = (a+0x7ed55d16) + (a<<12);
@@ -87,8 +93,12 @@ void main()
  uint mgi = gl_WorkGroupID.x;    
  uint mi = IN.meshletIndices[mgi];
  Meshlet meshlet = meshlets[mi];
- 
- mat4 model = model_Matrices[mesh.mesh_id];
+
+ mat4 model;
+ if(specialize_mesh.dyamic == false)
+    model = model_Matrices[mesh.mesh_id];
+ else
+    model = specialize_mesh.model_matrix;
  mat4 mvp = ubo.view_projection;
 
 if( ti < meshlet.vertex_count )
