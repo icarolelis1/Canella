@@ -78,15 +78,6 @@ namespace Canella
         bool is_static = false;
     };
 
-
-    struct TimeQueries
-    {
-        std::string name;
-        std::string description;
-        float time;
-    };
-    
-
     glm::vec4 compute_sphere_bounding_volume(Mesh &mesh, std::vector<Vertex> &vertices);
     using Drawables = std::vector<ModelMesh>;
 
@@ -103,6 +94,7 @@ namespace Canella
         virtual ~Render(){};
         virtual void build( nlohmann::json &data, OnOutputStatsEvent* display_stats) = 0;
         virtual void enqueue_drawables(Drawables &) = 0;
+        virtual void create_render_graph_resources() = 0;
         virtual void enqueue_drawable(ModelMesh& ) = 0;
         virtual void render(glm::mat4 &, glm::mat4 &) = 0;
         virtual Drawables &get_drawables() = 0;

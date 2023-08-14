@@ -51,7 +51,6 @@ namespace Canella
         std::unique_ptr<Canella::Application> application;
         Canella::RenderSystem::VulkanBackend::VulkanRender render;
         VkDescriptorPool imguiPool;
-        std::vector<Canella::TimeQueries *> time_queries;
         bool custom_font_pushed = false;
         void render_editor_gui(VkCommandBuffer &, uint32_t);
         void setup_imgui();

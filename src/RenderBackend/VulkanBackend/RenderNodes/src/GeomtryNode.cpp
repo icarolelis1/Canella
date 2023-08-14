@@ -1,10 +1,11 @@
-#include "RenderNodes/RenderNodes.h"
+#include "RenderNodes/GeometryNode.h"
 #include "VulkanRender/VulkanRender.h"
 #include "CanellaUtility/CanellaUtility.h"
 #include <imgui.h>
 
-//todo please Icaro, I trust you to clean this file.
+#define STORAGE_SIZE  500
 
+//todo please Icaro, I trust you to clean this file.
 void Canella::RenderSystem::VulkanBackend::GeometryPass::load_transient_resources( Canella::Render *render)
 {
     auto vulkan_renderer = (VulkanBackend::VulkanRender *)render;
@@ -252,12 +253,14 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::compute_frustum_culling
         total_geometry_count +=d.meshes.size() * d.instance_count;
     });
 
+    auto min_size = std::min(total_geometry_count,STORAGE_SIZE);
+
     //Clear Visibility  First at first call of compute_frustum_culling
     auto occlusion_buffer = resource_manager.get_buffer_cached(occlusion_visibility_buffer[image_index]);
     if(!hiz_depth.visibility_first_cleared)
     {
         auto& buffer_handle = occlusion_buffer->getBufferHandle();
-        vkCmdFillBuffer(command, buffer_handle, 0, 4 * total_geometry_count, 0);
+        vkCmdFillBuffer(command, buffer_handle, 0, 4 * min_size, 0);
         VkBufferMemoryBarrier fillBarrier = VulkanBackend::bufferBarrier(buffer_handle, VK_ACCESS_TRANSFER_WRITE_BIT,VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT);
         vkCmdPipelineBarrier(command, VK_PIPELINE_STAGE_TRANSFER_BIT,
                              VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, 0, 0,
@@ -399,11 +402,11 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::create_resource_buffers
     for (auto &drawable : drawables)
     {
         resource_bounds_buffers[i] = resource_manager.create_storage_buffer(sizeof(drawable.meshlet_compositions.bounds[0]) *
-                                                                            drawable.meshlet_compositions.bounds.size(),
-                                                                            VK_BUFFER_USAGE_TRANSFER_DST_BIT |
-                                                                            VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
-                                                                            &vulkan_renderer->transfer_pool,
-                                                                            drawable.meshlet_compositions.bounds.data());
+                drawable.meshlet_compositions.bounds.size(),
+                VK_BUFFER_USAGE_TRANSFER_DST_BIT |
+                VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
+                &vulkan_renderer->transfer_pool,
+                drawable.meshlet_compositions.bounds.data());
 
         resource_vertices_buffers[i] = resource_manager.create_storage_buffer(
                 (sizeof(Vertex) * drawable.positions.size()),
@@ -650,10 +653,10 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::create_indirect_command
     {
         total_geometry_count +=d.meshes.size() * d.instance_count;
     });
-
+    auto size  = std::max(total_geometry_count,STORAGE_SIZE);
     //Create the visibility buffer for all -> drawables ->meshes
     for(auto i = 0 ; i < number_images; ++i )
-        occlusion_visibility_buffer[i] = resource_manager.create_buffer(4 * total_geometry_count ,
+        occlusion_visibility_buffer[i] = resource_manager.create_buffer(4 * size ,
                                                                         VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
                                                                         VK_BUFFER_USAGE_TRANSFER_DST_BIT,
                                                                         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);

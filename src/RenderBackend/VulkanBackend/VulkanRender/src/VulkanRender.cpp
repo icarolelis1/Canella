@@ -61,14 +61,21 @@ void VulkanRender::init_vulkan_instance()
 
 void VulkanRender::enqueue_drawables(Drawables &drawables)
 {
-    m_drawables = drawables;
+  //  m_drawables = drawables;
     render_graph.load_resources(this);
     create_transform_buffers();
 }
 
+void VulkanRender::create_render_graph_resources() {
+    render_graph.load_resources(this);
+    create_transform_buffers();
+}
+
+
 void VulkanRender::create_transform_buffers()
 { // Loads the model matrix
     std::vector<glm::mat4> models;
+    if(m_drawables.size() == 0) return;
     for (auto &drawable : m_drawables)
         models.push_back(*drawable.model_matrix);
 
@@ -164,8 +171,8 @@ void VulkanRender::render(glm::mat4 &view, glm::mat4 &projection)
         for(auto& mesh : drawables_to_be_inserted)
             m_drawables.push_back(mesh);
         drawables_to_be_inserted.clear();
-        enqueue_new_mesh = false;
         should_reload = 1;
+        enqueue_new_mesh = false;
     }
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || should_reload != 0)
@@ -420,3 +427,4 @@ void Canella::RenderSystem::VulkanBackend::VulkanRender::enqueue_drawable(ModelM
     enqueue_new_mesh = true;
     Canella::Logger::Debug("%d drawables", m_drawables.size());
 }
+

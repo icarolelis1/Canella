@@ -22,6 +22,7 @@ void Application::load(nlohmann::json &config)
 void Application::setup_project_folder(nlohmann::json &data)
 {
     auto &asset_system = AssetSystem::instance();
+    asset_system.set_renderer(render);
     assets_folder = data["Assets"].get<std::string>();
     asset_system.set_project_src(assets_folder.c_str());
 }
@@ -35,7 +36,6 @@ void Application::run()
 {
     float time = (float)glfwGetTime();
     application_time.time = time - application_time.last_time_frame;
-
     scene->update_systems(frame_time);
     render->render(scene->main_camera->view, scene->main_camera->projection);
     frame_time = application_time.time_in_milli();

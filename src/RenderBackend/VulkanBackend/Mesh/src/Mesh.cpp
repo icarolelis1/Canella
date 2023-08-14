@@ -152,6 +152,7 @@ void MeshProcessing::load_asset_mesh(ModelMesh &model, const ::std::string &asse
     meshes.resize(assimpScene->mNumMeshes);
     uint32_t index_offset = 0;
     uint32_t vertex_offset = 0;
+
     for (unsigned int i = 0; i < meshes.size(); ++i)
     {
         const aiMesh *assimp_mesh = assimpScene->mMeshes[i];

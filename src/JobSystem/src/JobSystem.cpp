@@ -33,10 +33,10 @@ namespace Canella
 
         class JobSystemManager
         {
-            uint16_t numThreads = 0;
-            Canella::ThreadQueue<CanellaJob> jobQueue;
-            std::vector<std::thread> threads;
-            std::condition_variable cv;
+            uint16_t                         num_threads = 0;
+            Canella::ThreadQueue<CanellaJob> thread_queue;
+            std::vector<std::thread>         threads;
+            std::condition_variable          cv;
             std::mutex wake_mutex;
             std::atomic_bool done;
 
@@ -46,10 +46,10 @@ namespace Canella
              */
             JobSystemManager() : done(false)
             {
-                this->numThreads = std::thread::hardware_concurrency();
+                this->num_threads = std::thread::hardware_concurrency();
                 try
                 {
-                    for (int i = 0; i < this->numThreads; ++i)
+                    for ( int i = 0; i < this->num_threads; ++i)
                     {
                         threads.push_back(std::thread(&JobSystemManager::work, this));
                     }
@@ -69,7 +69,7 @@ namespace Canella
                 while (!done)
                 {
                     CanellaJob canellaJob;
-                    if (jobQueue.try_pop(canellaJob))
+                    if (thread_queue.try_pop( canellaJob))
                     {
 
                         canellaJob.job_detail->execute();
@@ -101,7 +101,7 @@ namespace Canella
             {
                 // Incremenmt the number of jobs to process
                 current_jobs += 1;
-                jobQueue.push(job);
+                thread_queue.push( job);
             }
 
             static JobSystemManager &instance()

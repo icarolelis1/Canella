@@ -14,13 +14,8 @@ namespace Canella
      * @param assets_folder subfolder inside project that contains the assets
      * @param scene the scene containing the meshes
      */
-    void load_meshes_from_scene(const std::string& assetsFolder, Scene *const scene);
-    /**
-     * @brief load a mesh in assets_folder path
-     * @param assetsFolder
-     * @param mesh_asset_component
-     */
-    void load_mesh_from_disk(const std::string& assetsFolder,ModelAssetComponent& mesh_asset_component);
+    void load_meshes_from_scene( const std::string &assetsFolder, Scene *const scene, Render *p_render );
+
     CameraComponent* get_main_camera(Scene *const scene);
     /**
  * \brief get a reference for all the Meshes in the scene

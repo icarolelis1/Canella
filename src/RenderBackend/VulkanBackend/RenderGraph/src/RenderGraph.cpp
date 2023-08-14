@@ -1,6 +1,6 @@
 #include "RenderGraph/RenderGraph.h"
 #include <fstream>
-#include "RenderNodes/RenderNodes.h"
+#include "RenderNodes/GeometryNode.h"
 #include "imgui.h"
 
 void Canella::RenderSystem::VulkanBackend::RenderNode::load_render_node(const nlohmann::json& node_json)

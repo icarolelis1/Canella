@@ -117,6 +117,8 @@ namespace Canella
                 */
                 void enqueue_drawable(ModelMesh& mesh) override;
 
+                void create_render_graph_resources() override;
+
                 Event<VkCommandBuffer &, uint32_t &> OnRecordCommandEvent;
                 PFN_vkCmdDrawMeshTasksEXT vkCmdDrawMeshTasksEXT;
                 PFN_vkCmdDrawMeshTasksIndirectEXT vkCmdDrawMeshTasksIndirectEXT;

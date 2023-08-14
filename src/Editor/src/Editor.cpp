@@ -60,7 +60,6 @@ void Canella::Editor::bind_shortcuts()
             display_statistics = !display_statistics;
         }
         if (key == GLFW_KEY_2 && action == InputAction::PRESS)
-
         {
             auto it = application->scene->entityLibrary.begin();
             while(it!= application->scene->entityLibrary.end())
@@ -86,15 +85,13 @@ void Canella::Editor::bind_shortcuts()
 
         if (key == GLFW_KEY_Y && action == InputAction::RELEASE)
         {
-            //Todo put all this process in a clean api
+
             Entity model_entity = application->scene->CreateEntity();
             auto& trans = model_entity.get_component<TransformComponent>();
-            trans.position = glm::vec3(RandomFloat(-2.0f,2.0f),1,RandomFloat(0.f,5.0f));
-            auto asset = model_entity.add_component<ModelAssetComponent>();
-            asset.source = "model_test/just_a_girl.glb";
-            AssetSystem::instance().load_asset(asset);
+            auto& asset = model_entity.add_component<ModelAssetComponent>();
+            asset.source =  "model_test/mario.glb";
             asset.mesh.model_matrix = &trans.model_matrix;
-            application->submit_loaded_model(asset.mesh);
+            AssetSystem::instance().async_load_asset(asset);
         }
     };
     keyboard.OnKeyInput += Event_Handler(short_cuts);
@@ -252,7 +249,7 @@ void Canella::Editor::render_editor_gui(VkCommandBuffer &command_buffer, uint32_
 
     layer.draw_layer();
 
-   // editor_layout();
+    editor_layout();
 
     ImGui ::Render();
         ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), command_buffer);
@@ -267,9 +264,8 @@ void Canella::Editor::editor_layout()
         ImGui::PopStyleColor();
         ImGui::Begin( "Canella" ) ;
         ImGui::Text( "FPS %.2f", double( 1.0 / application->frame_time ) * 2000 );
-        // ImGui::Text("Frame Time %f (ms)",double(application->frame_time/2.0));
-
-       // out_put_stats.invoke();
+         ImGui::Text("Frame Time %f (ms)",double(application->frame_time/2.0));
+        out_put_stats.invoke();
         ImGui::End();
 
         layer.draw_layer();

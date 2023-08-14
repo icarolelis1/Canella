@@ -1,23 +1,20 @@
 #include "Systems/Systems.h"
-#include "Window/Window.h"
-#include "Mesh/Mesh.h"
-#include "Render/Render.h"
+#include "AssetSystem/AssetSystem.h"
+#include "JobSystem/JobSystem.h"
+
 using namespace Canella;
 
-void Canella::load_meshes_from_scene(const std::string &assets_folder, Scene *const scene)
+void Canella::load_meshes_from_scene( const std::string &assets_folder, Scene *const scene, Canella::Render *p_render )
 {
+    auto& asset_system = Canella::AssetSystem::instance();
     for (auto &[entt_value, entity] : scene->entityLibrary)
         if (entity->has_component<ModelAssetComponent>())
         {
             auto &mesh_asset = entity->get_component<ModelAssetComponent>();
             // mesh_asset.mesh.model_matrix = &entity->get_component<TransformComponent>().model_matrix;
-            load_mesh_from_disk(assets_folder, mesh_asset);
+            asset_system.async_load_asset( mesh_asset);
         }
-}
-
-void Canella::load_mesh_from_disk(const std::string &assets_folder, ModelAssetComponent &mesh_asset_component)
-{
-    Canella::MeshProcessing::load_asset_mesh(mesh_asset_component.mesh, assets_folder, mesh_asset_component.source);
+    Canella::JobSystem::wait();
 }
 
 /**

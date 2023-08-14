@@ -35,9 +35,8 @@ namespace Canella {
         std::condition_variable cv;
         std::queue<T> queue;
     public:
-        ThreadQueue() {
+        ThreadQueue() {}
 
-        }
         ThreadQueue(ThreadQueue const& other) = delete;
         void push(T item) {
             std::lock_guard<std::mutex> lg(m);

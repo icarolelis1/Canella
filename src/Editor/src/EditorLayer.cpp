@@ -51,11 +51,7 @@ bool decompose_model(glm::mat4& transform,glm::vec3& translation, glm::vec3& rot
         rotation.x = atan2(-Row[2][0],Row[1][1]);
         rotation.z = 0;
     }
-
     return true;
-
-
-
 }
 
 void Canella::EditorLayer::setup_layer( Canella::OnSelectEntity &on_select_entity_event )
@@ -67,7 +63,7 @@ void Canella::EditorLayer::setup_layer( Canella::OnSelectEntity &on_select_entit
 
 void Canella::EditorLayer::draw_layer() {
 
-    if (entity_changed)
+    if (false)
     {
         auto& window = GlfwWindow::get_instance();
         ImVec2 size = ImGui::GetContentRegionAvail();
@@ -77,18 +73,8 @@ void Canella::EditorLayer::draw_layer() {
 
         auto& camera_projection = selected_entity.lock()->get_owner_scene().lock()->main_camera->projection;
         auto& camera_view = selected_entity.lock()->get_owner_scene().lock()->main_camera->view;
-
-        
-
         auto& entity_transform = selected_entity.lock()->get_component<TransformComponent>();
-
-
         auto transformation = ImGuizmo::OPERATION::TRANSLATE;
-/*        float tmpMatrix[16];
-        ImGuizmo::RecomposeMatrixFromComponents(&entity_transform.position.x,
-                                                &entity_transform.rotation.x,
-                                                &entity_transform.scale.x,
-                                                tmpMatrix);*/
 
         ImGuizmo::Manipulate(glm::value_ptr(camera_view),
                              glm::value_ptr(camera_projection),
@@ -98,7 +84,6 @@ void Canella::EditorLayer::draw_layer() {
 
         if (ImGuizmo::IsUsing())
         {
-
             glm::vec3 translation,rotation,scale;
             decompose_model(entity_transform.model_matrix,translation,rotation,scale);
 

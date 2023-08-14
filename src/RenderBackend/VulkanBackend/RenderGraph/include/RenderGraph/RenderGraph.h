@@ -99,8 +99,6 @@ namespace Canella {
                 void destroy_render_graph();
                 void destroy_render_node(const RefRenderNode &);
                 void load_node_transient_resources(RefRenderNode ,Canella::Render*);
-
-                std::vector<TimeQueries*> time_queries;
             private:
                 RefRenderNode start;
             };

@@ -17,6 +17,7 @@
       <config projectName="Canella" targetName="Meshoptimizer" />
       <config projectName="Canella" targetName="Render" />
       <config projectName="Canella" targetName="Engine" />
+      <config projectName="Canella" targetName="copy" />
       <config projectName="Canella" targetName="shaders" />
     </generated>
   </component>
@@ -36,36 +37,34 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/imgui.ini" beforeDir="false" afterPath="$PROJECT_DIR$/imgui.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/linux/glfw/share/doc/GLFW/html/spaces.svg" beforeDir="false" afterPath="$PROJECT_DIR$/libs/linux/glfw/share/doc/GLFW/html/spaces.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/config/render_path/pipelines.json" beforeDir="false" afterPath="$PROJECT_DIR$/resources/config/render_path/pipelines.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/shaders/common.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/resources/shaders/common.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/shaders/mesh.mesh" beforeDir="false" afterPath="$PROJECT_DIR$/resources/shaders/mesh.mesh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/shaders/spirv/mesh.mesh.spv" beforeDir="false" afterPath="$PROJECT_DIR$/resources/shaders/spirv/mesh.mesh.spv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/shaders/spirv/task.task.spv" beforeDir="false" afterPath="$PROJECT_DIR$/resources/shaders/spirv/task.task.spv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/shaders/task.task" beforeDir="false" afterPath="$PROJECT_DIR$/resources/shaders/task.task" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Components/include/Components/Components.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/include/Components/Components.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Components/src/Components.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/src/Components.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/assets/model_test/wall.glb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/scenes/scene.json" beforeDir="false" afterPath="$PROJECT_DIR$/resources/scenes/scene.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/shaders/command.comp" beforeDir="false" afterPath="$PROJECT_DIR$/resources/shaders/command.comp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/AssetSystem/include/AssetSystem/AssetSystem.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/AssetSystem/include/AssetSystem/AssetSystem.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/AssetSystem/src/AssetSystem.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/AssetSystem/src/AssetSystem.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Containers/include/Canella/ThreadQueue.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Containers/include/Canella/ThreadQueue.hpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Editor/include/Editor/Editor.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Editor/include/Editor/Editor.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Editor/src/Editor.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Editor/src/Editor.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/EditorComponents/src/EditorComponents.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/EditorComponents/src/EditorComponents.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Editor/src/EditorLayer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Editor/src/EditorLayer.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Entity/include/Entity.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Entity/include/Entity.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ImGUI/LICENSE.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ImGUI/imgui.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ImGUI/imgui.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ImGUI/imgui.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/ImGUI/imgui.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ImGUI/imgui_internal.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/ImGUI/imgui_internal.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/JobSystem/include/JobSystem/JobSystem.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/JobSystem/include/JobSystem/JobSystem.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/JobSystem/src/JobSystem.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/JobSystem/src/JobSystem.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Project/include/Project/Project.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Project/include/Project/Project.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Project/src/Project.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Project/src/Project.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Render/include/Render/Render.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Render/include/Render/Render.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/CanellaUtility/src/CanellaUtility.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/CanellaUtility/src/CanellaUtility.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Device/src/Device.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Device/src/Device.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Instance/include/Instance/Instance.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Instance/include/Instance/Instance.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Mesh/src/Mesh.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Mesh/src/Mesh.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/PipelineBuilder/include/PipelineBuilder/PipelineBuilder.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/PipelineBuilder/include/PipelineBuilder/PipelineBuilder.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/include/RenderNodes/RenderNodes.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/include/RenderNodes/RenderNodes.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/RenderNodes.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/RenderNodes.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderGraph/include/RenderGraph/RenderGraph.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderGraph/include/RenderGraph/RenderGraph.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderGraph/src/RenderGraph.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderGraph/src/RenderGraph.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/include/RenderNodes/RenderNodes.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/include/RenderNodes/GeometryNode.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/RenderNodes.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/GeomtryNode.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/VulkanRender/include/VulkanRender/VulkanRender.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/VulkanRender/include/VulkanRender/VulkanRender.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/VulkanRender/src/VulkanRender.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/VulkanRender/src/VulkanRender.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Scene/include/Scene/Scene.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Scene/include/Scene/Scene.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Scene/src/Scene.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Scene/src/Scene.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Serializer/src/Serializer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Serializer/src/Serializer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Systems/include/Systems/Systems.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Systems/include/Systems/Systems.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Systems/src/Systems.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Systems/src/Systems.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Window/src/Window.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Window/src/Window.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -103,26 +102,26 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;dev&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/IALCProjects/niagara&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;CPPToolchains&quot;,
-    &quot;settings.editor.splitter.proportion&quot;: &quot;0.24922441&quot;,
-    &quot;structure.view.defaults.are.configured&quot;: &quot;true&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "dev",
+    "last_opened_file_path": "D:/IALCProjects/niagara",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "clion.custom.compiler.configurable",
+    "settings.editor.splitter.proportion": "0.24922441",
+    "structure.view.defaults.are.configured": "true",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\IALCProjects\Canella\src\Editor\src" />
@@ -131,6 +130,11 @@
     </key>
   </component>
   <component name="RunManager" selected="CMake Application.Canella">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="Canella" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Canella" TARGET_NAME="Canella" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Canella" RUN_TARGET_NAME="Canella">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -161,6 +165,11 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
+    <configuration name="copy" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Canella" TARGET_NAME="copy" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="shaders" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Canella" TARGET_NAME="shaders" CONFIG_NAME="Debug">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -168,6 +177,7 @@
     </configuration>
     <list>
       <item itemvalue="CMake Application.Canella" />
+      <item itemvalue="CMake Application.copy" />
       <item itemvalue="CMake Application.shaders" />
       <item itemvalue="CMake Application.Engine" />
       <item itemvalue="CMake Application.ImGUI" />
@@ -311,7 +321,18 @@
       <workItem from="1690591562868" duration="1000" />
       <workItem from="1690635092032" duration="20510000" />
       <workItem from="1690720265687" duration="4658000" />
-      <workItem from="1690734351748" duration="4276000" />
+      <workItem from="1690734351748" duration="5325000" />
+      <workItem from="1690808921109" duration="2611000" />
+      <workItem from="1690846192580" duration="2072000" />
+      <workItem from="1690896058746" duration="13165000" />
+      <workItem from="1690933615127" duration="967000" />
+      <workItem from="1690979119764" duration="7468000" />
+      <workItem from="1691670795352" duration="703000" />
+      <workItem from="1691678708943" duration="42000" />
+      <workItem from="1691711757921" duration="1690000" />
+      <workItem from="1691940721264" duration="817000" />
+      <workItem from="1692048586946" duration="708000" />
+      <workItem from="1692053182572" duration="1963000" />
     </task>
     <servers />
   </component>
@@ -340,13 +361,68 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Mesh/src/Mesh.cpp</url>
-          <line>382</line>
+          <line>383</line>
           <option name="timeStamp" value="577" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Mesh/src/Mesh.cpp</url>
-          <line>371</line>
+          <line>372</line>
           <option name="timeStamp" value="581" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/GeomtryNode.cpp</url>
+          <line>39</line>
+          <option name="timeStamp" value="618" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/GeomtryNode.cpp</url>
+          <line>858</line>
+          <option name="timeStamp" value="619" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/GeomtryNode.cpp</url>
+          <line>859</line>
+          <option name="timeStamp" value="620" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/GeomtryNode.cpp</url>
+          <line>38</line>
+          <option name="timeStamp" value="621" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/GeomtryNode.cpp</url>
+          <line>63</line>
+          <option name="timeStamp" value="622" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/GeomtryNode.cpp</url>
+          <line>11</line>
+          <option name="timeStamp" value="623" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/VulkanRender/src/VulkanRender.cpp</url>
+          <line>261</line>
+          <option name="timeStamp" value="624" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/VulkanRender/src/VulkanRender.cpp</url>
+          <line>262</line>
+          <option name="timeStamp" value="625" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/GeomtryNode.cpp</url>
+          <line>400</line>
+          <option name="timeStamp" value="627" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/GeomtryNode.cpp</url>
+          <line>28</line>
+          <option name="timeStamp" value="628" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/GeomtryNode.cpp</url>
+          <line>30</line>
+          <option name="timeStamp" value="629" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

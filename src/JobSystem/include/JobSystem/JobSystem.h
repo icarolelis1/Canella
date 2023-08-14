@@ -62,16 +62,13 @@ namespace Canella
              * @param job the job
              */
             CanellaJob(HJob job);
-
             CanellaJob(const CanellaJob& other);
-
             /**
              * @brief Construct a new Canella Job object to dispatch a group of jobs
              * @param jobGroup
              */
 
             CanellaJob(HJobGroup &jobGroup);
-
             /**
              * @brief default constructor
              *

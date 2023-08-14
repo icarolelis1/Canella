@@ -123,21 +123,25 @@ foreach(SHADER IN LISTS SHADERS)
     add_custom_command(OUTPUT ${SHADER_DIR}/shaders/${FILENAME}.spv
         COMMAND ${glslc_executable} ${SHADER} -o ${SHADER_DIR}/spirv/${FILENAME}.spv  --target-spv=spv1.4
         DEPENDS ${SHADER}
-        COMMENT "Compiling ${FILENAME}")
+        COMMENT "Compiling ${FILENAME}" PRE_BUILD)
 list(APPEND SPV_SHADERS ${SHADER_DIR}/shaders/${FILENAME}.spv)
 endForeach()
-add_custom_target(shaders ALL DEPENDS ${SPV_SHADERS})
 
-#[[add_custom_command(TARGET ${PROJECT_NAME}  POST_BUILD
+add_custom_target( shaders ALL DEPENDS ${SPV_SHADERS} )
+add_custom_target( copy )
+
+add_custom_command(TARGET copy  PRE_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     ${PROJECT_SOURCE_DIR}/resources
-    ${PROJECT_BINARY_DIR}/resources)]]
+    ${PROJECT_BINARY_DIR}/resources)
 
-#[[add_custom_command(TARGET ${PROJECT_NAME}  POST_BUILD
+add_custom_command(TARGET copy PRE_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${PROJECT_SOURCE_DIR}/libs/dlls/assimp-vc143-mtd.dll"
-        ${PROJECT_BINARY_DIR})]]
+         ${PROJECT_BINARY_DIR})
 
+add_dependencies(copy shaders)
+add_dependencies(${PROJECT_NAME} copy )
 #[[
 add_custom_target(copy-files ALL
         COMMAND ${CMAKE_COMMAND} -E copy_directory

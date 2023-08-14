@@ -24,14 +24,23 @@ namespace Canella
          * @brief loads a mesh object
          * @param asset mesh asset to be loaded
          */
-        void load_asset(ModelAssetComponent &asset);
+        void async_load_asset(ModelAssetComponent &asset);
 
-        // Events
-        Event<ModelMesh &> OnLoadedModel;
+        /**
+         * @brief Get the source directory of the project
+         * @return the source directory of the project
+         */
+        std::string get_project_src();
+
+        /**
+         * @brief Injects an abstract renderer into asset system
+         * @param render application renderer
+         */
+        void set_renderer(Canella::Render* render);
 
     private:
+        Canella::Render* renderer;
         AssetSystem() = default;
-
         const char *project_src;
     };
 }

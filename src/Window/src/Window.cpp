@@ -30,7 +30,6 @@ void Canella::GlfwWindow::initialize(nlohmann::json &config)
     glfwSetWindowUserPointer(m_window, this);
 #ifdef WIN32
     RECT desktop;
-
     const HWND hDesktop = GetDesktopWindow();
     int horizontal, vertical;
     GetWindowRect(hDesktop, &desktop);

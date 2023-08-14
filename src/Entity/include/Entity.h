@@ -22,6 +22,9 @@ namespace Canella
             assert(!owner_scene.expired());
             auto scene =  owner_scene.lock();
             return scene->registry.emplace<T>( handle, std::forward<Args>( args)...);
+
+            const auto view = scene->registry.view<T>();
+            return view.get<T>( raw_id());
         }
 
         template<typename T>
