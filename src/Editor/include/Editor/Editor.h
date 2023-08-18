@@ -14,12 +14,19 @@
 
 #define USE_COLOR_STYLE_1 1
 
+/*
+ * #bdbdbd	(189,189,189)
+#32393d	(50,57,61)
+#373737	(55,55,55)
+#2d2d2d	(45,45,45)
+#464646	(70,70,70)
+ */
 #if USE_COLOR_STYLE_1
-#define MAIN_BG ImColor(251, 243, 212)
-#define TITLE_BG ImColor(92, 44, 12)
-#define BORDER ImColor(130, 140, 148)
-#define FONT_COLOR ImColor(92, 44, 12)
-#define MENU_BG ImColor(251, 243, 212)
+#define MAIN_BG ImColor(45,45,45)
+#define TITLE_BG ImColor(55,55,55)
+#define BORDER ImColor(50,57,61)
+#define FONT_COLOR ImColor(189,189,189)
+#define MENU_BG ImColor(70,70,70)
 #define BLUE ImColor(54, 79, 107)
 #endif
 
@@ -51,19 +58,23 @@ namespace Canella
         std::unique_ptr<Canella::Application> application;
         Canella::RenderSystem::VulkanBackend::VulkanRender render;
         VkDescriptorPool imguiPool;
-        bool custom_font_pushed = false;
+
         void render_editor_gui(VkCommandBuffer &, uint32_t);
         void setup_imgui();
-        bool scene_mode = true;
         void editor_layout();
         void bind_shortcuts();
+        void build_property_view();
+
         bool playing = true;
-        //Windows
         bool display_statistics = true;
+        bool scene_mode = true;
         bool game_mode = true;
+        bool custom_font_pushed = false;
+
         //Editor Events
         OnOutputStatsEvent out_put_stats;
         OnSelectEntity on_select_entity;
+        OnSelectOperation on_select_operation;
         OnDeselect on_deselect;
     };
 }

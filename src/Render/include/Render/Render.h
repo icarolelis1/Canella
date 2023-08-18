@@ -1,8 +1,6 @@
 #pragma once
 #ifndef RENDER
 #define RENDER
-#include "Windowing.h"
-#include "RenderBase.h"
 #include <json.hpp>
 #include <iostream>
 #include <unordered_map>
@@ -10,9 +8,11 @@
 #include <meshoptimizer.h>
 #include <vector>
 #include <Eventsystem/Eventsystem.hpp>
+
 namespace Canella
 {
 
+    class Render;
     struct Time
     {
         Time(float t) : time(t){};
@@ -23,7 +23,6 @@ namespace Canella
         float delta;
     };
 
-    class Render;
     struct MeshletBound
     {
 
@@ -86,6 +85,10 @@ namespace Canella
     class OnDrawableEnqueueEvent : public Event<Canella::Render *>  {};
     class OnOutputStatsEvent : public Event<> {};
 
+    enum GraphicsApi
+    {
+        Vulkan
+    };
 
     class Render
     {
@@ -99,7 +102,7 @@ namespace Canella
         virtual void render(glm::mat4 &, glm::mat4 &) = 0;
         virtual Drawables &get_drawables() = 0;
         OnOutputStatsEvent * display_render_stats_event;
-
+        GraphicsApi api;
         // Render Events`
         Canella::OnLoseSwapchainEvent   OnLostSwapchain;
         Canella::OnDrawableEnqueueEvent OnEnqueueDrawable;

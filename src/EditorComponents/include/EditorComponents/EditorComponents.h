@@ -19,7 +19,7 @@ namespace Canella{
     private:
         void camera_input_keys();
 
-        float sensitivity = 0.005f;
+        float sensitivity = 0.05f;
         float speed = 0.0050f;
         float drag_speed = 0.01f;
         glm::quat orientation = glm::quat(glm::vec3(0.f,0.f,0.f));

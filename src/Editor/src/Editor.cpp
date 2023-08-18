@@ -34,7 +34,7 @@ Canella::Editor::Editor()
     setup_imgui();
 #endif
     bind_shortcuts();
-    layer.setup_layer(on_select_entity);
+    layer.setup_layer(on_select_entity,on_select_operation);
 }
 
 float RandomFloat(float min, float max)
@@ -92,6 +92,21 @@ void Canella::Editor::bind_shortcuts()
             asset.source =  "model_test/mario.glb";
             asset.mesh.model_matrix = &trans.model_matrix;
             AssetSystem::instance().async_load_asset(asset);
+        }
+
+        if( key == GLFW_KEY_R && action == InputAction::PRESS)
+        {
+            on_select_operation.invoke(ImGuizmo::ROTATE);
+        }
+
+        if( key == GLFW_KEY_G && action == InputAction::PRESS)
+        {
+            on_select_operation.invoke(ImGuizmo::TRANSLATE);
+        }
+
+        if( key == GLFW_KEY_Z && action == InputAction::PRESS)
+        {
+            on_select_operation.invoke(ImGuizmo::SCALE);
         }
     };
     keyboard.OnKeyInput += Event_Handler(short_cuts);
@@ -247,6 +262,7 @@ void Canella::Editor::render_editor_gui(VkCommandBuffer &command_buffer, uint32_
     ImVec2 cursorPos = ImGui::GetCursorScreenPos();
     ImGuizmo::SetRect(cursorPos.x,cursorPos.y, size.x, size.y);
 
+    build_property_view();
     layer.draw_layer();
 
     editor_layout();
@@ -271,7 +287,7 @@ void Canella::Editor::editor_layout()
         layer.draw_layer();
 
     }
-   // ImGui::ShowDemoWindow();
+    ImGui::ShowDemoWindow();
 }
 
 Canella::Editor::~Editor()
@@ -283,4 +299,49 @@ Canella::Editor::~Editor()
     ImGui_ImplVulkan_Shutdown();
 #endif
     render.destroy();
+}
+
+void Canella::Editor::build_property_view() {
+    bool open = true;
+    ImGuiWindowFlags window_flags = 0;
+    window_flags |= ImGuiWindowFlags_NoTitleBar;
+    window_flags |= ImGuiWindowFlags_MenuBar;
+    if (!ImGui::Begin("Example: Property editor", &open))
+    {
+        ImGui::End();
+        return;
+    }
+    auto& scene = application->scene;
+    if (ImGui::BeginTable("split", 2, ImGuiTableFlags_BordersOuter | ImGuiTableFlags_Resizable))
+    {
+        for(auto& entity : scene->entityLibrary)
+        {
+            auto id = static_cast<uint32_t>(entity.first);
+            ImGui::PushID(id);
+            // Text and Tree nodes are less high than framed widgets, using AlignTextToFramePadding() we add vertical spacing to make the tree lines equal high.
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0);
+            ImGui::AlignTextToFramePadding();
+            bool node_open = ImGui::TreeNode("Object", "%s_%u", "entity", id);
+            auto i = 0;
+            if(node_open)
+            {
+                ImGui::PushID(i);
+                auto& transform = entity.second->get_component<TransformComponent>();
+                ImGui::AlignTextToFramePadding();
+                ImGui::PushItemWidth(transform.position.x);
+                ImGui::DragFloat("X", &transform.position.x);
+                ImGui::PopID();
+                ImGui::TreePop();
+
+            }
+            ImGui::TableSetColumnIndex(1);
+            ImGui::Text("my sailor is rich");
+            ImGui::PopID();
+
+        }
+        ImGui::EndTable();
+        ImGui::End();
+    }
+
 }

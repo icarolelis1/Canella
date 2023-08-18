@@ -152,7 +152,7 @@ namespace Canella
                 Commandpool command_pool;
                 std::vector<VkSemaphore> queued_semaphores;
 
-                void record_command_index(VkCommandBuffer &commandBuffer, uint32_t index);
+                void record_command_index(FrameData& frame, uint32_t index);
                 void cache_pipelines(const char *pipelines);
                 void destroy_descriptor_set_layouts();
                 void allocate_global_descriptorsets();

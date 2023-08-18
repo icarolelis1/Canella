@@ -43,14 +43,9 @@ namespace Canella
         CameraComponent() = default;
         ~CameraComponent() = default;
         Euler euler;
-       // glm::vec3 position = glm::vec3(0, 3, -3);
         glm::mat4 projection;
-  /*      float yaw = 90;
-        float pitch = 0;
-        float roll;*/
-        TransformComponent transform;
+        TransformComponent* entity_transform;
         glm::mat4 view;
-        glm::vec3 target;
         float fovy;
         float zNear;
         float zFar;

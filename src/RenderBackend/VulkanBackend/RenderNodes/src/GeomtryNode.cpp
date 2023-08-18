@@ -2,7 +2,7 @@
 #include "VulkanRender/VulkanRender.h"
 #include "CanellaUtility/CanellaUtility.h"
 #include <imgui.h>
-
+#include "Render/Framework.h"
 #define STORAGE_SIZE  500
 
 //todo please Icaro, I trust you to clean this file.
@@ -253,7 +253,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::compute_frustum_culling
         total_geometry_count +=d.meshes.size() * d.instance_count;
     });
 
-    auto min_size = std::min(total_geometry_count,STORAGE_SIZE);
+    auto min_size = std::max(std::min(total_geometry_count,STORAGE_SIZE),1);
 
     //Clear Visibility  First at first call of compute_frustum_culling
     auto occlusion_buffer = resource_manager.get_buffer_cached(occlusion_visibility_buffer[image_index]);
@@ -401,42 +401,15 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::create_resource_buffers
     auto i = 0;
     for (auto &drawable : drawables)
     {
-        resource_bounds_buffers[i] = resource_manager.create_storage_buffer(sizeof(drawable.meshlet_compositions.bounds[0]) *
-                drawable.meshlet_compositions.bounds.size(),
-                VK_BUFFER_USAGE_TRANSFER_DST_BIT |
-                VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
-                &vulkan_renderer->transfer_pool,
-                drawable.meshlet_compositions.bounds.data());
-
-        resource_vertices_buffers[i] = resource_manager.create_storage_buffer(
-                (sizeof(Vertex) * drawable.positions.size()),
-                VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
-                &vulkan_renderer->transfer_pool,
-                drawable.positions.data());
-
-        resource_meshlet_buffers[i] = resource_manager.create_storage_buffer(
-                sizeof(drawable.meshlet_compositions.meshlets[0]) * drawable.meshlet_compositions.meshlets.size(),
-                VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-                &vulkan_renderer->transfer_pool,
-                drawable.meshlet_compositions.meshlets.data());
-
-        resource_meshlet_vertices[i] = resource_manager.create_storage_buffer(
-                sizeof(drawable.meshlet_compositions.meshlet_vertices[0]) * drawable.meshlet_compositions.meshlet_vertices.size(),
-                VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-                &vulkan_renderer->transfer_pool,
-                drawable.meshlet_compositions.meshlet_vertices.data());
-
-        resource_meshlet_triangles[i] = resource_manager.create_storage_buffer(
-                sizeof(drawable.meshlet_compositions.meshlet_triangles[0]) * drawable.meshlet_compositions.meshlet_triangles.size(),
-                VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-                &vulkan_renderer->transfer_pool,
-                drawable.meshlet_compositions.meshlet_triangles.data());
+        resource_bounds_buffers[i] = Canella::create_storage_buffer(render,sizeof(drawable.meshlet_compositions.bounds[0]) *drawable.meshlet_compositions.bounds.size(),drawable.meshlet_compositions.bounds.data());
+        resource_vertices_buffers[i] =  Canella::create_storage_buffer(render,sizeof(Vertex) * drawable.positions.size(),drawable.positions.data());
+        resource_meshlet_buffers[i] = Canella::create_storage_buffer(render,sizeof(drawable.meshlet_compositions.meshlets[0]) * drawable.meshlet_compositions.meshlets.size(),drawable.meshlet_compositions.meshlets.data());
+        resource_meshlet_vertices[i] =  Canella::create_storage_buffer(render, sizeof(drawable.meshlet_compositions.meshlet_vertices[0]) * drawable.meshlet_compositions.meshlet_vertices.size(),drawable.meshlet_compositions.meshlet_vertices.data());
+        resource_meshlet_triangles[i] = Canella::create_storage_buffer(render,sizeof(drawable.meshlet_compositions.meshlet_triangles[0]) * drawable.meshlet_compositions.meshlet_triangles.size(),drawable.meshlet_compositions.meshlet_triangles.data());
 
         auto total_geometry_count = 0;
         std::for_each(drawables.begin(),drawables.end(),[&total_geometry_count](auto& d)
-        {
-            total_geometry_count +=d.meshes.size() * d.instance_count;
-        });
+        {total_geometry_count +=d.meshes.size() * d.instance_count;});
 
         std::vector<glm::vec4>spheres;
 
@@ -449,7 +422,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::create_resource_buffers
             std::vector<glm::vec3> points(draw_count);
             auto sqrt = std::floor(std::sqrt(drawable.instance_count));
             auto i = 0;
-            auto res =0.0;
+            auto res =4.5;
             for(auto  x = 0; x < sqrt; x++)
                 for (auto z = 0 ; z < sqrt ; ++z)
                 {
@@ -480,11 +453,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::create_resource_buffers
                 ind++;
             }
 
-        resource_static_meshes[i] = resource_manager.create_storage_buffer(sizeof(StaticMeshData) * mesh_data.size() ,
-                                                                           VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-                                                                           &vulkan_renderer->transfer_pool,
-                                                                           mesh_data.data());
-
+        resource_static_meshes[i] = Canella::create_storage_buffer(render,sizeof(StaticMeshData) * mesh_data.size(), mesh_data.data());
         i++;
     }
 }
@@ -631,15 +600,8 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::create_indirect_command
     for (auto i = 0; i < drawables.size(); ++i)
     {
 
-        draw_indirect_buffers[i] = resource_manager.create_buffer(drawables[i].instance_count * sizeof(IndirectCommandToCull) *drawables[i].meshes.size(),
-                                                                  VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
-                                                                  VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT,
-                                                                  VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-
-        command_count_buffers[i] = resource_manager.create_buffer(4,
-                                                                  VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT |
-                                                                  VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT,
-                                                                  VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+        draw_indirect_buffers[i] = Canella::create_device_buffer(render,drawables[i].instance_count * sizeof(IndirectCommandToCull) *drawables[i].meshes.size());
+        command_count_buffers[i] = Canella::create_device_buffer(render,4);
     }
 
     //Create Occlusion Culling Visibility Buffer

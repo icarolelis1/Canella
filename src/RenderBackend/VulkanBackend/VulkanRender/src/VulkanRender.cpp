@@ -2,6 +2,7 @@
 #include <core/compressed_pair.hpp>
 #include <functional>
 
+#define MAX_FRAMES_IN_FLIGHT 3
 using namespace Canella::RenderSystem::VulkanBackend;
 
 void VulkanRender::set_windowing(Windowing *windowing)
@@ -16,6 +17,7 @@ VulkanRender::VulkanRender() : resources_manager(&this->device) {}
 void VulkanRender::build( nlohmann::json &config, OnOutputStatsEvent* display_event)
 {
     init_vulkan_instance();
+    api = GraphicsApi::Vulkan;
     display_render_stats_event = display_event;
     auto glfw_window = dynamic_cast<GlfwWindow *>(window);
     glfw_window->getSurface(instance->handle, &surface);
@@ -129,7 +131,10 @@ void VulkanRender::render(glm::mat4 &view, glm::mat4 &projection)
                                             &next_image_index);
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR)
+    {
         OnLostSwapchain.invoke(this);
+        return;
+    }
 
     if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
         throw std::runtime_error("failed to acquire swap chain image!");
@@ -137,8 +142,7 @@ void VulkanRender::render(glm::mat4 &view, glm::mat4 &projection)
     vkResetFences(device.getLogicalDevice(), 1, &frame_data.imageAvaibleFence);
     update_view_projection( view, projection, next_image_index );
 
-    //todo  add space between current frame and next. FIX The syncronization issue.
-    record_command_index(frame_data.commandBuffer, current_frame);
+    record_command_index(frame_data, next_image_index);
     queued_semaphores.push_back(frame_data.imageAcquiredSemaphore);
 
     std::vector<VkPipelineStageFlags> wait_stages;
@@ -164,6 +168,7 @@ void VulkanRender::render(glm::mat4 &view, glm::mat4 &projection)
     present_info.swapchainCount        = 1;
     present_info.pSwapchains           = swap_chains;
     present_info.pImageIndices         = &next_image_index;
+
     result = vkQueuePresentKHR(device.getGraphicsQueueHandle(), &present_info);
 
     if(enqueue_new_mesh)
@@ -177,14 +182,15 @@ void VulkanRender::render(glm::mat4 &view, glm::mat4 &projection)
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || should_reload != 0)
     {
-        queued_semaphores.clear();
+        //queued_semaphores.clear();
         OnLostSwapchain.invoke(this);
         should_reload--;
     }
+
     else if (result != VK_SUCCESS)
         throw std::runtime_error("failed to present swap chain image!");
 
-    current_frame = (current_frame + 1) % 3;
+    current_frame = (current_frame + 1) % MAX_FRAMES_IN_FLIGHT;
     queued_semaphores.clear();
     enqueue_new_mesh = false;
 
@@ -257,15 +263,15 @@ void VulkanRender::write_global_descriptorsets()
     }
 }
 
-void VulkanRender::record_command_index(VkCommandBuffer &commandBuffer, uint32_t index)
+void VulkanRender::record_command_index(FrameData& frame, uint32_t index)
 {
     // Execute the render graph
-    frames[index].commandPool.begin_command_buffer(&device, commandBuffer, true);
-    render_graph.execute(commandBuffer, this, index);
+    frame.commandPool.begin_command_buffer(&device, frame.commandBuffer, true);
+    render_graph.execute(frame.commandBuffer, this, index);
 #if RENDER_EDITOR_LAYOUT
-    OnRecordCommandEvent.invoke(commandBuffer, index);
+    OnRecordCommandEvent.invoke(frame.commandBuffer, index);
 #endif
-    frames[index].commandPool.endCommandBuffer(commandBuffer);
+    frame.commandPool.endCommandBuffer(frame.commandBuffer);
 }
 
 void VulkanRender::allocate_global_descriptorsets()

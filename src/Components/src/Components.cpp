@@ -12,9 +12,9 @@ void Canella::SerializeTransform(nlohmann::json &data, entt::registry &registry,
            parent] =
         view.get<TransformComponent>(entity);
 
-/*    position.x = data["Position"]["x"].get<float>();
+    position.x = data["Position"]["x"].get<float>();
     position.y = data["Position"]["y"].get<float>();
-    position.z = data["Position"]["z"].get<float>();*/
+    position.z = data["Position"]["z"].get<float>();
 
     scale.x = data["Scale"]["x"].get<float>();
     scale.y = data["Scale"]["y"].get<float>();
@@ -28,19 +28,8 @@ void Canella::SerializeTransform(nlohmann::json &data, entt::registry &registry,
 void Canella::SerializeCamera(nlohmann::json &data, entt::registry &registry, entt::entity entity)
 {
     auto &camera_component = registry.emplace<CameraComponent>(entity);
-    auto pos_x = data["Position"]["x"].get<float>();
-    auto pos_y = data["Position"]["y"].get<float>();
-    auto pos_z = data["Position"]["z"].get<float>();
+    camera_component.entity_transform = &registry.get<TransformComponent>(entity);
 
-    auto yaw  = data["Yaw"].get<float>();
-    auto pitch = data["Pitch"].get<float>();
-    auto roll = data["Roll"].get<float>();
-
-
-    camera_component.transform.position = glm::vec3(pos_x, pos_y, pos_z);
-    camera_component.transform.rotation.y = yaw;
-    camera_component.transform.rotation.x = pitch;
-    camera_component.transform.rotation.z = roll;
 }
 
 void Canella::SerializeMeshAsset(nlohmann::json &data, entt::registry &registry, entt::entity entity)

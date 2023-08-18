@@ -109,12 +109,7 @@ void Descriptorpool::build_descriptor_set_layout(Device& device)
     vkAllocateDescriptorSets(device.getLogicalDevice(), &alloc_info, &vk_bindless_descriptor_set);
 }
 
-/**
- * \brief 
- * \param device Vulkan Device
- * \param layout DescriptorSetLayout a wrapper arround VkDescriptorsetLayout
- * \param set VkDescriptorSet Object to allocate
- */
+
 void Descriptorpool::allocate_descriptor_set(Device& device, std::shared_ptr<DescriptorSetLayout> layout,
                                            VkDescriptorSet& set)
 {

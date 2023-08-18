@@ -1,9 +1,6 @@
 #include "Editor/EditorLayer.h"
-#include <ImGuizmo.h>
 #include "Window/Window.h"
-#include "imgui.h"
 #include "Components/Components.h"
-#include "glm/gtc/type_ptr.hpp"
 #include <glm/gtx/matrix_decompose.hpp>
 
 bool decompose_model(glm::mat4& transform,glm::vec3& translation, glm::vec3& rotation,glm::vec3& scale)
@@ -54,19 +51,20 @@ bool decompose_model(glm::mat4& transform,glm::vec3& translation, glm::vec3& rot
     return true;
 }
 
-void Canella::EditorLayer::setup_layer( Canella::OnSelectEntity &on_select_entity_event )
+void Canella::EditorLayer::setup_layer( Canella::OnSelectEntity &on_select_entity_event,Canella::OnSelectOperation& on_select_operation )
 {
     std::function<void(std::weak_ptr<Entity>)> on_select = [=](std::weak_ptr<Entity> entity){ action_on_select_entity(entity); };
+    std::function<void(IMGUIZMO_NAMESPACE::OPERATION)> on_select_oepration = [=](IMGUIZMO_NAMESPACE::OPERATION operation){ action_select_operation(operation); };
     on_select_entity_event+=on_select;
+    on_select_operation += on_select_oepration;
 }
 
 
 void Canella::EditorLayer::draw_layer() {
 
-    if (false)
+    if (entity_changed)
     {
         auto& window = GlfwWindow::get_instance();
-        ImVec2 size = ImGui::GetContentRegionAvail();
         ImGuizmo::SetOrthographic(false);
         ImGuizmo::SetRect( 0,0,window.getExtent().width,window.getExtent().height);
         ImGuizmo::Enable(true);
@@ -74,23 +72,32 @@ void Canella::EditorLayer::draw_layer() {
         auto& camera_projection = selected_entity.lock()->get_owner_scene().lock()->main_camera->projection;
         auto& camera_view = selected_entity.lock()->get_owner_scene().lock()->main_camera->view;
         auto& entity_transform = selected_entity.lock()->get_component<TransformComponent>();
-        auto transformation = ImGuizmo::OPERATION::TRANSLATE;
-
-        ImGuizmo::Manipulate(glm::value_ptr(camera_view),
-                             glm::value_ptr(camera_projection),
-                             transformation,
-                             ImGuizmo::MODE::LOCAL,
-                             glm::value_ptr(entity_transform.model_matrix));
+        float tmpMatrix[16];
+        ImGuizmo::RecomposeMatrixFromComponents(&entity_transform.position.x, &entity_transform.rotation.x, &entity_transform.scale.x, tmpMatrix);
+        ImGuizmo::Manipulate(&camera_view[0][0], &camera_projection[0][0], operation,
+                             ImGuizmo::MODE::WORLD, tmpMatrix);
 
         if (ImGuizmo::IsUsing())
         {
-            glm::vec3 translation,rotation,scale;
-            decompose_model(entity_transform.model_matrix,translation,rotation,scale);
+            float matrixTranslation[3], matrixRotation[3], matrixScale[3];
+            ImGuizmo::DecomposeMatrixToComponents(tmpMatrix, matrixTranslation, matrixRotation, matrixScale);
+            switch (operation)
+            {
+                case ImGuizmo::OPERATION::TRANSLATE:
+                    entity_transform.position = glm::vec3(matrixTranslation[0], matrixTranslation[1], matrixTranslation[2]);
+                    break;
 
-            glm::vec3 delta_rot = rotation - entity_transform.rotation;
-            //entity_transform.rotation  -= delta_rot;
-            entity_transform.position =  translation;
-            entity_transform.scale = scale;
+                case ImGuizmo::OPERATION::ROTATE:
+                    entity_transform.rotation = glm::vec3(matrixRotation[0], matrixRotation[1], matrixRotation[2]);
+                    break;
+
+                case ImGuizmo::OPERATION::SCALE:
+                    entity_transform.scale = glm::vec3(matrixScale[0], matrixScale[1], matrixScale[2]);
+                    break;
+
+                default:
+                    break;
+            }
         }
     }
 
@@ -100,6 +107,11 @@ void Canella::EditorLayer::action_on_select_entity(std::weak_ptr<Entity> entity)
 
     selected_entity = entity;
     entity_changed = true;
+}
+
+void Canella::EditorLayer::action_select_operation(IMGUIZMO_NAMESPACE::OPERATION op)
+{
+    operation = op;
 }
 
 void Canella::EditorLayer::action_on_deselect_entity() {
