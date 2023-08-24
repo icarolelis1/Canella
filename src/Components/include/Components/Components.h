@@ -3,7 +3,6 @@
 #include "Entity.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
-#include <glm/gtx/quaternion.hpp>
 #include "json.hpp"
 #include <map>
 #include "Render/Render.h"
@@ -11,9 +10,6 @@
 
 namespace Canella
 {
-    /*
-     * List of Basic Components
-     */
 
     struct Euler
     {
@@ -22,19 +18,15 @@ namespace Canella
         glm::vec3 right;
     };
 
-    struct HierarchyComponent
-    {
-    };
-
     struct TransformComponent
     {
         TransformComponent(const TransformComponent &) = default;
-        TransformComponent() = default;
+        TransformComponent(){ orientation = glm::angleAxis(0.0f,glm::vec3(1,0,0));}
         glm::vec3 position = glm::vec3(0);
         glm::vec3 rotation;
+        glm::quat orientation;
         glm::vec3                     scale = glm::vec3(1);
         glm::mat4                     model_matrix;
-        std::list<TransformComponent> children;
         TransformComponent *parent = nullptr;
     };
 
@@ -56,7 +48,7 @@ namespace Canella
         ModelMesh mesh;
         std::string source;
         bool isStatic = true;
-        uint32_t instance_count;
+        int8_t instance_count;
         ModelAssetComponent() = default;
     };
 
@@ -85,10 +77,8 @@ namespace Canella
         template <typename T>
         void bind()
         {
-            instantiate_fn = []()
-            { return static_cast<ScriptableEntity *>(new T()); };
-            destroy_fn = [](Behavior *behavior)
-            {delete behavior->instance;behavior->instance = nullptr; };
+            instantiate_fn = [](){ return static_cast<ScriptableEntity *>(new T()); };
+            destroy_fn = [](Behavior *behavior){delete behavior->instance;behavior->instance = nullptr; };
             instance = instantiate_fn();
         }
         friend class Application;
@@ -115,14 +105,15 @@ namespace Canella
         }
     };*/
 
-    void SerializeTransform(nlohmann::json &data, entt::registry &registry, entt::entity entity);
+    void SerializeTransform( nlohmann::json &data, std::shared_ptr<Scene> registry, entt::entity entity);
     void SerializeCamera(nlohmann::json &data, entt::registry &registry, entt::entity entity);
     void SerializeMeshAsset(nlohmann::json &data, entt::registry &registry, entt::entity entity);
     void SerializeCameraEditor(nlohmann::json &data, entt::registry &registry, entt::entity entity);
     void DeserializeTransform(nlohmann::json &data, TransformComponent &);
     void DeserializeCamera(nlohmann::json &data, CameraComponent &);
     void DeserializeMeshAsset(nlohmann::json &data, ModelAssetComponent &);
-    void DeserializeCameraEditor(nlohmann::json &data, ModelAssetComponent &);
+    class CameraEditor;
+    void DeserializeCameraEditor(nlohmann::json &data, CameraEditor &);
 }
 
 #endif

@@ -23,7 +23,7 @@ void CameraEditor::on_start()
         camera_component->projection = glm::perspectiveFov(glm::radians(70.0f),
                                                            (float)extent.width,(float)extent.height,
                                                            .01f, 1000.f);
-        camera_component->projection[1][1] *=-1.0f;
+        //camera_component->projection[1][1] *=-1.0f;
 
     };
     // Create the event handler and register
@@ -91,28 +91,21 @@ void CameraEditor::camera_input_keys()
     // KeyBoard::instance().OnKeyInput += Event_Handler<int, InputAction>(key_callbacks);
 }
 
-void CameraEditor::update_euler_directions()
-{
-    glm::quat qPitch = glm::angleAxis(glm::radians(camera_component->entity_transform->rotation.x), glm::vec3(1, 0, 0));
-    glm::quat qYaw   = glm::angleAxis(glm::radians(camera_component->entity_transform->rotation.y), glm::vec3(0, 1, 0));
-    glm::quat qRoll  = glm::angleAxis(glm::radians(camera_component->entity_transform->rotation.z), glm::vec3(0, 0, 1));
-
+void CameraEditor::update_euler_directions() {
     // For a FPS camera we can omit roll
-    orientation = qPitch * qYaw * qRoll;
-    orientation = glm::normalize(orientation);
-    glm::mat4 rotate = glm::mat4_cast(orientation);
-    auto cam_pos_flipped = camera_component->entity_transform->position * glm::vec3(1,1,1);
-    glm::mat4 translate = glm::mat4(1.0f);
-    translate = glm::translate(translate,-camera_component->entity_transform->position);
+    glm::mat4 rotate          = glm::mat4_cast( camera_component->entity_transform->orientation );
+    auto      cam_pos_flipped = camera_component->entity_transform->position * glm::vec3( 1, 1, 1 );
+    glm::mat4 translate       = glm::mat4( 1.0f );
+    translate = glm::translate( translate, -camera_component->entity_transform->position );
 
-    translate = glm::translate(translate, -cam_pos_flipped);
+    translate = glm::translate( translate, -cam_pos_flipped );
     camera_component->view = rotate * translate;
 
     //camera_component->view = glm::inverse(camera_component->entity_transform->model_matrix);
-
-    camera_component->euler.up = glm::normalize(glm::vec3(0.f,  1.f, 0.0f) * orientation);
-    camera_component->euler.front = glm::normalize(glm::vec3(0.f, 0.f, -1.0f) * orientation);
-    camera_component->euler.right = glm::normalize(glm::vec3(1.f, 0.f, 0.0f) * orientation);
+    auto inv_view   = glm::inverse(camera_component->view);
+    camera_component->euler.up    = glm::normalize( inv_view[1] );
+    camera_component->euler.front = -glm::normalize( inv_view[2] );
+    camera_component->euler.right = glm::normalize(glm::cross( camera_component->euler.up ,camera_component->euler.front));
 }
 
 void CameraEditor::set_mouse_callbacks()
@@ -179,8 +172,12 @@ void CameraEditor::set_mouse_callbacks()
             auto horizontal_delta = rotating_x - x;
             auto vertical_delta = rotating_y - y;
             // TODO investigate the camera orientation is messedup
-            camera_component->entity_transform->rotation.y -= (float)horizontal_delta * sensitivity;
-            camera_component->entity_transform->rotation.x += (float)vertical_delta * sensitivity;
+        /*    camera_component->entity_transform->rotation.y -= (float)horizontal_delta * sensitivity;
+            camera_component->entity_transform->rotation.x += (float)vertical_delta * sensitivity;*/
+            auto quat_yaw = glm::angleAxis( (float)horizontal_delta * sensitivity,glm::vec3(0,-1,0));
+            auto quat_pitch = glm::angleAxis( (float)vertical_delta * sensitivity,camera_component->euler.right);
+
+            camera_component->entity_transform->orientation *= quat_yaw * quat_pitch;
             // Canella::Logger::Info("Event input is working %d %d",x,y);
             rotating_x = x;
             rotating_y = y;

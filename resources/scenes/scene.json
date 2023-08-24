@@ -2,65 +2,118 @@
   "Scene": {
     "Entities": [
       {
-        "Parent": "Root",
         "Components": [
           {
-            "type": "Transform",
+            "Orientation": {
+              "w": 1.0,
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.0
+            },
             "Position": {
               "x": 0.0,
               "y": 0.0,
               "z": 0.0
             },
-            "Scale": {
-              "x": 1,
-              "y": 1,
-              "z": 1
-            },
             "Rotation": {
-              "x": 0,
-              "y": 0,
-              "z": 0
-            }
+              "x": 0.0,
+              "y": -0.0,
+              "z": 0.0
+            },
+            "Scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "type": "Transform"
           },
           {
-            "type": "MeshAsset",
-            "Static": true,
+            "InstanceCount": 1,
             "Source": "model_test/wakfu_characters_yugo.glb",
-            "InstanceCount" : 2
+            "Static": true,
+            "type": "MeshAsset"
           }
-        ]
+        ],
+        "Name": "Actor1",
+        "Parent": "Root",
+        "UUID": 18446744073709551615
       },
       {
-        "Parent": "Root",
         "Components": [
           {
-            "type": "Camera",
-            "Fovy": 0,
-            "Znear": 0.1,
-            "Zfar": 100
-          },
-          {
-            "type": "Transform",
-            "Position": {
+            "Orientation": {
+              "w": 1.0,
               "x": 0.0,
               "y": 0.0,
-              "z": 10
+              "z": 0.0
             },
-            "Scale": {
-              "x": 1,
-              "y": 1,
-              "z": 1
+            "Position": {
+              "x": 9.0,
+              "y": 2.0,
+              "z": 20.0
             },
             "Rotation": {
-              "x": 0,
-              "y": 0,
-              "z": 0
-            }
+              "x": 0.0,
+              "y": -0.0,
+              "z": 0.0
+            },
+            "Scale": {
+              "x": 7.0,
+              "y": 1.0,
+              "z": 18.0
+            },
+            "type": "Transform"
+          },
+          {
+            "InstanceCount": 1,
+            "Source": "model_test/antique_floor_mosaic.glb",
+            "Static": true,
+            "type": "MeshAsset"
+          }
+        ],
+        "Name": "Floor",
+        "Parent": "Root",
+        "UUID": 18446744073709551615
+      },
+      {
+        "Components": [
+          {
+            "Fovy": 0.0,
+            "Zfar": 0.0,
+            "Znear": 0.0,
+            "type": "Camera"
+          },
+          {
+            "Orientation": {
+              "w": 0.7818267941474915,
+              "x": -0.6228887438774109,
+              "y": -0.020406005904078484,
+              "z": -0.019731413573026657
+            },
+            "Position": {
+              "x": -2.6458206176757813,
+              "y": -6.661126136779785,
+              "z": -7.630184650421143
+            },
+            "Rotation": {
+              "x": -77.08053588867188,
+              "y": -3.2382988929748535,
+              "z": -0.31170058250427246
+            },
+            "Scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "type": "Transform"
           },
           {
             "type": "CameraEditor"
           }
-        ]
+        ],
+        "Name": "Camera",
+        "Parent": "Root",
+        "UUID": 5290263814667214259
       }
     ]
   }

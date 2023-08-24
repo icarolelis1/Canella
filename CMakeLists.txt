@@ -66,6 +66,7 @@ endif()
 add_executable(${PROJECT_NAME}  main.cpp
         src/Editor/src/Editor.cpp
         src/Editor/src/EditorLayer.cpp
+        src/Editor/src/Inspector.cpp
         src/EditorComponents/src/EditorComponents.cpp)
 
 target_link_directories(${PROJECT_NAME} PUBLIC $ENV{VULKAN_SDK}/Lib ${GLFW_LIB}  ${OS_LIBS_DIR}/assimp/lib/ ${OS_LIBS_DIR}/metis/lib/)
@@ -142,9 +143,9 @@ add_custom_command(TARGET copy PRE_BUILD
 
 add_dependencies(copy shaders)
 add_dependencies(${PROJECT_NAME} copy )
-#[[
+
 add_custom_target(copy-files ALL
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${PROJECT_SOURCE_DIR}/resources
         ${CMAKE_BINARY_DIR}/resources
-        )]]
+        )

@@ -63,9 +63,7 @@ void VulkanRender::init_vulkan_instance()
 
 void VulkanRender::enqueue_drawables(Drawables &drawables)
 {
-  //  m_drawables = drawables;
-    render_graph.load_resources(this);
-    create_transform_buffers();
+    m_drawables = drawables;
 }
 
 void VulkanRender::create_render_graph_resources() {
@@ -143,9 +141,17 @@ void VulkanRender::render(glm::mat4 &view, glm::mat4 &projection)
     update_view_projection( view, projection, next_image_index );
 
     record_command_index(frame_data, next_image_index);
-    queued_semaphores.push_back(frame_data.imageAcquiredSemaphore);
 
-    std::vector<VkPipelineStageFlags> wait_stages;
+    if(enqueue_new_mesh)
+    {
+        for(auto& mesh : drawables_to_be_inserted)
+            m_drawables.push_back(mesh);
+        drawables_to_be_inserted.clear();
+        should_reload = 1;
+        enqueue_new_mesh = false;
+    }
+
+    queued_semaphores.push_back(frame_data.imageAcquiredSemaphore);
     wait_stages.push_back(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
 
     VkSubmitInfo submit_info = {};
@@ -171,14 +177,6 @@ void VulkanRender::render(glm::mat4 &view, glm::mat4 &projection)
 
     result = vkQueuePresentKHR(device.getGraphicsQueueHandle(), &present_info);
 
-    if(enqueue_new_mesh)
-    {
-        for(auto& mesh : drawables_to_be_inserted)
-            m_drawables.push_back(mesh);
-        drawables_to_be_inserted.clear();
-        should_reload = 1;
-        enqueue_new_mesh = false;
-    }
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || should_reload != 0)
     {
@@ -193,6 +191,7 @@ void VulkanRender::render(glm::mat4 &view, glm::mat4 &projection)
     current_frame = (current_frame + 1) % MAX_FRAMES_IN_FLIGHT;
     queued_semaphores.clear();
     enqueue_new_mesh = false;
+    wait_stages.clear();
 
 }
 
@@ -394,11 +393,11 @@ void VulkanRender::setup_internal_renderer_events()
     Event_Handler<Canella::Render *> reload_renderpass_manager(reload_fn_pass_manager);
     Event_Handler<Extent> reload_on_resize(resize_fn);
 
-    std::function<void(VkSemaphore &)> submite_transfer = [=](VkSemaphore &semaphore)
+    std::function<void(VkSemaphore &,VkPipelineStageFlagBits)> submite_transfer = [=](VkSemaphore &semaphore,VkPipelineStageFlagBits stage)
     {
-        enqueue_waits(semaphore);
+        enqueue_waits(semaphore,stage);
     };
-    Event_Handler<VkSemaphore &> submite_transfer_command_handler(submite_transfer);
+    Event_Handler<VkSemaphore &,VkPipelineStageFlagBits> submite_transfer_command_handler(submite_transfer);
 
     resources_manager.OnTransferCommand += submite_transfer_command_handler;
     OnLostSwapchain += reload_renderpass_manager;
@@ -407,9 +406,10 @@ void VulkanRender::setup_internal_renderer_events()
     glfw_window->OnWindowResize += reload_on_resize;
 }
 
-void VulkanRender::enqueue_waits(VkSemaphore semaphore)
+void VulkanRender::enqueue_waits(VkSemaphore semaphore,VkPipelineStageFlagBits stage)
 {
     queued_semaphores.push_back(semaphore);
+    wait_stages.push_back(stage);
 }
 
 VkCommandBuffer VulkanRender::request_command_buffer(VkCommandBufferLevel level)
@@ -431,6 +431,6 @@ void Canella::RenderSystem::VulkanBackend::VulkanRender::enqueue_drawable(ModelM
 {
     drawables_to_be_inserted.push_back(mesh);
     enqueue_new_mesh = true;
-    Canella::Logger::Debug("%d drawables", m_drawables.size());
+    Canella::Logger::Debug("%d drawables to insert", drawables_to_be_inserted.size());
 }
 

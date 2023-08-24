@@ -245,8 +245,8 @@ void MeshProcessing::build_meshlets(Canella::Meshlet &canellaMeshlet, Canella::M
         MeshletBound meshletBound{};
         meshletBound.center      = glm::vec4(bound.center[0], bound.center[1], bound.center[2], 1);
         meshletBound.cone_apex   = glm::vec4(bound.cone_apex[0], bound.cone_apex[1], bound.cone_apex[2], 0.f);
-        meshletBound.cone_axis   = glm::vec4(bound.cone_axis_s8[0], bound.cone_axis_s8[1], bound.cone_axis_s8[2], 1.f);
-        meshletBound.cone_cutoff = glm::vec4(bound.cone_cutoff_s8, bound.radius, 1, 1.1);
+        meshletBound.cone_axis   = glm::vec4(bound.cone_axis[0], bound.cone_axis[1], bound.cone_axis[2], 1.f);
+        meshletBound.cone_cutoff = glm::vec4(bound.cone_cutoff, bound.radius, 1, 1.1);
 
         bounds.push_back(meshletBound);
     }

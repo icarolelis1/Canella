@@ -54,3 +54,8 @@ std::string Canella::AssetSystem::get_project_src() {
 void Canella::AssetSystem::set_renderer( Canella::Render *_render ) {
     renderer = _render;
 }
+
+void Canella::AssetSystem::load_asset( Canella::ModelAssetComponent &asset ) {
+    auto project_src = get_project_src();
+    Canella::MeshProcessing::load_asset_mesh(asset.mesh, project_src, asset.source);
+}

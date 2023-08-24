@@ -104,8 +104,9 @@ namespace Canella
                 /**
                  * @brief Enqueue a semaphore to be waited before submitting graphics comands
                  * @param semaphore the semaphore to wait
+                 * @param stage Stage to wait the operation
                  */
-                void enqueue_waits(VkSemaphore semaphore);
+                void enqueue_waits(VkSemaphore semaphore,VkPipelineStageFlagBits stage);
                 /**
                  * @brief Add a semaphore to wait before submiting graphics commands
                  * @param semaphore the semaphore to wait
@@ -151,6 +152,7 @@ namespace Canella
                 Windowing *window;
                 Commandpool command_pool;
                 std::vector<VkSemaphore> queued_semaphores;
+                std::vector<VkPipelineStageFlags> wait_stages;
 
                 void record_command_index(FrameData& frame, uint32_t index);
                 void cache_pipelines(const char *pipelines);
@@ -165,10 +167,13 @@ namespace Canella
                 void init_vulkan_instance();
                 void destroy_pipelines();
                 void setup_frames();
-                int8_t should_reload =  0;
                 void get_device_proc();
-
                 void update_view_projection( glm::mat4 &view, glm::mat4 &projection, uint32_t next_image_index );
+                std::mutex mutex;
+                std::mutex mutex2;
+
+                int8_t should_reload =  0;
+                bool resources_loaded = false;
             };
         }
     }

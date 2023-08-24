@@ -80,7 +80,7 @@ uint32_t Canella::RenderSystem::VulkanBackend::find_memory_type(Device *device,
 }
 
 GPUResource::GPUResource(
-    ResourceType _type) : type(_type)
+        ResourceType _type) : type(_type)
 {
 }
 
@@ -88,7 +88,7 @@ Buffer::Buffer(RenderSystem::VulkanBackend::Device *device,
                VkDeviceSize size,
                VkBufferUsageFlags usage,
                VkMemoryPropertyFlags properties)
-    : GPUResource(ResourceType::BufferResource)
+        : GPUResource(ResourceType::BufferResource)
 {
     this->device = device;
     this->size = size;
@@ -161,9 +161,9 @@ void Buffer::flush(VkDeviceSize offset)
 }
 
 void ResourcesManager::copy_buffer_to(VkCommandBuffer command_buffer, const RefBuffer &src, const RefBuffer &dst, VkDeviceSize device_size, VkQueue queue)
-{ 
-    // vkWaitForFences(device->getLogicalDevice(), 1, &async_loader.fence, VK_TRUE, UINT64_MAX);
-    // vkResetFences(device->getLogicalDevice(), 1, &async_loader.fence);
+{
+     vkWaitForFences(device->getLogicalDevice(), 1, &async_loader.fence, VK_TRUE, UINT64_MAX);
+     vkResetFences(device->getLogicalDevice(), 1, &async_loader.fence);
 
     VkCommandBufferBeginInfo beginInfo = {};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -186,7 +186,7 @@ void ResourcesManager::copy_buffer_to(VkCommandBuffer command_buffer, const RefB
     submit_info.pCommandBuffers = &command_buffer;
     // submit_info.pSignalSemaphores = &async_loader.semaphore;
     // submit_info.signalSemaphoreCount = 1;
-    vkQueueSubmit(queue, 1, &submit_info, VK_NULL_HANDLE);
+    vkQueueSubmit(queue, 1, &submit_info, async_loader.fence);
     //OnTransferCommand.invoke(async_loader.semaphore);
     vkQueueWaitIdle(queue);
 }
@@ -207,18 +207,18 @@ ResourceAccessor ResourcesManager::create_buffer(size_t size, VkBufferUsageFlags
 }
 
 ResourceAccessor ResourcesManager::create_image(
-    Device *device,
-    uint32_t width,
-    uint32_t height,
-    VkFormat format,
-    VkImageTiling tilling,
-    VkImageUsageFlags usage,
-    VkMemoryPropertyFlags properties,
-    VkImageCreateFlags flags,
-    uint32_t num_mips,
-    VkImageAspectFlags aspectFlags,
-    uint32_t arrayLayers,
-    VkSampleCountFlagBits samples)
+        Device *device,
+        uint32_t width,
+        uint32_t height,
+        VkFormat format,
+        VkImageTiling tilling,
+        VkImageUsageFlags usage,
+        VkMemoryPropertyFlags properties,
+        VkImageCreateFlags flags,
+        uint32_t num_mips,
+        VkImageAspectFlags aspectFlags,
+        uint32_t arrayLayers,
+        VkSampleCountFlagBits samples)
 {
     auto unique_resource_id = uuid();
     resource_cache[unique_resource_id] = std::make_shared<Image>(device,width,height,format,tilling,usage,properties,num_mips,aspectFlags);
@@ -245,11 +245,29 @@ ResourcesManager::get_image_cached(uint64_t uuid)
     return std::static_pointer_cast<Image>(ref_image);
 }
 
+uint64_t ResourcesManager::create_storage_buffer(size_t size, VkBufferUsageFlags flags, VulkanBackend::Commandpool *transfer_pool, void *data)
+{
+    auto staging_buffer = std::make_shared<Buffer>(device,size,VK_BUFFER_USAGE_TRANSFER_SRC_BIT,VK_MEMORY_PROPERTY_HOST_COHERENT_BIT |VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+    staging_buffer->debug_id = "Staged";
+    if (auto result = vkMapMemory(device->getLogicalDevice(), staging_buffer->vk_deviceMemory, 0, size, 0, &staging_buffer->mapPointer) != VK_SUCCESS)
+        throw std::runtime_error("Failed to map buffer memory");
+
+    memcpy(staging_buffer->mapPointer, data, size);
+    staging_buffer->unmap();
+    ResourceAccessor id = create_buffer(size, flags, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    const auto command = transfer_pool->requestCommandBuffer(device, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+    copy_buffer_to(command, staging_buffer, get_buffer_cached(id), size, device->getTransferQueueHandle());
+
+    return id;
+
+}
+
+
 uint64_t ResourcesManager::write_descriptor_sets(
-    VkDescriptorSet &descriptorset,
-    std::vector<VkDescriptorBufferInfo> &buffer_infos,
-    std::vector<VkDescriptorImageInfo> &image_infos,
-    bool storage_buffers)
+        VkDescriptorSet &descriptorset,
+        std::vector<VkDescriptorBufferInfo> &buffer_infos,
+        std::vector<VkDescriptorImageInfo> &image_infos,
+        bool storage_buffers)
 {
     auto unique_id = uuid();
     DescriptorSet::update_descriptorset(device, descriptorset, buffer_infos, image_infos, false, storage_buffers);

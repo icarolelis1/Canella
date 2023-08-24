@@ -32,6 +32,15 @@
 
 namespace Canella
 {
+
+/*    Canella::Entity &Canella::Mouse::instance()
+    {
+        static Mouse mouse;
+        return mouse;
+    }*/
+
+
+
     class Editor;
 
     class StartPlayEvent : public Event<Canella::Editor &>
@@ -50,6 +59,7 @@ namespace Canella
         void play();
         void stop();
         std::weak_ptr<Entity> selected_entity;
+
     private:
 
         Canella::EditorLayer layer;
@@ -61,15 +71,13 @@ namespace Canella
 
         void render_editor_gui(VkCommandBuffer &, uint32_t);
         void setup_imgui();
-        void editor_layout();
+        void display_graphics_status();
         void bind_shortcuts();
-        void build_property_view();
 
-        bool playing = true;
-        bool display_statistics = true;
-        bool scene_mode = true;
         bool game_mode = true;
-        bool custom_font_pushed = false;
+        //Display Window
+        bool show_status;
+        bool show_inspector;
 
         //Editor Events
         OnOutputStatsEvent out_put_stats;

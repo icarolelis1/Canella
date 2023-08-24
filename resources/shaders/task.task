@@ -9,9 +9,6 @@
 
 #include "common.glsl"
 
-
-const float pi_half = 1.57079;
-
 layout(local_size_x = 32 ,local_size_y = 1 , local_size_z = 1 ) in;
 
 
@@ -62,10 +59,11 @@ struct Task
 
 taskPayloadSharedEXT Task OUT;
 
-bool cone_cull(vec3 cone, vec3 view_dir,float cutoff)
+bool cone_cull(vec3 center, float radius, vec3 cone_axis, float cone_cutoff, vec3 camera_position)
 {
-   return dot(cone.xyz,view_dir) >= cutoff;  
+	return dot(normalize(center - camera_position), normalize(cone_axis)) >= cone_cutoff* length(center - camera_position) + radius ;
 }
+
 
 void main()
 {
@@ -74,9 +72,8 @@ void main()
    uint ti = gl_LocalInvocationID.x; 
    uint mi = mgi * 32 + ti;
    uint thread_meshlet = mi + mesh_data.meshlet_offset ;
-   
   MeshletBound bound = bounds[thread_meshlet];
-  vec3 cone_apex = bound.cone_apex.xyz;
+
 
  mat4 model;
  if(specialize_mesh.dyamic == false)
@@ -84,20 +81,18 @@ void main()
  else
     model = specialize_mesh.model_matrix;
 
-  vec4 cone =  model*vec4(cone_apex.xyz/127 + mesh_data.pos,1);
-  vec4 cone_axis = model * bound.cone_axis/127.f;
-  vec3 direction = normalize( cone.xyz - ubo.eye.xyz);
-  bool accept = !cone_cull(cone_axis.xyz,direction,bound.cone_cutoff.x);
-   
+  vec4 cone_apex = model * vec4(bound.cone_apex.xyz,1);
+  vec3 center = bound.center.xyz +  model[3].xyz;
+  float radius = bound.cone_cutoff.y;
+  vec4 cone_axis = normalize(vec4((mat3(model)) * bound.cone_axis.xyz ,1.0));
+  bool accept = !cone_cull(center,radius, cone_axis.xyz,bound.cone_cutoff.x,ubo.eye.xyz);
+
    uvec4 ballot = subgroupBallot(accept);
    uint count = subgroupBallotBitCount(ballot);
    uint index = subgroupBallotInclusiveBitCount(ballot);
 
    if(accept)
-   {
       OUT.meshletIndices[ti] = thread_meshlet ;
-   }
-      
 
    if( ti == 0 );
           EmitMeshTasksEXT(count, 1, 1);

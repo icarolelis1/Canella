@@ -28,14 +28,19 @@ namespace Canella {
          * @return
          */
         Entity& CreateEntity();
+
+        /**
+        * @brief create an entity to the scene
+        * @return
+        */
+        Entity& CreateEntity(uint64_t uuid);
+
         void init_systems();
         /**
          * @brief update the component system
          * @param delta time between last frame and current frame
          */
         void update_systems(float delta);
-
-        void print_debug();
 
         CameraComponent * main_camera;
         entt::registry registry;

@@ -69,7 +69,6 @@ void Canella::RenderSystem::VulkanBackend::RenderGraph::load_render_node(const n
         render_node->load_render_node(descendent);
         //add to the descendent vector
         ref_node->descedent_nodes.push_back(render_node);
-        //store the timequery reference for the node in case of logging data
     }
 }
 

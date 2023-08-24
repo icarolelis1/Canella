@@ -28,7 +28,7 @@ namespace Canella
         void close();
         std::string assets_folder;
         std::shared_ptr<Canella::Scene> scene;
-
+        void Deserialize();
     private:
         void setup_project_folder(nlohmann::json& data);
         /**
@@ -43,8 +43,8 @@ namespace Canella
 
         Canella::Render* render;
         Canella::GlfwWindow* window;
-        Canella::Serializer serializer;
 
+        Canella::Serializer serializer;
         friend class Editor;
     };
 

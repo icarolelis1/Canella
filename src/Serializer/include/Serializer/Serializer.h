@@ -7,6 +7,7 @@
 
 namespace Canella
 {
+    enum ComponentType;
     class Scene;
     class Serializer
     {
@@ -25,7 +26,7 @@ namespace Canella
          * @param scene scene to be deserialized
          */
         void Deserialize(std::weak_ptr<Scene> scene);
-        
+
     private:
         void LoadEntities(std::shared_ptr<Scene> scene, const std::string& filepath);
         /**

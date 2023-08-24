@@ -19,10 +19,8 @@ void AsynchronousLoader::build()
     fence_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
     fence_info.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-    if (vkCreateSemaphore(device->getLogicalDevice(),
-                          &semaphore_info, nullptr, &semaphore) != VK_SUCCESS ||
-        vkCreateSemaphore(device->getLogicalDevice(),
-                          &semaphore_info, nullptr, &wait_semaphore) != VK_SUCCESS ||
+    if (vkCreateSemaphore(device->getLogicalDevice(),&semaphore_info, nullptr, &semaphore) != VK_SUCCESS ||
+        vkCreateSemaphore(device->getLogicalDevice(),&semaphore_info, nullptr, &wait_semaphore) != VK_SUCCESS ||
         vkCreateFence(device->getLogicalDevice(), &fence_info, nullptr, &fence))
         Logger::Error("Failed to create synchronization objects for Resource Loader");
 }

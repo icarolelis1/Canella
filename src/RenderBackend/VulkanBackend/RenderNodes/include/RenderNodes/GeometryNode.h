@@ -66,8 +66,8 @@ namespace Canella
                     uint32_t mip_count;
                     bool visibility_first_cleared = false;
                     uint32_t base_width;
-                    uint32_t base_height;
-                    VkSampler sampler;
+                    uint32_t  base_height;
+                    VkSampler max_sampler;
                     VkSampler regular_sampler;
                     VkDescriptorUpdateTemplate updateTemplate;
                     CullingData  culling_data;
@@ -172,7 +172,7 @@ namespace Canella
                 std::vector<DescriptorPerDrawable> geometry_data_descriptors;
                 std::vector<DescriptorPerDrawable> descriptors;
                 std::vector<ResourceAccessor> resource_static_meshes;
-
+                float do_occlusion_culling = 1.0f;
                 // debug commands
                 std::vector<IndirectCommandToCull> commands;
                 HIZDepth hiz_depth;

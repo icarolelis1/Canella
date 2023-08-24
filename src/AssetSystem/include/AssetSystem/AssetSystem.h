@@ -21,10 +21,16 @@ namespace Canella
         void set_project_src(const char *src);
 
         /**
-         * @brief loads a mesh object
+         * @brief loads a mesh object asynchrosnously
          * @param asset mesh asset to be loaded
          */
         void async_load_asset(ModelAssetComponent &asset);
+
+        /**
+       * @brief loads a mesh object
+       * @param asset mesh asset to be loaded
+       */
+        void load_asset(ModelAssetComponent &asset);
 
         /**
          * @brief Get the source directory of the project

@@ -11,6 +11,7 @@
   </component>
   <component name="CMakeRunConfigurationManager">
     <generated>
+      <config projectName="Canella" targetName="copy-files" />
       <config projectName="Canella" targetName="ImGUI" />
       <config projectName="Canella" targetName="Systems" />
       <config projectName="Canella" targetName="Canella" />
@@ -35,14 +36,20 @@
   <component name="ChangeListManager">
     <list default="true" id="f3fc5e0f-8f89-4e41-a906-50d83f14594e" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/imgui.ini" beforeDir="false" afterPath="$PROJECT_DIR$/imgui.ini" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/scenes/scene.json" beforeDir="false" afterPath="$PROJECT_DIR$/resources/scenes/scene.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/shaders/command.comp" beforeDir="false" afterPath="$PROJECT_DIR$/resources/shaders/command.comp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/shaders/occlusionwrite.comp" beforeDir="false" afterPath="$PROJECT_DIR$/resources/shaders/occlusionwrite.comp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/shaders/spirv/command.comp.spv" beforeDir="false" afterPath="$PROJECT_DIR$/resources/shaders/spirv/command.comp.spv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/shaders/spirv/occlusion.comp.spv" beforeDir="false" afterPath="$PROJECT_DIR$/resources/shaders/spirv/occlusion.comp.spv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/shaders/spirv/occlusionwrite.comp.spv" beforeDir="false" afterPath="$PROJECT_DIR$/resources/shaders/spirv/occlusionwrite.comp.spv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/shaders/occlusion.comp" beforeDir="false" afterPath="$PROJECT_DIR$/resources/shaders/occlusion.comp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/shaders/spirv/command.comp.spv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/shaders/spirv/fragment.frag.spv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/shaders/spirv/mesh.mesh.spv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/shaders/spirv/occlusion.comp.spv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/shaders/spirv/occlusionwrite.comp.spv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/shaders/spirv/task.task.spv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/shaders/task.task" beforeDir="false" afterPath="$PROJECT_DIR$/resources/shaders/task.task" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/AssetSystem/include/AssetSystem/AssetSystem.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/AssetSystem/include/AssetSystem/AssetSystem.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/AssetSystem/src/AssetSystem.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/AssetSystem/src/AssetSystem.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Components/include/Components/Components.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/include/Components/Components.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Components/src/Components.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/src/Components.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Editor/include/Editor/Editor.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Editor/include/Editor/Editor.h" afterDir="false" />
@@ -51,12 +58,26 @@
       <change beforePath="$PROJECT_DIR$/src/Editor/src/EditorLayer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Editor/src/EditorLayer.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/EditorComponents/include/EditorComponents/EditorComponents.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/EditorComponents/include/EditorComponents/EditorComponents.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/EditorComponents/src/EditorComponents.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/EditorComponents/src/EditorComponents.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Render/include/Render/Render.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Render/include/Render/Render.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Descriptorpool/src/Descriptorpool.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Descriptorpool/src/Descriptorpool.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Entity/include/Entity.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Entity/include/Entity.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ImGUI/imgui_impl_vulkan.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ImGUI/imgui_impl_vulkan.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Project/include/Project/Project.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Project/include/Project/Project.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Project/src/Project.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Project/src/Project.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/AsynchronousLoader/src/AsynchronousLoader.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/AsynchronousLoader/src/AsynchronousLoader.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Device/src/Device.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Device/src/Device.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Mesh/src/Mesh.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Mesh/src/Mesh.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Pipeline/include/Pipeline/Pipeline.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Pipeline/include/Pipeline/Pipeline.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderGraph/src/RenderGraph.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderGraph/src/RenderGraph.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/include/RenderNodes/GeometryNode.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/include/RenderNodes/GeometryNode.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/GeomtryNode.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/GeomtryNode.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Resources/include/Resources/Resources.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Resources/include/Resources/Resources.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Resources/src/Resources.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Resources/src/Resources.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/VulkanRender/include/VulkanRender/VulkanRender.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/VulkanRender/include/VulkanRender/VulkanRender.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/VulkanRender/src/VulkanRender.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/VulkanRender/src/VulkanRender.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Scene/include/Scene/Scene.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Scene/include/Scene/Scene.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Scene/src/Scene.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Scene/src/Scene.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Serializer/include/Serializer/Serializer.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Serializer/include/Serializer/Serializer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Serializer/src/Serializer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Serializer/src/Serializer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Systems/src/Systems.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Systems/src/Systems.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -116,11 +137,11 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\IALCProjects\Canella\resources\shaders" />
       <recent name="D:\IALCProjects\Canella\src\RenderBackend\VulkanBackend\VulkanImpl" />
       <recent name="D:\IALCProjects\Canella\src\RenderBackend\VulkanBackend\VulkanImpl\include\VulkanImpl" />
       <recent name="D:\IALCProjects\Canella\src\RenderBackend\VulkanBackend\VulkanImpl\include" />
       <recent name="D:\IALCProjects\Canella\src\Editor\src" />
-      <recent name="D:\IALCProjects\Canella\src\ImGUI" />
     </key>
   </component>
   <component name="RunManager" selected="CMake Application.Canella">
@@ -154,6 +175,11 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
+    <configuration name="copy-files" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Canella" TARGET_NAME="copy-files" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="copy" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Canella" TARGET_NAME="copy" CONFIG_NAME="Debug">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -167,6 +193,7 @@
     <list>
       <item itemvalue="CMake Application.Canella" />
       <item itemvalue="CMake Application.copy" />
+      <item itemvalue="CMake Application.copy-files" />
       <item itemvalue="CMake Application.shaders" />
       <item itemvalue="CMake Application.Engine" />
       <item itemvalue="CMake Application.ImGUI" />
@@ -329,7 +356,20 @@
       <workItem from="1692276561466" duration="4524000" />
       <workItem from="1692294798550" duration="15050000" />
       <workItem from="1692331322096" duration="1671000" />
-      <workItem from="1692363158825" duration="3968000" />
+      <workItem from="1692363158825" duration="7525000" />
+      <workItem from="1692377427812" duration="85000" />
+      <workItem from="1692377522052" duration="3738000" />
+      <workItem from="1692445762443" duration="12649000" />
+      <workItem from="1692468733617" duration="1228000" />
+      <workItem from="1692479767403" duration="3768000" />
+      <workItem from="1692555297022" duration="157000" />
+      <workItem from="1692703882653" duration="18437000" />
+      <workItem from="1692728408907" duration="8605000" />
+      <workItem from="1692789163993" duration="30259000" />
+      <workItem from="1692836958385" duration="593000" />
+      <workItem from="1692837572921" duration="479000" />
+      <workItem from="1692873830380" duration="18524000" />
+      <workItem from="1692910455130" duration="5000" />
     </task>
     <servers />
   </component>
@@ -367,9 +407,9 @@
           <option name="timeStamp" value="581" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/VulkanRender/src/VulkanRender.cpp</url>
-          <line>134</line>
-          <option name="timeStamp" value="584" />
+          <url>file://$PROJECT_DIR$/src/Editor/src/EditorLayer.cpp</url>
+          <line>44</line>
+          <option name="timeStamp" value="594" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

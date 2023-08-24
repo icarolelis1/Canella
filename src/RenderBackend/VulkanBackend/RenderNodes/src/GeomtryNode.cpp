@@ -5,7 +5,6 @@
 #include "Render/Framework.h"
 #define STORAGE_SIZE  500
 
-//todo please Icaro, I trust you to clean this file.
 void Canella::RenderSystem::VulkanBackend::GeometryPass::load_transient_resources( Canella::Render *render)
 {
     auto vulkan_renderer = (VulkanBackend::VulkanRender *)render;
@@ -70,9 +69,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
     //Move attachemnts layout to optimal layouts
     VkImageMemoryBarrier renderBeginBarriers[] =
     {
-
     imageBarrier(main_color->image, 0, 0, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,VK_IMAGE_ASPECT_COLOR_BIT),
-
     imageBarrier(main_depth->image, 0, 0, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_IMAGE_ASPECT_DEPTH_BIT),
     };
     vkCmdPipelineBarrier(command_buffer, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT, VK_DEPENDENCY_BY_REGION_BIT, 0, 0, 0, 0, 2, renderBeginBarriers);
@@ -90,7 +87,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
         if(clear)
         {
             clear_values.resize(2);
-            clear_values[0].color = {{NORMALIZE_COLOR(133), NORMALIZE_COLOR(133), NORMALIZE_COLOR(255), 1.0f}};
+            clear_values[0].color = {{NORMALIZE_COLOR(25), NORMALIZE_COLOR(33), NORMALIZE_COLOR(33), 1.0f}};
             clear_values[1].depthStencil = {1.f,0};
         }
 
@@ -132,22 +129,24 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
     vkCmdBeginQuery(command_buffer,queries.statistics_pool,0,0);
     if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT ,queries.timestamp_pool,0);
     draw_indirect(*early_pass.get(), true);
-    if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool, 1);
-    //Update the Pyramid Depth
-    if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool,2);
-    update_hiz_chain(render,command_buffer,index);
-    if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool, 3);
-    //Occlusion Culling
-    if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool,4);
-    execute_occlusion_culling(render,command_buffer,index);
-    if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool, 5);
-    //Late pass
-    if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool,6);
-    draw_indirect(*late_pass.get(), true);
-    if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool, 7);
-    //End the Query
+    if(do_occlusion_culling == 1.0f)
+    {
+        if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool, 1);
+        //Update the Pyramid Depth
+        if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool,2);
+        update_hiz_chain(render,command_buffer,index);
+        if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool, 3);
+        //Occlusion Culling
+        if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool,4);
+        execute_occlusion_culling(render,command_buffer,index);
+        if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool, 5);
+        //Late pass
+        if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool,6);
+        draw_indirect(*late_pass.get(), true);
+        if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool, 7);
+        //End the Query
+    }
     vkCmdEndQuery(command_buffer,queries.statistics_pool,0);
-
     //Change Pyramid and Swapchain Image Layout
     auto pyramid = resource_manager.get_image_cached(hiz_depth.pyramidImage);
     VkImageMemoryBarrier copyBarriers[] =
@@ -201,7 +200,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
             device.getLogicalDevice(),
             queries.statistics_pool,
             0,
-            1,
+            count,
             count * sizeof(uint64_t),
             queries.statistics.data(),
             sizeof(uint64_t),
@@ -244,7 +243,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::compute_frustum_culling
     auto extent = swapchain.getExtent();
     auto f = 1.0f / tanf(70 / 2.0f);
     auto c1 = f/( float(extent.height) / float(extent.width) );
-    culling_data.width_height_padding = glm::vec4(float(extent.width),float(extent.height),0,0);
+    culling_data.width_height_padding = glm::vec4(float(extent.width),do_occlusion_culling,0,0);
     culling_data.coefficients_width_znear = glm::vec4(c1,projection_view_transposed[1][1],0.01f,0.0f);
 
     auto total_geometry_count = 0;
@@ -348,6 +347,16 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::output_stats()
 {
     if (!debug_statics) return;
     auto n_second_convert = device->timestamp_period / 1000000.0f;
+    if(ImGui::Button("Occlusion"))
+    {
+        if(do_occlusion_culling == 1.0f)
+            do_occlusion_culling = 0.0f;
+        else if(do_occlusion_culling == 0.0f)
+            do_occlusion_culling = 1.0f;
+    }
+    bool  v= do_occlusion_culling == 1.0f? true : false;
+    ImGui::Checkbox("Using Occlusion Culling", &v);
+
     ImGui::Text("Clipping Prim Inv : %.1f  ",double(queries.statistics[0]));
     ImGui::Text("Mesh Shader inv:  %lf ",double(queries.statistics[1]));
     ImGui::Text("Task Shader Inv : %lf  ",double(queries.statistics[2]));
@@ -422,7 +431,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::create_resource_buffers
             std::vector<glm::vec3> points(draw_count);
             auto sqrt = std::floor(std::sqrt(drawable.instance_count));
             auto i = 0;
-            auto res =4.5;
+            auto res = 4.0;
             for(auto  x = 0; x < sqrt; x++)
                 for (auto z = 0 ; z < sqrt ; ++z)
                 {
@@ -639,15 +648,14 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::build_hierarchical_dept
         if(hiz_depth.pyramidImage)
             for(auto i = 0 ; i < hiz_depth.mip_count; ++i)
                 vkDestroyImageView(device->getLogicalDevice(),hiz_depth.mip_views[i],device->getAllocator());
-        vkDestroySampler(device->getLogicalDevice(),hiz_depth.sampler,device->getAllocator());
+        vkDestroySampler( device->getLogicalDevice(), hiz_depth.max_sampler, device->getAllocator());
         vkDestroySampler(device->getLogicalDevice(),hiz_depth.regular_sampler,device->getAllocator());
         vkDestroyDescriptorUpdateTemplate(device->getLogicalDevice(), hiz_depth.updateTemplate, device->getAllocator());
     }
     //Create Sampler
-    hiz_depth.sampler = create_sampler(device->getLogicalDevice(),VK_SAMPLER_REDUCTION_MODE_MAX_EXT);
-    hiz_depth.regular_sampler = create_sampler(device->getLogicalDevice(),VK_SAMPLER_REDUCTION_MODE_WEIGHTED_AVERAGE_EXT);
+    hiz_depth.max_sampler     = create_sampler( device->getLogicalDevice(), VK_SAMPLER_REDUCTION_MODE_MAX_EXT);
+    hiz_depth.regular_sampler = create_sampler(device->getLogicalDevice(),VK_SAMPLER_REDUCTION_MODE_WEIGHTED_AVERAGE);
 
-    //Returns the Last power of two before V
     auto previous_pow = [](uint32_t v)
     {
         uint32_t r = 1;
@@ -657,7 +665,6 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::build_hierarchical_dept
         }
         return r;
     };
-
     auto extent = swapchain.getExtent();
     auto base_width = previous_pow(extent.width);
     auto base_height = previous_pow(extent.height);
@@ -773,7 +780,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::update_hiz_chain( Canel
         image_infos[0].imageView = hiz_depth.mip_views[i];
 
         auto source_depth = i == 0 ? main_depth_target->view : hiz_depth.mip_views[i -1];
-        image_infos[1].sampler = hiz_depth.sampler;
+        image_infos[1].sampler = hiz_depth.max_sampler;
         image_infos[1].imageLayout =  i == 0 ? VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL : VK_IMAGE_LAYOUT_GENERAL;
         image_infos[1].imageView = source_depth;
 
@@ -816,7 +823,7 @@ Canella::RenderSystem::VulkanBackend::GeometryPass::~GeometryPass()
                                device->getAllocator());
 
     vkDestroyDescriptorUpdateTemplate(device->getLogicalDevice(), hiz_depth.updateTemplate, device->getAllocator());
-    vkDestroySampler(device->getLogicalDevice(), hiz_depth.sampler,device->getAllocator());
+    vkDestroySampler( device->getLogicalDevice(), hiz_depth.max_sampler, device->getAllocator());
     vkDestroySampler(device->getLogicalDevice(), hiz_depth.regular_sampler,device->getAllocator());
     vkDestroyQueryPool(device->getLogicalDevice(), queries.timestamp_pool, device->getAllocator());
     vkDestroyQueryPool(device->getLogicalDevice(), queries.statistics_pool, device->getAllocator());

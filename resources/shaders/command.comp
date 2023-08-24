@@ -43,26 +43,23 @@ void main(){
    uint ti = gl_LocalInvocationID.x;
    uint di = gi * 32 + ti;
 
-  if(occlusion_vibility_buffer[di] == 0)
+    if(culling_data.width_height_padding.y == 1.0f)
+    if(occlusion_vibility_buffer[di] == 0)
         return;
 
    StaticMeshData mesh = static_meshes[di];
-   vec4 center = model_matrices[mesh.mesh_id] *vec4(mesh.center + mesh.pos,1) ;
-   //Inflates the radius.
-   float radius = mesh.radius *  model_matrices[mesh.mesh_id][0][0].x *1.5;
-
+    vec4 center = model_matrices[mesh.mesh_id][3] + vec4(mesh.center + mesh.pos,1) ;
+   float radius = mesh.radius *  model_matrices[mesh.mesh_id][0][0].x;
    bool visible = true;
-
 	for (int i = 0; i < 6; ++i)
 		visible = visible && dot(culling_data.frustumPlanes[i], vec4(center.xyz, 1)) > -radius;
 
-
-   if(visible)
-   {
-      uint command_index = atomicAdd(commands_count, 1);
-      processed_commands[command_index].groupCountX              = (mesh.meshlet_count + 31)/32 ;
-      processed_commands[command_index].groupCountY              = 1;
-      processed_commands[command_index].groupCountZ              = 1;
-      processed_commands[command_index].draw_id                  = di;
-   }
+    if(visible)
+    {
+        uint command_index = atomicAdd(commands_count, 1);
+        processed_commands[command_index].groupCountX              = (mesh.meshlet_count + 31)/32 ;
+        processed_commands[command_index].groupCountY              = 1;
+        processed_commands[command_index].groupCountZ              = 1;
+        processed_commands[command_index].draw_id                  = di;
+    }
 }

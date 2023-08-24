@@ -17,11 +17,19 @@ void Canella::load_meshes_from_scene( const std::string &assets_folder, Scene *c
     Canella::JobSystem::wait();
 }
 
-/**
- * \brief Returns the main camera
- * \param scene scene object
- * \return returns the main Camera
- */
+void Canella::get_static_meshes_on_scene(Drawables &drawables, Scene *const scene)
+{
+    auto& asset_system = Canella::AssetSystem::instance();
+    for (auto [key, entity] : scene->entityLibrary)
+        if (entity->has_component<ModelAssetComponent>())
+        {
+            auto &mesh_asset = entity->get_component<ModelAssetComponent>();
+            asset_system.load_asset( mesh_asset);
+            drawables.push_back(mesh_asset.mesh);
+        }
+}
+
+
 CameraComponent *Canella::get_main_camera(Scene *const scene)
 {
     for (auto &[entt, entity] : scene->entityLibrary)
@@ -30,14 +38,12 @@ CameraComponent *Canella::get_main_camera(Scene *const scene)
     return nullptr;
 }
 
-void Canella::get_static_meshes_on_scene(Drawables &drawables, Scene *const scene)
+void resolve_hierarchy_transforms(Scene *const scene)
 {
     for (auto [key, value] : scene->entityLibrary)
-        if (value->has_component<ModelAssetComponent>())
+        if (value->has_component<TransformComponent>())
         {
-            const auto &[mesh, source, isStatic,instance_count] = value->get_component<ModelAssetComponent>();
-            if (isStatic)
-                drawables.push_back(mesh);
+            auto &transform = value->get_component<TransformComponent>();
         }
 }
 
@@ -48,12 +54,12 @@ void Canella::update_transforms(Scene *const scene)
         {
             auto &transform = value->get_component<TransformComponent>();
             transform.model_matrix = glm::mat4( 1.0f);
-            glm::quat q1 = glm::angleAxis(glm::radians(transform.rotation.x), glm::vec3(1, 0, 0));
-            glm::quat q2 = glm::angleAxis(glm::radians(transform.rotation.y), glm::vec3(0, 1, 0));
-            glm::quat q3 = glm::angleAxis(glm::radians(transform.rotation.z), glm::vec3(0, 0, 1));
-            glm::quat orientation = q1 * q2 * q3;
-            transform.model_matrix     = glm::translate( transform.model_matrix, transform.position) * glm::mat4_cast( orientation);
-            transform.model_matrix     = glm::scale( transform.model_matrix, transform.scale);
+            auto trans_matrix   =  glm::translate( glm::mat4(1.0f), transform.position);
+            auto rot_matrix     =  glm::mat4_cast( transform.orientation );
+            auto scale_matrix   =  glm::scale( glm::mat4(1.0f), transform.scale);
+            transform.model_matrix = trans_matrix*rot_matrix* scale_matrix;
+            transform.rotation = glm::eulerAngles(transform.orientation) * 57.2958f ;
+
             if (transform.parent != nullptr)
                 transform.model_matrix = transform.parent->model_matrix * transform.model_matrix;
         }
@@ -62,13 +68,14 @@ void Canella::update_transforms(Scene *const scene)
 void Canella::update_scripts(Scene *scene, float frame_time)
 {
     scene->registry.view<Behavior>().each( [=]( auto entity, auto &behavior)
-                                            {
-        if(!behavior.instance)
-        {
-            behavior.instance = behavior.instantiate_fn();
-            behavior.instance->entt_entity = entity;
-        }
-    behavior.instance->on_update(frame_time); });
+                                           {
+                                               if(!behavior.instance)
+                                               {
+                                                   behavior.instance = behavior.instantiate_fn();
+                                                   behavior.instance->entt_entity = entity;
+                                               }
+                                               behavior.instance->on_update(frame_time);
+                                           });
 }
 
 void Canella::start_scripts(Scene *scene)

@@ -163,8 +163,8 @@ namespace Canella
 			{
 				VkRenderPass *renderpass;
 				uint32_t subpass = 0;
-				VkCullModeFlagBits cullMode = VK_CULL_MODE_BACK_BIT;
-				VkBool32 dephTest = VK_TRUE;
+                VkCullModeFlagBits cullMode = VK_CULL_MODE_FRONT_BIT;
+                VkBool32 dephTest = VK_TRUE;
 				VkFrontFace frontFaceClock = VK_FRONT_FACE_CLOCKWISE;
 				VkPrimitiveTopology topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 				VkPolygonMode polygonMode = VK_POLYGON_MODE_FILL;
@@ -186,7 +186,6 @@ namespace Canella
 			{
 				FRAGMENT_SHADER,
 				VERTEX_SHADER,
-				GEOMETRY_SHADER,
 				COMPUTE_SHADER,
 				MESH_SHADER,
 				TASK_SHADER

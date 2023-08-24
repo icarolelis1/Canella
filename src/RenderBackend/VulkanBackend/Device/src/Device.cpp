@@ -18,6 +18,7 @@ namespace Canella
                 deviceExtensions.push_back("VK_EXT_mesh_shader");
                 deviceExtensions.push_back("VK_KHR_spirv_1_4");
                 deviceExtensions.push_back("VK_KHR_shader_float_controls");
+                deviceExtensions.push_back("VK_KHR_maintenance1");
             };
 
             void Device::choosePhysicalDevice(Instance instance, Surface surface)
@@ -58,7 +59,7 @@ namespace Canella
 
                 if (!findSuitableGPU)
                 {
-                    Logger::Error("Device don't support required extensions or is not a discrete GPU");
+                    Logger::Error("Device don't support required extensions or is not a discrete GPU Score %d",currentScore);
                     return;
                 }
 

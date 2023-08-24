@@ -14,7 +14,7 @@ namespace Canella
         Entity() = default;
         ~Entity() = default;
         Entity(entt::entity entity,std::weak_ptr<Scene> scene) : owner_scene( scene), handle( entity){}
-
+        std::string name;
         template<typename T,typename... Args>
         T& add_component(Args&&... args)
         {
@@ -23,8 +23,8 @@ namespace Canella
             auto scene =  owner_scene.lock();
             return scene->registry.emplace<T>( handle, std::forward<Args>( args)...);
 
-            const auto view = scene->registry.view<T>();
-            return view.get<T>( raw_id());
+          /*  const auto view = scene->registry.view<T>();
+            return view.get<T>( raw_id());*/
         }
 
         template<typename T>
@@ -49,8 +49,7 @@ namespace Canella
         bool has_component()
         {
             auto scene =  owner_scene.lock();
-            if(scene)
-                return scene->registry.any_of<T>( handle);
+            if(scene) return scene->registry.any_of<T>( handle);
             return false;
         }
 
@@ -63,6 +62,7 @@ namespace Canella
         {
             return owner_scene;
         }
+        uint64_t uuid;
 
     private:
         std::weak_ptr<Scene> owner_scene;

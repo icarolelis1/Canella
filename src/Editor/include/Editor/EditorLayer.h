@@ -3,10 +3,11 @@
 #include <ImGuizmo.h>
 #include "Eventsystem/Eventsystem.hpp"
 #include "Entity.h"
+#include "Project/Project.h"
+#include "Editor/Inspector.h"
 
 namespace Canella
 {
-
     class OnSelectEntity : public Event<std::weak_ptr<Entity>>{};
     class OnSelectOperation : public Event<IMGUIZMO_NAMESPACE::OPERATION>{};
     class OnDeselect : public Event<>{};
@@ -15,10 +16,13 @@ namespace Canella
     {
     public:
         EditorLayer() = default;
-         void setup_layer(Canella::OnSelectEntity &on_select_entity_event,Canella::OnSelectOperation& on_select_operation );
+         void setup_layer(Application *application,OnSelectEntity &on_select_entity_event,OnSelectOperation& on_select_operation );
         ~EditorLayer() = default;
         void draw_layer();
     private:
+
+
+        Canella::Inspector inspector;
         IMGUIZMO_NAMESPACE::OPERATION operation = ImGuizmo::TRANSLATE;
         bool entity_changed = false;
         void action_on_select_entity(std::weak_ptr<Entity> entity);

@@ -51,3 +51,7 @@ Application::~Application()
     JobSystem::stop();
     close();
 }
+
+void Application::Deserialize() {
+    serializer.Deserialize(scene);
+}

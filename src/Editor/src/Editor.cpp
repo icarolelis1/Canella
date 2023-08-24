@@ -7,6 +7,8 @@
 #include "AssetSystem/AssetSystem.h"
 #include <random>
 #include <ImGuizmo.h>
+#include "Editor/Inspector.h"
+
 Canella::Logger::Priority Canella::Logger::log_priority = Canella::Logger::Priority::Error_LOG;
 std::mutex Canella::Logger::logger_mutex;
 
@@ -32,22 +34,10 @@ Canella::Editor::Editor()
     // Setup ImGui codee
 #if RENDER_EDITOR_LAYOUT
     setup_imgui();
-#endif
     bind_shortcuts();
-    layer.setup_layer(on_select_entity,on_select_operation);
-}
+    layer.setup_layer(application.get(), on_select_entity,on_select_operation);
+#endif
 
-float RandomFloat(float min, float max)
-{
-    // this  function assumes max > min, you may want 
-    // more robust error checking for a non-debug build
-    assert(max > min); 
-    float random = ((float) rand()) / (float) RAND_MAX;
-
-    // generate (in your case) a float between 0 and (4.5-.78)
-    // then add .78, giving you a float between .78 and 4.5
-    float range = max - min;  
-    return (random*range) + min;
 }
 
 void Canella::Editor::bind_shortcuts()
@@ -55,27 +45,22 @@ void Canella::Editor::bind_shortcuts()
     auto &keyboard = KeyBoard::instance();
     std::function<void(int, InputAction)> short_cuts = [=](int key, InputAction action)
     {
-        if (key == GLFW_KEY_F1 && action == InputAction::PRESS)
-        {
-            display_statistics = !display_statistics;
-        }
+        if (key == GLFW_KEY_H && action == InputAction::PRESS)
+            show_inspector = !show_inspector;
+
         if (key == GLFW_KEY_2 && action == InputAction::PRESS)
         {
+            show_status = !show_status;
             auto it = application->scene->entityLibrary.begin();
             while(it!= application->scene->entityLibrary.end())
             {
                 if(it->second->has_component<ModelAssetComponent>())
-                {
                     selected_entity = it->second;
-                    Logger::Error("I got the right entity");
-                }
                 it++;
             }
-            if(!selected_entity.expired())
-            {
-                on_select_entity.invoke(selected_entity);
-            }
 
+            if(!selected_entity.expired())
+                on_select_entity.invoke(selected_entity);
         }
 
         if (key == GLFW_KEY_P && action == InputAction::PRESS)
@@ -95,14 +80,10 @@ void Canella::Editor::bind_shortcuts()
         }
 
         if( key == GLFW_KEY_R && action == InputAction::PRESS)
-        {
             on_select_operation.invoke(ImGuizmo::ROTATE);
-        }
 
         if( key == GLFW_KEY_G && action == InputAction::PRESS)
-        {
             on_select_operation.invoke(ImGuizmo::TRANSLATE);
-        }
 
         if( key == GLFW_KEY_Z && action == InputAction::PRESS)
         {
@@ -119,7 +100,6 @@ void Canella::Editor::run_editor()
 
     while (true)
     {
-        playing = ~window.shouldCloseWindow();
         if (game_mode) application->run();
         window.update();
         render.render(application->scene->main_camera->view, application->scene->main_camera->projection);
@@ -134,19 +114,15 @@ void Canella::Editor::run_editor()
 void Canella::Editor::play()
 {
     OnStartPlay.invoke(*this);
-    scene_mode = false;
 }
 
 void Canella::Editor::stop()
 {
-
     OnStopPlayEvent.invoke(*this);
-    scene_mode = false;
 }
 
 void Canella::Editor::setup_imgui()
 {
-
     VkDescriptorPoolSize pool_sizes[] =
         {
             {VK_DESCRIPTOR_TYPE_SAMPLER, 1000},
@@ -159,7 +135,8 @@ void Canella::Editor::setup_imgui()
             {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1000},
             {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000},
             {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000},
-            {VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000}};
+            {VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000}
+        };
 
     VkDescriptorPoolCreateInfo pool_info = {};
     pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
@@ -171,8 +148,7 @@ void Canella::Editor::setup_imgui()
     VK_CHECK(vkCreateDescriptorPool(render.device.getLogicalDevice(),
                                     &pool_info,
                                     nullptr,
-                                    &imguiPool),
-             "Failed to create Imgui DescriptorPool");
+                                    &imguiPool),"Failed to create Imgui DescriptorPool");
 
     IMGUI_CHECKVERSION();
     // this initializes the core structures of imgui
@@ -188,7 +164,7 @@ void Canella::Editor::setup_imgui()
     style.WindowRounding = 10;
     style.Colors[ImGuiCol_WindowBg] = MAIN_BG;
     style.Colors[ImGuiCol_TitleBg] = TITLE_BG;
-    style.Colors[ImGuiCol_Header] = ImColor(255, 255, 255);
+    style.Colors[ImGuiCol_Header] = ImColor(133, 133, 133);
     style.Colors[ImGuiCol_Border] = BLUE;
     style.Colors[ImGuiCol_Text] = FONT_COLOR;
     style.Colors[ImGuiCol_Separator] = BLUE;
@@ -196,9 +172,10 @@ void Canella::Editor::setup_imgui()
     style.Colors[ImGuiCol_Tab] = ImColor(255, 0, 0);
     style.Colors[ImGuiCol_TabActive] = ImColor(79, 53, 645);
     style.Colors[ImGuiCol_TabHovered] = ImColor(225, 0, 0);
-    style.Colors[ImGuiCol_FrameBg] = ImColor(255, 0, 0);
+    style.Colors[ImGuiCol_FrameBg] = MAIN_BG;
     style.Colors[ImGuiCol_TitleBgActive] = ImColor(79, 53, 64);
     style.Colors[ImGuiCol_MenuBarBg] = MENU_BG;
+    style.Colors[ImGuiCol_Separator] = ImColor(211,211,211);
     style.SeparatorTextBorderSize = 10;
     style.FramePadding = ImVec2(3, 3);
     style.ChildRounding = 5;
@@ -230,8 +207,7 @@ void Canella::Editor::setup_imgui()
                   1,
                   &submit_info, VK_NULL_HANDLE);
 
-    std::function<void(VkCommandBuffer &, uint32_t&)> render_editor = [=](VkCommandBuffer &cmd,
-                                                                                      uint32_t image_index)
+    std::function<void(VkCommandBuffer &, uint32_t&)> render_editor = [=](VkCommandBuffer &cmd,uint32_t image_index)
     {
         render_editor_gui(cmd, image_index);
     };
@@ -240,7 +216,6 @@ void Canella::Editor::setup_imgui()
 
 void Canella::Editor::render_editor_gui(VkCommandBuffer &command_buffer, uint32_t image_index)
 {
-
     auto &render_passes = render.renderpassManager.renderpasses;
     auto &swapchain = render.swapChain;
 
@@ -258,34 +233,37 @@ void Canella::Editor::render_editor_gui(VkCommandBuffer &command_buffer, uint32_
     ImGuizmo::BeginFrame();
     ImGuizmo::SetDrawlist(ImGui::GetBackgroundDrawList());
     ImVec2 size = ImGui::GetContentRegionAvail();
-
     ImVec2 cursorPos = ImGui::GetCursorScreenPos();
     ImGuizmo::SetRect(cursorPos.x,cursorPos.y, size.x, size.y);
 
-    build_property_view();
+    if(show_inspector)
     layer.draw_layer();
 
-    editor_layout();
+    display_graphics_status();
 
     ImGui ::Render();
-        ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), command_buffer);
+    ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), command_buffer);
     render_passes["imgui"]->endRenderPass(command_buffer);
 }
 
-void Canella::Editor::editor_layout()
+void Canella::Editor::display_graphics_status()
 {
-    if (true) {
+    if (show_status) {
+        ImGuiIO &io = ImGui::GetIO();
+        float display_width = (float) io.DisplaySize.x;
+
+        ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
+        ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove|
+                ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
         ImGui::PushStyleColor( ImGuiCol_Text, IM_COL32( 0xff, 0xff, 0xff, 0xff ));
         ImGui::PopStyleColor();
-        ImGui::Begin( "Canella" ) ;
+        ImGui::Begin( "Canella",NULL,window_flags ) ;
+        ImGui::SetWindowPos(ImVec2( display_width - 360, 0));
         ImGui::Text( "FPS %.2f", double( 1.0 / application->frame_time ) * 2000 );
          ImGui::Text("Frame Time %f (ms)",double(application->frame_time/2.0));
         out_put_stats.invoke();
         ImGui::End();
-
-        layer.draw_layer();
-
     }
     ImGui::ShowDemoWindow();
 }
@@ -299,49 +277,4 @@ Canella::Editor::~Editor()
     ImGui_ImplVulkan_Shutdown();
 #endif
     render.destroy();
-}
-
-void Canella::Editor::build_property_view() {
-    bool open = true;
-    ImGuiWindowFlags window_flags = 0;
-    window_flags |= ImGuiWindowFlags_NoTitleBar;
-    window_flags |= ImGuiWindowFlags_MenuBar;
-    if (!ImGui::Begin("Example: Property editor", &open))
-    {
-        ImGui::End();
-        return;
-    }
-    auto& scene = application->scene;
-    if (ImGui::BeginTable("split", 2, ImGuiTableFlags_BordersOuter | ImGuiTableFlags_Resizable))
-    {
-        for(auto& entity : scene->entityLibrary)
-        {
-            auto id = static_cast<uint32_t>(entity.first);
-            ImGui::PushID(id);
-            // Text and Tree nodes are less high than framed widgets, using AlignTextToFramePadding() we add vertical spacing to make the tree lines equal high.
-            ImGui::TableNextRow();
-            ImGui::TableSetColumnIndex(0);
-            ImGui::AlignTextToFramePadding();
-            bool node_open = ImGui::TreeNode("Object", "%s_%u", "entity", id);
-            auto i = 0;
-            if(node_open)
-            {
-                ImGui::PushID(i);
-                auto& transform = entity.second->get_component<TransformComponent>();
-                ImGui::AlignTextToFramePadding();
-                ImGui::PushItemWidth(transform.position.x);
-                ImGui::DragFloat("X", &transform.position.x);
-                ImGui::PopID();
-                ImGui::TreePop();
-
-            }
-            ImGui::TableSetColumnIndex(1);
-            ImGui::Text("my sailor is rich");
-            ImGui::PopID();
-
-        }
-        ImGui::EndTable();
-        ImGui::End();
-    }
-
 }

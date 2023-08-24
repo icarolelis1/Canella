@@ -53,6 +53,8 @@ bool occlusion_test(mat4 view, mat4 projection, vec3 center,float radius)
     //Sphere center in view space
     vec4 view_center = view * vec4(center,1.);
     vec4 eye_pos = ubo.eye;
+    if(distance(eye_pos.xyz,center)<radius) return false;
+
     float distance_to_sphere = distance(eye_pos,vec4(center,1));
     vec3 sphere_to_eye = normalize(center - eye_pos.xyz);
 
@@ -112,27 +114,28 @@ bool occlusion_test(mat4 view, mat4 projection, vec3 center,float radius)
     samples.z = textureLod( depthPyramid,ndc_corner_2, level ).x;
     samples.w = textureLod( depthPyramid,ndc_corner_3, level ).x;
 
-    float min_sample   = min(min(samples.x,samples.y),min(samples.z,samples.w));
+    float max_sample   = max(max(samples.x,samples.y),max(samples.z,samples.w));
     float sphere_depth = projected_nearest_point.z/projected_nearest_point.w;
-    return sphere_depth < min_sample;
+    return sphere_depth > max_sample;
 }
 
 void main(){
-
+    if(culling_data.width_height_padding.y == 0.0f)return;
    uint gi = gl_WorkGroupID.x;
    uint ti = gl_LocalInvocationID.x;
    uint di = gi * 32 + ti;
 
    StaticMeshData mesh = static_meshes[di];
-   vec4 center = model_matrices[mesh.mesh_id] *vec4(mesh.center + mesh.pos,1);
+   vec4 center = model_matrices[mesh.mesh_id][3]  + vec4(mesh.center + mesh.pos,1);
    //Inflates the radius.
    float radius = mesh.radius *  max(model_matrices[mesh.mesh_id][0][0].x,max(model_matrices[mesh.mesh_id][1][1].x,model_matrices[mesh.mesh_id][2][2].x)) ;
 
    bool visible = true;
     for (int i = 0; i < 6; ++i)
-		visible = visible && dot(culling_data.frustumPlanes[i], vec4(center.xyz, 1)) > -radius * 1.5;
+		visible = visible && dot(culling_data.frustumPlanes[i], vec4(center.xyz, 1)) > -radius;
+
     if(visible)
-        visible = visible && occlusion_test(ubo.view,ubo.projection,center.xyz,radius * 1.5);
+        visible = visible && !occlusion_test(ubo.view,ubo.projection,center.xyz,radius * 1.5);
 
    if(visible && occlusion_vibility_buffer[di] == 0)
    {
