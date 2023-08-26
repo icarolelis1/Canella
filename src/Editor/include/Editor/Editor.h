@@ -73,15 +73,14 @@ namespace Canella
         void setup_imgui();
         void display_graphics_status();
         void bind_shortcuts();
-
         bool game_mode = true;
         //Display Window
         bool show_status;
         bool show_inspector;
 
         //Editor Events
+        OnSelectEntity& on_select_entity;
         OnOutputStatsEvent out_put_stats;
-        OnSelectEntity on_select_entity;
         OnSelectOperation on_select_operation;
         OnDeselect on_deselect;
     };

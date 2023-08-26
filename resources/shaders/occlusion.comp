@@ -53,7 +53,6 @@ bool occlusion_test(mat4 view, mat4 projection, vec3 center,float radius)
     //Sphere center in view space
     vec4 view_center = view * vec4(center,1.);
     vec4 eye_pos = ubo.eye;
-    if(distance(eye_pos.xyz,center)<radius) return false;
 
     float distance_to_sphere = distance(eye_pos,vec4(center,1));
     vec3 sphere_to_eye = normalize(center - eye_pos.xyz);
@@ -91,18 +90,12 @@ bool occlusion_test(mat4 view, mat4 projection, vec3 center,float radius)
     vec2 ndc_corner_2 = clip_corner_2.xy/clip_corner_2.w; // Bottom-Left
     vec2 ndc_corner_3 = clip_corner_3.xy/clip_corner_3.w; // Bottom-Right
 
-    //Convert to viewportspace (invert Y)
-    ndc_corner_0 = ndc_corner_0 * vec2(0.5,-0.5) + vec2(0.5) ; // Top-Left
-    ndc_corner_1 = ndc_corner_1 * vec2(0.5,-0.5) + vec2(0.5) ; // Top-Right
-    ndc_corner_2 = ndc_corner_2 * vec2(0.5,-0.5) + vec2(0.5) ; // Bottom-Left
-    ndc_corner_3 = ndc_corner_3 * vec2(0.5,-0.5) + vec2(0.5) ; // Bottom-Right
-    float width =   distance(ndc_corner_0,ndc_corner_3) * culling_data.width_height_padding.x;
+    ndc_corner_0 = ndc_corner_0 * vec2(0.5,0.5) + vec2(0.5) ; // Top-Left
+    ndc_corner_1 = ndc_corner_1 * vec2(0.5,0.5) + vec2(0.5) ; // Top-Right
+    ndc_corner_2 = ndc_corner_2 * vec2(0.5,0.5) + vec2(0.5) ; // Bottom-Left
+    ndc_corner_3 = ndc_corner_3 * vec2(0.5,0.5) + vec2(0.5) ; // Bottom-Right
+    float width =   distance(ndc_corner_0,ndc_corner_1) * culling_data.width_height_padding.x;
 
-    /**
-        In view space the origin is the camera.
-        the vector view_center starts at camera and goes until the center of the sphere,
-        scalling by the radius is the closes point in sphere to the camera.
-    */
     vec3 nearest_point_on_sphere = (view_center.xyz  -  normalize(view_center.xyz))* radius;
     vec4 projected_nearest_point = projection * vec4(nearest_point_on_sphere.xyz,1);
     float level = floor(log2((width)));

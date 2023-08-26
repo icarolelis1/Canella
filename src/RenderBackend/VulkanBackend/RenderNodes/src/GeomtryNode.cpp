@@ -7,6 +7,7 @@
 
 void Canella::RenderSystem::VulkanBackend::GeometryPass::load_transient_resources( Canella::Render *render)
 {
+    hiz_depth.visibility_first_cleared = false;
     auto vulkan_renderer = (VulkanBackend::VulkanRender *)render;
     const auto &drawables = render->get_drawables();
     device = &vulkan_renderer->device;
@@ -204,7 +205,8 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
             count * sizeof(uint64_t),
             queries.statistics.data(),
             sizeof(uint64_t),
-            VK_QUERY_RESULT_64_BIT);
+            VK_QUERY_RESULT_64_BIT
+            );
 
 }
 
@@ -225,8 +227,6 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::compute_frustum_culling
 
     auto projection_view = render_camera_data.projection * render_camera_data.view;
     glm::mat4 projection_view_transposed = glm::transpose(projection_view);
-    auto p1 = projection_view_transposed[0][0];
-    auto p2 = projection_view_transposed[1][1];
     auto compute_pipeline_layout = pipeline_layouts["CommandProcessor"]->getHandle();
 
     auto normalize_plane = [](glm::vec4 p)
@@ -241,10 +241,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::compute_frustum_culling
     culling_data.frustumPlanes[5] = normalize_plane(projection_view_transposed[3] - projection_view_transposed[2]);
 
     auto extent = swapchain.getExtent();
-    auto f = 1.0f / tanf(70 / 2.0f);
-    auto c1 = f/( float(extent.height) / float(extent.width) );
     culling_data.width_height_padding = glm::vec4(float(extent.width),do_occlusion_culling,0,0);
-    culling_data.coefficients_width_znear = glm::vec4(c1,projection_view_transposed[1][1],0.01f,0.0f);
 
     auto total_geometry_count = 0;
     std::for_each(drawables.begin(),drawables.end(),[&total_geometry_count](auto& d)
@@ -648,14 +645,16 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::build_hierarchical_dept
         if(hiz_depth.pyramidImage)
             for(auto i = 0 ; i < hiz_depth.mip_count; ++i)
                 vkDestroyImageView(device->getLogicalDevice(),hiz_depth.mip_views[i],device->getAllocator());
-        vkDestroySampler( device->getLogicalDevice(), hiz_depth.max_sampler, device->getAllocator());
-        vkDestroySampler(device->getLogicalDevice(),hiz_depth.regular_sampler,device->getAllocator());
+ /*       vkDestroySampler( device->getLogicalDevice(), hiz_depth.max_sampler, device->getAllocator());
+        vkDestroySampler(device->getLogicalDevice(),hiz_depth.regular_sampler,device->getAllocator());*/
         vkDestroyDescriptorUpdateTemplate(device->getLogicalDevice(), hiz_depth.updateTemplate, device->getAllocator());
     }
     //Create Sampler
-    hiz_depth.max_sampler     = create_sampler( device->getLogicalDevice(), VK_SAMPLER_REDUCTION_MODE_MAX_EXT);
-    hiz_depth.regular_sampler = create_sampler(device->getLogicalDevice(),VK_SAMPLER_REDUCTION_MODE_WEIGHTED_AVERAGE);
-
+    if(!post_first_load)
+    {
+        hiz_depth.max_sampler     = create_sampler( device->getLogicalDevice(), VK_SAMPLER_REDUCTION_MODE_MAX_EXT);
+        hiz_depth.regular_sampler = create_sampler(device->getLogicalDevice(),VK_SAMPLER_REDUCTION_MODE_WEIGHTED_AVERAGE);
+    }
     auto previous_pow = [](uint32_t v)
     {
         uint32_t r = 1;

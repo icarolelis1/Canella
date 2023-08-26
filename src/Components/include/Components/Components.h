@@ -36,8 +36,11 @@ namespace Canella
         ~CameraComponent() = default;
         Euler euler;
         glm::mat4 projection;
+        Entity* entity;
         TransformComponent* entity_transform;
         glm::mat4 view;
+        float yaw;
+        float pitch;
         float fovy;
         float zNear;
         float zFar;

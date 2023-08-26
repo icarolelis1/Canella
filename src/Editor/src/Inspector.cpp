@@ -4,7 +4,6 @@
 
 
 //Property View Components
-
 void display_transform(std::shared_ptr<Canella::Entity> entity)
 {
     auto& transform = entity->get_component<Canella::TransformComponent>();
@@ -35,6 +34,7 @@ void Canella::Inspector::build() {
     window_flags |= ImGuiWindowFlags_NoMove;
     window_flags |= ImGuiWindowFlags_NoResize;
 
+    ImGui::SetNextWindowBgAlpha(0.55f); // Transparent background
     if ( !ImGui::Begin( "Inspector", &open,window_flags)) {
         ImGui::End();
         return;
@@ -76,6 +76,7 @@ void Canella::Inspector::hierarchy() {
             bool node_open = ImGui::TreeNodeEx(( void * ) ( intptr_t ) i, node_flags, entity.second->name.c_str());
             if ( ImGui::IsItemClicked()) {
                 selected_entity = entity.second;
+                on_select_entity.invoke(selected_entity);
                 node_clicked    = i;
             }
             create_entity_popup();
@@ -128,7 +129,6 @@ void Canella::Inspector::set_application( Canella::Application *application ) {
 }
 
 void Canella::Inspector::build_property_window(ImVec2 window_offset) {
-
     ImGui::Dummy(ImVec2(0,25));
     float item_height = ImGui::GetTextLineHeightWithSpacing();
     if (ImGui::BeginChildFrame(ImGui::GetID("frame"),ImVec2(-FLT_MIN, 10 * item_height)))
@@ -142,5 +142,27 @@ void Canella::Inspector::build_property_window(ImVec2 window_offset) {
 
 void Canella::Inspector::inspect_chilren( std::shared_ptr<Entity> parent ) {
 
+}
+
+void Canella::Inspector::setup_deselection_event() {
+    auto &mouse = Mouse::instance();
+    std::function<void(MouseButton, InputAction)> mouse_press = [=](MouseButton button, InputAction action) -> void
+    {
+        if (button == MouseButton::RIGHT_MOUSE)
+        {
+
+            if (action == InputAction::RELEASE)
+            {
+                selected_entity.reset();
+                on_select_entity.invoke(selected_entity);
+            }
+        }
+    };
+    Event_Handler<MouseButton, InputAction> handler_click(mouse_press);
+    mouse.OnMouseClick += handler_click;
+}
+
+Canella::Inspector::Inspector() {
+    //setup_deselection_event();
 }
 

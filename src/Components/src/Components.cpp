@@ -28,7 +28,8 @@ void Canella::SerializeCamera(nlohmann::json &data, entt::registry &registry, en
 {
     auto &camera_component = registry.emplace<CameraComponent>(entity);
     camera_component.entity_transform = &registry.get<TransformComponent>(entity);
-
+    camera_component.yaw = data["Yaw"].get<float>();
+    camera_component.pitch = data["Pitch"].get<float>();
 }
 
 void Canella::SerializeMeshAsset(nlohmann::json &data, entt::registry &registry, entt::entity entity)
@@ -80,6 +81,8 @@ void Canella::DeserializeCamera(nlohmann::json &data, CameraComponent &camera_co
     data["Fovy"] = camera_component.fovy;
     data["Znear"] = camera_component.zNear;
     data["Zfar"] = camera_component.zFar;
+    data["Yaw"] = camera_component.yaw;
+    data["Pitch"] = camera_component.pitch;
 }
 
 void Canella::DeserializeMeshAsset(nlohmann::json &data, ModelAssetComponent &mesh_asset_component)

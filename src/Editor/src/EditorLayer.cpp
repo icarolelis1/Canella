@@ -2,14 +2,13 @@
 #include "Window/Window.h"
 #include "Components/Components.h"
 #include "Editor/Inspector.h"
-#include "Editor/EditorLayer.h"
 
-void Canella::EditorLayer::setup_layer(Canella::Application* application, Canella::OnSelectEntity &on_select_entity_event,Canella::OnSelectOperation& on_select_operation )
+void Canella::EditorLayer::setup_layer(Canella::Application* application,Canella::OnSelectOperation& on_select_operation )
 {
     inspector.set_application(application);
     std::function<void(std::weak_ptr<Entity>)> on_select = [=](std::weak_ptr<Entity> entity){ action_on_select_entity(entity); };
     std::function<void(IMGUIZMO_NAMESPACE::OPERATION)> on_select_oepration = [=](IMGUIZMO_NAMESPACE::OPERATION operation){ action_select_operation(operation); };
-    on_select_entity_event+=on_select;
+    inspector.on_select_entity += on_select;
     on_select_operation += on_select_oepration;
 }
 
@@ -18,6 +17,12 @@ void Canella::EditorLayer::draw_layer() {
     inspector.build();
     if (entity_changed)
     {
+        if(selected_entity.expired())
+        {
+            entity_changed = false;
+            return;
+        }
+
         auto& window = GlfwWindow::get_instance();
         ImGuizmo::SetOrthographic(false);
         ImGuizmo::SetRect( 0,0,window.getExtent().width,window.getExtent().height);
@@ -35,7 +40,7 @@ void Canella::EditorLayer::draw_layer() {
         glm::vec3 nul = glm::vec3(0.0f,0.0f,0.0f);
         ImGuizmo::RecomposeMatrixFromComponents(&entity_transform.position.x, &nul.x, &entity_transform.scale.x, tmpMatrix);
         ImGuizmo::Manipulate(&camera_view[0][0], &camera_projection[0][0], operation,
-                             ImGuizmo::MODE::LOCAL, tmpMatrix);
+                             ImGuizmo::MODE::WORLD, tmpMatrix);
 
         if (ImGuizmo::IsUsing())
         {
@@ -80,4 +85,6 @@ void Canella::EditorLayer::action_select_operation(IMGUIZMO_NAMESPACE::OPERATION
 void Canella::EditorLayer::action_on_deselect_entity() {
     entity_changed = false;
 }
+
+Canella::EditorLayer::EditorLayer() : on_select_entity(inspector.on_select_entity) {}
 

@@ -10,21 +10,11 @@ void CameraEditor::on_start()
     auto &window = Canella::GlfwWindow::get_instance();
     auto extent = window.getExtent();
     // Initialize camera_component projection matrix usign window width and height
-    camera_component->projection = glm::perspectiveFov(glm::radians(70.0f),
-                                                       (float)extent.width,(float)extent.height,
-                                                       .01f, 1000.f);
-    //camera_component->projection[1][1] *=-1.0f;
-    // Attach Window Resize Event Callback.
-    // Reconstruct the projection matrix when the window resizes
+    camera_component->projection = glm::perspectiveFov(glm::radians(70.0f),(float)extent.width,(float)extent.height,.01f, 1000.f);
     std::function<void(Extent)> resize_callback = [&](Extent extent)
     {
-        if (extent.width == 0 || extent.height == 0)
-            return;
-        camera_component->projection = glm::perspectiveFov(glm::radians(70.0f),
-                                                           (float)extent.width,(float)extent.height,
-                                                           .01f, 1000.f);
-        //camera_component->projection[1][1] *=-1.0f;
-
+        if (extent.width == 0 || extent.height == 0)return;
+        camera_component->projection = glm::perspectiveFov(glm::radians(70.0f),(float)extent.width,(float)extent.height,.01f, 1000.f);
     };
     // Create the event handler and register
     Event_Handler<Extent> resize_handler(resize_callback);
@@ -39,20 +29,12 @@ void CameraEditor::on_start()
 void CameraEditor::on_update(float delta_time)
 {
     time = delta_time;
-    auto &camera_position = camera_component->entity_transform->position;
-    auto &camera_euler = camera_component->euler;
     auto &mouse = Mouse::instance();
     auto pos = mouse.get_cursor_pos();
     auto &keyboard = KeyBoard::instance();
     last_x = pos.x;
     last_y = pos.y;
-/*    if (camera_component->entity_transform->rotation.x > 89.0f)
-        camera_component->entity_transform->rotation.x = 89.0f;
-    if (camera_component->entity_transform->rotation.x < -89.0f)
-        camera_component->entity_transform->rotation.x = -89.0f;*/
-
-    camera_input_keys();
-    update_euler_directions();
+    update_euler_directions( delta_time );
 
     if (keyboard.getKeyPressed(GLFW_KEY_W))
         camera_component->entity_transform->position += camera_component->euler.front * speed * delta_time;
@@ -66,37 +48,15 @@ void CameraEditor::on_update(float delta_time)
         camera_component->entity_transform->position += camera_component->euler.up * speed * delta_time;
     if (keyboard.getKeyPressed(GLFW_KEY_C))
         camera_component->entity_transform->position -= camera_component->euler.up * speed * delta_time;
-
-    //Logger::Debug("%f", camera_component->entity_transform->position.y);
 }
 
-void CameraEditor::camera_input_keys()
-{
-    auto key_callbacks = [=](int key, InputAction action)
-    {
-        if (key == GLFW_KEY_W && action == InputAction::HOLD)
-            camera_component->entity_transform->position += camera_component->euler.front * speed * time;
-        if (key == GLFW_KEY_S && action == InputAction::HOLD)
-            camera_component->entity_transform->position -= camera_component->euler.front * speed * time;
-        if (key == GLFW_KEY_A && action == InputAction::HOLD)
-            camera_component->entity_transform->position -= camera_component->euler.right * speed * time;
-        if (key == GLFW_KEY_D && action == InputAction::HOLD)
-            camera_component->entity_transform->position += camera_component->euler.right * speed * time;
-        if (key == GLFW_KEY_SPACE && action == InputAction::HOLD)
-            camera_component->entity_transform->position += camera_component->euler.up * speed * time;
-        if (key == GLFW_KEY_C && action == InputAction::HOLD)
-            camera_component->entity_transform->position -= camera_component->euler.up * speed * time;
-    };
 
-    // KeyBoard::instance().OnKeyInput += Event_Handler<int, InputAction>(key_callbacks);
-}
+void CameraEditor::update_euler_directions( float d ) {
 
-void CameraEditor::update_euler_directions() {
-    // For a FPS camera we can omit roll
     glm::mat4 rotate          = glm::mat4_cast( camera_component->entity_transform->orientation );
     auto      cam_pos_flipped = camera_component->entity_transform->position * glm::vec3( 1, 1, 1 );
     glm::mat4 translate       = glm::mat4( 1.0f );
-    translate = glm::translate( translate, -camera_component->entity_transform->position );
+    //translate = glm::translate( translate, -camera_component->entity_transform->position );
 
     translate = glm::translate( translate, -cam_pos_flipped );
     camera_component->view = rotate * translate;
@@ -171,13 +131,12 @@ void CameraEditor::set_mouse_callbacks()
             // Calculate the offsets in comparison to previous drag_x and drag_y
             auto horizontal_delta = rotating_x - x;
             auto vertical_delta = rotating_y - y;
-            // TODO investigate the camera orientation is messedup
-        /*    camera_component->entity_transform->rotation.y -= (float)horizontal_delta * sensitivity;
-            camera_component->entity_transform->rotation.x += (float)vertical_delta * sensitivity;*/
-            auto quat_yaw = glm::angleAxis( (float)horizontal_delta * sensitivity,glm::vec3(0,-1,0));
-            auto quat_pitch = glm::angleAxis( (float)vertical_delta * sensitivity,camera_component->euler.right);
+            camera_component->yaw += horizontal_delta  * sensitivity;
+            camera_component->pitch += vertical_delta  * sensitivity;
+            auto quat_yaw = glm::normalize(glm::angleAxis( (float)camera_component->yaw,glm::vec3(0,1,0)));
+            auto quat_pitch = glm::normalize(glm::angleAxis( camera_component->pitch ,glm::vec3(1,0,0)));
 
-            camera_component->entity_transform->orientation *= quat_yaw * quat_pitch;
+            camera_component->entity_transform->orientation = (quat_pitch * quat_yaw );
             // Canella::Logger::Info("Event input is working %d %d",x,y);
             rotating_x = x;
             rotating_y = y;
@@ -192,3 +151,38 @@ void CameraEditor::set_mouse_callbacks()
     mouse.OnMouseClick += handler_click;
     mouse.OnMouseMove += handler_move;
 }
+
+void CameraEditor::move_and_focus( glm::vec3 position ) {
+    auto direction = glm::normalize(position - camera_component->entity_transform->position);
+    auto quat = glm::quatLookAt(direction,glm::vec3(0,1,0));
+    camera_component->entity_transform->orientation = quat;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -4,17 +4,17 @@
 #include "imgui_impl_glfw.h"
 #include "memory"
 #include "Components/Components.h"
-#include "AssetSystem/AssetSystem.h"
 #include <random>
 #include <ImGuizmo.h>
 #include "Editor/Inspector.h"
+#include <glm/gtc/quaternion.hpp>
 
 Canella::Logger::Priority Canella::Logger::log_priority = Canella::Logger::Priority::Error_LOG;
 std::mutex Canella::Logger::logger_mutex;
 
 using namespace Canella::RenderSystem::VulkanBackend;
 
-Canella::Editor::Editor()
+Canella::Editor::Editor() :on_select_entity(layer.on_select_entity)
 {
     std::fstream f(BASE_CONFIG_FILE);
     // Loads the project metadata
@@ -35,9 +35,11 @@ Canella::Editor::Editor()
 #if RENDER_EDITOR_LAYOUT
     setup_imgui();
     bind_shortcuts();
-    layer.setup_layer(application.get(), on_select_entity,on_select_operation);
+    layer.setup_layer(application.get(),on_select_operation);
 #endif
 
+    std::function<void(std::weak_ptr<Entity>)> on_select = [=](std::weak_ptr<Entity> entity){ selected_entity = entity;};
+    on_select_entity += on_select;
 }
 
 void Canella::Editor::bind_shortcuts()
@@ -47,28 +49,11 @@ void Canella::Editor::bind_shortcuts()
     {
         if (key == GLFW_KEY_H && action == InputAction::PRESS)
             show_inspector = !show_inspector;
-
         if (key == GLFW_KEY_2 && action == InputAction::PRESS)
-        {
             show_status = !show_status;
-            auto it = application->scene->entityLibrary.begin();
-            while(it!= application->scene->entityLibrary.end())
-            {
-                if(it->second->has_component<ModelAssetComponent>())
-                    selected_entity = it->second;
-                it++;
-            }
-
-            if(!selected_entity.expired())
-                on_select_entity.invoke(selected_entity);
-        }
-
         if (key == GLFW_KEY_P && action == InputAction::PRESS)
-        {
             game_mode = !game_mode;
-        }
-
-        if (key == GLFW_KEY_Y && action == InputAction::RELEASE)
+ /*       if (key == GLFW_KEY_Y && action == InputAction::RELEASE)
         {
 
             Entity model_entity = application->scene->CreateEntity();
@@ -77,8 +62,7 @@ void Canella::Editor::bind_shortcuts()
             asset.source =  "model_test/mario.glb";
             asset.mesh.model_matrix = &trans.model_matrix;
             AssetSystem::instance().async_load_asset(asset);
-        }
-
+        }*/
         if( key == GLFW_KEY_R && action == InputAction::PRESS)
             on_select_operation.invoke(ImGuizmo::ROTATE);
 
@@ -86,8 +70,19 @@ void Canella::Editor::bind_shortcuts()
             on_select_operation.invoke(ImGuizmo::TRANSLATE);
 
         if( key == GLFW_KEY_Z && action == InputAction::PRESS)
-        {
             on_select_operation.invoke(ImGuizmo::SCALE);
+        if( key == GLFW_KEY_F && action == InputAction::PRESS)
+        {
+            if(selected_entity.expired())
+                    return;
+            auto target = selected_entity.lock()->get_component<TransformComponent>().position;
+            auto cam = application->scene->main_camera;
+            auto direction = glm::normalize( -
+                     cam->entity_transform->position);
+            auto quat = glm::quatLookAt(direction,cam->euler.up);
+            auto delta = -cam->entity_transform->orientation + quat;
+            cam->entity_transform->orientation *= delta;
+
         }
     };
     keyboard.OnKeyInput += Event_Handler(short_cuts);
