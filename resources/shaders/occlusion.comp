@@ -94,6 +94,7 @@ bool occlusion_test(mat4 view, mat4 projection, vec3 center,float radius)
     ndc_corner_1 = ndc_corner_1 * vec2(0.5,0.5) + vec2(0.5) ; // Top-Right
     ndc_corner_2 = ndc_corner_2 * vec2(0.5,0.5) + vec2(0.5) ; // Bottom-Left
     ndc_corner_3 = ndc_corner_3 * vec2(0.5,0.5) + vec2(0.5) ; // Bottom-Right
+
     float width =   distance(ndc_corner_0,ndc_corner_1) * culling_data.width_height_padding.x;
 
     vec3 nearest_point_on_sphere = (view_center.xyz  -  normalize(view_center.xyz))* radius;

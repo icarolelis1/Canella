@@ -7,10 +7,10 @@
 #include <map>
 #include "Render/Render.h"
 #include "CanellaUtility/CanellaUtility.h"
+#include "Components/ComponentTable.hpp"
 
 namespace Canella
 {
-
     struct Euler
     {
         glm::vec3 front;
@@ -18,15 +18,24 @@ namespace Canella
         glm::vec3 right;
     };
 
+    struct Reference
+    {
+        ComponentType type;
+        uint64_t uid = 0;
+    };
+
+
     struct TransformComponent
     {
         TransformComponent(const TransformComponent &) = default;
         TransformComponent(){ orientation = glm::angleAxis(0.0f,glm::vec3(1,0,0));}
+        Canella::Entity* owner;
         glm::vec3 position = glm::vec3(0);
         glm::vec3 rotation;
         glm::quat orientation;
         glm::vec3                     scale = glm::vec3(1);
         glm::mat4                     model_matrix;
+        Reference reference;
         TransformComponent *parent = nullptr;
     };
 
@@ -117,6 +126,14 @@ namespace Canella
     void DeserializeMeshAsset(nlohmann::json &data, ModelAssetComponent &);
     class CameraEditor;
     void DeserializeCameraEditor(nlohmann::json &data, CameraEditor &);
+
+    //Component Referencies
+    void ResolveReferencesInTransform(TransformComponent& transform_component, std::shared_ptr<Scene> scene);
+
+/*
+    void assign_reference(std::shared_ptr<Scene> scene,Reference reference);
+    void resolve_component_references(std::shared_ptr<Scene> scene,std::vector<Reference>& references);*/
+
 }
 
 #endif

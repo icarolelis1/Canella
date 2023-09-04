@@ -2,6 +2,7 @@
 #define CANELLA_MESH
 #include "Render/Render.h"
 #include <unordered_map>
+
 namespace Canella{
 
     namespace MeshProcessing
@@ -12,7 +13,6 @@ namespace Canella{
             HalfEdge * next;
             HalfEdge * twin;
             Face     * triangle;
-
         };
 
         struct VertexHe
@@ -44,14 +44,19 @@ namespace Canella{
             std::map<std::pair<uint32_t ,uint32_t>, HalfEdge* > edges;
             std::vector<VertexHe> vertices;
             std::vector<Face>   triangles;
-            std::vector<Edge>geo_edges;
+            std::vector<Edge>   geo_edges;
+            std::vector<Mesh>   meshes;
+            glm::mat4          *model_matrix;
+            Meshlet             meshlet_compositions;
+
             ~Mesh();
             void classify_triangles();
         private:
 
         };
-        using cluster_adjacency_edges = std::map<std::pair<int,int>,int>;
 
+        std::array<glm::vec2,2> project_box_from_sphere(glm::mat4* model_matrix,SphereBoundingVolume& volume,int width,int height,glm::mat4& view,glm::mat4& projection);
+        using cluster_adjacency_edges = std::map<std::pair<int,int>,int>;
         void classify_triangle_group(std::vector<Vertex>&vertices,
                                      std::vector<unsigned int>& indices,
                                      std::vector<meshopt_Meshlet>& meshlets,

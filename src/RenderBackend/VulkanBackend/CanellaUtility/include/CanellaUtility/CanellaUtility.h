@@ -11,16 +11,16 @@
 
 namespace Canella
 {
-	namespace RenderSystem
+
+    uint64_t uuid();
+    static std::random_device random_device;
+    static std::mt19937_64 random_engine(random_device());
+    static std::uniform_int_distribution<uint64_t> uniform_distribution;
+
+    namespace RenderSystem
 	{
 		namespace VulkanBackend
 		{
-
-            static std::random_device random_device;
-            static std::mt19937_64 random_engine(random_device());
-            static std::uniform_int_distribution<uint64_t> uniform_distribution;
-
-            uint64_t uuid();
 			VkFormat convert_from_string_format(const char *image_format);
 			VkSampleCountFlagBits convert_from_string_sample_count(const char *samples);
 			VkAttachmentLoadOp convert_from_string_loadOp(const char *loadOp);

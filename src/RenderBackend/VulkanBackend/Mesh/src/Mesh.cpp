@@ -9,7 +9,6 @@
 #include <list>
 
 using namespace Canella;
-//TODO FINISH THE HIERARCHY OF LODS by doing a proper implementation the current one is just for learning prototype
 
 struct Vec4Hash {
     std::size_t operator()(const glm::vec4& v) const {
@@ -113,7 +112,6 @@ MeshProcessing::Mesh::~Mesh()
 }
 
 void MeshProcessing::Mesh::classify_triangles() {
-
     auto n = 0;
     for(auto edge : edges)
     {
@@ -190,6 +188,11 @@ void MeshProcessing::load_asset_mesh(ModelMesh &model, const ::std::string &asse
             meshopt_optimizeVertexCache(new_indices.data(), indices.data(), index_count, vertex_count);
             meshopt_optimizeVertexFetch(vertices.data(), indices.data(), index_count, vertices.data(), vertex_count, sizeof(Vertex));
     */
+        SphereBoundingVolume sphere;
+        auto sphere_dim = Canella::compute_sphere_bounding_volume(meshes[i],model.positions);
+        sphere.center = glm::vec3(sphere_dim.x,sphere_dim.y,sphere_dim.z);
+        sphere.radius = sphere_dim.w;
+        meshes[i].bounding_volume = sphere;
         MeshProcessing::build_meshlets(meshlet_composition, model, i);
     }
 }
@@ -397,5 +400,55 @@ MeshProcessing::classify_triangle_group(
             parts.data());
 
     parts;
+}
+
+std::array<glm::vec2,2> MeshProcessing::project_box_from_sphere( glm::mat4* model_matrix,SphereBoundingVolume &volume, int width, int height, glm::mat4 &view,
+                                                   glm::mat4 &projection ) {
+    using namespace glm;
+
+    vec4 eye_pos = vec4(view[3]);
+    auto m = *model_matrix;
+    auto center = volume.center + vec3(m[3]);
+    vec3 sphere_to_eye = normalize(center - vec3(eye_pos));
+
+    vec3 camera_up    =  normalize(vec3(view[1]));
+    vec3 camera_front =  normalize(vec3(view[2]));
+    vec3 camera_right =  normalize(vec3(view[0]));
+
+    //math mytery
+    //float f_radius =  distance_to_sphere * tan(asin(radius / distance_to_sphere));;
+    float f_radius =  volume.radius * m[0][0] * 0.6;
+
+    vec3 v_up_radius    = camera_up * f_radius;
+    vec3 v_right_radius = camera_right * f_radius;
+
+    //Compute AABB Corners
+    vec4 project_center  = projection * vec4(center,1.0);
+    vec4 world_corner_0 = vec4( vec3(center) + v_up_radius - v_right_radius, 1 ); // Top-Left
+    vec4 world_corner_1 = vec4( vec3(center) + v_up_radius + v_right_radius, 1 ); // Top-Right
+    vec4 world_corner_2 = vec4( vec3(center) - v_up_radius - v_right_radius, 1 ); // Bottom-Left
+    vec4 world_corner_3 = vec4( vec3(center) - v_up_radius + v_right_radius, 1 ); // Bottom-Right
+
+    auto view_projection = projection* view;
+    vec4 clip_corner_0 = view_projection * world_corner_0; // Top-Left
+    vec4 clip_corner_1 = view_projection * world_corner_1; // Top-Right
+    vec4 clip_corner_2 = view_projection * world_corner_2; // Bottom-Left
+    vec4 clip_corner_3 = view_projection * world_corner_3; // Bottom-Right
+
+    //NDC Corners
+    vec2 ndc_corner_0 = vec2(clip_corner_0.x,clip_corner_0.y)/clip_corner_0.w; // Top-Left
+    vec2 ndc_corner_1 = vec2(clip_corner_1.x,clip_corner_1.y)/clip_corner_1.w; // Top-Right
+    vec2 ndc_corner_2 = vec2(clip_corner_2.x,clip_corner_2.y)/clip_corner_2.w; // Bottom-Left
+    vec2 ndc_corner_3 = vec2(clip_corner_3.x,clip_corner_3.y)/clip_corner_3.w; // Bottom-Right
+
+    auto x1_window = (ndc_corner_0.x *  (float)width/2.0f) + width/2.0f;
+    auto y1_window = (ndc_corner_0.y * (float)height/2.0f) + height/2.0f;
+
+    auto x2_window = (ndc_corner_3.x * (float)width/2.0f) + width/2.0f;
+    auto y2_window = (ndc_corner_3.y * (float)height/2.0f) + height/2.0f;
+    auto result =std::array<vec2,2>();
+    result[1] = vec2(x1_window,y1_window);
+    result[0] = vec2(x2_window,y2_window);
+    return result;
 }
 

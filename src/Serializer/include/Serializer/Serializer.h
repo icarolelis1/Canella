@@ -13,7 +13,6 @@ namespace Canella
     {
     public:
         Serializer() = default;
-        explicit Serializer(const std::string& projectFolder);
         Serializer(const Serializer &other) = delete;
         ~Serializer() = default;
         /**
@@ -45,6 +44,8 @@ namespace Canella
         void DeserializeEntities(const std::shared_ptr<Canella::Scene> scene, const std::string& file_path);
 
         std::string m_ProjectFolder;
+
+        void resolve_references( std::shared_ptr<Scene> shared_ptr_1 );
     };
 }
 

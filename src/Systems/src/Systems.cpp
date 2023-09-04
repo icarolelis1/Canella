@@ -4,6 +4,30 @@
 
 using namespace Canella;
 
+Entity& get_entity_by_uid(Scene *const scene,uint64_t uid)
+{
+    for (auto [key, value] : scene->entityLibrary) {
+        if(value->uuid == uid)
+        {
+            return *value.get();
+        }
+    }
+}
+
+/*void Canella::resolve_component_referencies(Scene *const scene)
+{
+    for (auto [key, value] : scene->entityLibrary) {
+        if(!value->is_dirty)continue;
+        auto &transform = value->get_component<TransformComponent>();
+        if(transform.reference_to_transform.uid != 0)
+        {
+           auto& parent_transform = get_entity_by_uid(scene,transform.reference_to_transform.uid).get_component<TransformComponent>();
+           transform.parent = &parent_transform;
+        }
+    }
+}*/
+
+
 void Canella::load_meshes_from_scene( const std::string &assets_folder, Scene *const scene, Canella::Render *p_render )
 {
     auto& asset_system = Canella::AssetSystem::instance();
@@ -56,8 +80,8 @@ void Canella::update_transforms(Scene *const scene)
             transform.model_matrix = glm::mat4( 1.0f);
             auto trans_matrix   =  glm::translate( glm::mat4(1.0f), transform.position);
             auto rot_matrix     =  glm::mat4_cast( transform.orientation );
-            auto scale_matrix   =  glm::scale( glm::mat4(1.0f), transform.scale);
-            transform.model_matrix = trans_matrix*rot_matrix* scale_matrix;
+            transform.model_matrix = trans_matrix*rot_matrix;
+            transform.model_matrix   =  glm::scale( transform.model_matrix, transform.scale);
             transform.rotation = glm::eulerAngles(transform.orientation) * 57.2958f ;
 
             if (transform.parent != nullptr)

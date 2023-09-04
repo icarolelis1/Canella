@@ -14,7 +14,7 @@ add_library(
         RenderBackend/VulkanBackend/Renderpass/src/Renderpass.cpp
         RenderBackend/VulkanBackend/Resources/src/Resources.cpp
         RenderBackend/VulkanBackend/Descriptorpool/src/Descriptorpool.cpp
-        RenderBackend/VulkanBackend/RenderNodes/src/GeomtryNode.cpp
+        RenderBackend/VulkanBackend/RenderNodes/src/GeometryNode.cpp
         RenderBackend/VulkanBackend/PipelineBuilder/src/PipelineBuilder.cpp
         RenderBackend/VulkanBackend/Frame/src/Frame.cpp
         RenderBackend/VulkanBackend/CanellaUtility/src/CanellaUtility.cpp

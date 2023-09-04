@@ -50,6 +50,14 @@ namespace Canella
     {
         glm::vec4 position;
     };
+
+    struct SphereBoundingVolume
+    {
+        glm::vec3 center;
+        float radius;
+    };
+
+
     struct Mesh
     {
         uint32_t vertex_offset;
@@ -60,7 +68,7 @@ namespace Canella
         uint32_t meshlet_triangle_offset;
         uint32_t meshlet_vertex_offset;
         uint32_t meshlet_count;
-
+        SphereBoundingVolume bounding_volume;
         Mesh() = default;
         Mesh(const Mesh &other) = default;
     };

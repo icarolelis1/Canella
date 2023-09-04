@@ -9,6 +9,8 @@
 namespace Canella
 {
 
+    void resolve_component_referencies(Scene *const scene);
+
     /**
      * @brief load all the mesh assets from the scene
      * @param assets_folder subfolder inside project that contains the assets

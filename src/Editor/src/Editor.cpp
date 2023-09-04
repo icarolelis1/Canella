@@ -8,6 +8,7 @@
 #include <ImGuizmo.h>
 #include "Editor/Inspector.h"
 #include <glm/gtc/quaternion.hpp>
+#include "Mesh/Mesh.h"
 
 Canella::Logger::Priority Canella::Logger::log_priority = Canella::Logger::Priority::Error_LOG;
 std::mutex Canella::Logger::logger_mutex;
@@ -53,6 +54,8 @@ void Canella::Editor::bind_shortcuts()
             show_status = !show_status;
         if (key == GLFW_KEY_P && action == InputAction::PRESS)
             game_mode = !game_mode;
+        if (key == GLFW_KEY_B && action == InputAction::PRESS)
+            show_volume = !show_volume;
  /*       if (key == GLFW_KEY_Y && action == InputAction::RELEASE)
         {
 
@@ -243,7 +246,28 @@ void Canella::Editor::render_editor_gui(VkCommandBuffer &command_buffer, uint32_
 
 void Canella::Editor::display_graphics_status()
 {
+    if( show_volume )
+    {
+        auto &window = GlfwWindow::get_instance();
+        auto extent = window.getExtent();
+        auto& view =    application->scene->main_camera->view;
+        auto&projection =    application->scene->main_camera->projection;
+          auto& drawables  = application->render->get_drawables();
+          for(auto& drawable : drawables)
+              for(auto& mesh : drawable.meshes){
+                  auto  box_min_max = MeshProcessing::project_box_from_sphere(drawable.model_matrix,mesh.bounding_volume,extent.width,extent.height,view,projection);
+                  auto  box_min = ImVec2(box_min_max[0].x,box_min_max[0].y);
+                  auto  box_max = ImVec2(box_min_max[1].x,box_min_max[1].y);
+                  ImGui::GetBackgroundDrawList()->AddRect(box_min,box_max,IM_COL32(255, 255, 0, 255));
+              }
+        //ImGui::GetBackgroundDrawList()->AddRect(ImVec2(930,500),ImVec2(960,570),IM_COL32(255, 255, 0, 255));
+
+
+    }
+
     if (show_status) {
+
+
         ImGuiIO &io = ImGui::GetIO();
         float display_width = (float) io.DisplaySize.x;
 
@@ -256,7 +280,7 @@ void Canella::Editor::display_graphics_status()
         ImGui::Begin( "Canella",NULL,window_flags ) ;
         ImGui::SetWindowPos(ImVec2( display_width - 360, 0));
         ImGui::Text( "FPS %.2f", double( 1.0 / application->frame_time ) * 2000 );
-         ImGui::Text("Frame Time %f (ms)",double(application->frame_time/2.0));
+        ImGui::Text("Frame Time %f (ms)",double(application->frame_time/2.0));
         out_put_stats.invoke();
         ImGui::End();
     }
@@ -272,4 +296,8 @@ Canella::Editor::~Editor()
     ImGui_ImplVulkan_Shutdown();
 #endif
     render.destroy();
+}
+
+void Canella::Editor::display_bounding_boxes() {
+
 }

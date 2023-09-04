@@ -5,6 +5,11 @@
 
 namespace Canella
 {
+    uint64_t uuid()
+    {
+        return uniform_distribution(random_engine);
+    }
+
     namespace RenderSystem
     {
         namespace VulkanBackend
@@ -112,11 +117,6 @@ namespace Canella
                 if (strcmp(structure, "Meshlet"))
                     return sizeof(meshopt_Meshlet);
                 return sizeof(meshopt_Meshlet);
-            }
-
-            uint64_t uuid()
-            {
-                return uniform_distribution(random_engine);
             }
 
             void create_render_query(RenderQueries &renderQueries, Device *device,uint32_t time_stamps_count)

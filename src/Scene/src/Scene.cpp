@@ -62,4 +62,9 @@ Canella::Entity &Canella::Scene::CreateEntity( uint64_t _uuid ) {
     return *entityLibrary[entt_entity];
 }
 
+Canella::Entity& Canella::Scene::get_entity_by_uuid( uint64_t uuid ) {
+    for(auto& [entt,entity] : entityLibrary)
+        if(entity->uuid == uuid) return *entity.get();
+}
+
 

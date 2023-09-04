@@ -49,12 +49,12 @@ void main(){
 
    StaticMeshData mesh = static_meshes[di];
     vec4 center = model_matrices[mesh.mesh_id][3] + vec4(mesh.center + mesh.pos,1) ;
-   float radius = mesh.radius *  model_matrices[mesh.mesh_id][0][0].x;
+   float radius = mesh.radius *  max(max(model_matrices[mesh.mesh_id][0][0].x,model_matrices[mesh.mesh_id][1][1].x),model_matrices[mesh.mesh_id][2][2].x);
    bool visible = true;
 	for (int i = 0; i < 6; ++i)
 		visible = visible && dot(culling_data.frustumPlanes[i], vec4(center.xyz, 1)) > -radius;
 
-    if(visible)
+    if(true)
     {
         uint command_index = atomicAdd(commands_count, 1);
         processed_commands[command_index].groupCountX              = (mesh.meshlet_count + 31)/32 ;

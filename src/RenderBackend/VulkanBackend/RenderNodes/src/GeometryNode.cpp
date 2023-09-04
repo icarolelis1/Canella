@@ -417,11 +417,6 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::create_resource_buffers
         std::for_each(drawables.begin(),drawables.end(),[&total_geometry_count](auto& d)
         {total_geometry_count +=d.meshes.size() * d.instance_count;});
 
-        std::vector<glm::vec4>spheres;
-
-        for(auto& mesh : drawable.meshes)
-            spheres.push_back(compute_sphere_bounding_volume(mesh, drawables[i].positions));
-
         std::vector<StaticMeshData> mesh_data(total_geometry_count);
         auto generate_points = [&](const uint32_t draw_count)
         {
@@ -443,11 +438,11 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::create_resource_buffers
             for (auto j = 0; j < drawable.meshes.size(); ++j)
             {
                 //auto sphere = compute_sphere_bounding_volume(drawables[i].meshes[j], drawables[i].positions);
-                auto sphere = spheres[j];
+                auto sphere = drawable.meshes[j].bounding_volume;
                 StaticMeshData mesh;
                 mesh.pos = points[rep];
-                mesh.center = glm::vec3(sphere.x, sphere.y, sphere.z);
-                mesh.radius = sphere.w;
+                mesh.center = glm::vec3(sphere.center.x, sphere.center.y, sphere.center.z);
+                mesh.radius = sphere.radius;
                 mesh.vertex_offset = drawables[i].meshes[j].vertex_offset;
                 mesh.meshlet_triangles_offset = drawables[i].meshes[j].meshlet_triangle_offset;
                 mesh.meshlet_offset = drawables[i].meshes[j].meshlet_offset;

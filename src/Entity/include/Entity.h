@@ -63,7 +63,8 @@ namespace Canella
             return owner_scene;
         }
         uint64_t uuid;
-
+        //Is dirty when has a component referencing other entities
+        bool is_dirty = false;
     private:
         std::weak_ptr<Scene> owner_scene;
         entt::entity         handle;

@@ -42,6 +42,8 @@ namespace Canella {
          */
         void update_systems(float delta);
 
+        Entity& get_entity_by_uuid(uint64_t uuid);
+
         CameraComponent * main_camera;
         entt::registry registry;
         EntityLibrary  entityLibrary;

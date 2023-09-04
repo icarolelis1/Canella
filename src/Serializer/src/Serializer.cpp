@@ -5,9 +5,6 @@
 
 #include "EditorComponents/EditorComponents.h"
 
-Canella::Serializer::Serializer(const std::string& project): m_ProjectFolder(project) {}
-
-
 void Canella::Serializer::Serialize(std::weak_ptr<Scene> scene, const std::string &projectPath)
 {
     if (const auto sceneRef = scene.lock())
@@ -41,6 +38,7 @@ void Canella::Serializer::LoadEntities(std::shared_ptr<Scene> scene, const std::
     for (auto entity_meta : scene_data["Entities"])
     {
         auto uuid  = entity_meta["UUID"].get<std::uint64_t>();
+        //todo fix this weird if statement
         if(uuid == -1)
         {
             Entity& created_entity = scene->CreateEntity();
@@ -57,11 +55,7 @@ void Canella::Serializer::LoadEntities(std::shared_ptr<Scene> scene, const std::
         }
     }
 
-    //Resolve References
-    for (auto& entity : scene->entityLibrary)
-    {
-        
-    }
+    resolve_references(scene);
 }
 
 void Canella::Serializer::LoadComponents(
@@ -143,5 +137,22 @@ void Canella::Serializer::DeserializeEntities(
     }
     o<< std::setw(4)<<out_put.dump();
     o.close();
+}
+
+void Canella::Serializer::resolve_references( std::shared_ptr<Scene> scene ) {
+
+    auto iterator = scene->entityLibrary.begin();
+    while(iterator != scene->entityLibrary.end())
+    {
+        auto entity = iterator->second;
+        if(entity->is_dirty)
+        {
+            auto view = scene->registry.view<TransformComponent,CameraComponent,ModelAssetComponent,Behavior>();
+            auto& transform_component = entity->get_component<TransformComponent>();
+            ResolveReferencesInTransform(transform_component,scene);
+        }
+        ++iterator;
+    }
+
 }
 

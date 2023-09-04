@@ -72,12 +72,13 @@ namespace Canella
         void render_editor_gui(VkCommandBuffer &, uint32_t);
         void setup_imgui();
         void display_graphics_status();
+        void display_bounding_boxes();
         void bind_shortcuts();
         bool game_mode = true;
         //Display Window
         bool show_status;
         bool show_inspector;
-
+        bool show_volume = false;
         //Editor Events
         OnSelectEntity& on_select_entity;
         OnOutputStatsEvent out_put_stats;
