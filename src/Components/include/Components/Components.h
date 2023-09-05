@@ -59,6 +59,7 @@ namespace Canella
     {
         ModelMesh mesh;
         std::string source;
+        std::string instance_src;
         bool isStatic = true;
         int8_t instance_count;
         ModelAssetComponent() = default;

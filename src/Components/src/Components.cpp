@@ -66,8 +66,9 @@ void Canella::SerializeMeshAsset(nlohmann::json &data, entt::registry &registry,
 {
     registry.emplace<ModelAssetComponent>(entity);
     const auto view = registry.view<ModelAssetComponent>();
-    auto &[model,source, isStatic,instance_count] = view.get<ModelAssetComponent>(entity);
+    auto &[model,source,instance_src, isStatic,instance_count] = view.get<ModelAssetComponent>(entity);
     source = data["Source"].get<std::string>();
+    instance_src = data["InstanceData"].get<std::string>();
     isStatic = data["Static"].get<bool>();
     model.instance_count = data["InstanceCount"].get<std::uint32_t>();
 
@@ -133,7 +134,7 @@ void Canella::DeserializeMeshAsset(nlohmann::json &data, ModelAssetComponent &me
 {
     data["type"] = "MeshAsset";
     data["Source"] = mesh_asset_component.source;
-    data["InstanceCount"] = 1 ;
+    data["InstanceCount"] = mesh_asset_component.instance_count ;
     data["Static"] =  mesh_asset_component.isStatic;
     data["UID"] = 0;
 

@@ -67,6 +67,7 @@ namespace Canella{
         int count_boundaries(MeshProcessing::Mesh& mesh);
         void build_meshlets(Canella::Meshlet &canellaMeshlet, Canella::ModelMesh &model, int mesh_index);
         void load_asset_mesh(ModelMesh &mesh, const ::std::string &assetsPath, const std::string &source);
+        void load_instance_data(ModelMesh &mesh, const ::std::string &assetsPath, const std::string &instance);
     };
 }
 

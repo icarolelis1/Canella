@@ -73,12 +73,18 @@ namespace Canella
         Mesh(const Mesh &other) = default;
     };
 
+    struct ModelInstance
+    {
+        glm::vec3 position_offset;
+    };
+
     struct ModelMesh
     {
         std::vector<Vertex> positions;
         std::vector<glm::vec4> normal;
         std::vector<uint32_t> indices;
         std::vector<Mesh> meshes;
+        std::vector<ModelInstance> instance_data;
         glm::mat4 *model_matrix;
         Meshlet meshlet_compositions;
         uint32_t instance_count = 1;

@@ -254,15 +254,15 @@ void Canella::Editor::display_graphics_status()
         auto&projection =    application->scene->main_camera->projection;
           auto& drawables  = application->render->get_drawables();
           for(auto& drawable : drawables)
+              for(auto i = 0; i < drawable.instance_count; ++i)
               for(auto& mesh : drawable.meshes){
-                  auto  box_min_max = MeshProcessing::project_box_from_sphere(drawable.model_matrix,mesh.bounding_volume,extent.width,extent.height,view,projection);
+                  SphereBoundingVolume sphere = mesh.bounding_volume;
+                  sphere.center  = mesh.bounding_volume.center + drawable.instance_data[i].position_offset;
+                  auto  box_min_max = MeshProcessing::project_box_from_sphere(drawable.model_matrix,sphere,extent.width,extent.height,view,projection);
                   auto  box_min = ImVec2(box_min_max[0].x,box_min_max[0].y);
                   auto  box_max = ImVec2(box_min_max[1].x,box_min_max[1].y);
                   ImGui::GetBackgroundDrawList()->AddRect(box_min,box_max,IM_COL32(255, 255, 0, 255));
               }
-        //ImGui::GetBackgroundDrawList()->AddRect(ImVec2(930,500),ImVec2(960,570),IM_COL32(255, 255, 0, 255));
-
-
     }
 
     if (show_status) {

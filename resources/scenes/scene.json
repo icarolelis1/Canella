@@ -34,7 +34,8 @@
             "type": "Transform"
           },
           {
-            "InstanceCount": 1,
+            "InstanceCount": 2,
+            "InstanceData" : "model_test/wakfu_characters_yugo_instances.json",
             "Source": "model_test/wakfu_characters_yugo.glb",
             "Static": true,
             "UID": 0,

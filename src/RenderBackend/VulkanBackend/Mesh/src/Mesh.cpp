@@ -7,6 +7,7 @@
 #include <set>
 #include <metis.h>
 #include <list>
+#include <fstream>
 
 using namespace Canella;
 
@@ -143,8 +144,10 @@ void MeshProcessing::load_asset_mesh(ModelMesh &model, const ::std::string &asse
 
     auto &[positions, normal, indices,
            meshes,
+           instances,
            matrix, meshlet_composition,
-           instance_count,is_static] = model;
+           instance_count,
+           is_static] = model;
     indices.clear();
     positions.clear();
     meshes.resize(assimpScene->mNumMeshes);
@@ -195,6 +198,8 @@ void MeshProcessing::load_asset_mesh(ModelMesh &model, const ::std::string &asse
         meshes[i].bounding_volume = sphere;
         MeshProcessing::build_meshlets(meshlet_composition, model, i);
     }
+
+
 }
 
 void MeshProcessing::build_meshlets(Canella::Meshlet &canellaMeshlet, Canella::ModelMesh &model, int mesh_index)
@@ -402,8 +407,12 @@ MeshProcessing::classify_triangle_group(
     parts;
 }
 
-std::array<glm::vec2,2> MeshProcessing::project_box_from_sphere( glm::mat4* model_matrix,SphereBoundingVolume &volume, int width, int height, glm::mat4 &view,
-                                                   glm::mat4 &projection ) {
+std::array<glm::vec2,2> MeshProcessing::project_box_from_sphere( glm::mat4* model_matrix,
+                                                                 SphereBoundingVolume &volume,
+                                                                 int width,
+                                                                 int height,
+                                                                 glm::mat4 &view,
+                                                                 glm::mat4 &projection) {
     using namespace glm;
 
     vec4 eye_pos = vec4(view[3]);
@@ -417,17 +426,16 @@ std::array<glm::vec2,2> MeshProcessing::project_box_from_sphere( glm::mat4* mode
 
     //math mytery
     //float f_radius =  distance_to_sphere * tan(asin(radius / distance_to_sphere));;
-    float f_radius =  volume.radius * m[0][0] * 0.6;
+    float f_radius =  volume.radius * max(max(max(m[1][1],m[0][0]),m[2][2]),m[3][3]);
 
-    vec3 v_up_radius    = camera_up * f_radius;
-    vec3 v_right_radius = camera_right * f_radius;
+    vec3 v_up_radius    = camera_up * f_radius  ;
+    vec3 v_right_radius = camera_right * f_radius ;
 
     //Compute AABB Corners
-    vec4 project_center  = projection * vec4(center,1.0);
-    vec4 world_corner_0 = vec4( vec3(center) + v_up_radius - v_right_radius, 1 ); // Top-Left
-    vec4 world_corner_1 = vec4( vec3(center) + v_up_radius + v_right_radius, 1 ); // Top-Right
-    vec4 world_corner_2 = vec4( vec3(center) - v_up_radius - v_right_radius, 1 ); // Bottom-Left
-    vec4 world_corner_3 = vec4( vec3(center) - v_up_radius + v_right_radius, 1 ); // Bottom-Right
+    vec4 world_corner_0 = vec4( vec3(center) + v_up_radius - v_right_radius , 1 ); // Top-Left
+    vec4 world_corner_1 = vec4( vec3(center) + v_up_radius + v_right_radius , 1 ); // Top-Right
+    vec4 world_corner_2 = vec4( vec3(center) - v_up_radius - v_right_radius , 1 ); // Bottom-Left
+    vec4 world_corner_3 = vec4( vec3(center) - v_up_radius + v_right_radius , 1 ); // Bottom-Right
 
     auto view_projection = projection* view;
     vec4 clip_corner_0 = view_projection * world_corner_0; // Top-Left
@@ -441,7 +449,7 @@ std::array<glm::vec2,2> MeshProcessing::project_box_from_sphere( glm::mat4* mode
     vec2 ndc_corner_2 = vec2(clip_corner_2.x,clip_corner_2.y)/clip_corner_2.w; // Bottom-Left
     vec2 ndc_corner_3 = vec2(clip_corner_3.x,clip_corner_3.y)/clip_corner_3.w; // Bottom-Right
 
-    auto x1_window = (ndc_corner_0.x *  (float)width/2.0f) + width/2.0f;
+    auto x1_window = (ndc_corner_0.x *  (float)width/2.0f) + width/2.0f ;
     auto y1_window = (ndc_corner_0.y * (float)height/2.0f) + height/2.0f;
 
     auto x2_window = (ndc_corner_3.x * (float)width/2.0f) + width/2.0f;
@@ -450,5 +458,20 @@ std::array<glm::vec2,2> MeshProcessing::project_box_from_sphere( glm::mat4* mode
     result[1] = vec2(x1_window,y1_window);
     result[0] = vec2(x2_window,y2_window);
     return result;
+}
+
+void MeshProcessing::load_instance_data( ModelMesh &mesh, const std::string &assetsPath, const std::string &instance ) {
+    std::fstream f(assetsPath + "\\" + instance);
+    nlohmann::json instance_data;
+    f >> instance_data;
+    for(auto& data :instance_data["Instances"])
+    {
+        ModelInstance inst;
+        auto pos_x = data["Position"]["X"].get<float>();
+        auto pos_y = data["Position"]["Y"].get<float>();
+        auto pos_z = data["Position"]["Z"].get<float>();
+        inst.position_offset = glm::vec3(pos_x,pos_y,pos_z);
+        mesh.instance_data.push_back(inst);
+    }
 }
 

@@ -418,7 +418,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::create_resource_buffers
         {total_geometry_count +=d.meshes.size() * d.instance_count;});
 
         std::vector<StaticMeshData> mesh_data(total_geometry_count);
-        auto generate_points = [&](const uint32_t draw_count)
+ /*       auto generate_points = [&](const uint32_t draw_count)
         {
             std::vector<glm::vec3> points(draw_count);
             auto sqrt = std::floor(std::sqrt(drawable.instance_count));
@@ -431,8 +431,8 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::create_resource_buffers
                     i++;
                 }
             return points;
-        };
-        auto points = generate_points(drawable.instance_count * drawable.meshes.size());
+        };*/
+       // auto points = generate_points(drawable.instance_count * drawable.meshes.size());
         auto ind  = 0;
         for(auto  rep = 0 ; rep < drawable.instance_count ; ++rep)
             for (auto j = 0; j < drawable.meshes.size(); ++j)
@@ -440,7 +440,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::create_resource_buffers
                 //auto sphere = compute_sphere_bounding_volume(drawables[i].meshes[j], drawables[i].positions);
                 auto sphere = drawable.meshes[j].bounding_volume;
                 StaticMeshData mesh;
-                mesh.pos = points[rep];
+                mesh.pos = drawable.instance_data[rep].position_offset;
                 mesh.center = glm::vec3(sphere.center.x, sphere.center.y, sphere.center.z);
                 mesh.radius = sphere.radius;
                 mesh.vertex_offset = drawables[i].meshes[j].vertex_offset;
