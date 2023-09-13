@@ -101,6 +101,7 @@ namespace Canella
         void terminate();
 
         void schedule(const CanellaJob &job);
+        void schedule_by_copy(const CanellaJob job);
 
         /**
          * @brief schedules a batch of work to jobsystem

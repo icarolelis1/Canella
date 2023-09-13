@@ -52,20 +52,9 @@ void Canella::Editor::bind_shortcuts()
             show_inspector = !show_inspector;
         if (key == GLFW_KEY_2 && action == InputAction::PRESS)
             show_status = !show_status;
-        if (key == GLFW_KEY_P && action == InputAction::PRESS)
-            game_mode = !game_mode;
         if (key == GLFW_KEY_B && action == InputAction::PRESS)
             show_volume = !show_volume;
- /*       if (key == GLFW_KEY_Y && action == InputAction::RELEASE)
-        {
 
-            Entity model_entity = application->scene->CreateEntity();
-            auto& trans = model_entity.get_component<TransformComponent>();
-            auto& asset = model_entity.add_component<ModelAssetComponent>();
-            asset.source =  "model_test/mario.glb";
-            asset.mesh.model_matrix = &trans.model_matrix;
-            AssetSystem::instance().async_load_asset(asset);
-        }*/
         if( key == GLFW_KEY_R && action == InputAction::PRESS)
             on_select_operation.invoke(ImGuizmo::ROTATE);
 
@@ -104,9 +93,6 @@ void Canella::Editor::run_editor()
         if (KeyBoard::instance().getKeyPressed(GLFW_KEY_ESCAPE))
             break;
     }
-
-    // closes the app
-    application->close();
 }
 
 void Canella::Editor::play()
@@ -238,6 +224,7 @@ void Canella::Editor::render_editor_gui(VkCommandBuffer &command_buffer, uint32_
     layer.draw_layer();
 
     display_graphics_status();
+    display_bounding_boxes();
 
     ImGui ::Render();
     ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), command_buffer);
@@ -246,25 +233,6 @@ void Canella::Editor::render_editor_gui(VkCommandBuffer &command_buffer, uint32_
 
 void Canella::Editor::display_graphics_status()
 {
-    if( show_volume )
-    {
-        auto &window = GlfwWindow::get_instance();
-        auto extent = window.getExtent();
-        auto& view =    application->scene->main_camera->view;
-        auto&projection =    application->scene->main_camera->projection;
-          auto& drawables  = application->render->get_drawables();
-          for(auto& drawable : drawables)
-              for(auto i = 0; i < drawable.instance_count; ++i)
-              for(auto& mesh : drawable.meshes){
-                  SphereBoundingVolume sphere = mesh.bounding_volume;
-                  sphere.center  = mesh.bounding_volume.center + drawable.instance_data[i].position_offset;
-                  auto  box_min_max = MeshProcessing::project_box_from_sphere(drawable.model_matrix,sphere,extent.width,extent.height,view,projection);
-                  auto  box_min = ImVec2(box_min_max[0].x,box_min_max[0].y);
-                  auto  box_max = ImVec2(box_min_max[1].x,box_min_max[1].y);
-                  ImGui::GetBackgroundDrawList()->AddRect(box_min,box_max,IM_COL32(255, 255, 0, 255));
-              }
-    }
-
     if (show_status) {
 
 
@@ -299,5 +267,26 @@ Canella::Editor::~Editor()
 }
 
 void Canella::Editor::display_bounding_boxes() {
-
+    if( show_volume )
+    {
+        auto &window = GlfwWindow::get_instance();
+        auto extent = window.getExtent();
+        auto& view =    application->scene->main_camera->view;
+        auto&projection =    application->scene->main_camera->projection;
+        auto& drawables  = application->render->get_drawables();
+        for(auto& drawable : drawables)
+            for(auto i = 0; i < drawable.instance_count; ++i)
+                for(auto& mesh : drawable.meshes){
+                    SphereBoundingVolume sphere = mesh.bounding_volume;
+                    auto m = *drawable.model_matrix;
+                    auto s = sphere.center;
+                    //sphere.center  = mesh.bounding_volume.center + drawable.instance_data[i].position_offset;
+                    sphere.center  = m *  (glm::vec4(drawable.instance_data[i].position_offset.x,drawable.instance_data[i].position_offset.y,drawable.instance_data[i].position_offset.z,1.0));
+                    sphere.center += s/2.0f;
+                    auto  box_min_max = MeshProcessing::project_box_from_sphere(drawable.model_matrix,sphere,extent.width,extent.height,view,projection);
+                    auto  box_min = ImVec2(box_min_max[0].x,box_min_max[0].y);
+                    auto  box_max = ImVec2(box_min_max[1].x,box_min_max[1].y);
+                    ImGui::GetBackgroundDrawList()->AddRect(box_min,box_max,IM_COL32(255, 255, 0, 255));
+                }
+    }
 }

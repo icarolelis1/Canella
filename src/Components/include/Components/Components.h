@@ -36,6 +36,7 @@ namespace Canella
         glm::vec3                     scale = glm::vec3(1);
         glm::mat4                     model_matrix;
         Reference reference;
+        std::list<TransformComponent*> children;
         TransformComponent *parent = nullptr;
     };
 
@@ -60,8 +61,9 @@ namespace Canella
         ModelMesh mesh;
         std::string source;
         std::string instance_src;
+        std::string material_name = "DefaultMaterial";
         bool isStatic = true;
-        int8_t instance_count;
+        int instance_count;
         ModelAssetComponent() = default;
     };
 

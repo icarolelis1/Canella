@@ -1,7 +1,6 @@
 #pragma once
 #ifndef ASSET_SYSTEM
 #define ASSET_SYSTEM
-#include "VulkanRender/VulkanRender.h"
 #include <Eventsystem/Eventsystem.hpp>
 #include "Components/Components.h"
 
@@ -31,6 +30,12 @@ namespace Canella
        * @param asset mesh asset to be loaded
        */
         void load_asset(ModelAssetComponent &asset);
+
+        /**
+         * @brief Loads a material
+         * @param material the material to be loaded
+         */
+        void load_material_async( Canella::MaterialDescription material );
 
         /**
          * @brief Get the source directory of the project

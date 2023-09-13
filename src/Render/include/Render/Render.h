@@ -78,6 +78,21 @@ namespace Canella
         glm::vec3 position_offset;
     };
 
+    struct TextureSlot
+    {
+        std::string texture_source;
+        std::string semantic;
+    };
+
+    struct MaterialDescription
+    {
+        std::string name;
+        std::string              pipeline;
+        std::vector<TextureSlot> texture_slots;
+    };
+
+    struct RawTextureData;
+
     struct ModelMesh
     {
         std::vector<Vertex> positions;
@@ -92,8 +107,8 @@ namespace Canella
     };
 
     glm::vec4 compute_sphere_bounding_volume(Mesh &mesh, std::vector<Vertex> &vertices);
-    using Drawables = std::vector<ModelMesh>;
 
+    using Drawables = std::vector<ModelMesh>;
     class OnLoseSwapchainEvent : public Event<Canella::Render *>{};
     class OnRenderEvent : public Event<Canella::Render *>{};
     class OnDrawableEnqueueEvent : public Event<Canella::Render *>  {};
@@ -117,6 +132,7 @@ namespace Canella
         virtual Drawables &get_drawables() = 0;
         OnOutputStatsEvent * display_render_stats_event;
         GraphicsApi api;
+
         // Render Events`
         Canella::OnLoseSwapchainEvent   OnLostSwapchain;
         Canella::OnDrawableEnqueueEvent OnEnqueueDrawable;

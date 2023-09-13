@@ -17,9 +17,10 @@ namespace Canella
         ~Serializer() = default;
         /**
         * \brief Serialize the scene to a file
-        * \param scene
+        * \param scenes_path location of scene meta data
+        * \param assets_path location of assets meta data
         */
-        void Serialize(std::weak_ptr<Scene> scene,const std::string& projectPath);
+        void Serialize(std::weak_ptr<Scene> scene, const std::string &scenes_path,const std::string &assets_path);
         /**
          * @brief Deserialize the scene
          * @param scene scene to be deserialized
@@ -27,6 +28,9 @@ namespace Canella
         void Deserialize(std::weak_ptr<Scene> scene);
 
     private:
+
+        void LoadMaterialData(std::weak_ptr<Scene> scene ,const std::string &projectPath);
+
         void LoadEntities(std::shared_ptr<Scene> scene, const std::string& filepath);
         /**
         * \brief Builds the components for each entity in the config File

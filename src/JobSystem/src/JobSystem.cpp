@@ -71,10 +71,8 @@ namespace Canella
                     CanellaJob canellaJob;
                     if (thread_queue.try_pop( canellaJob))
                     {
-
                         canellaJob.job_detail->execute();
                         canellaJob.job_detail->onComplete();
-
                         finished_jobs.fetch_add(1);
                     }
                     else
@@ -97,7 +95,7 @@ namespace Canella
              *
              * @param job the job to be submited
              */
-            void submit(const CanellaJob &job)
+            void submit(const CanellaJob job)
             {
                 // Incremenmt the number of jobs to process
                 current_jobs += 1;
@@ -119,9 +117,7 @@ namespace Canella
             void wait()
             {
 
-                while (finished_jobs < current_jobs)
-                {
-                };
+                while (finished_jobs < current_jobs){};
             }
 
             /**
@@ -150,9 +146,7 @@ namespace Canella
 
             void dispatch(uint16_t jobCount, uint16_t groupSize,CanellaJob job)
             {
-
                 uint32_t groupCount = (jobCount + groupSize - 1) / groupSize;
-
                 for (uint32_t groupIndex = 0; groupIndex < groupCount; ++groupIndex)
                 {
                     const uint32_t offset = groupIndex * groupSize;

@@ -40,7 +40,6 @@ void Canella::Inspector::build() {
         return;
     }
     save_button();
-
     ImGuiIO &io            = ImGui::GetIO();
     float   display_width  = ( float ) io.DisplaySize.x;
     float   display_height = ( float ) io.DisplaySize.y;
@@ -49,7 +48,7 @@ void Canella::Inspector::build() {
     ImGui::SetWindowSize( ImVec2( min_width, display_height ));
     ImGui::Dummy(ImVec2(0,5));
 
-    hierarchy();
+    hierarchy_tab();
 
     if(selected_entity.lock())
         build_property_window(ImVec2(min_width,0));
@@ -57,38 +56,110 @@ void Canella::Inspector::build() {
 
 }
 
-void Canella::Inspector::hierarchy() {
+void Canella::Inspector::hierarchy_tab() {
+
     float item_height = ImGui::GetTextLineHeightWithSpacing();
     if (ImGui::BeginChildFrame(ImGui::GetID("Hierarchy"),ImVec2(-FLT_MIN, 10 * item_height))) {
 
         auto       &scene = application->scene;
-        auto       i      = 0;
-        for ( auto &entity: scene->entityLibrary ) {
-            auto id = static_cast<uint32_t>(entity.first);
-            ImGui::PushID( id );
-            auto       row          = "entity " + std::to_string( id );
-            static int node_clicked = -1;
-            auto       node_flags   = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick |
-                                      ImGuiTreeNodeFlags_SpanAvailWidth;
-            if ( selected_entity.lock())
-                if ( selected_entity.lock()->raw_id() == entity.second->raw_id())
-                    node_flags |= ImGuiTreeNodeFlags_Selected;
-            bool node_open = ImGui::TreeNodeEx(( void * ) ( intptr_t ) i, node_flags, entity.second->name.c_str());
-            if ( ImGui::IsItemClicked()) {
-                selected_entity = entity.second;
-                on_select_entity.invoke(selected_entity);
-                node_clicked    = i;
-            }
-            create_entity_popup();
-            if ( node_open ) {
-                inspect_chilren( entity.second );
-                ImGui::TreePop();
-            }
-            ImGui::Separator();
-            ImGui::PopID();
-            i++;
+        //Transform component of the root
+        auto& root_transform =  scene->root->get_component<Canella::TransformComponent>();
+        //Root Entity Raw_id
+        auto raw_id = root_transform.owner->raw_id();
+        //Grabbing the Root Entity using its raw Id;
+        auto entity = scene->entityLibrary.find(raw_id)->second;
+
+        auto id = static_cast<uint32_t>(entity->uuid);
+        ImGui::PushID(id);
+        auto node_flags   = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick |ImGuiTreeNodeFlags_SpanAvailWidth;
+        if ( selected_entity.lock())
+            if ( selected_entity.lock()->raw_id() == entity->raw_id())
+                node_flags |= ImGuiTreeNodeFlags_Selected;
+
+        auto i = 0;
+        bool node_open = ImGui::TreeNodeEx(( void * ) ( intptr_t )i, node_flags, entity->name.c_str());
+
+        if ( ImGui::IsItemClicked()) {
+            selected_entity = entity;
+            on_select_entity.invoke(selected_entity);
         }
-        ImGui::EndChildFrame();
+
+        std::pair<entt::entity,Entity*> pair = std::make_pair(entity->raw_id(),entity.get());
+        drag_and_drop_behavior( scene, pair);
+        create_entity_popup();
+        if ( node_open ) {hierarchy_entity(entity);ImGui::TreePop(); }
+
+        ImGui::Separator();
+        ImGui::PopID();
+    }
+    ImGui::EndChildFrame();
+}
+
+void Canella::Inspector::hierarchy_entity(std::shared_ptr<Entity>  entity) {
+
+    auto& transform_parent = entity->get_component<Canella::TransformComponent>();
+    auto  i  = 0;
+    auto& scene = application->scene;
+    for ( auto& transform: transform_parent.children ) {
+        auto &entity = *transform->owner;
+        auto shared_ptr_entity = scene->entityLibrary.find(transform->owner->raw_id())->second;
+        auto id = static_cast<uint32_t>(entity.uuid);
+        ImGui::PushID( id );
+        auto node_flags   = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick |ImGuiTreeNodeFlags_SpanAvailWidth;
+        if ( selected_entity.lock())
+            if ( selected_entity.lock()->raw_id() == entity.raw_id())
+                node_flags |= ImGuiTreeNodeFlags_Selected;
+
+        bool node_open = ImGui::TreeNodeEx(( void * ) ( intptr_t ) i, node_flags, entity.name.c_str());
+        if ( ImGui::IsItemClicked()) {
+            selected_entity = shared_ptr_entity;
+            on_select_entity.invoke(selected_entity);
+        }
+
+        std::pair<entt::entity,Entity*> pair = std::make_pair(entity.raw_id(),&entity);
+        drag_and_drop_behavior( scene, pair);
+        create_entity_popup();
+        if ( node_open ) {
+            hierarchy_entity(shared_ptr_entity);
+            ImGui::TreePop();
+        }
+
+        ImGui::Separator();
+        ImGui::PopID();
+        i++;
+    }
+}
+
+
+void Canella::Inspector::drag_and_drop_behavior( const std::shared_ptr<Canella::Scene> &scene,
+                                                 const std::pair<const entt::entity,  Entity*> entity) const {
+    if(ImGui::BeginDragDropSource())
+    {
+        if(entity.second->name != "Scene_Root")
+        {
+            ImGui::SetDragDropPayload("Entity", &entity.first, sizeof(entity.first));
+            ImGui::Text(entity.second->name.c_str());
+        }
+        ImGui::EndDragDropSource();
+    }
+
+    if(ImGui::BeginDragDropTarget())
+    {
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Entity"))
+        {
+            IM_ASSERT(payload->DataSize == sizeof(entt::entity));
+            entt::entity payload_n = *(entt::entity*)payload->Data;
+            auto entity_dragged = scene->entityLibrary[payload_n];
+            auto&  transform = entity_dragged->get_component<Canella::TransformComponent>();
+
+            //Remove from previous parent
+            transform.parent->children.remove(&transform);
+            auto& target_transform = entity.second->get_component<TransformComponent>();
+            transform.parent = &target_transform;
+            target_transform.children.push_back(&transform);
+
+        }
+        ImGui::EndDragDropTarget();
     }
 }
 
@@ -98,9 +169,7 @@ void Canella::Inspector::create_entity_popup() {
         if (ImGui::Button("Close"))
             ImGui::CloseCurrentPopup();
         if (ImGui::Button("Create"))
-        {
-            application->scene->CreateEntity();
-        }
+            application->scene->create_root_parented_entity();
         ImGui::EndPopup();
     }
 }
@@ -133,6 +202,8 @@ void Canella::Inspector::build_property_window(ImVec2 window_offset) {
     float item_height = ImGui::GetTextLineHeightWithSpacing();
     if (ImGui::BeginChildFrame(ImGui::GetID("frame"),ImVec2(-FLT_MIN, 10 * item_height)))
     {
+
+        ImGui::InputText("Name ", selected_entity.lock()->name.data(), IM_ARRAYSIZE(selected_entity.lock()->name.data()));
         ImGui::Text("Components");
         auto selected = selected_entity.lock();
         display_transform(selected);
@@ -140,9 +211,6 @@ void Canella::Inspector::build_property_window(ImVec2 window_offset) {
     }
 }
 
-void Canella::Inspector::inspect_chilren( std::shared_ptr<Entity> parent ) {
-
-}
 
 void Canella::Inspector::setup_deselection_event() {
     auto &mouse = Mouse::instance();
@@ -165,4 +233,5 @@ void Canella::Inspector::setup_deselection_event() {
 Canella::Inspector::Inspector() {
     //setup_deselection_event();
 }
+
 

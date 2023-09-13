@@ -28,7 +28,6 @@ namespace Canella
                 bool push_descriptor;
                 bool bindless_suported;
             };
-
             struct SwapchainQueryProperties
             {
                 VkSurfaceCapabilitiesKHR capabilities;
@@ -129,6 +128,7 @@ namespace Canella
                 bool prepareDevice(VkSurfaceKHR surface, Instance instance);
                 void destroyDevice();
                 VkFormat get_depth_format();
+                std::mutex& get_queue_mutex(int code);
                 float timestamp_period;
 
             private:
@@ -141,6 +141,10 @@ namespace Canella
                 VkQueue presentationQueue;
                 VkQueue transferQueue;
                 VkQueue computeQueue;
+
+                std::mutex graphics_mutex;
+                std::mutex transfer_mutex;
+                std::mutex compute_mutex;
                 QueueFamilyIndices queueFamilies;
                 VkPhysicalDeviceProperties vk_physicalDeviceProperties;
                 VkPhysicalDeviceMemoryProperties vk_MemoryProperties;

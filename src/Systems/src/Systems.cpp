@@ -31,28 +31,44 @@ Entity& get_entity_by_uid(Scene *const scene,uint64_t uid)
 void Canella::load_meshes_from_scene( const std::string &assets_folder, Scene *const scene, Canella::Render *p_render )
 {
     auto& asset_system = Canella::AssetSystem::instance();
+    std::list<std::string> material_names;
     for (auto &[entt_value, entity] : scene->entityLibrary)
         if (entity->has_component<ModelAssetComponent>())
         {
             auto &mesh_asset = entity->get_component<ModelAssetComponent>();
+            material_names.push_back(mesh_asset.material_name);
             // mesh_asset.mesh.model_matrix = &entity->get_component<TransformComponent>().model_matrix;
             asset_system.async_load_asset( mesh_asset);
         }
     Canella::JobSystem::wait();
 }
 
-void Canella::get_static_meshes_on_scene(Drawables &drawables, Scene *const scene)
+
+void Canella::load_initial_meshes_on_scene( Drawables &drawables, Scene *const scene)
 {
     auto& asset_system = Canella::AssetSystem::instance();
     for (auto [key, entity] : scene->entityLibrary)
         if (entity->has_component<ModelAssetComponent>())
         {
             auto &mesh_asset = entity->get_component<ModelAssetComponent>();
+            //Get all the materials in use at start
             asset_system.load_asset( mesh_asset);
             drawables.push_back(mesh_asset.mesh);
+            Logger::Debug("Size of mesh %d",sizeof(drawables.end()->positions));
         }
 }
 
+void Canella::load_initial_materials_on_scene( Scene *const scene) {
+    auto& asset_system = Canella::AssetSystem::instance();
+    for (auto [key, entity] : scene->entityLibrary)
+        if (entity->has_component<ModelAssetComponent>())
+        {
+            auto &mesh_asset = entity->get_component<ModelAssetComponent>();
+            asset_system.load_material_async( scene->material_library[mesh_asset.material_name] );
+        }
+    JobSystem::wait();
+
+}
 
 CameraComponent *Canella::get_main_camera(Scene *const scene)
 {
@@ -113,3 +129,4 @@ void Canella::start_scripts(Scene *scene)
         }
         behavior.instance->on_start(); });
 }
+

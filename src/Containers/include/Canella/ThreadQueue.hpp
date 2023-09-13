@@ -42,7 +42,6 @@ namespace Canella {
             std::lock_guard<std::mutex> lg(m);
             queue.push(item);
             cv.notify_one();
-
         }
         bool pop(T& item) {
             return true;

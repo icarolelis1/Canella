@@ -54,20 +54,16 @@ bool occlusion_test(mat4 view, mat4 projection, vec3 center,float radius)
     vec4 view_center = view * vec4(center,1.);
     vec4 eye_pos = ubo.eye;
 
-    float distance_to_sphere = distance(eye_pos,vec4(center,1));
+    float distance_to_sphere = distance(vec3(eye_pos),center);
     vec3 sphere_to_eye = normalize(center - eye_pos.xyz);
 
     //Compute Camera Coordinate System
-    vec3 camera_up    =  normalize(view[1].xyz);
-    vec3 camera_front =  normalize(view[2].xyz);
-    vec3 camera_right =  normalize(cross(sphere_to_eye, camera_up));
+    vec3 camera_up    =  normalize(vec3(view[1]));
+    vec3 camera_front =  normalize(vec3(view[2]));
+    vec3 camera_right =  normalize(vec3(view[0]));
 
-    //math mytery
-    //float f_radius =  distance_to_sphere * tan(asin(radius / distance_to_sphere));;
-    float f_radius =  radius;
-
-    vec3 v_up_radius    = camera_up * f_radius;
-    vec3 v_right_radius = camera_right * f_radius;
+    vec3 v_up_radius    = camera_up * radius;
+    vec3 v_right_radius = camera_right * radius;
 
     //Compute AABB Corners
     vec4 project_center  = projection * vec4(center,1.0);
@@ -120,7 +116,8 @@ void main(){
    uint di = gi * 32 + ti;
 
    StaticMeshData mesh = static_meshes[di];
-   vec4 center = model_matrices[mesh.mesh_id][3]  + vec4(mesh.center + mesh.pos,1);
+   vec4 center = model_matrices[mesh.mesh_id] *vec4(mesh.pos,1);
+    center += vec4(mesh.center,1.0f);
    //Inflates the radius.
    float radius = mesh.radius *  max(model_matrices[mesh.mesh_id][0][0].x,max(model_matrices[mesh.mesh_id][1][1].x,model_matrices[mesh.mesh_id][2][2].x)) ;
 
@@ -129,7 +126,7 @@ void main(){
 		visible = visible && dot(culling_data.frustumPlanes[i], vec4(center.xyz, 1)) > -radius;
 
     if(visible)
-        visible = visible && !occlusion_test(ubo.view,ubo.projection,center.xyz,radius * 1.5);
+        visible = visible && !occlusion_test(ubo.view,ubo.projection,center.xyz,radius);
 
    if(visible && occlusion_vibility_buffer[di] == 0)
    {

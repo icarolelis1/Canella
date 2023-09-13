@@ -4,7 +4,7 @@
 #include "Device/Device.h"
 #include <unordered_map>
 #include "Commandpool/Commandpool.h"
-#include "AsynchronousLoader/AsynchronousLoader.h"
+#include "AsynchronousLoader/SyncStructure.h"
 #include "Render/Render.h"
 #include <mutex>
 #ifndef GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
@@ -18,8 +18,8 @@ namespace Canella
         namespace VulkanBackend
         {
 
-            VkBufferMemoryBarrier bufferBarrier(VkBuffer buffer, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask);
-            VkImageMemoryBarrier imageBarrier(VkImage image, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkImageLayout oldLayout, VkImageLayout newLayout, VkImageAspectFlags aspectMask);
+            VkBufferMemoryBarrier buffer_barrier( VkBuffer buffer, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask);
+            VkImageMemoryBarrier image_barrier( VkImage image, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkImageLayout oldLayout, VkImageLayout newLayout, VkImageAspectFlags aspectMask);
             VkSampler create_sampler(VkDevice device, VkSamplerReductionModeEXT reductionMode);
 
             enum ResourceType
@@ -34,6 +34,7 @@ namespace Canella
             {
             public:
                 std::string debug_id = "";
+                bool is_persistent = false;
                 VkDeviceSize size;
                 explicit GPUResource(ResourceType type);
                 virtual ~GPUResource() = default;
@@ -118,7 +119,8 @@ namespace Canella
                 RefImage get_image_cached(uint64_t);
 
                 explicit ResourcesManager(Device *device);
-                AsynchronousLoader async_loader;
+                SyncStructure async_loader;
+                SyncStructure async_loader2;
                 /**
                  * @brief late setup. Builds the AsyncronousLoader
                  */
@@ -159,9 +161,14 @@ namespace Canella
                                                  uint32_t num_mips =1 ,
                                                  VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT,
                                                  uint32_t arrayLayers =1 ,
-                                                 VkSampleCountFlagBits samples= VK_SAMPLE_COUNT_1_BIT);
+                                                 VkSampleCountFlagBits samples= VK_SAMPLE_COUNT_1_BIT,
+                                                 bool store_in_textures_cache = false);
+
+
+                ResourceAccessor create_texture(const std::string& file_path,Device* device,VkFormat format);
 
                 ~ResourcesManager() = default;
+
                 /**
                  * @brief Creates a Device Local Buffer
                  * @tparam Data
@@ -189,16 +196,25 @@ namespace Canella
                  * @return
                  */
                 uint64_t write_descriptor_sets(VkDescriptorSet &descriptorset, std::vector<VkDescriptorBufferInfo> &buffer_infos, std::vector<VkDescriptorImageInfo> &image_infos, bool);
+
                 /**
                  * @brief destroys all the resources cached
                  */
-                void destroy_resources();
+                void destroy_non_persistent_resources();
+
+                /**
+                 * @brief destory all textures cached
+                 */
+                void destroy_texture_resources();
 
                 // Events
                 Event<VkSemaphore&,VkPipelineStageFlagBits> OnTransferCommand;
+                Commandpool resource_loader_pool;
 
             private:
                 std::unordered_map<ResourceAccessor, RefGPUResource> resource_cache;
+                //Saving the textures in a different cache because textures don't get reloaded in ReloadEvents...
+                std::unordered_map<ResourceAccessor, RefGPUResource> textures_cache;
                 Device *device;
                 std::mutex mutex;
             };

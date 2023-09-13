@@ -23,8 +23,7 @@ namespace Canella
                                                                 &createInfo,
                                                                 nullptr,
                                                                 &pool);
-                result == VK_SUCCESS)
-                    Logger::Debug("Successfully Created CommandPool");
+                result != VK_SUCCESS) Logger::Debug("Failed to create command pool");
             }
 
             VkCommandBuffer Commandpool::requestCommandBuffer(Device *device, VkCommandBufferLevel level) const
@@ -42,11 +41,8 @@ namespace Canella
                 allocInfo.commandPool = pool;
                 allocInfo.level = level;
                 allocInfo.commandBufferCount = static_cast<uint32_t>(1);
-                // VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_
-
                 VkResult result = vkAllocateCommandBuffers(device->getLogicalDevice(), &allocInfo, &buffer);
-                if (result != VK_SUCCESS)
-                    Logger::Error("Failed to allocate CommandBuffer");
+                if (result != VK_SUCCESS) Logger::Error("Failed to allocate CommandBuffer");
             }
 
             void Commandpool::begin_command_buffer(Device* device, VkCommandBuffer &buffer, bool single_usage)const
@@ -63,7 +59,6 @@ namespace Canella
             void Commandpool::endCommandBuffer(VkCommandBuffer &buffer)
             {
                 vkEndCommandBuffer(buffer);
-                
             }
 
             void Commandpool::destroy(Device *device)

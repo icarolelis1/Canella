@@ -48,7 +48,8 @@ void main(){
         return;
 
    StaticMeshData mesh = static_meshes[di];
-    vec4 center = model_matrices[mesh.mesh_id][3] + vec4(mesh.center + mesh.pos,1) ;
+    vec4 center = model_matrices[mesh.mesh_id] * vec4(mesh.pos,1) ;
+    center += vec4(mesh.center,1.0)/2.0f;
    float radius = mesh.radius *  max(max(model_matrices[mesh.mesh_id][0][0].x,model_matrices[mesh.mesh_id][1][1].x),model_matrices[mesh.mesh_id][2][2].x);
    bool visible = true;
 	for (int i = 0; i < 6; ++i)

@@ -24,7 +24,18 @@ namespace Canella
  * \param drawables Reference to vector containing the meshes
  * \param scene The Scene
  */
-    void get_static_meshes_on_scene(Drawables& drawables, Scene *const scene);
+    void load_initial_meshes_on_scene( Drawables& drawables, Scene *const scene);
+
+    /**
+     * @brief Load the textures associated with materials at start
+     * @param scene The Scene
+     */
+    void load_initial_materials_on_scene( Scene *const scene );
+
+    /**
+     * @brief Load all the materials referenced in the assets/materials folder
+     */
+    void load_initial_materials_on_scene();
     /**
      * @brief update all the transforms calculating the model matrix
      * @param scene the scene containing the transforms
@@ -42,6 +53,8 @@ namespace Canella
      * @param scene
      */
     void start_scripts(Scene *scene);
+
+
     class GlfwWindow;
     void update_camera(CameraComponent& camera_component,GlfwWindow& window);
 }

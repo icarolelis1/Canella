@@ -13,7 +13,6 @@ void Canella::EditorLayer::setup_layer(Canella::Application* application,Canella
 }
 
 void Canella::EditorLayer::draw_layer() {
-
     inspector.build();
     if (entity_changed)
     {
@@ -33,12 +32,15 @@ void Canella::EditorLayer::draw_layer() {
         auto camera_view = selected_entity.lock()->get_owner_scene().lock()->main_camera->view;
         auto& entity_transform = selected_entity.lock()->get_component<TransformComponent>();
         float tmpMatrix[16];
-     /*   camera_view[1][1] *=-1;
-        camera_view[2][2] *=-1;*/
 
-        //Dont use euler angles to manipulate my orientation
+        glm::vec3 pos_offset = glm::vec3(0);
+        if(entity_transform.parent != nullptr)
+            pos_offset = entity_transform.parent->position;
+
+
+        auto world_pos = entity_transform.position + pos_offset;
         glm::vec3 nul = glm::vec3(0.0f,0.0f,0.0f);
-        ImGuizmo::RecomposeMatrixFromComponents(&entity_transform.position.x, &nul.x, &entity_transform.scale.x, tmpMatrix);
+        ImGuizmo::RecomposeMatrixFromComponents(&world_pos.x, &nul.x, &entity_transform.scale.x, tmpMatrix);
         ImGuizmo::Manipulate(&camera_view[0][0], &camera_projection[0][0], operation,
                              ImGuizmo::MODE::WORLD, tmpMatrix);
 
@@ -52,7 +54,7 @@ void Canella::EditorLayer::draw_layer() {
             switch (operation)
             {
                 case ImGuizmo::OPERATION::TRANSLATE:
-                    entity_transform.position = glm::vec3(matrixTranslation[0], matrixTranslation[1], matrixTranslation[2]);
+                    entity_transform.position = glm::vec3(matrixTranslation[0], matrixTranslation[1], matrixTranslation[2]) - pos_offset;
                     break;
 
                 case ImGuizmo::OPERATION::ROTATE:

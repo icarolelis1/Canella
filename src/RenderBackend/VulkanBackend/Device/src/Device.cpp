@@ -478,6 +478,12 @@ namespace Canella
             VkFormat Device::get_depth_format() {
                 return depth_format;
             }
+
+            std::mutex &Device::get_queue_mutex( int code ) {
+                if( code == 1)
+                    return graphics_mutex;
+                return transfer_mutex;
+            }
         }
     }
 }

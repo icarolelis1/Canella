@@ -27,8 +27,13 @@ glm::vec4 compute_sphere_bounding_volume(Canella::Mesh &mesh, std::vector<Canell
 void Canella::SerializeTransform( nlohmann::json &data, std::shared_ptr<Scene> scene, entt::entity entity)
 {
     const auto view = scene->registry.view<TransformComponent>();
-    auto &[owner,position,rotation,orientation,scale,model,reference, parent] =
-        view.get<TransformComponent>(entity);
+    auto &[owner,position,rotation,
+           orientation,scale,
+           model,
+           reference,
+           children,
+           parent] =  view.get<TransformComponent>(entity);
+
     owner = scene->entityLibrary[entity].get();
     position.x = data["Position"]["x"].get<float>();
     position.y = data["Position"]["y"].get<float>();
@@ -36,17 +41,15 @@ void Canella::SerializeTransform( nlohmann::json &data, std::shared_ptr<Scene> s
     scale.x    = data["Scale"]["x"].get<float>();
     scale.y    = data["Scale"]["y"].get<float>();
     scale.z    = data["Scale"]["z"].get<float>();
-
     rotation.x = data["Rotation"]["x"].get<float>();
     rotation.y = data["Rotation"]["y"].get<float>();
     rotation.z = data["Rotation"]["z"].get<float>();
-
     orientation.x = data["Orientation"]["x"].get<float>();
     orientation.y = data["Orientation"]["y"].get<float>();
     orientation.z = data["Orientation"]["z"].get<float>();
     orientation.w = data["Orientation"]["w"].get<float>();
 
-    reference.uid = data["References"][0]["UUID"].get<std::uint64_t>();
+    reference.uid = data["References"][0]["Entity"].get<std::uint64_t>();
     if(reference.uid != 0)
         scene->entityLibrary[entity]->is_dirty = true;
 
@@ -66,11 +69,11 @@ void Canella::SerializeMeshAsset(nlohmann::json &data, entt::registry &registry,
 {
     registry.emplace<ModelAssetComponent>(entity);
     const auto view = registry.view<ModelAssetComponent>();
-    auto &[model,source,instance_src, isStatic,instance_count] = view.get<ModelAssetComponent>(entity);
+    auto &[model,source,instance_src,material_name, isStatic,instance_count] = view.get<ModelAssetComponent>(entity);
     source = data["Source"].get<std::string>();
     instance_src = data["InstanceData"].get<std::string>();
     isStatic = data["Static"].get<bool>();
-    model.instance_count = data["InstanceCount"].get<std::uint32_t>();
+    model.instance_count = data["InstanceCount"].get<std::int32_t>();
 
 
     // Pass the model matrix pointer to mesh comming from TransformComponent
@@ -108,14 +111,9 @@ void Canella::DeserializeTransform(nlohmann::json &data, TransformComponent &tra
 
 
     data["References"][0]["Type"] = stringify(ComponentType::Transform);
-    if(transform_component.parent == nullptr)
-    {
-        data["References"][0]["UUID"] =0;
-    }
-    else
-    {
-        data["References"][0]["Entity"] =  transform_component.parent->owner->uuid;
-    }
+    data["References"][0]["Entity"] =  transform_component.parent->owner->uuid;
+
+
 
 }
 
@@ -134,8 +132,9 @@ void Canella::DeserializeMeshAsset(nlohmann::json &data, ModelAssetComponent &me
 {
     data["type"] = "MeshAsset";
     data["Source"] = mesh_asset_component.source;
-    data["InstanceCount"] = mesh_asset_component.instance_count ;
+    data["InstanceCount"] =1;
     data["Static"] =  mesh_asset_component.isStatic;
+    data["InstanceData"] =  mesh_asset_component.instance_src;
     data["UID"] = 0;
 
 }
@@ -148,10 +147,18 @@ void Canella::DeserializeCameraEditor(nlohmann::json &data, CameraEditor &camera
 
 void Canella::ResolveReferencesInTransform( Canella::TransformComponent &transform_component,
                                             std::shared_ptr<Scene> scene ) {
+    if(transform_component.reference.uid == 0)
+    {
+        auto& root_transform = scene->root->get_component<TransformComponent>();
+        transform_component.parent = &root_transform;
 
-    if(transform_component.reference.uid == 0) return;
+        root_transform.children.push_back(&transform_component);
+        return;
+    }
     auto& referenced_entity = scene->get_entity_by_uuid(transform_component.reference.uid);
-    transform_component.parent  = &referenced_entity.get_component<TransformComponent>();
+    auto& referenced_transform = referenced_entity.get_component<TransformComponent>();
+    transform_component.parent  = &referenced_transform;
+    referenced_transform.children.push_back(&transform_component);
 }
 
 /*

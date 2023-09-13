@@ -15,7 +15,7 @@ void Application::load(nlohmann::json &config)
     setup_project_folder(config);
     scene = std::make_shared<Scene>(assets_folder, render);
     // serialize scene
-    serializer.Serialize(scene, config["Scenes"]);
+    serializer.Serialize(scene, config["Scenes"],assets_folder);
     scene->init_systems();
 }
 
@@ -25,11 +25,6 @@ void Application::setup_project_folder(nlohmann::json &data)
     asset_system.set_renderer(render);
     assets_folder = data["Assets"].get<std::string>();
     asset_system.set_project_src(assets_folder.c_str());
-}
-
-void Canella::Application::submit_loaded_model(ModelMesh &mesh)
-{
-    render->enqueue_drawable(mesh);
 }
 
 void Application::run()
@@ -42,14 +37,9 @@ void Application::run()
     application_time.last_time_frame = time;
 }
 
-void Application::close()
-{
-}
-
 Application::~Application()
 {
     JobSystem::stop();
-    close();
 }
 
 void Application::Deserialize() {

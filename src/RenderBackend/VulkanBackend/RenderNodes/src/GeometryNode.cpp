@@ -70,8 +70,10 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
     //Move attachemnts layout to optimal layouts
     VkImageMemoryBarrier renderBeginBarriers[] =
     {
-    imageBarrier(main_color->image, 0, 0, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,VK_IMAGE_ASPECT_COLOR_BIT),
-    imageBarrier(main_depth->image, 0, 0, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_IMAGE_ASPECT_DEPTH_BIT),
+            image_barrier( main_color->image, 0, 0, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                           VK_IMAGE_ASPECT_COLOR_BIT ),
+            image_barrier( main_depth->image, 0, 0, VK_IMAGE_LAYOUT_UNDEFINED,
+                           VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_IMAGE_ASPECT_DEPTH_BIT ),
     };
     vkCmdPipelineBarrier(command_buffer, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT, VK_DEPENDENCY_BY_REGION_BIT, 0, 0, 0, 0, 2, renderBeginBarriers);
 
@@ -88,7 +90,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
         if(clear)
         {
             clear_values.resize(2);
-            clear_values[0].color = {{NORMALIZE_COLOR(25), NORMALIZE_COLOR(33), NORMALIZE_COLOR(33), 1.0f}};
+            clear_values[0].color = {{NORMALIZE_COLOR(13), NORMALIZE_COLOR(13), NORMALIZE_COLOR(33), 1.0f}};
             clear_values[1].depthStencil = {1.f,0};
         }
 
@@ -152,8 +154,12 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
     auto pyramid = resource_manager.get_image_cached(hiz_depth.pyramidImage);
     VkImageMemoryBarrier copyBarriers[] =
                  {
-                         imageBarrier(main_color->image, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,VK_IMAGE_ASPECT_COLOR_BIT),
-                         imageBarrier(swapchain.get_images()[index], 0, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,VK_IMAGE_ASPECT_COLOR_BIT),
+                         image_barrier( main_color->image, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+                                        VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                                        VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_ASPECT_COLOR_BIT ),
+                         image_barrier( swapchain.get_images()[index], 0, VK_ACCESS_TRANSFER_WRITE_BIT,
+                                        VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                        VK_IMAGE_ASPECT_COLOR_BIT ),
                  };
 
     vkCmdPipelineBarrier(command_buffer, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_DEPENDENCY_BY_REGION_BIT, 0, 0, 0, 0, 2,copyBarriers);
@@ -191,7 +197,9 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
         vkCmdCopyImage(command_buffer, main_color->image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, swapchain.get_images()[index], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyRegion);
     }
 
-    VkImageMemoryBarrier presentBarrier = imageBarrier(swapchain.get_images()[index], VK_ACCESS_TRANSFER_WRITE_BIT, 0, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,VK_IMAGE_ASPECT_COLOR_BIT);
+    VkImageMemoryBarrier presentBarrier = image_barrier( swapchain.get_images()[index], VK_ACCESS_TRANSFER_WRITE_BIT, 0,
+                                                         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                                         VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_ASPECT_COLOR_BIT );
     vkCmdPipelineBarrier(command_buffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_DEPENDENCY_BY_REGION_BIT, 0, 0, 0, 0, 1, &presentBarrier);
     vkGetQueryPoolResults(device.getLogicalDevice(),queries.timestamp_pool,0,queries.time_stamps.size(),sizeof(uint64_t) * queries.time_stamps.size(),queries.time_stamps.data(),sizeof(uint64_t),VK_QUERY_RESULT_64_BIT);
 
@@ -257,7 +265,9 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::compute_frustum_culling
     {
         auto& buffer_handle = occlusion_buffer->getBufferHandle();
         vkCmdFillBuffer(command, buffer_handle, 0, 4 * min_size, 0);
-        VkBufferMemoryBarrier fillBarrier = VulkanBackend::bufferBarrier(buffer_handle, VK_ACCESS_TRANSFER_WRITE_BIT,VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT);
+        VkBufferMemoryBarrier fillBarrier = VulkanBackend::buffer_barrier( buffer_handle, VK_ACCESS_TRANSFER_WRITE_BIT,
+                                                                           VK_ACCESS_SHADER_READ_BIT |
+                                                                           VK_ACCESS_SHADER_WRITE_BIT );
         vkCmdPipelineBarrier(command, VK_PIPELINE_STAGE_TRANSFER_BIT,
                              VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, 0, 0,
                              0, 1, &fillBarrier, 0,
@@ -270,12 +280,17 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::compute_frustum_culling
     {
         auto count_buffer = resource_manager.get_buffer_cached(command_count_buffers[i]);
 
-        VkBufferMemoryBarrier prefill_barrier = bufferBarrier(count_buffer->getBufferHandle(), VK_ACCESS_INDIRECT_COMMAND_READ_BIT, VK_ACCESS_TRANSFER_WRITE_BIT);
+        VkBufferMemoryBarrier prefill_barrier = buffer_barrier( count_buffer->getBufferHandle(),
+                                                                VK_ACCESS_INDIRECT_COMMAND_READ_BIT,
+                                                                VK_ACCESS_TRANSFER_WRITE_BIT );
         vkCmdPipelineBarrier(command, VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, 0, 1, &prefill_barrier, 0, 0);
 
         vkCmdFillBuffer(command, count_buffer->getBufferHandle(), 0, sizeof(uint32_t), 0);
 
-        VkBufferMemoryBarrier fill_barrier = VulkanBackend::bufferBarrier(count_buffer->getBufferHandle(), VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT);
+        VkBufferMemoryBarrier fill_barrier = VulkanBackend::buffer_barrier( count_buffer->getBufferHandle(),
+                                                                            VK_ACCESS_TRANSFER_WRITE_BIT,
+                                                                            VK_ACCESS_SHADER_READ_BIT |
+                                                                            VK_ACCESS_SHADER_WRITE_BIT );
         vkCmdPipelineBarrier(command, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, 0, 0, 0, 1, &fill_barrier, 0, 0);
 
         auto processed_buffer = resource_manager.get_buffer_cached(draw_indirect_buffers[i]);
@@ -285,7 +300,9 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::compute_frustum_culling
         vkCmdBindPipeline(command, VK_PIPELINE_BIND_POINT_COMPUTE, compute_pipeline);
         vkCmdDispatch(command, uint32_t((drawables[i].meshes.size()*drawables[i].instance_count+ 31) / 32), 1, 1);
 
-        VkBufferMemoryBarrier cull = VulkanBackend::bufferBarrier(processed_buffer->getBufferHandle(), VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_INDIRECT_COMMAND_READ_BIT);
+        VkBufferMemoryBarrier cull = VulkanBackend::buffer_barrier( processed_buffer->getBufferHandle(),
+                                                                    VK_ACCESS_SHADER_WRITE_BIT,
+                                                                    VK_ACCESS_INDIRECT_COMMAND_READ_BIT );
         vkCmdPipelineBarrier(command, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT, 0, 0, 0, 1, &cull, 0, 0);
     }
 }
@@ -313,13 +330,18 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute_occlusion_culli
     {
         auto count_buffer = resource_manager.get_buffer_cached(command_count_buffers[i]);
         //wait for last Write to finish (There is 2 render passes for drawing early and late)
-        VkBufferMemoryBarrier prefill_barrier = bufferBarrier(count_buffer->getBufferHandle(), VK_ACCESS_INDIRECT_COMMAND_READ_BIT, VK_ACCESS_TRANSFER_WRITE_BIT);
+        VkBufferMemoryBarrier prefill_barrier = buffer_barrier( count_buffer->getBufferHandle(),
+                                                                VK_ACCESS_INDIRECT_COMMAND_READ_BIT,
+                                                                VK_ACCESS_TRANSFER_WRITE_BIT );
         vkCmdPipelineBarrier(command, VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, 0, 1, &prefill_barrier, 0, 0);
         //Fill the count buffer with 0
         vkCmdFillBuffer(command, count_buffer->getBufferHandle(), 0, sizeof(uint32_t), 0);
 
         //Wait for FillBuffer to Finish
-        VkBufferMemoryBarrier fill_barrier = VulkanBackend::bufferBarrier(count_buffer->getBufferHandle(),VK_ACCESS_TRANSFER_WRITE_BIT,VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT);
+        VkBufferMemoryBarrier fill_barrier = VulkanBackend::buffer_barrier( count_buffer->getBufferHandle(),
+                                                                            VK_ACCESS_TRANSFER_WRITE_BIT,
+                                                                            VK_ACCESS_SHADER_READ_BIT |
+                                                                            VK_ACCESS_SHADER_WRITE_BIT );
         vkCmdPipelineBarrier(command,VK_PIPELINE_STAGE_TRANSFER_BIT,VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,0, 0, 0,1,&fill_barrier, 0,0);
 
         //Dispatch the Occlusion Culling pass2
@@ -333,8 +355,10 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute_occlusion_culli
         auto occlusion_buffer = resource_manager.get_buffer_cached(occlusion_visibility_buffer[image_index]);
         auto processed_buffer = resource_manager.get_buffer_cached(draw_indirect_buffers[i]);
         VkBufferMemoryBarrier cull [] =
-        { VulkanBackend::bufferBarrier( processed_buffer->getBufferHandle(), VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_INDIRECT_COMMAND_READ_BIT ),
-          VulkanBackend::bufferBarrier( occlusion_buffer->getBufferHandle(), VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_INDIRECT_COMMAND_READ_BIT )
+        { VulkanBackend::buffer_barrier( processed_buffer->getBufferHandle(), VK_ACCESS_SHADER_WRITE_BIT,
+                                         VK_ACCESS_INDIRECT_COMMAND_READ_BIT ),
+          VulkanBackend::buffer_barrier( occlusion_buffer->getBufferHandle(), VK_ACCESS_SHADER_WRITE_BIT,
+                                         VK_ACCESS_INDIRECT_COMMAND_READ_BIT )
         };
         vkCmdPipelineBarrier(command, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT,0, 0, 0,2, &cull[0],0, 0);
     }
@@ -416,22 +440,8 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::create_resource_buffers
         auto total_geometry_count = 0;
         std::for_each(drawables.begin(),drawables.end(),[&total_geometry_count](auto& d)
         {total_geometry_count +=d.meshes.size() * d.instance_count;});
-
         std::vector<StaticMeshData> mesh_data(total_geometry_count);
- /*       auto generate_points = [&](const uint32_t draw_count)
-        {
-            std::vector<glm::vec3> points(draw_count);
-            auto sqrt = std::floor(std::sqrt(drawable.instance_count));
-            auto i = 0;
-            auto res = 4.0;
-            for(auto  x = 0; x < sqrt; x++)
-                for (auto z = 0 ; z < sqrt ; ++z)
-                {
-                    points[i] = (glm::vec3(x * res, 0,z * res));
-                    i++;
-                }
-            return points;
-        };*/
+
        // auto points = generate_points(drawable.instance_count * drawable.meshes.size());
         auto ind  = 0;
         for(auto  rep = 0 ; rep < drawable.instance_count ; ++rep)
@@ -640,8 +650,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::build_hierarchical_dept
         if(hiz_depth.pyramidImage)
             for(auto i = 0 ; i < hiz_depth.mip_count; ++i)
                 vkDestroyImageView(device->getLogicalDevice(),hiz_depth.mip_views[i],device->getAllocator());
- /*       vkDestroySampler( device->getLogicalDevice(), hiz_depth.max_sampler, device->getAllocator());
-        vkDestroySampler(device->getLogicalDevice(),hiz_depth.regular_sampler,device->getAllocator());*/
+
         vkDestroyDescriptorUpdateTemplate(device->getLogicalDevice(), hiz_depth.updateTemplate, device->getAllocator());
     }
     //Create Sampler
@@ -749,8 +758,11 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::update_hiz_chain( Canel
 
     VkImageMemoryBarrier read_barriers[] =
      {
-     imageBarrier(pyramid_image->image,0,VK_ACCESS_SHADER_READ_BIT,VK_IMAGE_LAYOUT_UNDEFINED,VK_IMAGE_LAYOUT_GENERAL,VK_IMAGE_ASPECT_COLOR_BIT),
-     imageBarrier(main_depth_target->image,0,VK_ACCESS_SHADER_READ_BIT,VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,VK_IMAGE_ASPECT_DEPTH_BIT),
+             image_barrier( pyramid_image->image, 0, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_LAYOUT_UNDEFINED,
+                            VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_ASPECT_COLOR_BIT ),
+             image_barrier( main_depth_target->image, 0, VK_ACCESS_SHADER_READ_BIT,
+                            VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                            VK_IMAGE_ASPECT_DEPTH_BIT ),
      };
 
     vkCmdPipelineBarrier(command,VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,VK_DEPENDENCY_BY_REGION_BIT,0, 0, 0,0,2, read_barriers);
@@ -799,11 +811,18 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::update_hiz_chain( Canel
         vkCmdDispatch(command,group_size(current_width),group_size(current_height),1);
 
         //Wait for the image to be written in the computue shader
-        VkImageMemoryBarrier wait_barrier = imageBarrier(pyramid_image->image,VK_ACCESS_SHADER_WRITE_BIT,VK_ACCESS_SHADER_READ_BIT,VK_IMAGE_LAYOUT_GENERAL,VK_IMAGE_LAYOUT_GENERAL,VK_IMAGE_ASPECT_COLOR_BIT);
+        VkImageMemoryBarrier wait_barrier = image_barrier( pyramid_image->image, VK_ACCESS_SHADER_WRITE_BIT,
+                                                           VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_LAYOUT_GENERAL,
+                                                           VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_ASPECT_COLOR_BIT );
         vkCmdPipelineBarrier(command,VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,VK_DEPENDENCY_BY_REGION_BIT,0,0, 0,0, 1,&wait_barrier);
     }
     //Reset the image layout
-    VkImageMemoryBarrier depthWriteBarrier = imageBarrier(main_depth_target->image,VK_ACCESS_SHADER_READ_BIT,VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,VK_IMAGE_ASPECT_DEPTH_BIT);
+    VkImageMemoryBarrier depthWriteBarrier = image_barrier( main_depth_target->image, VK_ACCESS_SHADER_READ_BIT,
+                                                            VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT |
+                                                            VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+                                                            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                                                            VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                                                            VK_IMAGE_ASPECT_DEPTH_BIT );
     vkCmdPipelineBarrier(command,VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,VK_DEPENDENCY_BY_REGION_BIT,0, 0,0, 0,1, &depthWriteBarrier);
 
 }

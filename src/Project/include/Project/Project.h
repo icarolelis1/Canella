@@ -25,7 +25,6 @@ namespace Canella
         ~Application();
         void load(nlohmann::json &config);
         void run();
-        void close();
         std::string assets_folder;
         std::shared_ptr<Canella::Scene> scene;
         void Deserialize();

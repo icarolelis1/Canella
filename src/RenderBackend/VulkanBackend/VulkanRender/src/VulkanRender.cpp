@@ -289,6 +289,8 @@ void VulkanRender::destroy()
 {
     vkDeviceWaitIdle(device.getLogicalDevice());
     resources_manager.async_loader.destroy();
+    resources_manager.async_loader2.destroy();
+    resources_manager.resource_loader_pool.destroy(&device);
     transfer_pool.destroy(&device);
     command_pool.destroy(&device);
     free(instance);
@@ -301,7 +303,8 @@ void VulkanRender::destroy()
     destroy_pipeline_layouts();
     destroy_pipelines();
     descriptorPool.destroy();
-    resources_manager.destroy_resources();
+    resources_manager.destroy_non_persistent_resources();
+    resources_manager.destroy_texture_resources();
     device.destroyDevice();
 
     Canella::Logger::Info("Vulkan Renderer Destroyed!");
@@ -361,7 +364,7 @@ void VulkanRender::setup_internal_renderer_events()
         // Destroy Objects
         renderpassManager.destroy_renderpasses();
         swapChain.destroy_swapchain(device);
-        resources_manager.destroy_resources();
+        resources_manager.destroy_non_persistent_resources();
         // resources_manager.async_loader.destroy();
         // resources_manager.build();
         global_buffers.clear();

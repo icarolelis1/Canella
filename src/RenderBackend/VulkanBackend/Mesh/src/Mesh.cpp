@@ -417,15 +417,13 @@ std::array<glm::vec2,2> MeshProcessing::project_box_from_sphere( glm::mat4* mode
 
     vec4 eye_pos = vec4(view[3]);
     auto m = *model_matrix;
-    auto center = volume.center + vec3(m[3]);
+    auto center = volume.center ;
     vec3 sphere_to_eye = normalize(center - vec3(eye_pos));
 
     vec3 camera_up    =  normalize(vec3(view[1]));
     vec3 camera_front =  normalize(vec3(view[2]));
     vec3 camera_right =  normalize(vec3(view[0]));
-
-    //math mytery
-    //float f_radius =  distance_to_sphere * tan(asin(radius / distance_to_sphere));;
+    auto distance_to_sphere = glm::distance(glm::vec3(eye_pos),center);
     float f_radius =  volume.radius * max(max(max(m[1][1],m[0][0]),m[2][2]),m[3][3]);
 
     vec3 v_up_radius    = camera_up * f_radius  ;
@@ -455,8 +453,8 @@ std::array<glm::vec2,2> MeshProcessing::project_box_from_sphere( glm::mat4* mode
     auto x2_window = (ndc_corner_3.x * (float)width/2.0f) + width/2.0f;
     auto y2_window = (ndc_corner_3.y * (float)height/2.0f) + height/2.0f;
     auto result =std::array<vec2,2>();
-    result[1] = vec2(x1_window,y1_window);
-    result[0] = vec2(x2_window,y2_window);
+    result[0] = vec2(x1_window,y1_window);
+    result[1] = vec2(x2_window,y2_window);
     return result;
 }
 

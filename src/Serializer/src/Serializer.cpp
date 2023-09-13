@@ -5,23 +5,52 @@
 
 #include "EditorComponents/EditorComponents.h"
 
-void Canella::Serializer::Serialize(std::weak_ptr<Scene> scene, const std::string &projectPath)
+void Canella::Serializer::Serialize(std::weak_ptr<Scene> scene, const std::string &scenes_path,const std::string &assets_path)
 {
     if (const auto sceneRef = scene.lock())
     {
-        m_ProjectFolder = projectPath;
-        const auto project_path = std::filesystem::absolute(projectPath);
+        m_ProjectFolder = scenes_path;
+        const auto project_path = std::filesystem::absolute(scenes_path);
         for (const auto &file : std::filesystem::directory_iterator(project_path))
         {
             std::string file_name = file.path().filename().string();
             std::string extension = file.path().extension().string();
             if (file_name == "scene.json")
-                LoadEntities(sceneRef, projectPath+ "//" + file_name);
+                LoadEntities(sceneRef, scenes_path+ "//" + file_name);
         }
     }
-    else
-        Logger::Error("Invalid scene for serialization");
+
+    LoadMaterialData(scene,assets_path);
+
 }
+
+void Canella::Serializer::LoadMaterialData( std::weak_ptr<Scene> scene,const std::string &projectPath ) {
+
+    const auto project_path = std::filesystem::absolute(projectPath);
+    auto filepath = project_path.string() +"\\" + "Materials";
+
+    for(const auto& p: std::filesystem::recursive_directory_iterator(filepath)) {
+        auto file = p.path().string();
+        auto scene_locked = scene.lock();
+        std::fstream   f( file );
+        nlohmann::json material_meta;
+        f >> material_meta;
+
+         MaterialDescription material;
+         material.pipeline = material_meta["Pipeline"];
+         material.name = material_meta["Name"];
+
+         for(auto& texture_slot : material_meta["TextureSlots"])
+         {
+             TextureSlot slot;
+             slot.texture_source = texture_slot["TextureSource"];
+             slot.semantic = texture_slot["SemanticSlot"];
+             material.texture_slots.push_back( slot);
+         }
+         scene_locked->material_library[material_meta["Name"]] = material;
+    }
+}
+
 
 void Canella::Serializer::Deserialize(std::weak_ptr<Scene> scene)
 {
@@ -39,20 +68,10 @@ void Canella::Serializer::LoadEntities(std::shared_ptr<Scene> scene, const std::
     {
         auto uuid  = entity_meta["UUID"].get<std::uint64_t>();
         //todo fix this weird if statement
-        if(uuid == -1)
-        {
-            Entity& created_entity = scene->CreateEntity();
-            created_entity.uuid = uuid;
-            created_entity.name = entity_meta["Name"].get<std::string>();
-            LoadComponents(scene, created_entity.raw_id(), entity_meta["Components"]);
-        }
-        else
-        {
-            Entity& created_entity = scene->CreateEntity(uuid);
-            created_entity.uuid = uuid;
-            created_entity.name = entity_meta["Name"].get<std::string>();
-            LoadComponents(scene, created_entity.raw_id(), entity_meta["Components"]);
-        }
+        Entity& created_entity = scene->CreateEntity(uuid);
+        created_entity.uuid = uuid;
+        created_entity.name = entity_meta["Name"].get<std::string>();
+        LoadComponents(scene, created_entity.raw_id(), entity_meta["Components"]);
     }
 
     resolve_references(scene);
@@ -94,6 +113,11 @@ void Canella::Serializer::DeserializeEntities(
     auto iterator = scene->entityLibrary.begin();
     while(iterator != scene->entityLibrary.end())
     {
+        if(iterator->second->name == "Scene_Root")
+        {
+            ++iterator;
+            continue;
+        }
         nlohmann::json entity;
         entity["Name"] = iterator->second->name;
         entity["UUID"] = iterator->second->uuid;
@@ -144,15 +168,20 @@ void Canella::Serializer::resolve_references( std::shared_ptr<Scene> scene ) {
     auto iterator = scene->entityLibrary.begin();
     while(iterator != scene->entityLibrary.end())
     {
-        auto entity = iterator->second;
-        if(entity->is_dirty)
+        //Root  has no parent... so just skip it
+        if(iterator->second->name == "Scene_Root")
         {
-            auto view = scene->registry.view<TransformComponent,CameraComponent,ModelAssetComponent,Behavior>();
-            auto& transform_component = entity->get_component<TransformComponent>();
-            ResolveReferencesInTransform(transform_component,scene);
+            ++iterator;
+            continue;
         }
+
+        auto entity = iterator->second;
+        auto view = scene->registry.view<TransformComponent,CameraComponent,ModelAssetComponent,Behavior>();
+        auto& transform_component = entity->get_component<TransformComponent>();
+        ResolveReferencesInTransform(transform_component,scene);
         ++iterator;
     }
 
 }
+
 

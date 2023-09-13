@@ -82,7 +82,7 @@ void main()
     model = specialize_mesh.model_matrix;
 
   vec4 cone_apex = model * vec4(bound.cone_apex.xyz,1);
-  vec3 center = bound.center.xyz +  model[3].xyz;
+  vec3 center = vec3(model * vec4(bound.center.xyz,1.0));
   float radius = bound.cone_cutoff.y;
   vec4 cone_axis = normalize(vec4((mat3(model)) * bound.cone_axis.xyz ,1.0));
   bool accept = !cone_cull(center,radius, cone_axis.xyz,bound.cone_cutoff.x,ubo.eye.xyz);

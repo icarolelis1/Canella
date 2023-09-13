@@ -1,0 +1,13 @@
+{
+  "Materials": [
+    {
+      "Pipeline": "MeshShaderPipeline",
+      "TextureSlots": [
+        {
+          "TextureSource" : "dasdsad.png",
+          "SemanticSlot" : "Albedo"
+        }
+      ]
+    }
+  ]
+}

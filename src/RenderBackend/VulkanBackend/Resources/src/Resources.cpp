@@ -1,7 +1,8 @@
 #include "Resources/Resources.h"
 #include "DescriptorSet/DescriptorSet.h"
 #include "CanellaUtility/CanellaUtility.h"
-
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 using namespace Canella::RenderSystem::VulkanBackend;
 
 //Utility
@@ -32,7 +33,7 @@ VkSampler Canella::RenderSystem::VulkanBackend::create_sampler(VkDevice device, 
     return sampler;
 }
 
-VkBufferMemoryBarrier Canella::RenderSystem::VulkanBackend::bufferBarrier(VkBuffer buffer, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask)
+VkBufferMemoryBarrier Canella::RenderSystem::VulkanBackend::buffer_barrier( VkBuffer buffer, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask)
 {
     VkBufferMemoryBarrier result = {VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER};
 
@@ -46,7 +47,7 @@ VkBufferMemoryBarrier Canella::RenderSystem::VulkanBackend::bufferBarrier(VkBuff
     return result;
 }
 
-VkImageMemoryBarrier Canella::RenderSystem::VulkanBackend::imageBarrier(VkImage image, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkImageLayout oldLayout, VkImageLayout newLayout, VkImageAspectFlags aspectMask)
+VkImageMemoryBarrier Canella::RenderSystem::VulkanBackend::image_barrier( VkImage image, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkImageLayout oldLayout, VkImageLayout newLayout, VkImageAspectFlags aspectMask)
 {
     VkImageMemoryBarrier result = { VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER };
 
@@ -191,10 +192,16 @@ void ResourcesManager::copy_buffer_to(VkCommandBuffer command_buffer, const RefB
     vkQueueWaitIdle(queue);
 }
 
-ResourcesManager::ResourcesManager(Device *_device) : device(_device), async_loader(_device) {}
+ResourcesManager::ResourcesManager(Device *_device) : device(_device), async_loader(_device), async_loader2(_device) {}
 
 // Build the async_loader creating the synchronization obje
-void ResourcesManager::build() { async_loader.build(); }
+void ResourcesManager::build() {
+    resource_loader_pool.build(device,POOL_TYPE::GRAPHICS,VK_COMMAND_POOL_CREATE_TRANSIENT_BIT);
+    async_loader.build();
+    async_loader2.build();
+    vkResetFences(device->getLogicalDevice(), 1, &async_loader2.fence);
+
+}
 
 ResourceAccessor ResourcesManager::create_buffer(size_t size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
 {
@@ -218,12 +225,99 @@ ResourceAccessor ResourcesManager::create_image(
         uint32_t num_mips,
         VkImageAspectFlags aspectFlags,
         uint32_t arrayLayers,
-        VkSampleCountFlagBits samples)
+        VkSampleCountFlagBits samples,
+        bool store_in_textures_cache)
 {
     auto unique_resource_id = uuid();
-    resource_cache[unique_resource_id] = std::make_shared<Image>(device,width,height,format,tilling,usage,properties,num_mips,aspectFlags);
-
+    if(!store_in_textures_cache)
+        resource_cache[unique_resource_id] = std::make_shared<Image>(device,width,height,format,tilling,usage,properties,num_mips,aspectFlags);
+    else
+        textures_cache[unique_resource_id] = std::make_shared<Image>(device,width,height,format,tilling,usage,properties,num_mips,aspectFlags);
     return unique_resource_id;
+}
+
+
+ResourceAccessor ResourcesManager::create_texture( const std::string &file_path, Device *device, VkFormat format )
+{
+
+    uint32_t num_mips;
+    int      tex_width, tex_height, tex_channels;
+    stbi_uc* pixels = stbi_load(file_path.c_str(), &tex_width, &tex_height, &tex_channels, STBI_rgb_alpha);
+
+    //Generate mips
+    if(true)
+    {
+        const uint32_t maxMips = static_cast<uint32_t>(std::floor(std::log2(std::max(tex_width, tex_height)))) + 1;
+        num_mips = maxMips < 10 ? maxMips : 10;
+    }
+
+    if (!pixels) {
+        Canella::Logger::Error("Failed to load texture at source path %s",file_path.c_str());
+        return 0;
+    }
+
+    VkDeviceSize image_size = tex_width * tex_height * 4;
+    {
+        std::unique_lock<std::mutex> m( async_loader.pool_mutex );
+        auto resource_accessor = create_image( device, tex_width, tex_height, format, VK_IMAGE_TILING_OPTIMAL,
+                                      VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+                                      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 0, num_mips,
+                                      VK_IMAGE_ASPECT_COLOR_BIT, 1,
+                                      VK_SAMPLE_COUNT_1_BIT,true);
+
+
+        auto  staging_buffer = std::make_shared<Buffer>( device, image_size,
+                                                                                VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                                                                                VK_MEMORY_PROPERTY_HOST_COHERENT_BIT |
+                                                                                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
+        void *data;
+        vkMapMemory( device->getLogicalDevice(), staging_buffer->vk_deviceMemory, 0, image_size, 0, &data );
+        memcpy( data, pixels, static_cast<size_t>(image_size));
+        vkUnmapMemory( device->getLogicalDevice(), staging_buffer->vk_deviceMemory );
+
+        auto image = std::static_pointer_cast<Image>(textures_cache[resource_accessor]);
+        auto command_buffer = resource_loader_pool.requestCommandBuffer(device, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+
+        resource_loader_pool.begin_command_buffer(device,command_buffer,true);
+
+        auto layout_barrier = image_barrier( image->image, 0, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED,
+                       VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_ASPECT_COLOR_BIT );
+
+        vkCmdPipelineBarrier(command_buffer,VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+            VK_PIPELINE_STAGE_TRANSFER_BIT,VK_DEPENDENCY_BY_REGION_BIT,0,
+            0, 0,0,1,
+            &layout_barrier);
+
+        VkBufferImageCopy region = {};
+        region.bufferOffset = 0;
+        region.bufferRowLength = 0;
+        region.bufferImageHeight = 0;
+        region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        region.imageSubresource.mipLevel = 0;
+        region.imageSubresource.baseArrayLayer = 0;
+        region.imageSubresource.layerCount = 1;
+        region.imageOffset = { 0, 0, 0 };
+
+        region.imageExtent = {
+                static_cast<uint32_t>(tex_width),
+                static_cast<uint32_t>(tex_height),
+                1
+        };
+        vkCmdCopyBufferToImage(command_buffer, staging_buffer->getBufferHandle(), image->image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+        resource_loader_pool.endCommandBuffer(command_buffer);
+        VkSubmitInfo submitInfo = {};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = &command_buffer;
+
+        {
+            std::unique_lock<std::mutex> lock(device->get_queue_mutex(1));
+            vkQueueSubmit(device->getGraphicsQueueHandle(), 1, &submitInfo,  async_loader2.fence);
+        }
+        vkWaitForFences(device->getLogicalDevice(), 1, &async_loader2.fence, VK_TRUE, UINT64_MAX);
+        vkResetFences(device->getLogicalDevice(), 1, &async_loader2.fence);
+    }
+    return 0;
 }
 
 RefBuffer ResourcesManager::get_buffer_cached(uint64_t uuid)
@@ -274,12 +368,28 @@ uint64_t ResourcesManager::write_descriptor_sets(
     return unique_id;
 }
 
-void ResourcesManager::destroy_resources()
+void ResourcesManager::destroy_non_persistent_resources()
 {
     auto it = resource_cache.begin();
     for (auto it = resource_cache.begin(); it != resource_cache.end(); ++it)
-        it->second.reset();
+    {
+        if(it->second->is_persistent == false)
+            it->second.reset();
+    }
+
     resource_cache.clear();
+}
+
+void ResourcesManager::destroy_texture_resources() {
+
+    auto it = textures_cache.begin();
+    for (auto it = textures_cache.begin(); it != textures_cache.end(); ++it)
+    {
+        if(it->second->is_persistent == true)
+            it->second.reset();
+    }
+
+    textures_cache.clear();
 }
 
 Image::Image(Device *_device,

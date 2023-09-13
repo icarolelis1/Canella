@@ -72,6 +72,9 @@ namespace Canella
         void render_editor_gui(VkCommandBuffer &, uint32_t);
         void setup_imgui();
         void display_graphics_status();
+        /**
+          * @brief Displays the Bounding Box for each mesh/instance project in 2D coordinates used for Occlusion Culling.
+        */
         void display_bounding_boxes();
         void bind_shortcuts();
         bool game_mode = true;

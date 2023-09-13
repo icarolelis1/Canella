@@ -1,17 +1,17 @@
-#include "AsynchronousLoader/AsynchronousLoader.h"
+#include "AsynchronousLoader/SyncStructure.h"
 
 using namespace Canella::RenderSystem::VulkanBackend;
 
-AsynchronousLoader::AsynchronousLoader(Device *_device) : device(_device) {}
+SyncStructure::SyncStructure( Device *_device) : device( _device) {}
 
-void AsynchronousLoader::destroy()
+void SyncStructure::destroy()
 {
     vkDestroySemaphore(device->getLogicalDevice(), semaphore, device->getAllocator());
     vkDestroySemaphore(device->getLogicalDevice(), wait_semaphore, device->getAllocator());
     vkDestroyFence(device->getLogicalDevice(), fence, device->getAllocator());
 }
 
-void AsynchronousLoader::build()
+void SyncStructure::build()
 {
     VkSemaphoreCreateInfo semaphore_info{};
     semaphore_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;

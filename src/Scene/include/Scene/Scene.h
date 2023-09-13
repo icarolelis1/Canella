@@ -12,8 +12,10 @@
 namespace Canella {
     class Render;
     class Entity;
-    class CameraComponent;
+    struct CameraComponent;
+    struct MaterialDescription;
     using EntityLibrary = std::unordered_map<entt::entity, std::shared_ptr<Entity>>;
+    using MaterialLibrary = std::unordered_map<std::string, MaterialDescription>;
     class Scene : public std::enable_shared_from_this<Scene> {
     public:
         /**
@@ -44,10 +46,21 @@ namespace Canella {
 
         Entity& get_entity_by_uuid(uint64_t uuid);
 
+        /**
+         * @brief Creates an entity parented by the root node
+         * @return
+         */
+        Entity& create_root_parented_entity();
+
+        std::unique_ptr<Canella::Entity> root;
         CameraComponent * main_camera;
         entt::registry registry;
         EntityLibrary  entityLibrary;
+        MaterialLibrary material_library;
     private:
+
+        bool init_root();
+
         std::vector<uint32_t> static_geometry;
         Canella::Render* render;
         std::string asset_folder;
