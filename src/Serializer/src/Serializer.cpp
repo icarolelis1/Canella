@@ -90,7 +90,7 @@ void Canella::Serializer::LoadComponents(
         else if(type == "Camera")
             SerializeCamera( component_data, scene->registry, entity);
         else if(type == "MeshAsset")
-            SerializeMeshAsset( component_data, scene->registry, entity);
+            SerializeMeshAsset( component_data, scene, entity);
         else if( type == "CameraEditor")
             SerializeCameraEditor( component_data, scene->registry, entity);
     }

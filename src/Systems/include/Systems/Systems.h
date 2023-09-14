@@ -8,16 +8,6 @@
 #include <memory>
 namespace Canella
 {
-
-    void resolve_component_referencies(Scene *const scene);
-
-    /**
-     * @brief load all the mesh assets from the scene
-     * @param assets_folder subfolder inside project that contains the assets
-     * @param scene the scene containing the meshes
-     */
-    void load_meshes_from_scene( const std::string &assetsFolder, Scene *const scene, Render *p_render );
-
     CameraComponent* get_main_camera(Scene *const scene);
     /**
  * \brief get a reference for all the Meshes in the scene
@@ -32,10 +22,6 @@ namespace Canella
      */
     void load_initial_materials_on_scene( Scene *const scene );
 
-    /**
-     * @brief Load all the materials referenced in the assets/materials folder
-     */
-    void load_initial_materials_on_scene();
     /**
      * @brief update all the transforms calculating the model matrix
      * @param scene the scene containing the transforms
@@ -53,9 +39,6 @@ namespace Canella
      * @param scene
      */
     void start_scripts(Scene *scene);
-
-
     class GlfwWindow;
-    void update_camera(CameraComponent& camera_component,GlfwWindow& window);
 }
 #endif
