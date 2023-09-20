@@ -76,9 +76,7 @@ target_link_directories(${PROJECT_NAME} PUBLIC $ENV{VULKAN_SDK}/Lib ${GLFW_LIB} 
 #Setup Imgui
 file (GLOB IMGUI_SRC
         "src/ImGUI/*.cpp")
-add_library(
-        ImGUI
-        ${IMGUI_SRC})
+add_library(ImGUI  ${IMGUI_SRC} src/ImGUI/ImCoolbar.cpp)
 
 include_directories(${PROJECT_NAME} PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/nlhoman

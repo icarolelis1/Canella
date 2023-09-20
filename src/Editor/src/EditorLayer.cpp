@@ -1,8 +1,8 @@
 #include "Editor/EditorLayer.h"
+#include "ImCoolbar.h"
 #include "Window/Window.h"
 #include "Components/Components.h"
 #include "Editor/Inspector.h"
-
 void Canella::EditorLayer::setup_layer(Canella::Application* application,Canella::OnSelectOperation& on_select_operation )
 {
     inspector.set_application(application);
@@ -13,6 +13,36 @@ void Canella::EditorLayer::setup_layer(Canella::Application* application,Canella
 }
 
 void Canella::EditorLayer::draw_layer() {
+    
+/*    auto coolbar_button     = [](const char* label) -> bool {
+        float w         = ImGui::GetCoolBarItemWidth();
+        auto font_ptr   = ImGui::GetIO().Fonts->Fonts[0];
+        font_ptr->Scale = ImGui::GetCoolBarItemScale();
+        ImGui::PushFont(font_ptr);
+        bool res = ImGui::Button(label, ImVec2(w*1.5, w*1.5));
+        ImGui::PopFont();
+        return res;
+    };
+
+    if (ImGui::BeginCoolBar("##CoolBarMain", ImCoolBarFlags_::ImCoolBarFlags_Vertical, ImVec2(0.0f, 0.3f))) {
+        if (ImGui::CoolBarItem()) {
+            if (coolbar_button("A")) {
+
+            }
+        }
+        if (ImGui::CoolBarItem()) {
+            if (coolbar_button("B")) {
+
+            }
+        }
+        if (ImGui::CoolBarItem()) {
+            if (coolbar_button("C")) {
+
+            }
+        }
+        ImGui::EndCoolBar();
+    }*/
+
     inspector.build();
     if (entity_changed)
     {
