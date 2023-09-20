@@ -7,6 +7,7 @@ set(LIBS_DIR "./libs")
 # VULKAN AND GLFW FOLDER
 
 add_definitions(-DCMAKE_EXPORT_COMPILE_COMMANDS=ON)
+add_definitions(-DUSE_VULKAN=1)
 
 find_package(Vulkan REQUIRED) # throws error if could not find Vulkan
 message(STATUS "Found Package Vulkan: $ENV{VULKAN_SDK}")

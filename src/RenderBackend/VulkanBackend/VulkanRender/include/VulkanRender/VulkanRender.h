@@ -33,27 +33,6 @@ namespace Canella
             class VulkanRender : public Render
             {
 
-
-                struct AsyncTransferJob
-                {
-                    VkCommandBuffer              cmd         = VK_NULL_HANDLE;
-                    uint32_t                     frameSignal = 0;
-                    VkSemaphore                  semaphore   = VK_NULL_HANDLE;
-                    VkFence                      fence       = VK_NULL_HANDLE;
-                    bool                         print       = true;
-                    uint64_t                     purgeableResources;
-                };
-
-                struct TestTransfer
-                {
-                    AsyncTransferJob  transfer;
-                    Commandpool        transferCmdPool;
-                    VkFence            transferFence;
-                    VkSemaphore        transferSemaphore;
-
-                };
-
-
             public:
                 /**
                  * @brief Constructs a vulkan Renderer
@@ -117,9 +96,8 @@ namespace Canella
                  * @param mesh mesh to be rendered
                 */
                 void enqueue_drawable(ModelMesh& mesh) override;
-
                 void create_render_graph_resources() override;
-
+                void allocate_material(MaterialData& material) override;
                 Event<VkCommandBuffer &, uint32_t &> OnRecordCommandEvent;
                 PFN_vkCmdDrawMeshTasksEXT vkCmdDrawMeshTasksEXT;
                 PFN_vkCmdDrawMeshTasksIndirectEXT vkCmdDrawMeshTasksIndirectEXT;
@@ -141,6 +119,7 @@ namespace Canella
                 Instance *instance;
                 unsigned int current_frame = 0;
                 RenderCameraData render_camera_data;
+                std::vector<std::pair<std::string,VkDescriptorSet>> raw_materials;
 
             private:
                 Surface surface;
@@ -158,7 +137,7 @@ namespace Canella
                 void cache_pipelines(const char *pipelines);
                 void destroy_descriptor_set_layouts();
                 void allocate_global_descriptorsets();
-                void allocate_global_usage_buffers();
+                void create_global_buffers();
                 void write_global_descriptorsets();
                 void create_transform_buffers();
                 void destroy_pipeline_layouts();
@@ -171,7 +150,7 @@ namespace Canella
                 void update_view_projection( glm::mat4 &view, glm::mat4 &projection, uint32_t next_image_index );
                 std::mutex mutex;
                 std::mutex mutex2;
-
+                VkSampler default_sampler;
                 int8_t should_reload =  0;
                 bool resources_loaded = false;
             };

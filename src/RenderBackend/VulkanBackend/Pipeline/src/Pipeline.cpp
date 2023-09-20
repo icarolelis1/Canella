@@ -18,10 +18,13 @@ Pipeline::Pipeline(Device* _device,
     VkPipelineRasterizationStateCreateInfo rasterization_state = initializers::pipelineRasterizationStateCreateInfo(info.polygonMode, info.cullMode, info.frontFaceClock);
 
     VkPipelineColorBlendAttachmentState blend_attachment_state {};
-    blend_attachment_state.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 
-    VkPipelineColorBlendStateCreateInfo color_blend_state;
-    color_blend_state = initializers::pipelineColorBlendStateCreateInfo(info.colorAttachmentsCount, &blend_attachment_state);
+    blend_attachment_state =  initializers::pipelineColorBlendAttachmentState(
+            0xf,
+            VK_FALSE);
+
+    VkPipelineColorBlendStateCreateInfo color_blend_state =
+            initializers::pipelineColorBlendStateCreateInfo(info.colorAttachmentsCount, &blend_attachment_state);
 
     VkPipelineDepthStencilStateCreateInfo depthStencilState = initializers::pipelineDepthStencilStateCreateInfo(info.dephTest, VK_TRUE, VK_COMPARE_OP_LESS);
 

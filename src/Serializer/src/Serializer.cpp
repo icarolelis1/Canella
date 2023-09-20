@@ -47,7 +47,7 @@ void Canella::Serializer::LoadMaterialData( std::weak_ptr<Scene> scene,const std
              slot.semantic = texture_slot["SemanticSlot"];
              material.texture_slots.push_back( slot);
          }
-         scene_locked->material_library[material_meta["Name"]] = material;
+         scene_locked->materials_used_in_scene.push_back(material);
     }
 }
 

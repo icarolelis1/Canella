@@ -42,6 +42,8 @@ namespace Canella
                 Event<> on_before_release;
             };
 
+            //Todo refactor this class. No need to use inheritance here just use separate
+            // arrays to store each type of resource. No need to use classes just structs wihtou methods
             class Buffer : public GPUResource
             {
             public:
@@ -85,7 +87,6 @@ namespace Canella
             class Image : public GPUResource
             {
             public:
-                int num_layers;
                 Device *device;
                 VkExtent2D extent;
 
@@ -117,7 +118,7 @@ namespace Canella
             public:
                 RefBuffer get_buffer_cached(uint64_t);
                 RefImage get_image_cached(uint64_t);
-
+                RefImage get_texture_cached(uint64_t);
                 explicit ResourcesManager(Device *device);
                 SyncStructure async_loader;
                 SyncStructure async_loader2;
@@ -213,7 +214,7 @@ namespace Canella
 
             private:
                 std::unordered_map<ResourceAccessor, RefGPUResource> resource_cache;
-                //Saving the textures in a different cache because textures don't get reloaded in ReloadEvents...
+                //Saving the textures in a different cache because textures don't get recreated in ReloadEvents...
                 std::unordered_map<ResourceAccessor, RefGPUResource> textures_cache;
                 Device *device;
                 std::mutex mutex;

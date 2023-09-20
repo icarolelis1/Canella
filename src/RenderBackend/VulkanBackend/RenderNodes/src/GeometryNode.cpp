@@ -101,9 +101,11 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
 
         for (auto i = 0; i < drawables.size(); ++i)
         {
-            VkDescriptorSet desc[3] = {global_descriptors[index],transform_descriptors[index], descriptors[i].descriptor_sets[index]};
+            auto material = vulkan_renderer->raw_materials[0].second;
+
+            VkDescriptorSet desc[4] = {global_descriptors[index],transform_descriptors[index], descriptors[i].descriptor_sets[index],material};
             vkCmdBindDescriptorSets(command_buffer,VK_PIPELINE_BIND_POINT_GRAPHICS,
-                                    pipeline_layouts["MeshShaderPipeline"]->getHandle(),0,3,
+                                    pipeline_layouts["MeshShaderPipeline"]->getHandle(),0,4,
                                     desc,0,nullptr);
 
             auto indirect_buffer = resource_manager.get_buffer_cached(draw_indirect_buffers[i]);

@@ -12,12 +12,8 @@ namespace Canella
             {
                 deviceExtensions.push_back("VK_KHR_swapchain");
                 deviceExtensions.push_back("VK_KHR_push_descriptor");
-                deviceExtensions.push_back("VK_KHR_16bit_storage");
-                deviceExtensions.push_back("VK_KHR_draw_indirect_count");
                 deviceExtensions.push_back("VK_EXT_sampler_filter_minmax");
                 deviceExtensions.push_back("VK_EXT_mesh_shader");
-                deviceExtensions.push_back("VK_KHR_spirv_1_4");
-                deviceExtensions.push_back("VK_KHR_shader_float_controls");
                 deviceExtensions.push_back("VK_KHR_maintenance1");
             };
 
@@ -291,8 +287,6 @@ namespace Canella
                     queueCreateInfos.push_back(QcreateInfo);
                 }
 
-                VkPhysicalDeviceVulkan12Features features_12 = {VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES};
-
                 VkPhysicalDeviceFeatures features{};
                 features.samplerAnisotropy = VK_TRUE;
                 features.fillModeNonSolid = VK_TRUE;
@@ -306,6 +300,7 @@ namespace Canella
                 vk_PhysicalDevicefeatures2.features.pipelineStatisticsQuery = true;
                 vk_PhysicalDevicefeatures2.features.multiDrawIndirect = true;
                 vk_PhysicalDevicefeatures2.features.depthBounds = true;
+                vk_PhysicalDevicefeatures2.features.samplerAnisotropy = true;
 
 
                 //Chain StorageBuffer16BitAccess

@@ -3,6 +3,7 @@
 #define ASSET_SYSTEM
 #include <Eventsystem/Eventsystem.hpp>
 #include "Components/Components.h"
+#include "MaterialManager/MaterialManager.h"
 
 namespace Canella
 {
@@ -35,7 +36,7 @@ namespace Canella
          * @brief Loads a material
          * @param material the material to be loaded
          */
-        void load_material_async( Canella::MaterialDescription material );
+        void load_material_async( Canella::MaterialDescription material,MaterialCollection& materials  );
 
         /**
          * @brief Get the source directory of the project

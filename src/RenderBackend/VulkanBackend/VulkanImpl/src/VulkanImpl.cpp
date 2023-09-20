@@ -22,9 +22,11 @@
 
      uint64_t create_texture( VulkanBackend::VulkanRender *renderer,const std::string &file ) {
          auto &resource_manager = renderer->resources_manager;
-         resource_manager.create_texture(file,&renderer->device, VK_FORMAT_R8G8B8A8_UNORM);
-         return 0;
+         return resource_manager.create_texture(file,&renderer->device, VK_FORMAT_R8G8B8A8_UNORM);
+     }
 
+     void allocate_material_data( MaterialData &material, VulkanBackend::VulkanRender *render ) {
+         render->allocate_material(material);
      }
  }
 

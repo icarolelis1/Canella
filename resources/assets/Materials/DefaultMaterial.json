@@ -3,35 +3,7 @@
   "Pipeline": "MeshShaderPipeline",
   "TextureSlots": [
     {
-      "TextureSource" : "normal_flip_3.jpg",
-      "SemanticSlot" : "Normal"
-    },
-    {
-      "TextureSource" : "normal_flip_3.jpg",
-      "SemanticSlot" : "Normal"
-    },
-    {
-      "TextureSource" : "normal_flip_3.jpg",
-      "SemanticSlot" : "Normal"
-    },
-    {
-      "TextureSource" : "normal_flip_3.jpg",
-      "SemanticSlot" : "Normal"
-    },
-    {
-      "TextureSource" : "normal_flip_3.jpg",
-      "SemanticSlot" : "Normal"
-    },
-    {
-      "TextureSource" : "normal_flip_3.jpg",
-      "SemanticSlot" : "Normal"
-    },
-    {
-      "TextureSource" : "normal_flip_3.jpg",
-      "SemanticSlot" : "Normal"
-    },
-    {
-      "TextureSource" : "normal_flip_3.jpg",
+      "TextureSource" : "ocean-rock_albedo.png",
       "SemanticSlot" : "Normal"
     }
   ]

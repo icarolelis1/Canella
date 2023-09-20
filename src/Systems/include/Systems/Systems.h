@@ -5,6 +5,7 @@
 #include "Components/Components.h"
 #include "glm/mat4x4.hpp"
 #include "Scene/Scene.h"
+#include "MaterialManager/MaterialManager.h"
 #include <memory>
 namespace Canella
 {
@@ -19,8 +20,10 @@ namespace Canella
     /**
      * @brief Load the textures associated with materials at start
      * @param scene The Scene
+     * @param render Application  renderer
+     * @param materials Application materials collection
      */
-    void load_initial_materials_on_scene( Scene *const scene );
+    void load_initial_materials_on_scene( Scene *const scene,Render* render, MaterialCollection& materials );
 
     /**
      * @brief update all the transforms calculating the model matrix

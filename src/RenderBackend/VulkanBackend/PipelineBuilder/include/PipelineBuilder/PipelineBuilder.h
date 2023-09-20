@@ -107,8 +107,7 @@ namespace Canella
 						pipelineInfo.frontFaceClock = VK_FRONT_FACE_CLOCKWISE;
 						pipelineInfo.vertexOffsets = {0};
 						pipelineInfo.subpass = 0;
-						pipelines[pipeline_key] = std::make_unique<Pipeline>(device,
-                                                                             pipelineLayouts[pipeline_key].get(), shaders, pipelineInfo);
+						pipelines[pipeline_key] = std::make_unique<Pipeline>(device,pipelineLayouts[pipeline_key].get(), shaders, pipelineInfo);
 					}
 				}
 
@@ -133,9 +132,7 @@ namespace Canella
 					const int i)
 				{
 					auto key = pipelineData["PipelineData"]["DescriptorSetLayouts"][i]["Key"].get<std::string>();
-					descriptor_set_layouts[i] = PipelineBuilder::createDescriptorSetLayout(device,
-																						   pipelineData["PipelineData"]
-																									   ["DescriptorSetLayouts"][i]);
+					descriptor_set_layouts[i] = PipelineBuilder::createDescriptorSetLayout(device,pipelineData["PipelineData"]["DescriptorSetLayouts"][i]);
 					if (cachedDescriptorSetLayouts.find(key) == cachedDescriptorSetLayouts.end())
 						cachedDescriptorSetLayouts[key] = std::move(descriptor_set_layouts[i]);
 				}

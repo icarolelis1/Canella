@@ -5,20 +5,21 @@
  */
 
 #version 450
- 
+
+layout( set = 3,binding = 0) uniform sampler2D albedo_sampler;
+
+
 layout (location = 0) in VertexInput {
   vec4 color;
+  vec2 uv;
 } vertexInput;
 
 layout(location = 0) out vec4 outFragColor;
- 
 
-float linearize_depth(float depth)
-{
-    return (2.0 * 0.01 * 1000)/(0.01 + 1000 - (depth * 2.0 -1.0) * (1000 - 0.01));
-}
 void main()
 {
 	//outFragColor = vec4(vec3(linearize_depth(gl_FragCoord.z)/1000.),1.0f);
-	outFragColor = vec4(vertexInput.color.xyz,0.5);
+    vec2 uv = vertexInput.uv.xy;
+    vec3 albedo = texture(albedo_sampler,uv).rgb;
+	outFragColor = vec4(albedo,1.0);
 }

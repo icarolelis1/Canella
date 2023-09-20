@@ -65,20 +65,19 @@ void Canella::SerializeCamera(nlohmann::json &data, entt::registry &registry, en
 
 }
 
-void Canella::SerializeMeshAsset(nlohmann::json &data, entt::registry &registry, entt::entity entity)
+void Canella::SerializeMeshAsset(nlohmann::json &data,std::shared_ptr<Canella::Scene> scene , entt::entity entity)
 {
-    registry.emplace<ModelAssetComponent>(entity);
-    const auto view = registry.view<ModelAssetComponent>();
-    auto &[model,source,instance_src,material_name, isStatic,instance_count] = view.get<ModelAssetComponent>(entity);
+    scene->registry.emplace<ModelAssetComponent>(entity);
+    const auto view_model = scene->registry.view<ModelAssetComponent>();
+    auto &[model,source,instance_src,material_name, isStatic,instance_count] = view_model.get<ModelAssetComponent>(entity);
     source = data["Source"].get<std::string>();
     instance_src = data["InstanceData"].get<std::string>();
     isStatic = data["Static"].get<bool>();
-    model.instance_count = data["InstanceCount"].get<std::int32_t>();
+    model.instance_count = data["InstanceCount"].get<std::int8_t>();
 
-
-    // Pass the model matrix pointer to mesh comming from TransformComponent
-    const auto view_transform = registry.view<TransformComponent>();
-    model.model_matrix = &view_transform.get<TransformComponent>(entity).model_matrix;
+    const auto view_transform = scene->registry.view<TransformComponent>();
+    auto& transform = view_transform.get<TransformComponent>(entity);
+    model.model_matrix = &transform.model_matrix;
 }
 
 void Canella::SerializeCameraEditor(nlohmann::json &data, entt::registry &registry, entt::entity entity)

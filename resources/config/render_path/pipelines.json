@@ -1,6 +1,6 @@
 ﻿{
   "PipelineData": {
-    "DescriptorSetLayoutCounts":6,
+    "DescriptorSetLayoutCounts":7,
     "PipelinesCount": 4,
     "DescriptorSetLayouts": [
       {
@@ -210,6 +210,21 @@
             "Binding": 1
           }
         ]
+      },
+      {
+        "Key": "Material",
+        "ResourceCount": 1,
+        "PushDescriptor" : false,
+        "BindingResources": [
+          {
+            "Key": "Albedo",
+            "Stage": [
+              "FRAGMENT_STAGE"
+            ],
+            "Type": "SAMPLER_2D",
+            "Binding": 0
+          }
+        ]
       }
     ],
     "Pipelines":    [
@@ -217,13 +232,14 @@
         "Key": "MeshShaderPipeline",
         "IsCompute": false,
         "PushConstantRangesCount": 1,
-        "NumerOfDescriptorSets": 3,
+        "NumerOfDescriptorSets": 4,
         "Renderpass": "basic",
         "VertexAttributeCount": 0,
         "PipelineLayoutDescriptors": [
           "ViewProjection",
           "Transforms",
-          "Meshlets"
+          "Meshlets",
+          "Material"
         ],
         "PushConstants": {
           "Stage": [

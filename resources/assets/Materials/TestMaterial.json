@@ -1,0 +1,10 @@
+{
+  "Name" : "TestMaterial",
+  "Pipeline": "MeshShaderPipeline",
+  "TextureSlots": [
+    {
+      "TextureSource": "ocean-rock_albedo.png",
+      "SemanticSlot": "Normal"
+    }
+  ]
+}

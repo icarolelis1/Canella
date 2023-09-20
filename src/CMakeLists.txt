@@ -103,8 +103,11 @@ add_library(
         Systems/src/Systems.cpp
         Serializer/src/Serializer.cpp
         AssetSystem/src/AssetSystem.cpp
+        MaterialManager/src/MaterialManager.cpp
 
 )
+
+
 
 target_include_directories(Engine PUBLIC
         Entity/include
@@ -114,6 +117,8 @@ target_include_directories(Engine PUBLIC
         Scene/include
         Serializer/include
         AssetSystem/include
+        MaterialManager/include
         )
+
 
 target_link_libraries(Engine PUBLIC Render Systems)

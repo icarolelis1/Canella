@@ -59,6 +59,7 @@ layout( set = 2 ,binding = 6) readonly buffer MeshData
 layout(location = 0) out VertexOutput
 {
 	vec4 color;
+	vec2 uv;
 } vertexOutput[];
 
 struct Task
@@ -110,16 +111,16 @@ if( ti < meshlet.vertex_count )
 	uint mhash = hash(mi);
 	vec3 mcolor = vec3(float(mhash & 255), float((mhash >> 8) & 255), float((mhash >> 16) & 255)) / 255.0;
 	vertexOutput[ti].color = vec4(mcolor,1);
-
+	vertexOutput[ti].uv = vertices[vertex_indice].uv.xy;
 }
 
-if (ti < meshlet.triangle_count)
+if ( ti < meshlet.triangle_count )
 {
 	uint index_offset =  mesh.meshlet_triangles_offset;
 	gl_PrimitiveTriangleIndicesEXT[ti] = uvec3(	
-	 											uint(meshlet_indices[index_offset + meshlet.triangle_offset + ti*3 + 0 ]) , 
-	 											uint(meshlet_indices[index_offset + meshlet.triangle_offset + ti*3 + 1 ]) ,
-	 											uint(meshlet_indices[index_offset + meshlet.triangle_offset + ti*3 + 2 ])  );
+	 											uint( meshlet_indices[index_offset + meshlet.triangle_offset + ti*3 ]),
+	 											uint( meshlet_indices[index_offset + meshlet.triangle_offset + ti*3 + 1 ]),
+	 											uint( meshlet_indices[index_offset + meshlet.triangle_offset + ti*3 + 2 ]));
 
 }
 

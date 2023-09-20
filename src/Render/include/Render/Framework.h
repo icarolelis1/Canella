@@ -29,6 +29,8 @@ namespace Canella
      * @return
      */
     uint64_t create_texture(Render* renderer ,const std::string& file);
+
+    void allocate_material_data(Render* render, MaterialData& material);
 }
 
 #endif

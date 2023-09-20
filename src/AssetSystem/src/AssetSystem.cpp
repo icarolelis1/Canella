@@ -33,21 +33,62 @@ private :
 
 struct LoadTextureJob : Canella::JobSystem::JobDetail
 {
-    LoadTextureJob( std::string _texture_path,Canella::Render* _renderer) : texture_path(_texture_path),renderer(_renderer)
+    LoadTextureJob( std::string _texture_path,Canella::Render* _renderer) :
+    texture_path(_texture_path),
+    renderer(_renderer)
     {}
 
     void execute() override
     {
-        Canella::create_texture(renderer,texture_path);
+        texture_accessor = Canella::create_texture(renderer,texture_path);
     }
     ~LoadTextureJob() = default;
 
-private :
-    int code;
     std::string texture_path;
     Canella::Render* renderer;
+    uint64_t texture_accessor;
 };
 
+
+struct LoadMaterialFromDisk : Canella::JobSystem::JobDetail
+{
+    LoadMaterialFromDisk( std::string _project_src,Canella::Render* _renderer,
+                          Canella::MaterialDescription _material_desc,
+                          Canella::MaterialCollection* _materials ) :
+            project_src(_project_src),
+            renderer(_renderer),
+            material_desc(_material_desc),
+            materials(_materials)
+
+    {}
+
+    void execute() override
+    {
+        //Load textures
+        new_material.name = material_desc.name;
+        for(auto&slot : material_desc.texture_slots)
+        {
+            const auto project_path = std::filesystem::absolute(project_src);
+            auto texture_accessor = Canella::create_texture(renderer,project_path.string()+"\\" + "Textures" + "\\" + slot.texture_source);
+            Canella::Logger::Info("Loaded texture %s",slot.texture_source.c_str());
+            new_material.texture_accessors.push_back(texture_accessor);
+        }
+    }
+
+    void onCompleteCallback() override
+    {
+        materials->material_loaded_record[new_material.name] = true;
+        Canella::Logger::Info("Finished Loading Material texture %s",new_material.name.c_str());
+        materials->collection.push_back(std::move(new_material));
+    }
+
+    ~LoadMaterialFromDisk() = default;
+    std::string project_src;
+    Canella::Render* renderer;
+    Canella::MaterialCollection* materials;
+    Canella::MaterialDescription material_desc;
+    Canella::MaterialData new_material;
+};
 
 Canella::AssetSystem &Canella::AssetSystem::instance()
 {
@@ -83,11 +124,11 @@ void Canella::AssetSystem::load_asset( Canella::ModelAssetComponent &asset ) {
 
 }
 
-void Canella::AssetSystem::load_material_async( Canella::MaterialDescription material) {
-    for(auto& slot : material.texture_slots)
-    {
-        const auto project_path = std::filesystem::absolute(project_src);
-        JobSystem::CanellaJob job((std::make_shared<LoadTextureJob>(project_path.string() +"\\" + "Textures" + "\\" + slot.texture_source,renderer)));
-        JobSystem::schedule(std::move(job));
-    }
+void Canella::AssetSystem::load_material_async( Canella::MaterialDescription material_desc,MaterialCollection& materials ) {
+
+    if(is_material_loaded(material_desc.name,materials))
+        return;
+    auto load_job = std::make_shared<LoadMaterialFromDisk>(project_src,renderer,material_desc,&materials);
+    JobSystem::CanellaJob job(load_job);
+    JobSystem::schedule((job));
 }

@@ -8,7 +8,6 @@
 #include <meshoptimizer.h>
 #include <vector>
 #include <Eventsystem/Eventsystem.hpp>
-
 namespace Canella
 {
 
@@ -49,6 +48,7 @@ namespace Canella
     struct Vertex
     {
         glm::vec4 position;
+        glm::vec4 uv;
     };
 
     struct SphereBoundingVolume
@@ -86,12 +86,16 @@ namespace Canella
 
     struct MaterialDescription
     {
-        std::string name;
+        std::string              name;
         std::string              pipeline;
         std::vector<TextureSlot> texture_slots;
     };
 
-    struct RawTextureData;
+    struct MaterialData {
+        std::vector<uint64_t> texture_accessors;
+        std::string name;
+    };
+
 
     struct ModelMesh
     {
@@ -129,6 +133,7 @@ namespace Canella
         virtual void create_render_graph_resources() = 0;
         virtual void enqueue_drawable(ModelMesh& ) = 0;
         virtual void render(glm::mat4 &, glm::mat4 &) = 0;
+        virtual void allocate_material(MaterialData& material) = 0;
         virtual Drawables &get_drawables() = 0;
         OnOutputStatsEvent * display_render_stats_event;
         GraphicsApi api;

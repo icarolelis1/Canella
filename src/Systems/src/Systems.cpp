@@ -1,18 +1,8 @@
 #include "Systems/Systems.h"
 #include "AssetSystem/AssetSystem.h"
 #include "JobSystem/JobSystem.h"
-
+#include "Render/Framework.h"
 using namespace Canella;
-
-Entity& get_entity_by_uid(Scene *const scene,uint64_t uid)
-{
-    for (auto [key, value] : scene->entityLibrary) {
-        if(value->uuid == uid)
-        {
-            return *value.get();
-        }
-    }
-}
 
 void Canella::load_initial_meshes_on_scene( Drawables &drawables, Scene *const scene)
 {
@@ -24,14 +14,14 @@ void Canella::load_initial_meshes_on_scene( Drawables &drawables, Scene *const s
     }
 }
 
-void Canella::load_initial_materials_on_scene( Scene *const scene) {
+void Canella::load_initial_materials_on_scene( Scene *const scene,Render* render, MaterialCollection& materials ) {
     auto& asset_system = Canella::AssetSystem::instance();
-    scene->registry.view<ModelAssetComponent>()
-            .each([&](const auto&entity, const auto& model_asset)
-                  {
-                      asset_system.load_material_async( scene->material_library[model_asset.material_name] );
-                  });
+    for(auto& material_description : scene->materials_used_in_scene)
+        asset_system.load_material_async( material_description,materials);
+    //wait until all initial materials are loaded
     JobSystem::wait();
+    for(auto& material : materials.collection)
+        Canella::allocate_material_data(render,material);
 
 }
 
@@ -99,6 +89,7 @@ void Canella::start_scripts(Scene *scene)
                            behavior.instance = behavior.instantiate_fn();
                            behavior.instance->entt_entity = entity;
                        }
-                       behavior.instance->on_start(); });
+                       behavior.instance->on_start();
+                   });
 }
 

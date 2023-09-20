@@ -137,10 +137,13 @@ int MeshProcessing::count_boundaries(MeshProcessing::Mesh& mesh)
 void MeshProcessing::load_asset_mesh(ModelMesh &model, const ::std::string &assetsPath, const std::string &source)
 {
     Assimp::Importer importer;
-    const aiScene *assimpScene = importer.ReadFile(assetsPath + "\\" + source, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
+    const aiScene *assimpScene = importer.ReadFile(assetsPath + "\\" + source, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices| aiProcess_FlipUVs);
 
     if (!assimpScene || assimpScene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !assimpScene->mRootNode)
+    {
         Logger::Error(importer.GetErrorString());
+        return;
+    }
 
     auto &[positions, normal, indices,
            meshes,
@@ -165,8 +168,10 @@ void MeshProcessing::load_asset_mesh(ModelMesh &model, const ::std::string &asse
         for (unsigned int j = 0; j < assimp_mesh->mNumVertices; j++)
         {
             auto v3         = glm::make_vec4(&assimp_mesh->mVertices[j].x);
+            auto uv =         glm::make_vec2(&assimp_mesh->mTextureCoords[0][j].x);
             Vertex vertex;
             vertex.position = v3;
+            vertex.uv = glm::vec4(uv.x,uv.y,1.0,1.0);
             positions.push_back(vertex);
         }
 
@@ -198,8 +203,6 @@ void MeshProcessing::load_asset_mesh(ModelMesh &model, const ::std::string &asse
         meshes[i].bounding_volume = sphere;
         MeshProcessing::build_meshlets(meshlet_composition, model, i);
     }
-
-
 }
 
 void MeshProcessing::build_meshlets(Canella::Meshlet &canellaMeshlet, Canella::ModelMesh &model, int mesh_index)
@@ -236,9 +239,8 @@ void MeshProcessing::build_meshlets(Canella::Meshlet &canellaMeshlet, Canella::M
     meshlet_vertices.resize(last.vertex_offset + last.vertex_count);
     meshlet_triangles.resize(last.triangle_offset + ((last.triangle_count * 3 + 3) & ~3));
     meshlets.resize(meshlet_count);
-
-
     //classify_triangle_group(positions,indices,meshlets,meshlet_vertices,meshlet_triangles);
+
     while (meshlets.size() % 32 != 0)
         meshlets.push_back(meshopt_Meshlet());
 

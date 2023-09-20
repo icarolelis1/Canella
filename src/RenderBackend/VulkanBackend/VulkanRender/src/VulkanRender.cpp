@@ -1,10 +1,9 @@
 #include "VulkanRender/VulkanRender.h"
 #include <core/compressed_pair.hpp>
 #include <functional>
-
 #define MAX_FRAMES_IN_FLIGHT 3
-using namespace Canella::RenderSystem::VulkanBackend;
 
+using namespace Canella::RenderSystem::VulkanBackend;
 void VulkanRender::set_windowing(Windowing *windowing)
 {
     window = windowing;
@@ -29,7 +28,7 @@ void VulkanRender::build( nlohmann::json &config, OnOutputStatsEvent* display_ev
     cache_pipelines(config["Pipelines"].get<std::string>().c_str());
     init_descriptor_pool();
     setup_frames();
-    allocate_global_usage_buffers();
+    create_global_buffers();
     allocate_global_descriptorsets();
     write_global_descriptorsets();
     setup_internal_renderer_events();
@@ -38,6 +37,19 @@ void VulkanRender::build( nlohmann::json &config, OnOutputStatsEvent* display_ev
     transfer_pool.build(&device, POOL_TYPE::TRANSFER, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
     command_pool.build(&device, POOL_TYPE::GRAPHICS, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
+    VkSamplerCreateInfo samplerInfo = {};
+    samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+    samplerInfo.magFilter = VK_FILTER_LINEAR;
+    samplerInfo.minFilter = VK_FILTER_LINEAR;
+    samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    samplerInfo.anisotropyEnable = VK_TRUE;
+    samplerInfo.maxAnisotropy = 10;
+    samplerInfo.maxLod = 10;
+    samplerInfo.minLod = 0;
+
+    vkCreateSampler(device.getLogicalDevice(),&samplerInfo,device.getAllocator(),&default_sampler);
 }
 
 void VulkanRender::get_device_proc() {
@@ -232,7 +244,7 @@ void VulkanRender::cache_pipelines(const char *pipelines)
                                          cachedPipelineLayouts, renderpassManager.renderpasses, cachedPipelines);
 }
 
-void VulkanRender::allocate_global_usage_buffers()
+void VulkanRender::create_global_buffers()
 {
     const auto number_of_images = swapChain.get_number_of_images();
     for (auto i = 0; i < number_of_images; i++)
@@ -305,8 +317,8 @@ void VulkanRender::destroy()
     descriptorPool.destroy();
     resources_manager.destroy_non_persistent_resources();
     resources_manager.destroy_texture_resources();
+    vkDestroySampler( device.getLogicalDevice(), default_sampler, device.getAllocator());
     device.destroyDevice();
-
     Canella::Logger::Info("Vulkan Renderer Destroyed!");
 }
 
@@ -380,7 +392,7 @@ void VulkanRender::setup_internal_renderer_events()
         // Rebuild Renderpasses
         renderpassManager.rebuild(&device, &swapChain, &resources_manager);
         // Recreate the uniform buffers
-        allocate_global_usage_buffers();
+        create_global_buffers();
         // Allocate the descriptorsets for global uniforms
         allocate_global_descriptorsets();
         // Write the descriptorsets
@@ -435,5 +447,27 @@ void Canella::RenderSystem::VulkanBackend::VulkanRender::enqueue_drawable(ModelM
     drawables_to_be_inserted.push_back(mesh);
     enqueue_new_mesh = true;
     Canella::Logger::Debug("%d drawables to insert", drawables_to_be_inserted.size());
+}
+
+void VulkanRender::allocate_material( Canella::MaterialData &material ) {
+
+    std::vector<VkDescriptorImageInfo> image_infos;
+    std::vector<VkDescriptorBufferInfo> buffer_infos;
+    VkDescriptorSet  set;
+
+    for(auto& image : material.texture_accessors)
+    {
+        descriptorPool.allocate_descriptor_set(device,cachedDescriptorSetLayouts["Material"],set);
+
+        auto image_ref   = resources_manager.get_texture_cached(image);
+        VkDescriptorImageInfo descriptor_image_info = {};
+        descriptor_image_info.sampler     = default_sampler;
+        descriptor_image_info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        descriptor_image_info.imageView   = image_ref->view;
+        image_infos.push_back( descriptor_image_info);
+    }
+    DescriptorSet::update_descriptorset(&device,set, buffer_infos, image_infos, false);
+    auto pair = std::make_pair(material.name,set);
+    raw_materials.push_back(pair);
 }
 

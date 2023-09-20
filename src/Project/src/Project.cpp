@@ -1,5 +1,6 @@
 #include "Project/Project.h"
 #include "AssetSystem/AssetSystem.h"
+#include "Systems/Systems.h"
 
 using namespace Canella;
 Application::Application(Canella::GlfwWindow *_window, Canella::Render *_render) : application_time(0)
@@ -13,10 +14,22 @@ void Application::load(nlohmann::json &config)
     JobSystem::initialize();
     // Setup Project Folder
     setup_project_folder(config);
-    scene = std::make_shared<Scene>(assets_folder, render);
+    //Create the application Scene
+    scene = std::make_shared<Scene>();
     // serialize scene
     serializer.Serialize(scene, config["Scenes"],assets_folder);
-    scene->init_systems();
+
+    //Enqueue initial meshes to render
+    std::vector<ModelMesh> meshes;
+    load_initial_meshes_on_scene( meshes, scene.get());
+    render->enqueue_drawables(meshes);
+
+    //Load materials
+    load_initial_materials_on_scene( scene.get(),render,material_collection );
+    scene->init_scene();
+
+    //Create Render Graph Resources
+    render->create_render_graph_resources();
 }
 
 void Application::setup_project_folder(nlohmann::json &data)

@@ -15,7 +15,7 @@ namespace Canella {
     struct CameraComponent;
     struct MaterialDescription;
     using EntityLibrary = std::unordered_map<entt::entity, std::shared_ptr<Entity>>;
-    using MaterialLibrary = std::unordered_map<std::string, MaterialDescription>;
+    using MaterialLibrary = std::vector<MaterialDescription>;
     class Scene : public std::enable_shared_from_this<Scene> {
     public:
         /**
@@ -23,7 +23,7 @@ namespace Canella {
          * @param asset_folder Relative directory the scene will look for meshes
          * @param render application renderer
          */
-        Scene(const std::string& asset_folder,Canella::Render* render);
+        Scene() = default;
         ~Scene() = default;
         /**
          * @brief create an entity to the scene
@@ -37,7 +37,7 @@ namespace Canella {
         */
         Entity& CreateEntity(uint64_t uuid);
 
-        void init_systems();
+        void init_scene();
         /**
          * @brief update the component system
          * @param delta time between last frame and current frame
@@ -55,15 +55,12 @@ namespace Canella {
         std::unique_ptr<Canella::Entity> root;
         CameraComponent * main_camera;
         entt::registry registry;
-        EntityLibrary  entityLibrary;
-        MaterialLibrary material_library;
+        EntityLibrary   entityLibrary;
+        MaterialLibrary materials_used_in_scene;
+
     private:
-
         bool init_root();
-
         std::vector<uint32_t> static_geometry;
-        Canella::Render* render;
-        std::string asset_folder;
     };
 }
 

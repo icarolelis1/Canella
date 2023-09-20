@@ -36,7 +36,7 @@
           {
             "InstanceCount": 1,
             "InstanceData": "model_test/wakfu_characters_yugo_instances.json",
-            "Source": "model_test/scene.gltf",
+            "Source": "model_test/scene.glb",
             "Static": true,
             "UID": 0,
             "type": "MeshAsset"

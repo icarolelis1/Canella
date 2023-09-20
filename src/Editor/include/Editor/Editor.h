@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <json.hpp>
+#include "VulkanRender/VulkanRender.h"
 #include "Project/Project.h"
 #include "Logger/Logger.hpp"
 #include <Eventsystem/Eventsystem.hpp>

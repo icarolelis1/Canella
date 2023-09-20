@@ -5,8 +5,6 @@
 #include "stb_image.h"
 using namespace Canella::RenderSystem::VulkanBackend;
 
-//Utility
-
 VkSampler Canella::RenderSystem::VulkanBackend::create_sampler(VkDevice device, VkSamplerReductionModeEXT reductionMode)
 {
     VkSamplerCreateInfo create_info = { VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO };
@@ -19,7 +17,11 @@ VkSampler Canella::RenderSystem::VulkanBackend::create_sampler(VkDevice device, 
     create_info.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
     create_info.minLod       = 0;
     create_info.maxLod       = 16.f;
-
+    create_info.anisotropyEnable = VK_TRUE;
+    create_info.maxAnisotropy = 10;
+    create_info.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+    create_info.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+    create_info.unnormalizedCoordinates = VK_FALSE;
     VkSamplerReductionModeCreateInfoEXT createInfoReduction = { VK_STRUCTURE_TYPE_SAMPLER_REDUCTION_MODE_CREATE_INFO_EXT };
 
     if (reductionMode != VK_SAMPLER_REDUCTION_MODE_WEIGHTED_AVERAGE_EXT)
@@ -239,17 +241,9 @@ ResourceAccessor ResourcesManager::create_image(
 
 ResourceAccessor ResourcesManager::create_texture( const std::string &file_path, Device *device, VkFormat format )
 {
-
-    uint32_t num_mips;
     int      tex_width, tex_height, tex_channels;
     stbi_uc* pixels = stbi_load(file_path.c_str(), &tex_width, &tex_height, &tex_channels, STBI_rgb_alpha);
-
-    //Generate mips
-    if(true)
-    {
-        const uint32_t maxMips = static_cast<uint32_t>(std::floor(std::log2(std::max(tex_width, tex_height)))) + 1;
-        num_mips = maxMips < 10 ? maxMips : 10;
-    }
+    const uint32_t maxMips = static_cast<uint32_t>(std::floor(std::log2(std::max(tex_width, tex_height)))) + 1;
 
     if (!pixels) {
         Canella::Logger::Error("Failed to load texture at source path %s",file_path.c_str());
@@ -261,9 +255,13 @@ ResourceAccessor ResourcesManager::create_texture( const std::string &file_path,
         std::unique_lock<std::mutex> m( async_loader.pool_mutex );
         auto resource_accessor = create_image( device, tex_width, tex_height, format, VK_IMAGE_TILING_OPTIMAL,
                                       VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-                                      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 0, num_mips,
-                                      VK_IMAGE_ASPECT_COLOR_BIT, 1,
-                                      VK_SAMPLE_COUNT_1_BIT,true);
+                                      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                                      0,
+                                      1,
+                                      VK_IMAGE_ASPECT_COLOR_BIT,
+                                      1,
+                                      VK_SAMPLE_COUNT_1_BIT,
+                                      true);
 
 
         auto  staging_buffer = std::make_shared<Buffer>( device, image_size,
@@ -298,12 +296,19 @@ ResourceAccessor ResourcesManager::create_texture( const std::string &file_path,
         region.imageSubresource.layerCount = 1;
         region.imageOffset = { 0, 0, 0 };
 
-        region.imageExtent = {
-                static_cast<uint32_t>(tex_width),
-                static_cast<uint32_t>(tex_height),
-                1
-        };
+        region.imageExtent = {static_cast<uint32_t>(tex_width),static_cast<uint32_t>(tex_height),1};
+
         vkCmdCopyBufferToImage(command_buffer, staging_buffer->getBufferHandle(), image->image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+
+        auto layout_to_shader_readonly = image_barrier( image->image, VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                                        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_ASPECT_COLOR_BIT );
+
+        vkCmdPipelineBarrier(command_buffer,VK_PIPELINE_STAGE_TRANSFER_BIT,
+                             VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,VK_DEPENDENCY_BY_REGION_BIT,0,
+                             0, 0,0,1,
+                             &layout_to_shader_readonly);
+
+
         resource_loader_pool.endCommandBuffer(command_buffer);
         VkSubmitInfo submitInfo = {};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -314,10 +319,11 @@ ResourceAccessor ResourcesManager::create_texture( const std::string &file_path,
             std::unique_lock<std::mutex> lock(device->get_queue_mutex(1));
             vkQueueSubmit(device->getGraphicsQueueHandle(), 1, &submitInfo,  async_loader2.fence);
         }
+
         vkWaitForFences(device->getLogicalDevice(), 1, &async_loader2.fence, VK_TRUE, UINT64_MAX);
         vkResetFences(device->getLogicalDevice(), 1, &async_loader2.fence);
+        return resource_accessor;
     }
-    return 0;
 }
 
 RefBuffer ResourcesManager::get_buffer_cached(uint64_t uuid)
@@ -338,6 +344,16 @@ ResourcesManager::get_image_cached(uint64_t uuid)
     assert(ref_image->type == ResourceType::ImageResource);
     return std::static_pointer_cast<Image>(ref_image);
 }
+
+RefImage
+ResourcesManager::get_texture_cached( uint64_t uuid) {
+    auto cache_iterator = textures_cache.find(uuid);
+    assert(cache_iterator != textures_cache.end());
+    auto ref_image = cache_iterator->second;
+    assert(ref_image->type == ResourceType::ImageResource);
+    return std::static_pointer_cast<Image>(ref_image);
+}
+
 
 uint64_t ResourcesManager::create_storage_buffer(size_t size, VkBufferUsageFlags flags, VulkanBackend::Commandpool *transfer_pool, void *data)
 {
@@ -391,6 +407,7 @@ void ResourcesManager::destroy_texture_resources() {
 
     textures_cache.clear();
 }
+
 
 Image::Image(Device *_device,
              uint32_t Width, uint32_t Height,
@@ -460,7 +477,6 @@ Image::Image(Device *_device,
 
 Image::~Image()
 {
-
     on_before_release.invoke();
     vkDestroyImageView(device->getLogicalDevice(), view, device->getAllocator());
     vkDestroyImage(device->getLogicalDevice(), image, device->getAllocator());

@@ -9,6 +9,7 @@
 #include "Editor/Inspector.h"
 #include <glm/gtc/quaternion.hpp>
 #include "Mesh/Mesh.h"
+#include "AssetSystem/AssetSystem.h"
 
 Canella::Logger::Priority Canella::Logger::log_priority = Canella::Logger::Priority::Error_LOG;
 std::mutex Canella::Logger::logger_mutex;
@@ -75,6 +76,16 @@ void Canella::Editor::bind_shortcuts()
             auto delta = -cam->entity_transform->orientation + quat;
             cam->entity_transform->orientation *= delta;
 
+        }
+
+        if( key == GLFW_KEY_O && action == InputAction::PRESS)
+        {
+            auto& asset_system = Canella::AssetSystem::instance();
+            TextureSlot slot = {"normal_flip_3.jpg","Albedo"};
+            MaterialDescription material_description = {};
+            material_description.texture_slots.push_back(std::move(slot));
+            material_description.name = "BocetinhaDeCoco";
+            asset_system.load_material_async( material_description,application->material_collection);
         }
     };
     keyboard.OnKeyInput += Event_Handler(short_cuts);

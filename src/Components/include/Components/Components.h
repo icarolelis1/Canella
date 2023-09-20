@@ -25,6 +25,8 @@ namespace Canella
     };
 
 
+    //Todo completely refactor this. Remove the mat4 model,list,and reference.
+    //Create alternative systems to support parenting and make this struct much much smaller.
     struct TransformComponent
     {
         TransformComponent(const TransformComponent &) = default;
@@ -122,7 +124,7 @@ namespace Canella
 
     void SerializeTransform( nlohmann::json &data, std::shared_ptr<Scene> registry, entt::entity entity);
     void SerializeCamera(nlohmann::json &data, entt::registry &registry, entt::entity entity);
-    void SerializeMeshAsset(nlohmann::json &data, entt::registry &registry, entt::entity entity);
+    void SerializeMeshAsset(nlohmann::json &data, std::shared_ptr<Scene> scene, entt::entity entity);
     void SerializeCameraEditor(nlohmann::json &data, entt::registry &registry, entt::entity entity);
     void DeserializeTransform(nlohmann::json &data, TransformComponent &);
     void DeserializeCamera(nlohmann::json &data, CameraComponent &);

@@ -1,7 +1,5 @@
 #version 450
-#extension GL_EXT_shader_16bit_storage: require
-#extension GL_EXT_shader_8bit_storage: require
-#extension GL_EXT_shader_atomic_float: require
+
 
 layout(local_size_x = 32 ,local_size_y = 1 , local_size_z = 1 ) in;
 

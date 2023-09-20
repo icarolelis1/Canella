@@ -71,6 +71,7 @@ struct StaticMeshData{
 struct Vertex
 {
 	vec4 position;
+	vec4 uv;
 };
 
 vec3 rotateQuat(vec3 v, vec4 q)
