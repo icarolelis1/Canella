@@ -46,8 +46,8 @@ void VulkanRender::build( nlohmann::json &config, OnOutputStatsEvent* display_ev
     samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
     samplerInfo.anisotropyEnable = VK_TRUE;
     samplerInfo.maxAnisotropy = 10;
-    samplerInfo.maxLod = 10;
     samplerInfo.minLod = 0;
+    samplerInfo.maxLod = 11;
 
     vkCreateSampler(device.getLogicalDevice(),&samplerInfo,device.getAllocator(),&default_sampler);
 }

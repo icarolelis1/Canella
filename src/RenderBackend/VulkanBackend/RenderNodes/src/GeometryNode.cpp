@@ -99,13 +99,18 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
 
         vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,pipelines[pipeline_name]->getPipelineHandle());
 
+        VkDescriptorSet desc[2] = {global_descriptors[index],transform_descriptors[index]};
+        vkCmdBindDescriptorSets(command_buffer,VK_PIPELINE_BIND_POINT_GRAPHICS,
+                                pipeline_layouts["MeshShaderPipeline"]->getHandle(),0,2,
+                                desc,0,nullptr);
+
         for (auto i = 0; i < drawables.size(); ++i)
         {
             auto material = vulkan_renderer->raw_materials[0].second;
 
-            VkDescriptorSet desc[4] = {global_descriptors[index],transform_descriptors[index], descriptors[i].descriptor_sets[index],material};
+            VkDescriptorSet desc[2] = { descriptors[i].descriptor_sets[index],material};
             vkCmdBindDescriptorSets(command_buffer,VK_PIPELINE_BIND_POINT_GRAPHICS,
-                                    pipeline_layouts["MeshShaderPipeline"]->getHandle(),0,4,
+                                    pipeline_layouts["MeshShaderPipeline"]->getHandle(),2,2,
                                     desc,0,nullptr);
 
             auto indirect_buffer = resource_manager.get_buffer_cached(draw_indirect_buffers[i]);
@@ -208,16 +213,10 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
     uint32_t count = static_cast<uint32_t>(queries.statistics.size());
     //Query the results from pool
     vkGetQueryPoolResults(
-            device.getLogicalDevice(),
-            queries.statistics_pool,
-            0,
-            count,
-            count * sizeof(uint64_t),
-            queries.statistics.data(),
-            sizeof(uint64_t),
-            VK_QUERY_RESULT_64_BIT
+            device.getLogicalDevice(),queries.statistics_pool,0,
+            count,count * sizeof(uint64_t),
+            queries.statistics.data(),sizeof(uint64_t),VK_QUERY_RESULT_64_BIT
             );
-
 }
 
 
@@ -253,18 +252,19 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::compute_frustum_culling
     auto extent = swapchain.getExtent();
     culling_data.width_height_padding = glm::vec4(float(extent.width),do_occlusion_culling,0,0);
 
-    auto total_geometry_count = 0;
-    std::for_each(drawables.begin(),drawables.end(),[&total_geometry_count](auto& d)
-    {
-        total_geometry_count +=d.meshes.size() * d.instance_count;
-    });
-
-    auto min_size = std::max(std::min(total_geometry_count,STORAGE_SIZE),1);
-
     //Clear Visibility  First at first call of compute_frustum_culling
     auto occlusion_buffer = resource_manager.get_buffer_cached(occlusion_visibility_buffer[image_index]);
     if(!hiz_depth.visibility_first_cleared)
     {
+        auto total_geometry_count = 0;
+        std::for_each(drawables.begin(),drawables.end(),[&total_geometry_count](auto& d)
+        {
+            total_geometry_count +=d.meshes.size() * d.instance_count;
+        });
+
+        auto min_size = std::max(std::min(total_geometry_count,STORAGE_SIZE),1);
+
+
         auto& buffer_handle = occlusion_buffer->getBufferHandle();
         vkCmdFillBuffer(command, buffer_handle, 0, 4 * min_size, 0);
         VkBufferMemoryBarrier fillBarrier = VulkanBackend::buffer_barrier( buffer_handle, VK_ACCESS_TRANSFER_WRITE_BIT,

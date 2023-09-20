@@ -20,6 +20,9 @@ void main()
 {
 	//outFragColor = vec4(vec3(linearize_depth(gl_FragCoord.z)/1000.),1.0f);
     vec2 uv = vertexInput.uv.xy;
+
+    float gamma = 2.2;
     vec3 albedo = texture(albedo_sampler,uv).rgb;
-	outFragColor = vec4(albedo,1.0);
+    vec4 color = vec4(pow(albedo,vec3(1.0/gamma)),1.0);
+	outFragColor = color;
 }

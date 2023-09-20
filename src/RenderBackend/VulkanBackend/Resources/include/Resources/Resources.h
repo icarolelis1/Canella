@@ -168,6 +168,8 @@ namespace Canella
 
                 ResourceAccessor create_texture(const std::string& file_path,Device* device,VkFormat format);
 
+                void generate_mips(std::shared_ptr<Image> image,VkCommandBuffer command,uint32_t width,uint32_t height,uint32_t mip_levels);
+
                 ~ResourcesManager() = default;
 
                 /**
@@ -218,6 +220,9 @@ namespace Canella
                 std::unordered_map<ResourceAccessor, RefGPUResource> textures_cache;
                 Device *device;
                 std::mutex mutex;
+
+                void copy_buffer_to_image( int tex_width, int tex_height, std::shared_ptr<Buffer> &staging_buffer,
+                                           std::shared_ptr<Image> &image, VkCommandBuffer command_buffer ) const;
             };
         }
     } // namespace name
