@@ -3,6 +3,8 @@
 #include "Window/Window.h"
 #include "Components/Components.h"
 #include "Editor/Inspector.h"
+#include "imgui_impl_vulkan.h"
+
 void Canella::EditorLayer::setup_layer(Canella::Application* application,Canella::OnSelectOperation& on_select_operation )
 {
     inspector.set_application(application);
@@ -12,9 +14,9 @@ void Canella::EditorLayer::setup_layer(Canella::Application* application,Canella
     on_select_operation += on_select_oepration;
 }
 
-void Canella::EditorLayer::draw_layer() {
-    
-/*    auto coolbar_button     = [](const char* label) -> bool {
+void Canella::EditorLayer::draw_guizmos() {
+
+    /*    auto coolbar_button     = [](const char* label) -> bool {
         float w         = ImGui::GetCoolBarItemWidth();
         auto font_ptr   = ImGui::GetIO().Fonts->Fonts[0];
         font_ptr->Scale = ImGui::GetCoolBarItemScale();
@@ -43,7 +45,8 @@ void Canella::EditorLayer::draw_layer() {
         ImGui::EndCoolBar();
     }*/
 
-    inspector.build();
+    //inspector.build();
+
     if (entity_changed)
     {
         if(selected_entity.expired())
@@ -52,9 +55,15 @@ void Canella::EditorLayer::draw_layer() {
             return;
         }
 
-        auto& window = GlfwWindow::get_instance();
+        auto size = ImGui::GetWindowSize();
+
+        ImVec2 vMin = ImGui::GetWindowContentRegionMin();
+
+        vMin.x += ImGui::GetWindowPos().x;
+        vMin.y += ImGui::GetWindowPos().y;
+
         ImGuizmo::SetOrthographic(false);
-        ImGuizmo::SetRect( 0,0,window.getExtent().width,window.getExtent().height);
+        ImGuizmo::SetRect( vMin.x,vMin.y,size.x,size.y);
         ImGuizmo::Enable(true);
 
         auto camera_projection =  selected_entity.lock()->get_owner_scene().lock()->main_camera->projection;

@@ -88,6 +88,19 @@ namespace Canella
         OnOutputStatsEvent out_put_stats;
         OnSelectOperation on_select_operation;
         OnDeselect on_deselect;
+        std::vector<ImTextureID> color_id;
+
+        void allocate_color_image();
+
+        void bind_lost_swapchain_event();
+
+        void begin_imgui_render( uint32_t image_index, VkCommandBuffer &command_buffer,
+                                 RenderSystem::VulkanBackend::Renderpasses& render_passes );
+
+        void
+        end_imgui_render( VkCommandBuffer &command_buffer, RenderSystem::VulkanBackend::Renderpasses &render_passes ) ;
+
+        void setup_dock_space();
     };
 }
 

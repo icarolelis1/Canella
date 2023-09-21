@@ -120,6 +120,7 @@ namespace Canella
                 unsigned int current_frame = 0;
                 RenderCameraData render_camera_data;
                 std::vector<std::pair<std::string,VkDescriptorSet>> raw_materials;
+                VkSampler default_sampler;
 
             private:
                 Surface surface;
@@ -150,7 +151,6 @@ namespace Canella
                 void update_view_projection( glm::mat4 &view, glm::mat4 &projection, uint32_t next_image_index );
                 std::mutex mutex;
                 std::mutex mutex2;
-                VkSampler default_sampler;
                 int8_t should_reload =  0;
                 bool resources_loaded = false;
             };

@@ -66,6 +66,7 @@ namespace Canella
                 std::vector<VkClearValue> clearValues,
                 uint32_t imageIndex,
                 VkSubpassContents contents)
+                const
             {
                 VkRenderPassBeginInfo info = {};
                 info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -189,7 +190,7 @@ namespace Canella
                 }
             }
 
-            void RenderPass::endRenderPass(VkCommandBuffer commandBuffer)
+            void RenderPass::endRenderPass(VkCommandBuffer commandBuffer) const
             {
                 vkCmdEndRenderPass(commandBuffer);
             }

@@ -5,11 +5,14 @@
 #include "memory"
 #include "Components/Components.h"
 #include <random>
+#include <imgui_internal.h>
 #include <ImGuizmo.h>
 #include "Editor/Inspector.h"
-#include <glm/gtc/quaternion.hpp>
+#include "Editor/Viewport.h"
 #include "Mesh/Mesh.h"
 #include "AssetSystem/AssetSystem.h"
+
+
 
 Canella::Logger::Priority Canella::Logger::log_priority = Canella::Logger::Priority::Error_LOG;
 std::mutex Canella::Logger::logger_mutex;
@@ -38,10 +41,21 @@ Canella::Editor::Editor() :on_select_entity(layer.on_select_entity)
     setup_imgui();
     bind_shortcuts();
     layer.setup_layer(application.get(),on_select_operation);
+    allocate_color_image();
+    bind_lost_swapchain_event();
 #endif
-
     std::function<void(std::weak_ptr<Entity>)> on_select = [=](std::weak_ptr<Entity> entity){ selected_entity = entity;};
     on_select_entity += on_select;
+
+}
+
+void Canella::Editor::allocate_color_image() {
+    auto     size = render.renderpassManager.renderpasses["basic"]->image_accessors[0].size();
+    for(auto i    = 0 ; i < size ; i++)
+    {
+        auto image = render.resources_manager.get_image_cached( render.renderpassManager.renderpasses["basic"]->image_accessors[0][i]);
+        color_id.push_back( ImGui_ImplVulkan_AddTexture( render.default_sampler, image->view, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL ));
+    }
 }
 
 void Canella::Editor::bind_shortcuts()
@@ -70,8 +84,7 @@ void Canella::Editor::bind_shortcuts()
                     return;
             auto target = selected_entity.lock()->get_component<TransformComponent>().position;
             auto cam = application->scene->main_camera;
-            auto direction = glm::normalize( -
-                     cam->entity_transform->position);
+            auto direction = glm::normalize( -cam->entity_transform->position);
             auto quat = glm::quatLookAt(direction,cam->euler.up);
             auto delta = -cam->entity_transform->orientation + quat;
             cam->entity_transform->orientation *= delta;
@@ -84,7 +97,7 @@ void Canella::Editor::bind_shortcuts()
             TextureSlot slot = {"normal_flip_3.jpg","Albedo"};
             MaterialDescription material_description = {};
             material_description.texture_slots.push_back(std::move(slot));
-            material_description.name = "BocetinhaDeCoco";
+            material_description.name = "TEST_MATERIAL_LOAD`";
             asset_system.load_material_async( material_description,application->material_collection);
         }
     };
@@ -150,6 +163,7 @@ void Canella::Editor::setup_imgui()
     ImGui::CreateContext();
 
     ImGuiIO &io = ImGui::GetIO();
+    io.ConfigFlags = ImGuiConfigFlags_::ImGuiConfigFlags_DockingEnable;
     // Add the custom font
     io.Fonts->AddFontFromFileTTF(R"(resources\Fonts\RobotoRegular-3m4L.ttf)",30);
 
@@ -211,42 +225,51 @@ void Canella::Editor::setup_imgui()
 
 void Canella::Editor::render_editor_gui(VkCommandBuffer &command_buffer, uint32_t image_index)
 {
-    auto &render_passes = render.renderpassManager.renderpasses;
-    auto &swapchain = render.swapChain;
-
-    std ::vector<VkClearValue> clearValues;
-    const VkViewport viewport = swapchain.get_view_port();
-    const VkRect2D rect_2d = swapchain.get_rect2d();
-    //current_frame.secondaryPool.begin_command_buffer(&render.device, command_buffer true);
-    render_passes["imgui"]->beginRenderPass(command_buffer, clearValues, image_index);
-    vkCmdSetViewport(command_buffer, 0, 1, &viewport);
-    vkCmdSetScissor(command_buffer, 0, 1, &rect_2d);
-    ImGui_ImplGlfw_NewFrame();
-    ImGui_ImplVulkan_NewFrame();
-
-    ImGui ::NewFrame();
+    auto& render_passes = render.renderpassManager.renderpasses;
+    begin_imgui_render( image_index, command_buffer, render_passes );
+    setup_dock_space();
+    layer.inspector.build();
+    auto flags = ImGuiWindowFlags_::ImGuiWindowFlags_NoScrollbar;
+    ImGui::Begin("Viewport",NULL,flags);
+    Viewport::build_viewport( color_id[image_index]);
     ImGuizmo::BeginFrame();
-    ImGuizmo::SetDrawlist(ImGui::GetBackgroundDrawList());
-    ImVec2 size = ImGui::GetContentRegionAvail();
-    ImVec2 cursorPos = ImGui::GetCursorScreenPos();
-    ImGuizmo::SetRect(cursorPos.x,cursorPos.y, size.x, size.y);
-
-    if(show_inspector)
-    layer.draw_layer();
-
-    display_graphics_status();
+    ImGuizmo::SetDrawlist();
+    layer.draw_guizmos();
     display_bounding_boxes();
+    display_graphics_status();
+    ImGui::End();
+    ImGui::End();
+    end_imgui_render( command_buffer,render_passes );
+}
 
+void Canella::Editor::end_imgui_render( VkCommandBuffer &command_buffer, Renderpasses &render_passes )  {
     ImGui ::Render();
     ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), command_buffer);
     render_passes["imgui"]->endRenderPass(command_buffer);
 }
 
+void Canella::Editor::begin_imgui_render( uint32_t image_index, VkCommandBuffer &command_buffer,
+                                          RenderSystem::VulkanBackend::Renderpasses& render_passes ) {
+    auto &swapchain = render.swapChain;
+
+    std ::vector<VkClearValue> clear_values(1);
+    clear_values[0].color = {{NORMALIZE_COLOR(7), NORMALIZE_COLOR(7), NORMALIZE_COLOR(7), 0.0f}};
+    const VkViewport vk_viewport = swapchain.get_view_port();
+
+    const VkRect2D rect_2d = swapchain.get_rect2d();
+    //current_frame.secondaryPool.begin_command_buffer(&render.device, command_buffer true);
+    render_passes["imgui"]->beginRenderPass(command_buffer, clear_values, image_index);
+    vkCmdSetViewport(command_buffer, 0, 1, &vk_viewport);
+    vkCmdSetScissor(command_buffer, 0, 1, &rect_2d);
+    ImGui_ImplGlfw_NewFrame();
+    ImGui_ImplVulkan_NewFrame();
+    ImGui ::NewFrame();
+
+}
+
 void Canella::Editor::display_graphics_status()
 {
     if (show_status) {
-
-
         ImGuiIO &io = ImGui::GetIO();
         float display_width = (float) io.DisplaySize.x;
 
@@ -263,7 +286,6 @@ void Canella::Editor::display_graphics_status()
         out_put_stats.invoke();
         ImGui::End();
     }
-    ImGui::ShowDemoWindow();
 }
 
 Canella::Editor::~Editor()
@@ -280,8 +302,13 @@ Canella::Editor::~Editor()
 void Canella::Editor::display_bounding_boxes() {
     if( show_volume )
     {
-        auto &window = GlfwWindow::get_instance();
-        auto extent = window.getExtent();
+
+        auto size = ImGui::GetWindowSize();
+
+        ImVec2 vMin = ImGui::GetWindowContentRegionMin();
+        vMin.x += ImGui::GetWindowPos().x;
+        vMin.y += ImGui::GetWindowPos().y;
+
         auto& view =    application->scene->main_camera->view;
         auto&projection =    application->scene->main_camera->projection;
         auto& drawables  = application->render->get_drawables();
@@ -294,10 +321,44 @@ void Canella::Editor::display_bounding_boxes() {
                     //sphere.center  = mesh.bounding_volume.center + drawable.instance_data[i].position_offset;
                     sphere.center  = m *  (glm::vec4(drawable.instance_data[i].position_offset.x,drawable.instance_data[i].position_offset.y,drawable.instance_data[i].position_offset.z,1.0));
                     sphere.center += s/2.0f;
-                    auto  box_min_max = MeshProcessing::project_box_from_sphere(drawable.model_matrix,sphere,extent.width,extent.height,view,projection);
-                    auto  box_min = ImVec2(box_min_max[0].x,box_min_max[0].y);
-                    auto  box_max = ImVec2(box_min_max[1].x,box_min_max[1].y);
-                    ImGui::GetBackgroundDrawList()->AddRect(box_min,box_max,IM_COL32(255, 255, 0, 255));
+                    auto  box_min_max = MeshProcessing::project_box_from_sphere(drawable.model_matrix,sphere,size.x,size.y,view,projection);
+                    auto  box_min = ImVec2(box_min_max[0].x + vMin.x ,box_min_max[0].y + vMin.y);
+                    auto  box_max = ImVec2(box_min_max[1].x + vMin.x ,box_min_max[1].y + vMin.y);
+                    ImGui::GetForegroundDrawList()->AddRect(box_min,box_max,IM_COL32(255, 255, 0, 255));
                 }
     }
+}
+
+void Canella::Editor::bind_lost_swapchain_event() {
+    std::function<void( Canella::Render * )> reload_fn_pass_manager = [=]( Canella::Render * ) {
+        color_id.clear();
+        vkDeviceWaitIdle(render.device.getLogicalDevice());
+        allocate_color_image();
+    };
+    Event_Handler<Canella::Render *> reload(reload_fn_pass_manager);
+    render.OnLostSwapchain += reload;
+}
+
+void Canella::Editor::setup_dock_space() {
+
+    auto flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+    auto &window = GlfwWindow::get_instance();
+    auto extent = window.getExtent();
+    ImGui::SetNextWindowPos(ImVec2(0.0f,0.0f),ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(extent.width,extent.height));
+
+    ImGui::PushStyleVar(ImGuiStyleVar_::ImGuiStyleVar_WindowRounding,0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_::ImGuiStyleVar_WindowBorderSize,0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
+
+    flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove
+            | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus ;
+
+    static bool dock = true;
+    ImGui::Begin("Dock Space",&dock, flags);
+    ImGui::PopStyleVar(3);
+
+    //Dock Space
+    ImGui::DockSpace(ImGui::GetID("DockSpace"));
 }

@@ -38,8 +38,27 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/imgui.ini" beforeDir="false" afterPath="$PROJECT_DIR$/imgui.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/assets/model_test/fusion_suit_samus.glb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/config/render_path/basic.json" beforeDir="false" afterPath="$PROJECT_DIR$/resources/config/render_path/basic.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Editor/include/Editor/Editor.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Editor/include/Editor/Editor.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Editor/include/Editor/EditorLayer.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Editor/include/Editor/EditorLayer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Editor/src/Editor.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Editor/src/Editor.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Editor/src/EditorLayer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Editor/src/EditorLayer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Editor/src/Inspector.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Editor/src/Inspector.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ImGUI/imconfig.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/ImGUI/imconfig.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ImGUI/imgui.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ImGUI/imgui.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ImGUI/imgui.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/ImGUI/imgui.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ImGUI/imgui_demo.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ImGUI/imgui_demo.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ImGUI/imgui_draw.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ImGUI/imgui_draw.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ImGUI/imgui_internal.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/ImGUI/imgui_internal.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ImGUI/imgui_tables.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ImGUI/imgui_tables.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ImGUI/imgui_widgets.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ImGUI/imgui_widgets.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ImGUI/imstb_rectpack.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/ImGUI/imstb_rectpack.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ImGUI/imstb_truetype.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/ImGUI/imstb_truetype.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/GeometryNode.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/RenderNodes/src/GeometryNode.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Renderpass/include/Renderpass/Renderpass.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Renderpass/include/Renderpass/Renderpass.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Renderpass/src/Renderpass.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Renderpass/src/Renderpass.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/VulkanRender/include/VulkanRender/VulkanRender.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/VulkanRender/include/VulkanRender/VulkanRender.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/VulkanRender/src/VulkanRender.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderBackend/VulkanBackend/VulkanRender/src/VulkanRender.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -117,11 +136,6 @@
     </key>
   </component>
   <component name="RunManager" selected="CMake Application.Canella">
-    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="Canella" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Canella" TARGET_NAME="Canella" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Canella" RUN_TARGET_NAME="Canella">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -148,6 +162,11 @@
       </method>
     </configuration>
     <configuration name="Systems" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Canella" TARGET_NAME="Systems" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -378,6 +397,7 @@
       <workItem from="1695121003824" duration="16478000" />
       <workItem from="1695210827134" duration="13435000" />
       <workItem from="1695241551681" duration="5049000" />
+      <workItem from="1695291021137" duration="18061000" />
     </task>
     <servers />
   </component>
@@ -411,17 +431,17 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/src/Editor/src/Inspector.cpp</url>
-          <line>228</line>
+          <line>225</line>
           <option name="timeStamp" value="597" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/src/Editor/src/Inspector.cpp</url>
-          <line>229</line>
+          <line>226</line>
           <option name="timeStamp" value="598" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/src/Editor/src/Inspector.cpp</url>
-          <line>221</line>
+          <line>218</line>
           <option name="timeStamp" value="601" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
@@ -453,21 +473,6 @@
           <url>file://$PROJECT_DIR$/src/Serializer/src/Serializer.cpp</url>
           <line>117</line>
           <option name="timeStamp" value="703" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/RenderBackend/VulkanBackend/Resources/src/Resources.cpp</url>
-          <line>563</line>
-          <option name="timeStamp" value="719" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/Serializer/src/Serializer.cpp</url>
-          <line>49</line>
-          <option name="timeStamp" value="725" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/Serializer/src/Serializer.cpp</url>
-          <line>47</line>
-          <option name="timeStamp" value="726" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

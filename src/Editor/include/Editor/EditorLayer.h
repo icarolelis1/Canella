@@ -15,18 +15,15 @@ namespace Canella
         EditorLayer();
          void setup_layer(Application *application, OnSelectOperation& on_select_operation );
         ~EditorLayer() = default;
-        void draw_layer();
+        void draw_guizmos();
         OnSelectEntity& on_select_entity;
-    private:
-
-
         Canella::Inspector inspector;
+    private:
         IMGUIZMO_NAMESPACE::OPERATION operation = ImGuizmo::TRANSLATE;
         bool entity_changed = false;
         void action_on_select_entity(std::weak_ptr<Entity> entity);
         void action_select_operation(IMGUIZMO_NAMESPACE::OPERATION operation);
         void action_on_deselect_entity();
-
         std::weak_ptr<Entity> selected_entity;
     };
 }

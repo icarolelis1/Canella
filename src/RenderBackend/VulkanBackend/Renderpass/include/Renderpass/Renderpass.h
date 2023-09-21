@@ -90,18 +90,15 @@ namespace Canella
                  * @param frameBuffer vulkan framebuffer associated with this renderpass
                  * @param contents
                  */
-                void beginRenderPass(
-                    VkCommandBuffer &commandBuffer,
-                    std::vector<VkClearValue> clearValue,
-                    uint32_t imageIndex,
-                    VkSubpassContents contents = VK_SUBPASS_CONTENTS_INLINE);
+                void beginRenderPass(VkCommandBuffer &commandBuffer,std::vector<VkClearValue> clearValue,uint32_t imageIndex,
+                    VkSubpassContents contents = VK_SUBPASS_CONTENTS_INLINE) const;
 
                 /**
                  * @brief calls endRenderpass
                  *
                  * @param cmd the command in which the renderpass has begun
                  */
-                void endRenderPass(VkCommandBuffer cmd);
+                void endRenderPass(VkCommandBuffer cmd) const;
 
             private:
                 bool use_external_framebuffer = false;

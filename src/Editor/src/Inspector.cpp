@@ -30,28 +30,25 @@ void Canella::Inspector::build() {
     if(application == nullptr) return;
     bool             open         = true;
     ImGuiWindowFlags window_flags = 0;
-    window_flags |= ImGuiWindowFlags_NoTitleBar;
-    window_flags |= ImGuiWindowFlags_NoMove;
-    window_flags |= ImGuiWindowFlags_NoResize;
 
-    ImGui::SetNextWindowBgAlpha(0.55f); // Transparent background
     if ( !ImGui::Begin( "Inspector", &open,window_flags)) {
         ImGui::End();
         return;
     }
     save_button();
-    ImGuiIO &io            = ImGui::GetIO();
+ /*   ImGuiIO &io            = ImGui::GetIO();
     float   display_width  = ( float ) io.DisplaySize.x;
-    float   display_height = ( float ) io.DisplaySize.y;
-    ImGui::SetWindowPos( ImVec2( 0, 0 ));
-    auto min_width = glm::min( display_width * 0.25f, 520.0f );
-    ImGui::SetWindowSize( ImVec2( min_width, display_height ));
+    float   display_height = ( float ) io.DisplaySize.y;*/
+/*    ImGui::SetWindowPos( ImVec2( 0, 0 ));
+    auto min_width = glm::min( display_width * 0.25f, 520.0f );*/
+    //ImGui::SetWindowSize( ImVec2( min_width, display_height ));
     ImGui::Dummy(ImVec2(0,5));
 
     hierarchy_tab();
 
     if(selected_entity.lock())
-        build_property_window(ImVec2(min_width,0));
+        build_property_window(ImVec2(25,0));
+
     ImGui::End();
 
 }

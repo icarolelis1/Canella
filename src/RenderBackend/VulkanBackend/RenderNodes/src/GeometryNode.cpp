@@ -90,7 +90,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
         if(clear)
         {
             clear_values.resize(2);
-            clear_values[0].color = {{NORMALIZE_COLOR(13), NORMALIZE_COLOR(13), NORMALIZE_COLOR(33), 1.0f}};
+            clear_values[0].color = {{NORMALIZE_COLOR(7), NORMALIZE_COLOR(7), NORMALIZE_COLOR(7), 1.0f}};
             clear_values[1].depthStencil = {1.f,0};
         }
 
@@ -159,17 +159,18 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
     vkCmdEndQuery(command_buffer,queries.statistics_pool,0);
     //Change Pyramid and Swapchain Image Layout
     auto pyramid = resource_manager.get_image_cached(hiz_depth.pyramidImage);
-    VkImageMemoryBarrier copyBarriers[] =
-                 {
-                         image_barrier( main_color->image, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-                                        VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-                                        VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_ASPECT_COLOR_BIT ),
-                         image_barrier( swapchain.get_images()[index], 0, VK_ACCESS_TRANSFER_WRITE_BIT,
-                                        VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                                        VK_IMAGE_ASPECT_COLOR_BIT ),
-                 };
 
-    vkCmdPipelineBarrier(command_buffer, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_DEPENDENCY_BY_REGION_BIT, 0, 0, 0, 0, 2,copyBarriers);
+    VkImageMemoryBarrier color_barrier = image_barrier( main_color->image, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+                                        VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                                        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_ASPECT_COLOR_BIT );
+
+
+    vkCmdPipelineBarrier(command_buffer, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+                         VK_PIPELINE_STAGE_TRANSFER_BIT,
+                         VK_DEPENDENCY_BY_REGION_BIT, 0, 0,
+                         0, 0, 1,
+                         &color_barrier);
+
     auto extent  = swapchain.getExtent();
 
     if ( false )
@@ -201,13 +202,21 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
         copyRegion.dstSubresource.layerCount = 1;
         copyRegion.extent = { extent.width, extent.height, 1 };
 
-        vkCmdCopyImage(command_buffer, main_color->image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, swapchain.get_images()[index], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyRegion);
+        //vkCmdCopyImage(command_buffer, main_color->image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, swapchain.get_images()[index], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyRegion);
     }
 
-    VkImageMemoryBarrier presentBarrier = image_barrier( swapchain.get_images()[index], VK_ACCESS_TRANSFER_WRITE_BIT, 0,
-                                                         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+/*    VkImageMemoryBarrier presentBarrier = image_barrier( swapchain.get_images()[index], VK_ACCESS_TRANSFER_WRITE_BIT,
+                                                         0,
+                                                         VK_IMAGE_LAYOUT_UNDEFINED,
                                                          VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_ASPECT_COLOR_BIT );
-    vkCmdPipelineBarrier(command_buffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_DEPENDENCY_BY_REGION_BIT, 0, 0, 0, 0, 1, &presentBarrier);
+
+    vkCmdPipelineBarrier(command_buffer, VK_PIPELINE_STAGE_TRANSFER_BIT,
+                         VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+                         VK_DEPENDENCY_BY_REGION_BIT, 0,
+                         0, 0, 0,
+
+                         1, &presentBarrier);*/
+
     vkGetQueryPoolResults(device.getLogicalDevice(),queries.timestamp_pool,0,queries.time_stamps.size(),sizeof(uint64_t) * queries.time_stamps.size(),queries.time_stamps.data(),sizeof(uint64_t),VK_QUERY_RESULT_64_BIT);
 
     uint32_t count = static_cast<uint32_t>(queries.statistics.size());

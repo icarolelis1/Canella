@@ -404,14 +404,15 @@ void VulkanRender::setup_internal_renderer_events()
     {
        this->should_reload = 1;
     };
-
     Event_Handler<Canella::Render *> reload_renderpass_manager(reload_fn_pass_manager);
+
     Event_Handler<Extent> reload_on_resize(resize_fn);
 
     std::function<void(VkSemaphore &,VkPipelineStageFlagBits)> submite_transfer = [=](VkSemaphore &semaphore,VkPipelineStageFlagBits stage)
     {
         enqueue_waits(semaphore,stage);
     };
+
     Event_Handler<VkSemaphore &,VkPipelineStageFlagBits> submite_transfer_command_handler(submite_transfer);
 
     resources_manager.OnTransferCommand += submite_transfer_command_handler;
