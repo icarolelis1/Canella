@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\CMakeFiles\fccb56f2c354f5395c7d308708392066\PACKAGE_force.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{14B0E372-63C8-3A46-B8B3-91B7F3378D4C}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

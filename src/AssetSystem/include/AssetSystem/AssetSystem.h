@@ -50,6 +50,10 @@ namespace Canella
          */
         void set_renderer(Canella::Render* render);
 
+        void batch_models_in_hierarchy(std::shared_ptr<Entity> entity);
+
+        uint64_t load_ktx_cube_map(const std::string& path);
+
     private:
         Canella::Render* renderer;
         AssetSystem() = default;

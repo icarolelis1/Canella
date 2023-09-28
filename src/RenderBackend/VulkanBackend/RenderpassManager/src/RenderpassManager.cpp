@@ -53,37 +53,30 @@ namespace Canella
                     // For each attachemnt defined in the renderpass i we store the vulkan especification for it
                     for (uint32_t j = 0; j < attchmenCount; ++j)
                     {
-                        nlohmann::json renderAttachmentDescriptionJson = renderpassJson["Attachments_descriptions"][
-                            std::to_string(j)];
+                        nlohmann::json renderAttachmentDescriptionJson = renderpassJson["Attachments_descriptions"][std::to_string(j)];
                         RenderAttachment attachment;
                         attachment.description = {};
                         attachment.reference = {};
                         std::string format_str = renderAttachmentDescriptionJson["Format"].get<std::string>();
                         VkFormat format = get_attachment_format(format_str.c_str(),swapchain);
                         attachment.description.format = format;
-                        attachment.description.samples = convert_from_string_sample_count(
-                            renderAttachmentDescriptionJson["Samples"].get<std::string>().c_str());
-                        attachment.description.loadOp = convert_from_string_loadOp(
-                            renderAttachmentDescriptionJson["LoadOp"].get<std::string>().c_str());
-                        attachment.description.storeOp = convert_from_string_storeOp(
-                            renderAttachmentDescriptionJson["StoreOp"].get<std::string>().c_str());
+                        attachment.description.samples = convert_from_string_sample_count(renderAttachmentDescriptionJson["Samples"].get<std::string>().c_str());
+                        attachment.description.loadOp = convert_from_string_loadOp(renderAttachmentDescriptionJson["LoadOp"].get<std::string>().c_str());
+                        attachment.description.storeOp = convert_from_string_storeOp(renderAttachmentDescriptionJson["StoreOp"].get<std::string>().c_str());
                         attachment.description.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
                         attachment.description.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-                        attachment.description.initialLayout = convert_from_string_image_layout(
-                            renderAttachmentDescriptionJson["InitialLayout"].get<std::string>().c_str());
-                        attachment.description.finalLayout =
-                                convert_from_string_image_layout(
-                                        renderAttachmentDescriptionJson["FinalLayout"].get<std::string>().c_str());
+                        attachment.description.initialLayout = convert_from_string_image_layout(renderAttachmentDescriptionJson["InitialLayout"].get<std::string>().c_str());
+                        attachment.description.finalLayout = convert_from_string_image_layout(renderAttachmentDescriptionJson["FinalLayout"].get<std::string>().c_str());
+                        attachment.reference.attachment = renderAttachmentDescriptionJson["Attachment"].get<std::uint32_t>();
+                        attachment.reference.layout = convert_from_string_image_layout(renderAttachmentDescriptionJson["AttachmentLayout"].get<std::string>().c_str());
                         attachment.description.flags = 0;
-                        attachment.reference.attachment = renderAttachmentDescriptionJson["Attachment"].get<
-                            std::uint32_t>();
-                        attachment.reference.layout = convert_from_string_image_layout(
-                                renderAttachmentDescriptionJson["AttachmentLayout"].get<std::string>().c_str());
+
                         render_attachments_descriptions.push_back(attachment);
                     }
 
                     // For each internal subpass in the renderpass of index i we store the subpassdescription and dependency for it
                     std::vector<Subpass> subpasses;
+                    std::vector<VkAttachmentReference> description_color_attachments;
                     for (uint32_t j = 0; j < renderpassManagerDescription.renderpasses_descriptions[i].
                          number_of_subpasses; ++j)
                     {
@@ -94,23 +87,25 @@ namespace Canella
 
                         // For each subpass description inside subpass j
                         VkSubpassDescription description = {};
+
                         for (uint32_t x = 0; x < subpass.description.size(); ++x)
                         {
+                            description_color_attachments.clear();
                             nlohmann::json subpassDescriptionJson = subpassesDescriptionsJson[std::to_string(x)];
-
                             description.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-
                             description.colorAttachmentCount = subpassDescriptionJson["ColorAttachmentCount"].get<std::uint32_t>();
+                            for(auto col_attachment_index = 0 ; col_attachment_index < description.colorAttachmentCount; ++col_attachment_index)
+                            {
+                                description_color_attachments.push_back(render_attachments_descriptions[subpassDescriptionJson["ColorAttachemntIndex"][col_attachment_index].get<std::uint32_t>()].reference);
+                            }
+
+                            description.pColorAttachments = description_color_attachments.data();
+                            bool has_depth = subpassDescriptionJson["HasDepthAttachment"].get<bool>();
                             description.inputAttachmentCount = 0;
                             description.preserveAttachmentCount = 0;
-                            description.pColorAttachments =
-                                    &render_attachments_descriptions[subpassDescriptionJson[
-                                    "ColorAttachemntIndex"][0].get<std::uint32_t>()].reference;
-                            bool has_depth = subpassDescriptionJson["HasDepthAttachment"].get<bool>();
-                            if(has_depth)
+                            if ( has_depth )
                             {
-                                description.pDepthStencilAttachment = &render_attachments_descriptions[subpassDescriptionJson[
-                                        "DepthAttachmentIndex"].get<std::uint32_t>()].reference;
+                                description.pDepthStencilAttachment = &render_attachments_descriptions[subpassDescriptionJson["DepthAttachmentIndex"].get<std::uint32_t>()].reference;
                             }
                             description.flags = 0;
                             subpass.description[x] = description;

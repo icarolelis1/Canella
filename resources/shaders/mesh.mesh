@@ -11,55 +11,59 @@ layout(triangles, max_vertices = 64, max_primitives = 128) out;
 
 #include "common.glsl"
 
-layout (set = 0 ,binding = 0) uniform UBO 
+layout (set = 0 ,binding = 0) uniform UBO
 {
-	mat4 view_projection;
-	vec4 eye;
+    mat4 view_projection;
+    vec4 eye;
+    mat4 projection;
+    mat4 view;
 } ubo;
 
-layout(std430,set = 1 ,binding = 0) readonly  buffer Model_Matrixes
+layout(std430,set = 2 ,binding = 0) readonly  buffer Model_Matrixes
 {
 	mat4 model_Matrices[];
 };
 
-layout(std430,set = 2 ,binding = 0) readonly  buffer Meshlets
+layout(std430,set = 3 ,binding = 0) readonly  buffer Meshlets
 {
 	Meshlet meshlets[];
 };
 
-layout(std430, set = 2 ,binding = 1) readonly  buffer Vertices
+layout(std430, set = 3 ,binding = 1) readonly  buffer Vertices
 {
 	Vertex vertices[];
 };
 
-layout(set = 2 ,binding = 2) readonly  buffer Bounds
+layout(set = 3 ,binding = 2) readonly  buffer Bounds
 {
 	MeshletBound bounds[];
 };
 
-layout( set = 2 ,binding = 3) readonly buffer MeshletIndices
+layout( set = 3 ,binding = 3) readonly buffer MeshletIndices
 {
 	uint8_t meshlet_indices[];
 };
 
-layout( set = 2 ,binding = 4) readonly buffer MeshletVertices
+layout( set = 3 ,binding = 4) readonly buffer MeshletVertices
 {
 	uint meshlet_vertices[];
 };
-layout( set = 2 ,binding = 5) readonly buffer MeshDrawCommand
+layout( set = 3 ,binding = 5) readonly buffer MeshDrawCommand
 {
 	IndirectDrawDispatch draw_commands[];
 };
 
-layout( set = 2 ,binding = 6) readonly buffer MeshData
+layout( set = 3 ,binding = 6) readonly buffer MeshData
 {
 	StaticMeshData static_meshes[];
 };
 
 layout(location = 0) out VertexOutput
 {
-	vec4 color;
+	vec3 world_pos;
 	vec2 uv;
+	vec3 normal;
+
 } vertexOutput[];
 
 struct Task
@@ -100,18 +104,18 @@ void main()
     model = model_Matrices[mesh.mesh_id];
  else
     model = specialize_mesh.model_matrix;
- mat4 mvp = ubo.view_projection;
+ mat4 vp = ubo.view_projection;
 
 if( ti < meshlet.vertex_count )
 {
   	uint vertex_indice = uint(meshlet_vertices[meshlet.vertex_offset + ti + mesh.meshlet_vertices_offset]);
 	vec3 fragPos = vec3(model * vec4(vertices[vertex_indice + mesh.vertex_offset].position.xyz + mesh.pos,1.0));
-  	gl_MeshVerticesEXT[ti].gl_Position = mvp * vec4(fragPos,1.0)  ;
+  	gl_MeshVerticesEXT[ti].gl_Position = vp * vec4(fragPos,1.0)  ;
 
 	uint mhash = hash(mi);
-	vec3 mcolor = vec3(float(mhash & 255), float((mhash >> 8) & 255), float((mhash >> 16) & 255)) / 255.0;
-	vertexOutput[ti].color = vec4(mcolor,1);
+	vertexOutput[ti].world_pos = fragPos;
 	vertexOutput[ti].uv = vertices[vertex_indice].uv.xy;
+	vertexOutput[ti].normal = normalize(mat3(model) * vertices[vertex_indice].normal.xyz).xyz;
 }
 
 if ( ti < meshlet.triangle_count )

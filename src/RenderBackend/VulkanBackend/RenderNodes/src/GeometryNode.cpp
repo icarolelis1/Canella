@@ -58,13 +58,13 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
     auto &drawables = vulkan_renderer->get_drawables();
     auto &resource_manager = vulkan_renderer->resources_manager;
     auto main_color = resource_manager.get_image_cached(renderpasses["basic"]->image_accessors[0][index]);
-    auto main_depth = resource_manager.get_image_cached(renderpasses["basic"]->image_accessors[1][index]);
+    auto main_depth = resource_manager.get_image_cached(renderpasses["basic"]->image_accessors[3][index]);
 
     //Reset Query
     reset_queries( command_buffer );
     // Compute Frustum culling
     if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool,8);
-    compute_frustum_culling(render, command_buffer, pipelines["CommandProcessor"]->getPipelineHandle(), drawables, current_frame);
+    compute_frustum_culling( render, command_buffer, pipelines["CommandProcessor"]->get_pipeline_handle(), drawables, current_frame);
     if (debug_statics)vkCmdWriteTimestamp(command_buffer,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,queries.timestamp_pool, 9);
 
     //Move attachemnts layout to optimal layouts
@@ -89,29 +89,33 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
         std::vector<VkClearValue> clear_values = {};
         if(clear)
         {
-            clear_values.resize(2);
+            clear_values.resize(4);
             clear_values[0].color = {{NORMALIZE_COLOR(7), NORMALIZE_COLOR(7), NORMALIZE_COLOR(7), 1.0f}};
-            clear_values[1].depthStencil = {1.f,0};
+            clear_values[1].color = {{NORMALIZE_COLOR(7), NORMALIZE_COLOR(7), NORMALIZE_COLOR(7), 1.0f}};
+            clear_values[2].color = {{NORMALIZE_COLOR(7), NORMALIZE_COLOR(7), NORMALIZE_COLOR(7), 1.0f}};;
+            clear_values[3].depthStencil = {1.f,0};
         }
 
         if (begin_render_pass)
             current_renderpass.beginRenderPass(command_buffer, clear_values, current_frame,VK_SUBPASS_CONTENTS_INLINE);
 
-        vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,pipelines[pipeline_name]->getPipelineHandle());
+        vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                          pipelines[pipeline_name]->get_pipeline_handle());
 
-        VkDescriptorSet desc[2] = {global_descriptors[index],transform_descriptors[index]};
-        vkCmdBindDescriptorSets(command_buffer,VK_PIPELINE_BIND_POINT_GRAPHICS,
-                                pipeline_layouts["MeshShaderPipeline"]->getHandle(),0,2,
-                                desc,0,nullptr);
+        VkDescriptorSet desc[3] = {global_descriptors[index],vulkan_renderer->enviroment_set, transform_descriptors[index]};
+
+        vkCmdBindDescriptorSets( command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                                 pipeline_layouts["MeshShaderPipeline"]->get_handle(), 0, 3,
+                                 desc, 0, nullptr);
 
         for (auto i = 0; i < drawables.size(); ++i)
         {
             auto material = vulkan_renderer->raw_materials[0].second;
 
             VkDescriptorSet desc[2] = { descriptors[i].descriptor_sets[index],material};
-            vkCmdBindDescriptorSets(command_buffer,VK_PIPELINE_BIND_POINT_GRAPHICS,
-                                    pipeline_layouts["MeshShaderPipeline"]->getHandle(),2,2,
-                                    desc,0,nullptr);
+            vkCmdBindDescriptorSets( command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                                     pipeline_layouts["MeshShaderPipeline"]->get_handle(), 3, 2,
+                                     desc, 0, nullptr);
 
             auto indirect_buffer = resource_manager.get_buffer_cached(draw_indirect_buffers[i]);
             auto command_count = resource_manager.get_buffer_cached(command_count_buffers[i]);
@@ -121,7 +125,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
             mesh_specialize.dyamic  = !drawables[i].is_static;
             mesh_specialize.model_matrix = *drawables[i].model_matrix;
 
-            vkCmdPushConstants(command_buffer,pipeline_layouts["MeshShaderPipeline"]->getHandle(),VK_SHADER_STAGE_TASK_BIT_EXT | VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_COMPUTE_BIT,0, sizeof(mesh_specialize),&mesh_specialize);
+            vkCmdPushConstants( command_buffer, pipeline_layouts["MeshShaderPipeline"]->get_handle(), VK_SHADER_STAGE_TASK_BIT_EXT | VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_COMPUTE_BIT, 0, sizeof(mesh_specialize), &mesh_specialize);
 
             vulkan_renderer->vkCmdDrawMeshTasksIndirectCountEXT(
                     command_buffer,indirect_buffer->getBufferHandle(),0,command_count->getBufferHandle(),0,drawables[i].meshes.size() * drawables[i].instance_count,indirect_size);
@@ -158,7 +162,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute(
     }
     vkCmdEndQuery(command_buffer,queries.statistics_pool,0);
     //Change Pyramid and Swapchain Image Layout
-    auto pyramid = resource_manager.get_image_cached(hiz_depth.pyramidImage);
+    auto pyramid = resource_manager.get_image_cached(hiz_depth.pyramid_image);
 
     VkImageMemoryBarrier color_barrier = image_barrier( main_color->image, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
                                         VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
@@ -245,7 +249,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::compute_frustum_culling
 
     auto projection_view = render_camera_data.projection * render_camera_data.view;
     glm::mat4 projection_view_transposed = glm::transpose(projection_view);
-    auto compute_pipeline_layout = pipeline_layouts["CommandProcessor"]->getHandle();
+    auto compute_pipeline_layout = pipeline_layouts["CommandProcessor"]->get_handle();
 
     auto normalize_plane = [](glm::vec4 p)
     { return p / length(glm::vec3(p)); };
@@ -333,8 +337,8 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::execute_occlusion_culli
     auto& pipelines = vulkan_renderer->cachedPipelines;
     auto& layouts = vulkan_renderer->cachedPipelineLayouts;
 
-    auto& occlusion_pipeline = pipelines["OcclusionCulling"]->getPipelineHandle();
-    auto occlusion_pipeline_layouts = layouts["OcclusionCulling"]->getHandle();
+    auto& occlusion_pipeline = pipelines["OcclusionCulling"]->get_pipeline_handle();
+    auto occlusion_pipeline_layouts = layouts["OcclusionCulling"]->get_handle();
     auto& globaL_descriptors = vulkan_renderer->global_descriptors;
 
     for (auto i = 0; i < drawables.size(); ++i)
@@ -595,7 +599,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::write_descriptorsets_cu
 
             image_infos.resize(1);
 
-            auto pyramid = resource_manager.get_image_cached(hiz_depth.pyramidImage);
+            auto pyramid = resource_manager.get_image_cached(hiz_depth.pyramid_image);
             VkDescriptorImageInfo image_info{};
             image_info.sampler =    hiz_depth.regular_sampler;
             image_info.imageView = pyramid->view;
@@ -658,7 +662,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::build_hierarchical_dept
     if(post_first_load) //Is true after the initial load. Executed again when swapchain resizes
     {
         //Destroy HI-Z mips
-        if(hiz_depth.pyramidImage)
+        if(hiz_depth.pyramid_image)
             for(auto i = 0 ; i < hiz_depth.mip_count; ++i)
                 vkDestroyImageView(device->getLogicalDevice(),hiz_depth.mip_views[i],device->getAllocator());
 
@@ -698,18 +702,18 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::build_hierarchical_dept
 
     uint32_t num_mips = get_image_mips_count(base_width,base_height);
     hiz_depth.mip_count = num_mips;
-    hiz_depth.pyramidImage = resources.create_image(device,
-                                                    base_width,
-                                                    base_height,VK_FORMAT_R32_SFLOAT,VK_IMAGE_TILING_OPTIMAL,
+    hiz_depth.pyramid_image = resources.create_image( device,
+                                                      base_width,
+                                                      base_height, VK_FORMAT_R32_SFLOAT, VK_IMAGE_TILING_OPTIMAL,
                                                     VK_IMAGE_USAGE_STORAGE_BIT|VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
-                                                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,0,num_mips,
-                                                    VK_IMAGE_ASPECT_COLOR_BIT,1,VK_SAMPLE_COUNT_1_BIT);
+                                                      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 0, num_mips,
+                                                      VK_IMAGE_ASPECT_COLOR_BIT, 1, VK_SAMPLE_COUNT_1_BIT);
 
     //Create a view for each mip
     for(auto i = 0; i < num_mips; ++i)
     {
         VkImageViewCreateInfo createInfo = { VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO };
-        createInfo.image = resources.get_image_cached(hiz_depth.pyramidImage)->image;
+        createInfo.image = resources.get_image_cached(hiz_depth.pyramid_image)->image;
         createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
         createInfo.format = VK_FORMAT_R32_SFLOAT;
         createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
@@ -723,7 +727,6 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::build_hierarchical_dept
     }
 
     //Create the push descriptor template
-
     std::array<VkDescriptorUpdateTemplateEntry,2> entries;
     entries[0].descriptorCount = 1;
     entries[0].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
@@ -744,7 +747,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::build_hierarchical_dept
     create_info.pDescriptorUpdateEntries = entries.data();
     create_info.templateType = VK_DESCRIPTOR_UPDATE_TEMPLATE_TYPE_PUSH_DESCRIPTORS_KHR;
     create_info.pipelineBindPoint = VK_PIPELINE_BIND_POINT_COMPUTE;
-    create_info.pipelineLayout = layouts["OcclusionWrite"]->getHandle();
+    create_info.pipelineLayout = layouts["OcclusionWrite"]->get_handle();
 
     VK_CHECK(vkCreateDescriptorUpdateTemplate(device->getLogicalDevice(),
                                               &create_info,
@@ -762,10 +765,9 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::update_hiz_chain( Canel
     auto& resource_manager = vulkan_renderer->resources_manager;
     auto& layouts = vulkan_renderer->cachedPipelineLayouts;
     auto& pipelines = vulkan_renderer->cachedPipelines;
-    auto& render_data = vulkan_renderer->render_camera_data;
     //This is main depth image. renderpasses stores all the renderpasses and image attachments.
-    auto main_depth_target = resource_manager.get_image_cached(renderpasses.renderpasses["basic"]->image_accessors[1][image_index]);
-    auto pyramid_image = resource_manager.get_image_cached(hiz_depth.pyramidImage);
+    auto main_depth_target = resource_manager.get_image_cached(renderpasses.renderpasses["basic"]->image_accessors[3][image_index]);
+    auto pyramid_image = resource_manager.get_image_cached(hiz_depth.pyramid_image);
 
     VkImageMemoryBarrier read_barriers[] =
      {
@@ -786,7 +788,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::update_hiz_chain( Canel
 
     vkCmdBindPipeline(command,
                       VK_PIPELINE_BIND_POINT_COMPUTE,
-                      pipelines["OcclusionWrite"]->getPipelineHandle());
+                      pipelines["OcclusionWrite"]->get_pipeline_handle());
 
     for(auto i = 0; i < hiz_depth.mip_count; ++i)
     {
@@ -801,7 +803,8 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::update_hiz_chain( Canel
         image_infos[1].imageLayout =  i == 0 ? VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL : VK_IMAGE_LAYOUT_GENERAL;
         image_infos[1].imageView = source_depth;
 
-        vulkan_renderer->vkCmdPushDescriptorSetWithTemplateKHR(command,hiz_depth.updateTemplate,layouts["OcclusionWrite"]->getHandle(),0, image_infos.data());
+        vulkan_renderer->vkCmdPushDescriptorSetWithTemplateKHR( command, hiz_depth.updateTemplate,
+                                                                layouts["OcclusionWrite"]->get_handle(), 0, image_infos.data());
 
         uint32_t current_width = std::max(1u, hiz_depth.base_width >> i);
         uint32_t current_height = std::max(1u, hiz_depth.base_width >> i);
@@ -816,9 +819,7 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::update_hiz_chain( Canel
         push_data.size.x = current_width;
         push_data.size.y = current_height;
 
-        auto g1 = group_size(current_width);
-        auto g2 = group_size(current_height);
-        vkCmdPushConstants(command,layouts["OcclusionWrite"]->getHandle(),VK_SHADER_STAGE_COMPUTE_BIT,0, sizeof(push_data),&push_data);
+        vkCmdPushConstants( command, layouts["OcclusionWrite"]->get_handle(), VK_SHADER_STAGE_COMPUTE_BIT, 0, sizeof(push_data), &push_data);
         vkCmdDispatch(command,group_size(current_width),group_size(current_height),1);
 
         //Wait for the image to be written in the computue shader
@@ -834,13 +835,14 @@ void Canella::RenderSystem::VulkanBackend::GeometryPass::update_hiz_chain( Canel
                                                             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                                                             VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
                                                             VK_IMAGE_ASPECT_DEPTH_BIT );
+
     vkCmdPipelineBarrier(command,VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,VK_DEPENDENCY_BY_REGION_BIT,0, 0,0, 0,1, &depthWriteBarrier);
 
 }
 
 Canella::RenderSystem::VulkanBackend::GeometryPass::~GeometryPass()
 {
-    if(hiz_depth.pyramidImage)
+    if(hiz_depth.pyramid_image)
         for(auto i = 0 ; i < hiz_depth.mip_count; ++i)
             vkDestroyImageView(device->getLogicalDevice(),
                                hiz_depth.mip_views[i],

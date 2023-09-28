@@ -99,7 +99,8 @@ namespace Canella
 						PipelineProperties pipelineInfo = {};
 						std::vector<std::vector<ATRIBUTES>> atributes;
 						pipelineInfo.atributes = atributes;
-						pipelineInfo.colorAttachmentsCount = 1;
+                        //
+						pipelineInfo.colorAttachmentsCount = 3;
 						pipelineInfo.cullMode = VK_CULL_MODE_BACK_BIT;
 						pipelineInfo.dephTest = VK_TRUE;
 						pipelineInfo.depthBias = 0;

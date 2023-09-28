@@ -1,0 +1,2 @@
+D:/Tools/glTF-IBL-Sampler/thirdparty/KTX-Software/lib/internalexport.def
+D:/Tools/glTF-IBL-Sampler/thirdparty/KTX-Software/lib/internalexport_write.def

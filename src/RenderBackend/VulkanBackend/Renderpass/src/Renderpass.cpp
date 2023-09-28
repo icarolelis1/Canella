@@ -44,6 +44,7 @@ namespace Canella
 
                 create_images(swapchain,resource_manager,framebufferRessources["ResourcesToCreate"]);
                 use_external_framebuffer = framebufferRessources["StealFrameBuffers"].get<bool>();
+                auto match_swapchain_targets_count = framebufferRessources["MatchSwapChainTargets"].get<bool>();
 
                 if(use_external_framebuffer)
                 {
@@ -52,8 +53,7 @@ namespace Canella
                     for(auto& fb : framebuffers)
                         external_frame_buffers.push_back(&fb);
                 }
-                else
-                    create_frame_buffer(swapchain,resource_manager,framebufferRessources["FrameBufferAttachments"],renderpass_manager);
+                else create_frame_buffer(swapchain,resource_manager,framebufferRessources["FrameBufferAttachments"],renderpass_manager,match_swapchain_targets_count);
             };
 
             VkRenderPass& RenderPass::get_vk_render_pass()
@@ -88,13 +88,17 @@ namespace Canella
             void RenderPass::create_frame_buffer(Swapchain* swapchain,
                                                  ResourcesManager* resource_manager,
                                                  nlohmann::json& frame_buffers_meta,
-                                                 RenderpassManager& renderpass_manager)
+                                                 RenderpassManager& renderpass_manager,
+                                                 bool match_swapchain_targets_count)
             {
                 auto targets = swapchain->getViews();
+                auto targets_size = targets.size();
                 std::vector<VkImageView> views(frame_buffers_meta.size());
                 vk_framebuffers.resize(static_cast<uint32_t>(targets.size()));
                 auto i = 0;
-                for (auto& view : targets)
+                targets_size = match_swapchain_targets_count? targets_size : 1;
+
+                for (auto swapchain_index =  0; swapchain_index < targets_size ; swapchain_index++)
                 {
                     //Get the image views that the renderpass uses
                     // The field ResourceIndex refers to an image from the images created in create_images
@@ -105,7 +109,7 @@ namespace Canella
 
                         //If index -1. It means that it will use the stardard output
                         if( strcmp(steal_resource_from.c_str(),"StandardOutput") == 0 )
-                            views[view_index] = view;
+                            views[view_index] = targets[swapchain_index];
                         else if(strcmp(steal_resource_from.c_str(),"Self") == 0)
                             views[view_index] = resource_manager->get_image_cached(image_accessors[img_index][i])->view;
 
@@ -138,7 +142,6 @@ namespace Canella
                 }
             }
 
-            //Todo refactor this. Make attachments creation dynamic
             void RenderPass::create_images(Swapchain *swapchain,
                                            ResourcesManager* resource_manager,
                                            nlohmann::json& images_meta)
@@ -155,11 +158,12 @@ namespace Canella
                     VkFormat format;
                     if(strcmp(format_str.c_str(),"SupportedDepth") == 0)
                         format = device->get_depth_format();
-                    if(strcmp(format_str.c_str(),"SwapchainFormat") == 0)
+                    else if(strcmp(format_str.c_str(),"SwapchainFormat") == 0)
                         format = swapchain->getFormat();
+                    else
+                        format = RenderSystem::VulkanBackend::convert_from_string_format(format_str.c_str());
                     for(auto i  =0 ; i < number_of_images; ++i)
                     {
-                        //Todo properly refactor this just using the flagsbit
                         //Create the depth image
                         if(!image_meta["ColorImage"].get<bool>())
                             image_accessors[image_index].push_back(

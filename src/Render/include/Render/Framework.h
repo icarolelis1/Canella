@@ -2,6 +2,7 @@
 #define CANELLA_RENDER_FRAMEWORK
 #include "Render.h"
 
+
 namespace Canella
 {
     //This is in progress slowly ...
@@ -31,6 +32,9 @@ namespace Canella
     uint64_t create_texture(Render* renderer ,const std::string& file);
 
     void allocate_material_data(Render* render, MaterialData& material);
+
+    uint64_t create_ktx_cube_map(Render* render,const std::string& path);
+
 }
 
 #endif

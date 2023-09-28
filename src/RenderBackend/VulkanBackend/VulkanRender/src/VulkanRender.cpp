@@ -50,6 +50,13 @@ void VulkanRender::build( nlohmann::json &config, OnOutputStatsEvent* display_ev
     samplerInfo.maxLod = 11;
 
     vkCreateSampler(device.getLogicalDevice(),&samplerInfo,device.getAllocator(),&default_sampler);
+    samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+    samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+    samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+    samplerInfo.maxLod = 8;
+    vkCreateSampler(device.getLogicalDevice(),&samplerInfo,device.getAllocator(),&cube_sampler);
+
+    generate_brdf_lut();
 }
 
 void VulkanRender::get_device_proc() {
@@ -128,7 +135,7 @@ void VulkanRender::create_transform_buffers()
     }
 }
 
-void VulkanRender::render(glm::mat4 &view, glm::mat4 &projection)
+void VulkanRender::render(glm::mat4 &view,glm::vec3& eye, glm::mat4 &projection)
 {
     FrameData &frame_data = frames[current_frame];
     vkWaitForFences(device.getLogicalDevice(), 1, &frame_data.imageAvaibleFence, VK_TRUE, UINT64_MAX);
@@ -150,7 +157,7 @@ void VulkanRender::render(glm::mat4 &view, glm::mat4 &projection)
         throw std::runtime_error("failed to acquire swap chain image!");
 
     vkResetFences(device.getLogicalDevice(), 1, &frame_data.imageAvaibleFence);
-    update_view_projection( view, projection, next_image_index );
+    update_view_projection( view,eye, projection, current_frame );
 
     record_command_index(frame_data, next_image_index);
 
@@ -207,15 +214,16 @@ void VulkanRender::render(glm::mat4 &view, glm::mat4 &projection)
 
 }
 
-void VulkanRender::update_view_projection( glm::mat4 &view, glm::mat4 &projection, uint32_t next_image_index ) {
+void VulkanRender::update_view_projection( glm::mat4 &view,glm::vec3& eye, glm::mat4 &projection, uint32_t next_image_index ) {
     auto refBuffer = resources_manager.get_buffer_cached( global_buffers[next_image_index]);
     render_camera_data.projection = projection;
     render_camera_data.view       = view;
     ViewProjection view_projection{};
     view_projection.view_projection = projection * view;
-    view_projection.eye             = -glm::vec4(view[3]);
+    view_projection.eye             =-view[3];
     view_projection.view            = view;
     view_projection.projection      = projection;
+    auto v = view_projection.eye;
     refBuffer->udpate(view_projection);
 }
 
@@ -318,6 +326,7 @@ void VulkanRender::destroy()
     resources_manager.destroy_non_persistent_resources();
     resources_manager.destroy_texture_resources();
     vkDestroySampler( device.getLogicalDevice(), default_sampler, device.getAllocator());
+    vkDestroySampler( device.getLogicalDevice(), cube_sampler, device.getAllocator());
     device.destroyDevice();
     Canella::Logger::Info("Vulkan Renderer Destroyed!");
 }
@@ -470,5 +479,137 @@ void VulkanRender::allocate_material( Canella::MaterialData &material ) {
     DescriptorSet::update_descriptorset(&device,set, buffer_infos, image_infos, false);
     auto pair = std::make_pair(material.name,set);
     raw_materials.push_back(pair);
+}
+
+void VulkanRender::generate_brdf_lut() {
+
+    VkDescriptorUpdateTemplate descriptor_update_template;
+     brdflut = resources_manager.create_image( &device,
+                            512,
+                            512, VK_FORMAT_R32G32_SFLOAT, VK_IMAGE_TILING_OPTIMAL,
+                            VK_IMAGE_USAGE_STORAGE_BIT|VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
+                            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 0, 1,
+                            VK_IMAGE_ASPECT_COLOR_BIT, 1, VK_SAMPLE_COUNT_1_BIT,true);
+
+    VkDescriptorUpdateTemplateEntry entry;
+    entry.descriptorCount = 1;
+    entry.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+    entry.dstBinding = 0;
+    entry.stride = sizeof(VkDescriptorImageInfo);
+    entry.offset = 0;
+    entry.dstArrayElement = 0;
+    VkDescriptorUpdateTemplateCreateInfo create_info = { VK_STRUCTURE_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_CREATE_INFO };
+    create_info.descriptorUpdateEntryCount = 1;
+    create_info.pDescriptorUpdateEntries = &entry;
+    create_info.templateType = VK_DESCRIPTOR_UPDATE_TEMPLATE_TYPE_PUSH_DESCRIPTORS_KHR;
+    create_info.pipelineBindPoint = VK_PIPELINE_BIND_POINT_COMPUTE;
+    create_info.pipelineLayout = cachedPipelines["BrdfLutGen"]->get_pipeline_layout().get_handle();
+    auto image = resources_manager.get_texture_cached(brdflut);
+    VK_CHECK(vkCreateDescriptorUpdateTemplate(device.getLogicalDevice(),
+                                              &create_info,
+                                              0,
+                                              &descriptor_update_template),
+                                              "Failed to create VkDescriptorUpdateTemplateCreateInfo");
+
+    auto command_buffer = request_command_buffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+    begin_command_buffer(command_buffer);
+
+
+    auto barrier = image_barrier( image->image,
+                                  0,
+                                  VK_ACCESS_SHADER_READ_BIT,
+                                  VK_IMAGE_LAYOUT_UNDEFINED,
+                                  VK_IMAGE_LAYOUT_GENERAL,
+                                  VK_IMAGE_ASPECT_COLOR_BIT );
+
+    vkCmdPipelineBarrier(command_buffer,
+                         VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+                         VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
+                         VK_DEPENDENCY_BY_REGION_BIT,
+                         0,
+                         0, 0,
+                         0,1,
+                         &barrier);
+
+    vkCmdBindPipeline(command_buffer,
+                      VK_PIPELINE_BIND_POINT_COMPUTE,
+                      cachedPipelines["BrdfLutGen"]->get_pipeline_handle());
+
+    VkDescriptorImageInfo image_info;
+
+    image_info.sampler =  VK_NULL_HANDLE;
+    image_info.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+    image_info.imageView = resources_manager.get_texture_cached(brdflut)->view;
+    vkCmdPushDescriptorSetWithTemplateKHR(command_buffer,
+                                          descriptor_update_template,
+                                          cachedPipelines["BrdfLutGen"]->get_pipeline_layout().get_handle(),
+                                          0,
+                                          &image_info);
+    //Calculate the groupcount for given dimension in 2D
+    auto group_size = [](uint32_t dimension)
+    {return (dimension + 32 - 1) / 32;};
+
+    vkCmdDispatch(command_buffer,group_size(512),group_size(512),1);
+
+    auto to_shader_read = image_barrier( image->image,
+                                         VK_ACCESS_SHADER_WRITE_BIT,
+                                  VK_ACCESS_SHADER_READ_BIT,
+                                  VK_IMAGE_LAYOUT_GENERAL,
+                                  VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                                  VK_IMAGE_ASPECT_COLOR_BIT );
+
+    vkCmdPipelineBarrier(command_buffer,
+                         VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
+                         VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+                         VK_DEPENDENCY_BY_REGION_BIT,
+                         0,0, 0,0,
+                         1, &to_shader_read);
+
+
+    end_command_buffer(command_buffer);
+    vkDestroyDescriptorUpdateTemplate(device.getLogicalDevice(), descriptor_update_template, device.getAllocator());
+
+    VkSubmitInfo submit_info = {};
+    submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submit_info.commandBufferCount = 1;
+    submit_info.pCommandBuffers = &command_buffer;
+    vkQueueSubmit(device.getGraphicsQueueHandle(), 1, &submit_info,VK_NULL_HANDLE);
+    vkDeviceWaitIdle(device.getLogicalDevice());
+
+}
+
+void VulkanRender::set_environment_maps( Canella::EnvironmentMaps &maps ) {
+
+    descriptorPool.allocate_descriptor_set(device,cachedDescriptorSetLayouts["Environment"],enviroment_set);
+
+    std::vector<VkDescriptorBufferInfo> buffer_infos;
+    std::vector<VkDescriptorImageInfo> image_infos;
+
+    auto irradiance = resources_manager.get_texture_cached(maps.irradiance);
+    auto specular = resources_manager.get_texture_cached(maps.specular);
+    auto brdfLut = resources_manager.get_texture_cached(brdflut);
+
+    VkDescriptorImageInfo irradiance_image_info = {};
+    irradiance_image_info.sampler     = cube_sampler;
+    irradiance_image_info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    irradiance_image_info.imageView   = irradiance->view;
+
+    VkDescriptorImageInfo specular_image_info = {};
+    specular_image_info.sampler     = cube_sampler;
+    specular_image_info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    specular_image_info.imageView   = specular->view;
+
+    VkDescriptorImageInfo brdflut_image_info = {};
+    brdflut_image_info.sampler     = default_sampler;
+    brdflut_image_info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    brdflut_image_info.imageView   = brdfLut->view;
+
+    image_infos.push_back( irradiance_image_info );
+    image_infos.push_back( specular_image_info );
+    image_infos.push_back( brdflut_image_info );
+
+    resources_manager.write_descriptor_sets(enviroment_set,buffer_infos,image_infos,false);
+
+
 }
 

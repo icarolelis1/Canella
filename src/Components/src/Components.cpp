@@ -108,11 +108,8 @@ void Canella::DeserializeTransform(nlohmann::json &data, TransformComponent &tra
     data["Orientation"]["z"] = transform_component.orientation.z;
     data["Orientation"]["w"] = transform_component.orientation.w;
 
-
     data["References"][0]["Type"] = stringify(ComponentType::Transform);
     data["References"][0]["Entity"] =  transform_component.parent->owner->uuid;
-
-
 
 }
 

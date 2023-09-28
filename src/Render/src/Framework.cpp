@@ -37,4 +37,11 @@ namespace Canella
         return RenderSystem::VulkanBackend::allocate_material_data(material,(RenderSystem::VulkanBackend::VulkanRender*)render);
 #endif
     }
+
+    uint64_t create_ktx_cube_map(Render* render,const std::string& path)
+    {
+#ifdef USE_VULKAN
+        return RenderSystem::VulkanBackend::create_ktx_cube_map( (RenderSystem::VulkanBackend::VulkanRender*)render,path );
+#endif
+    }
 }

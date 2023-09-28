@@ -1,6 +1,5 @@
 #include "Pipeline/Pipeline.h"
 #include "CanellaUtility/CanellaUtility.h"
-
 using namespace Canella::RenderSystem::VulkanBackend;
 
 Pipeline::Pipeline(Device* _device,
@@ -17,14 +16,16 @@ Pipeline::Pipeline(Device* _device,
     VkPipelineInputAssemblyStateCreateInfo input_assembly_state = initializers::pipelineInputAssemblyStateCreateInfo(info.topology, 0, VK_FALSE);
     VkPipelineRasterizationStateCreateInfo rasterization_state = initializers::pipelineRasterizationStateCreateInfo(info.polygonMode, info.cullMode, info.frontFaceClock);
 
-    VkPipelineColorBlendAttachmentState blend_attachment_state {};
+    VkPipelineColorBlendAttachmentState blend_attachment_state[3];
 
-    blend_attachment_state =  initializers::pipelineColorBlendAttachmentState(
+    blend_attachment_state[0] =  initializers::pipelineColorBlendAttachmentState(
             0xf,
             VK_FALSE);
+    blend_attachment_state[1] = blend_attachment_state[0] ;
+    blend_attachment_state[2] = blend_attachment_state[0] ;
 
-    VkPipelineColorBlendStateCreateInfo color_blend_state =
-            initializers::pipelineColorBlendStateCreateInfo(info.colorAttachmentsCount, &blend_attachment_state);
+            VkPipelineColorBlendStateCreateInfo color_blend_state =
+            initializers::pipelineColorBlendStateCreateInfo(info.colorAttachmentsCount, blend_attachment_state);
 
     VkPipelineDepthStencilStateCreateInfo depthStencilState = initializers::pipelineDepthStencilStateCreateInfo(info.dephTest, VK_TRUE, VK_COMPARE_OP_LESS);
 
@@ -66,7 +67,7 @@ Pipeline::Pipeline(Device* _device,
 
     VkGraphicsPipelineCreateInfo pipelineCI{};
     pipelineCI.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-    pipelineCI.layout = pipelineLayout->getHandle();
+    pipelineCI.layout = pipelineLayout->get_handle();
     pipelineCI.renderPass = *info.renderpass;
     pipelineCI.flags = 0;
     pipelineCI.basePipelineIndex = -1;
@@ -107,7 +108,7 @@ Canella::RenderSystem::VulkanBackend::Pipeline::Pipeline(Device *_device,
 {
     VkComputePipelineCreateInfo  create_info{create_info.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO};
     create_info.stage = compute_shader.getShaderStageInfo();
-    create_info.layout = pipelineLayout->getHandle();
+    create_info.layout = pipelineLayout->get_handle();
     VK_CHECK(vkCreateComputePipelines(_device->getLogicalDevice(),
                                       nullptr,
                                       1,
@@ -118,12 +119,12 @@ Canella::RenderSystem::VulkanBackend::Pipeline::Pipeline(Device *_device,
 
 }
 
-VkPipeline& Pipeline::getPipelineHandle()
+VkPipeline& Pipeline::get_pipeline_handle()
 {
     return vk_pipeline;
 }
 
-PipelineLayout Pipeline::getPipelineLayoutHandle()
+PipelineLayout Pipeline::get_pipeline_layout()
 {
     return *pipelineLayout;
 }
@@ -226,18 +227,20 @@ VkDescriptorType DescriptorSetLayout::getDescriptorType(ShaderResourceType type)
 {
     switch (type)
     {
-    case ShaderResourceType::UNIFORM_BUFFER:
-        return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    case ShaderResourceType::IMAGE_SAMPLER:
-        return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    case ShaderResourceType::INPUT_ATTACHMENT:
-        return VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
-    case ShaderResourceType::STORAGE_BUFFER:
-        return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-    case ShaderResourceType::IMAGE_STORAGE:
-        return VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-    default:
-        return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+        case ShaderResourceType::UNIFORM_BUFFER:
+            return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        case ShaderResourceType::IMAGE_SAMPLER:
+            return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        case ShaderResourceType::INPUT_ATTACHMENT:
+            return VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
+        case ShaderResourceType::STORAGE_BUFFER:
+            return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+        case ShaderResourceType::IMAGE_STORAGE:
+            return VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+        case ShaderResourceType::IMAGE_SAMPLER_CUBE:
+            return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        default:
+            return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
     }
 }
 
@@ -270,7 +273,7 @@ PipelineLayout::PipelineLayout(
         Logger::Debug("Successfully Created PipelineLayout");
 }
 
-VkPipelineLayout PipelineLayout::getHandle()
+VkPipelineLayout PipelineLayout::get_handle()
 {
     return vk_pipelineLayout;
 }

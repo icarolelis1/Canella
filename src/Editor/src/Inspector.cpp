@@ -1,7 +1,7 @@
 #include "Editor/Inspector.h"
 #include "Components/Components.h"
 #include "imgui_internal.h"
-
+#include "FontsAwesome/IconsFontAwesome.h"
 
 //Property View Components
 void display_transform(std::shared_ptr<Canella::Entity> entity)
@@ -167,11 +167,19 @@ void Canella::Inspector::create_entity_popup() {
             ImGui::CloseCurrentPopup();
         if (ImGui::Button("Create"))
             application->scene->create_root_parented_entity();
+        if (ImGui::Button("Copy"))
+            application->scene->copy_entity(selected_entity.lock());
+        if (ImGui::Button("Batch Models"))
+            application->scene->batch_models_in_hierarchy(selected_entity.lock());
         ImGui::EndPopup();
     }
 }
 
 void Canella::Inspector::save_button() {
+    ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0,255,0,255));
+    ImGui::Text( ICON_FA_POUND_SIGN "  Paint" ); // use string literal concatenation
+    ImGui::PopStyleColor();
+
     if(ImGui::Button( "Save"))
         ImGui::OpenPopup("Save?");
 

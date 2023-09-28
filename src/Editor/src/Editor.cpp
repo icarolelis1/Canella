@@ -11,6 +11,7 @@
 #include "Editor/Viewport.h"
 #include "Mesh/Mesh.h"
 #include "AssetSystem/AssetSystem.h"
+#include "FontsAwesome/IconsFontAwesome.h"
 
 
 
@@ -113,7 +114,7 @@ void Canella::Editor::run_editor()
     {
         if (game_mode) application->run();
         window.update();
-        render.render(application->scene->main_camera->view, application->scene->main_camera->projection);
+        render.render(application->scene->main_camera->view,application->scene->main_camera->entity_transform->position,  application->scene->main_camera->projection);
         if (KeyBoard::instance().getKeyPressed(GLFW_KEY_ESCAPE))
             break;
     }
@@ -164,30 +165,61 @@ void Canella::Editor::setup_imgui()
 
     ImGuiIO &io = ImGui::GetIO();
     io.ConfigFlags = ImGuiConfigFlags_::ImGuiConfigFlags_DockingEnable;
+
+    float baseFontSize = 30.0f; // 13.0f is the size of the default font. Change to the font size you use.
+    float iconFontSize = baseFontSize * 2.0f / 3.0f; // FontAwesome fonts need to have their sizes reduced by 2.0f/3.0f in order to align correctly
+
+// merge in icons from Font Awesome
+    static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
+    ImFontConfig icons_config;
+    icons_config.MergeMode = true;
+    icons_config.PixelSnapH = true;
+    icons_config.GlyphMinAdvanceX = iconFontSize;
+
     // Add the custom font
     io.Fonts->AddFontFromFileTTF(R"(resources\Fonts\RobotoRegular-3m4L.ttf)",30);
+    io.Fonts->AddFontFromFileTTF( R"(resources\Fonts\fontawesome-webfont.ttf)", iconFontSize, &icons_config, icons_ranges );
 
     // Setup Dear ImGui style
     ImGuiStyle &style = ImGui ::GetStyle();
-    style.WindowBorderSize = 7;
-    style.WindowRounding = 10;
-    style.Colors[ImGuiCol_WindowBg] = MAIN_BG;
-    style.Colors[ImGuiCol_TitleBg] = TITLE_BG;
-    style.Colors[ImGuiCol_Header] = ImColor(133, 133, 133);
-    style.Colors[ImGuiCol_Border] = BLUE;
-    style.Colors[ImGuiCol_Text] = FONT_COLOR;
-    style.Colors[ImGuiCol_Separator] = BLUE;
-    style.Colors[ImGuiCol_ChildBg] = ImColor(0, 0, 0);
-    style.Colors[ImGuiCol_Tab] = ImColor(255, 0, 0);
-    style.Colors[ImGuiCol_TabActive] = ImColor(79, 53, 645);
-    style.Colors[ImGuiCol_TabHovered] = ImColor(225, 0, 0);
-    style.Colors[ImGuiCol_FrameBg] = MAIN_BG;
-    style.Colors[ImGuiCol_TitleBgActive] = ImColor(79, 53, 64);
-    style.Colors[ImGuiCol_MenuBarBg] = MENU_BG;
-    style.Colors[ImGuiCol_Separator] = ImColor(211,211,211);
-    style.SeparatorTextBorderSize = 10;
-    style.FramePadding = ImVec2(3, 3);
-    style.ChildRounding = 5;
+    style.GrabRounding = 3.0f;
+
+    style.Colors[ImGuiCol_Text] = ImVec4(0.80f, 0.80f, 0.83f, 1.00f);
+    style.Colors[ImGuiCol_TextDisabled] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
+    style.Colors[ImGuiCol_WindowBg] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
+    style.Colors[ImGuiCol_PopupBg] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
+    style.Colors[ImGuiCol_Border] = ImVec4(0.80f, 0.80f, 0.83f, 0.88f);
+    style.Colors[ImGuiCol_BorderShadow] = ImVec4(0.92f, 0.91f, 0.88f, 0.00f);
+    style.Colors[ImGuiCol_FrameBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+    style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
+    style.Colors[ImGuiCol_FrameBgActive] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+    style.Colors[ImGuiCol_TitleBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+    style.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(1.00f, 0.98f, 0.95f, 0.75f);
+    style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
+    style.Colors[ImGuiCol_MenuBarBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+    style.Colors[ImGuiCol_ScrollbarBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+    style.Colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.80f, 0.80f, 0.83f, 0.31f);
+    style.Colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+    style.Colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
+    style.Colors[ImGuiCol_CheckMark] = ImVec4(0.80f, 0.80f, 0.83f, 0.31f);
+    style.Colors[ImGuiCol_SliderGrab] = ImVec4(0.80f, 0.80f, 0.83f, 0.31f);
+    style.Colors[ImGuiCol_SliderGrabActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
+    style.Colors[ImGuiCol_Button] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+    style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
+    style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+    style.Colors[ImGuiCol_Header] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+    style.Colors[ImGuiCol_HeaderHovered] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+    style.Colors[ImGuiCol_HeaderActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
+
+    style.Colors[ImGuiCol_ResizeGrip] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+    style.Colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+    style.Colors[ImGuiCol_ResizeGripActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
+    style.Colors[ImGuiCol_PlotLines] = ImVec4(0.40f, 0.39f, 0.38f, 0.63f);
+    style.Colors[ImGuiCol_PlotLinesHovered] = ImVec4(0.25f, 1.00f, 0.00f, 1.00f);
+    style.Colors[ImGuiCol_PlotHistogram] = ImVec4(0.40f, 0.39f, 0.38f, 0.63f);
+    style.Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.25f, 1.00f, 0.00f, 1.00f);
+    style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.25f, 1.00f, 0.00f, 0.43f);
+
     auto &window = GlfwWindow::get_instance();
     ImGui_ImplGlfw_InitForVulkan(window.m_window, true);
 
@@ -229,7 +261,7 @@ void Canella::Editor::render_editor_gui(VkCommandBuffer &command_buffer, uint32_
     begin_imgui_render( image_index, command_buffer, render_passes );
     setup_dock_space();
     layer.inspector.build();
-    auto flags = ImGuiWindowFlags_::ImGuiWindowFlags_NoScrollbar;
+    auto flags = ImGuiWindowFlags_::ImGuiWindowFlags_NoScrollbar| ImGuiWindowFlags_::ImGuiWindowFlags_NoScrollWithMouse;
     ImGui::Begin("Viewport",NULL,flags);
     Viewport::build_viewport( color_id[image_index]);
     ImGuizmo::BeginFrame();
@@ -237,6 +269,7 @@ void Canella::Editor::render_editor_gui(VkCommandBuffer &command_buffer, uint32_
     layer.draw_guizmos();
     display_bounding_boxes();
     display_graphics_status();
+    //ImGui::ShowDemoWindow();
     ImGui::End();
     ImGui::End();
     end_imgui_render( command_buffer,render_passes );

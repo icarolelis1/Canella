@@ -34,6 +34,7 @@ namespace Canella
 			enum class ShaderResourceType
 			{
 				IMAGE_SAMPLER,
+                IMAGE_SAMPLER_CUBE,
 				UNIFORM_BUFFER,
 				PUSH_CONSTANT,
 				STORAGE_BUFFER,
@@ -257,7 +258,7 @@ namespace Canella
 							   std::vector<VkPushConstantRange> _pushConstants);
 				PipelineLayout(const PipelineLayout& other) = default;
 				~PipelineLayout() = default;
-				VkPipelineLayout getHandle();
+				VkPipelineLayout get_handle();
 				void destroy(Device *device);
 
 			private:
@@ -287,8 +288,8 @@ namespace Canella
 				Pipeline(Device *device, PipelineLayout *pipeline_layout, Shader compute_shader);
 				~Pipeline() = default;
 				void destroy();
-				VkPipeline &getPipelineHandle();
-				PipelineLayout getPipelineLayoutHandle();
+				VkPipeline &get_pipeline_handle();
+				PipelineLayout get_pipeline_layout();
 				const char *id;
 			private:
                 VkPipelineCache pipeline_cache = 0 ;

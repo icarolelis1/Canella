@@ -1,0 +1,1 @@
+D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\interface\basisu_c_binding\obj_basisu_cbind.dir\Debug\obj_basisu_cbind.lib

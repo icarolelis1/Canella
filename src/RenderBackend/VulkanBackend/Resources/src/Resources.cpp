@@ -3,6 +3,9 @@
 #include "CanellaUtility/CanellaUtility.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#include "ktx.h"
+#include "ktxvulkan.h"
+
 using namespace Canella::RenderSystem::VulkanBackend;
 
 VkSampler Canella::RenderSystem::VulkanBackend::create_sampler(VkDevice device, VkSamplerReductionModeEXT reductionMode)
@@ -49,7 +52,12 @@ VkBufferMemoryBarrier Canella::RenderSystem::VulkanBackend::buffer_barrier( VkBu
     return result;
 }
 
-VkImageMemoryBarrier Canella::RenderSystem::VulkanBackend::image_barrier( VkImage image, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkImageLayout oldLayout, VkImageLayout newLayout, VkImageAspectFlags aspectMask)
+VkImageMemoryBarrier Canella::RenderSystem::VulkanBackend::image_barrier( VkImage image,
+                                                                          VkAccessFlags srcAccessMask,
+                                                                          VkAccessFlags dstAccessMask,
+                                                                          VkImageLayout oldLayout,
+                                                                          VkImageLayout newLayout,
+                                                                          VkImageAspectFlags aspectMask)
 {
     VkImageMemoryBarrier result = { VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER };
 
@@ -232,9 +240,9 @@ ResourceAccessor ResourcesManager::create_image(
 {
     auto unique_resource_id = uuid();
     if(!store_in_textures_cache)
-        resource_cache[unique_resource_id] = std::make_shared<Image>(device,width,height,format,tilling,usage,properties,num_mips,aspectFlags);
+        resource_cache[unique_resource_id] = std::make_shared<Image>(device,width,height,format,tilling,usage,properties,num_mips,aspectFlags,arrayLayers);
     else
-        textures_cache[unique_resource_id] = std::make_shared<Image>(device,width,height,format,tilling,usage,properties,num_mips,aspectFlags);
+        textures_cache[unique_resource_id] = std::make_shared<Image>(device,width,height,format,tilling,usage,properties,num_mips,aspectFlags,arrayLayers);
     return unique_resource_id;
 }
 
@@ -290,7 +298,6 @@ ResourceAccessor ResourcesManager::create_texture( const std::string &file_path,
 
       /*  auto layout_to_shader_readonly = image_barrier( image->image, VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                                                         VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_ASPECT_COLOR_BIT );
-
         vkCmdPipelineBarrier(command_buffer,VK_PIPELINE_STAGE_TRANSFER_BIT,
                              VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,VK_DEPENDENCY_BY_REGION_BIT,0,
                              0, 0,0,1,
@@ -315,6 +322,150 @@ ResourceAccessor ResourcesManager::create_texture( const std::string &file_path,
         return resource_accessor;
     }
 }
+
+
+ResourceAccessor ResourcesManager::create_cube_map( const std::string& path  )
+{
+    ktxTexture *ktxTexture;
+    ktxResult   result   = ktxTexture_CreateFromNamedFile(path.c_str(),KTX_TEXTURE_CREATE_LOAD_IMAGE_DATA_BIT, &ktxTexture );
+
+    if ( result != KTX_SUCCESS ) {
+        Canella::Logger::Error( "Failed to load ktx texture %s", path.c_str());
+        return 0;
+    }
+
+    auto width      = ktxTexture->baseWidth;
+    auto height     = ktxTexture->baseHeight;
+    auto mip_levels = ktxTexture->numLevels;
+    VkFormat format = VK_FORMAT_R16G16B16A16_SFLOAT;
+    ktx_uint8_t *ktxTextureData = ktxTexture_GetData( ktxTexture );
+    ktx_size_t  ktxTextureSize  = ktxTexture_GetDataSize(ktxTexture);
+    {
+        std::unique_lock<std::mutex>m( async_loader.pool_mutex );
+
+        auto staging_buffer = std::make_shared<Buffer>( device, ktxTextureSize,
+                                                        VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                                                        VK_MEMORY_PROPERTY_HOST_COHERENT_BIT |
+                                                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
+
+        void *data;
+        vkMapMemory( device->getLogicalDevice(), staging_buffer->vk_deviceMemory, 0, ktxTextureSize, 0, &data );
+        memcpy( data, ktxTextureData, static_cast<size_t>(ktxTextureSize));
+        vkUnmapMemory( device->getLogicalDevice(), staging_buffer->vk_deviceMemory );
+
+        std::vector<VkBufferImageCopy> copy_regions;
+
+        for (uint32_t face = 0; face < 6; face++)
+        {
+            for (uint32_t level = 0; level < mip_levels; level++)
+            {
+                ktx_size_t offset;
+                KTX_error_code result = ktxTexture_GetImageOffset(ktxTexture, level, 0, face, &offset);
+                assert(result == KTX_SUCCESS);
+
+                VkBufferImageCopy buffer_image_copy = {};
+                buffer_image_copy.imageSubresource.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
+                buffer_image_copy.imageSubresource.mipLevel       = level;
+                buffer_image_copy.imageSubresource.baseArrayLayer = face;
+                buffer_image_copy.imageSubresource.layerCount     = 1;
+                buffer_image_copy.imageExtent.width               = ktxTexture->baseWidth >> level;
+                buffer_image_copy.imageExtent.height              = ktxTexture->baseHeight >> level;
+                buffer_image_copy.imageExtent.depth               = 1;
+                buffer_image_copy.bufferOffset                    = offset;
+
+                copy_regions.push_back( buffer_image_copy);
+            }
+        }
+        auto cube_map_accessor = create_image( device, width, height, format, VK_IMAGE_TILING_OPTIMAL,
+                                               VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+                                               VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                                               0,
+                                               mip_levels,
+                                               VK_IMAGE_ASPECT_COLOR_BIT,
+                                               6,
+                                               VK_SAMPLE_COUNT_1_BIT,
+                                               true);
+
+
+        auto command_buffer = resource_loader_pool.requestCommandBuffer(device, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+
+        VkImageSubresourceRange subresource_range = {};
+        subresource_range.aspectMask   = VK_IMAGE_ASPECT_COLOR_BIT;
+        subresource_range.baseMipLevel = 0;
+        subresource_range.levelCount   = mip_levels;
+        subresource_range.layerCount   = 6;
+
+        resource_loader_pool.begin_command_buffer(device,command_buffer,true);
+        auto cube_map = get_texture_cached( cube_map_accessor);
+
+        VkImageMemoryBarrier transfer_barrier = { VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER };
+
+        transfer_barrier.srcAccessMask = 0;
+        transfer_barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+        transfer_barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        transfer_barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+        transfer_barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        transfer_barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        transfer_barrier.image = cube_map->image;
+        transfer_barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        transfer_barrier.subresourceRange.levelCount = mip_levels;
+        transfer_barrier.subresourceRange.layerCount = 6;
+        transfer_barrier.subresourceRange.baseMipLevel = 0;
+
+
+        vkCmdPipelineBarrier(command_buffer,
+                             VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+                             VK_PIPELINE_STAGE_TRANSFER_BIT,
+                             VK_DEPENDENCY_BY_REGION_BIT,
+                             0,0,0,0,1,
+                             &transfer_barrier);
+
+        vkCmdCopyBufferToImage(command_buffer,
+                               staging_buffer->getBufferHandle(),
+                               cube_map->image,
+                               VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                               static_cast<uint32_t>(copy_regions.size()),
+                               copy_regions.data());
+
+
+        VkImageMemoryBarrier shader_read_barrier = { VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER };
+
+        shader_read_barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+        shader_read_barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+        shader_read_barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+        shader_read_barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        shader_read_barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        shader_read_barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        shader_read_barrier.image = cube_map->image;
+        shader_read_barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        shader_read_barrier.subresourceRange.levelCount = mip_levels;
+        shader_read_barrier.subresourceRange.layerCount = 6;
+        shader_read_barrier.subresourceRange.baseMipLevel = 0;
+
+        vkCmdPipelineBarrier(command_buffer,VK_PIPELINE_STAGE_TRANSFER_BIT,
+                             VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,VK_DEPENDENCY_BY_REGION_BIT,0,
+                             0, 0,0,1,
+                             &shader_read_barrier);
+
+        resource_loader_pool.endCommandBuffer(command_buffer);
+
+        VkSubmitInfo submitInfo = {};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = &command_buffer;
+        {
+            std::unique_lock<std::mutex> lock(device->get_queue_mutex(1));
+            vkQueueSubmit(device->getGraphicsQueueHandle(), 1, &submitInfo,  async_loader2.fence);
+        }
+        vkWaitForFences(device->getLogicalDevice(), 1, &async_loader2.fence, VK_TRUE, UINT64_MAX);
+        vkResetFences(device->getLogicalDevice(), 1, &async_loader2.fence);
+        ktxTexture_Destroy( ktxTexture );
+
+        return cube_map_accessor;
+    }
+
+}
+
 void ResourcesManager::generate_mips(std::shared_ptr<Image> image,VkCommandBuffer command, uint32_t width,uint32_t height,uint32_t mip_levels)
 {
     VkImageMemoryBarrier barrier{};
@@ -501,29 +652,36 @@ Image::Image(Device *_device,
              VkMemoryPropertyFlags properties,
              uint32_t num_mips,
              VkImageAspectFlags aspectFlags,
-             uint32_t arrayLayers,
+             uint32_t array_layers,
              VkSampleCountFlagBits samples ) : GPUResource(ResourceType::ImageResource)
 {
 
     extent.width = Width;
     extent.height = Height;
     device = _device;
-    VkImageCreateInfo imageInfo = {};
-    imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-    imageInfo.imageType = VK_IMAGE_TYPE_2D;
-    imageInfo.extent.width = Width;
-    imageInfo.extent.height = Height;
-    imageInfo.extent.depth = 1;
-    imageInfo.mipLevels = num_mips;
-    imageInfo.arrayLayers = arrayLayers;
-    imageInfo.format = format;
-    imageInfo.tiling = tiling;
-    imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    imageInfo.usage = usage;
-    imageInfo.samples = samples;
-    imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    VkImageCreateInfo image_info = {};
+    image_info.sType         = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+    image_info.imageType     = VK_IMAGE_TYPE_2D;
+    image_info.extent.width  = Width;
+    image_info.extent.height = Height;
+    image_info.extent.depth  = 1;
+    image_info.mipLevels     = num_mips;
+    image_info.arrayLayers   = array_layers;
+    image_info.format        = format;
+    image_info.tiling        = tiling;
+    image_info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    image_info.usage         = usage;
+    image_info.samples       = samples;
+    image_info.sharingMode   = VK_SHARING_MODE_EXCLUSIVE;
+    if( array_layers == 6)
+    {
+        Canella::Logger::Trace("IMAGE WITH SIX LAYERS");
+        image_info.flags     = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
+    }
 
-    if (vkCreateImage(device->getLogicalDevice(), &imageInfo, device->getAllocator(), &image) != VK_SUCCESS)
+
+
+    if ( vkCreateImage( device->getLogicalDevice(), &image_info, device->getAllocator(), &image) != VK_SUCCESS)
     {
         throw std::runtime_error("Failed to create image\n");
     }
@@ -546,18 +704,19 @@ Image::Image(Device *_device,
     VkImageViewCreateInfo viewInfo = {};
     viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
     viewInfo.image = image;
-    viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+    viewInfo.viewType = array_layers == 1 ? VK_IMAGE_VIEW_TYPE_2D : VK_IMAGE_VIEW_TYPE_CUBE;
     viewInfo.format = format;
     viewInfo.subresourceRange.aspectMask = aspectFlags;
     viewInfo.subresourceRange.baseMipLevel = 0;
     viewInfo.subresourceRange.levelCount = num_mips;
     viewInfo.subresourceRange.baseArrayLayer = 0;
-    viewInfo.subresourceRange.layerCount = 1;
+    viewInfo.subresourceRange.layerCount = array_layers;
     VkResult result;
     result = vkCreateImageView(device->getLogicalDevice(), &viewInfo, nullptr, &view);
 
     VK_CHECK(result, "Faild to create imageview");
 }
+
 
 Image::~Image()
 {

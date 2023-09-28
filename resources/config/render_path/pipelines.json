@@ -1,7 +1,7 @@
 ﻿{
   "PipelineData": {
-    "DescriptorSetLayoutCounts":7,
-    "PipelinesCount": 4,
+    "DescriptorSetLayoutCounts":9,
+    "PipelinesCount": 5,
     "DescriptorSetLayouts": [
       {
         "Key": "ViewProjection",
@@ -12,7 +12,9 @@
             "Key": "ViewProjection",
             "Stage": [
               "MESH_STAGE",
-              "TASK_SHADER"
+              "FRAGMENT_STAGE",
+              "TASK_STAGE",
+              "COMPUTE_STAGE"
             ],
             "Type": "UNIFORM_BUFFER",
             "Binding": 0
@@ -28,7 +30,7 @@
             "Key": "Transforms",
             "Stage": [
               "MESH_STAGE",
-              "TASK_SHADER",
+              "TASK_STAGE",
               "COMPUTE_STAGE"
             ],
             "Type": "STORAGE_BUFFER",
@@ -60,7 +62,7 @@
           {
             "Key": "Bounds",
             "Stage": [
-              "TASK_SHADER",
+              "TASK_STAGE",
               "MESH_STAGE"
             ],
             "Type": "STORAGE_BUFFER",
@@ -213,7 +215,7 @@
       },
       {
         "Key": "Material",
-        "ResourceCount": 1,
+        "ResourceCount": 5,
         "PushDescriptor" : false,
         "BindingResources": [
           {
@@ -223,6 +225,84 @@
             ],
             "Type": "SAMPLER_2D",
             "Binding": 0
+          },
+          {
+            "Key": "Ao",
+            "Stage": [
+              "FRAGMENT_STAGE"
+            ],
+            "Type": "SAMPLER_2D",
+            "Binding": 1
+          },
+          {
+            "Key": "Metalness",
+            "Stage": [
+              "FRAGMENT_STAGE"
+            ],
+            "Type": "SAMPLER_2D",
+            "Binding": 2
+          },
+          {
+            "Key": "Normal",
+            "Stage": [
+              "FRAGMENT_STAGE"
+            ],
+            "Type": "SAMPLER_2D",
+            "Binding": 3
+          },
+          {
+            "Key": "Roughness",
+            "Stage": [
+              "FRAGMENT_STAGE"
+            ],
+            "Type": "SAMPLER_2D",
+            "Binding": 4
+          }
+        ]
+      },
+      {
+        "Key": "BrdfLut",
+        "ResourceCount": 1,
+        "PushDescriptor" : true,
+        "BindingResources": [
+          {
+            "Key": "BrdfLut",
+            "Stage": [
+              "COMPUTE_STAGE"
+            ],
+            "Type": "IMAGE_STORAGE",
+            "Binding": 0
+          }
+        ]
+      },
+      {
+        "Key": "Environment",
+        "ResourceCount": 3,
+        "PushDescriptor" : false,
+        "BindingResources": [
+          {
+            "Key": "Environment",
+            "Stage": [
+              "FRAGMENT_STAGE"
+            ],
+            "Type": "SAMPLER_CUBE",
+            "Binding": 0
+          },
+          {
+            "Key": "Environment",
+            "Stage": [
+              "FRAGMENT_STAGE"
+            ],
+            "Type": "SAMPLER_CUBE",
+            "Binding": 1
+          },
+          {
+            "Key": "Environment",
+            "Stage": [
+              "FRAGMENT_STAGE"
+            ],
+            "Type": "SAMPLER_2D",
+            "Binding": 2
           }
         ]
       }
@@ -232,11 +312,12 @@
         "Key": "MeshShaderPipeline",
         "IsCompute": false,
         "PushConstantRangesCount": 1,
-        "NumerOfDescriptorSets": 4,
+        "NumerOfDescriptorSets": 5,
         "Renderpass": "basic",
         "VertexAttributeCount": 0,
         "PipelineLayoutDescriptors": [
           "ViewProjection",
+          "Environment",
           "Transforms",
           "Meshlets",
           "Material"
@@ -244,7 +325,8 @@
         "PushConstants": {
           "Stage": [
             "MESH_STAGE",
-            "TASK_STAGE"
+            "TASK_STAGE",
+            "COMPUTE_STAGE"
           ],
           "Size" : 80,
           "Offset" : 0
@@ -331,6 +413,28 @@
           "ResourcesCount": 1,
           "Source": "resources\\Shaders\\spirv\\occlusion.comp.spv"
         }
+      },
+      {
+        "Key": "BrdfLutGen",
+        "IsCompute": true,
+        "PushConstantRangesCount": 0,
+        "NumerOfDescriptorSets": 1,
+        "PipelineLayoutDescriptors": ["BrdfLut"],
+        "PushConstants": {},
+        "Builtin": true,
+        "Shader": {
+          "Type": "Compute",
+          "ResourcesCount": 1,
+          "Source": "resources\\Shaders\\spirv\\brdflutgen.comp.spv"
+        },
+        "BindingResources": [
+          {
+            "Key": "BrdfLut",
+            "Stage": [ "COMPUTE_STAGE" ],
+            "Type": "IMAGE_STORAGE",
+            "Binding": 0
+          }
+        ]
       }
     ]
   }

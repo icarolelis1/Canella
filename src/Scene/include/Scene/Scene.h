@@ -52,6 +52,10 @@ namespace Canella {
          */
         Entity& create_root_parented_entity();
 
+        Entity& copy_entity(std::shared_ptr<Entity> entity);
+
+        void batch_models_in_hierarchy(std::shared_ptr<Entity> entity);
+
         std::unique_ptr<Canella::Entity> root;
         CameraComponent * main_camera;
         entt::registry registry;

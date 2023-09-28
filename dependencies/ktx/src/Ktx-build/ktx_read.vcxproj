@@ -1,0 +1,399 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{6AB1D5FF-05FD-3F5B-9D43-06746EB76273}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.22000.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>ktx_read</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ktx_read.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ktx_read</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ktx_read.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ktx_read</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">ktx_read.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">ktx_read</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">ktx_read.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">ktx_read</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\include;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\other_include;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\dfdutils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CallingConvention>StdCall</CallingConvention>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_DEBUG;DEBUG;LIBKTX;BASISD_SUPPORT_KTX2_ZSTD=0;BASISD_SUPPORT_KTX2=1;BASISD_SUPPORT_FXT1=0;KTX_API=__declspec(dllexport);BASISU_NO_ITERATOR_DEBUG_LEVEL;KTX_FEATURE_KTX1;KTX_FEATURE_KTX2;CMAKE_INTDIR="Debug";ktx_read_EXPORTS</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;DEBUG;LIBKTX;BASISD_SUPPORT_KTX2_ZSTD=0;BASISD_SUPPORT_KTX2=1;BASISD_SUPPORT_FXT1=0;KTX_API=__declspec(dllexport);BASISU_NO_ITERATOR_DEBUG_LEVEL;KTX_FEATURE_KTX1;KTX_FEATURE_KTX2;CMAKE_INTDIR=\"Debug\";ktx_read_EXPORTS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\include;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\other_include;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\dfdutils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\include;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\other_include;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\dfdutils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>D:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build/Debug/ktx_read.lib</ImportLibrary>
+      <ModuleDefinitionFile>D:/Tools/glTF-IBL-Sampler/thirdparty/KTX-Software/lib/internalexport.def</ModuleDefinitionFile>
+      <ProgramDataBaseFile>D:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build/Debug/ktx_read.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\include;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\other_include;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\dfdutils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;LIBKTX;BASISD_SUPPORT_KTX2_ZSTD=0;BASISD_SUPPORT_KTX2=1;BASISD_SUPPORT_FXT1=0;KTX_API=__declspec(dllexport);BASISU_NO_ITERATOR_DEBUG_LEVEL;KTX_FEATURE_KTX1;KTX_FEATURE_KTX2;CMAKE_INTDIR="Release";ktx_read_EXPORTS</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;LIBKTX;BASISD_SUPPORT_KTX2_ZSTD=0;BASISD_SUPPORT_KTX2=1;BASISD_SUPPORT_FXT1=0;KTX_API=__declspec(dllexport);BASISU_NO_ITERATOR_DEBUG_LEVEL;KTX_FEATURE_KTX1;KTX_FEATURE_KTX2;CMAKE_INTDIR=\"Release\";ktx_read_EXPORTS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\include;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\other_include;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\dfdutils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\include;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\other_include;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\dfdutils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>D:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build/Release/ktx_read.lib</ImportLibrary>
+      <ModuleDefinitionFile>D:/Tools/glTF-IBL-Sampler/thirdparty/KTX-Software/lib/internalexport.def</ModuleDefinitionFile>
+      <ProgramDataBaseFile>D:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build/Release/ktx_read.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\include;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\other_include;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\dfdutils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;LIBKTX;BASISD_SUPPORT_KTX2_ZSTD=0;BASISD_SUPPORT_KTX2=1;BASISD_SUPPORT_FXT1=0;KTX_API=__declspec(dllexport);BASISU_NO_ITERATOR_DEBUG_LEVEL;KTX_FEATURE_KTX1;KTX_FEATURE_KTX2;CMAKE_INTDIR="MinSizeRel";ktx_read_EXPORTS</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;LIBKTX;BASISD_SUPPORT_KTX2_ZSTD=0;BASISD_SUPPORT_KTX2=1;BASISD_SUPPORT_FXT1=0;KTX_API=__declspec(dllexport);BASISU_NO_ITERATOR_DEBUG_LEVEL;KTX_FEATURE_KTX1;KTX_FEATURE_KTX2;CMAKE_INTDIR=\"MinSizeRel\";ktx_read_EXPORTS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\include;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\other_include;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\dfdutils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\include;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\other_include;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\dfdutils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>D:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build/MinSizeRel/ktx_read.lib</ImportLibrary>
+      <ModuleDefinitionFile>D:/Tools/glTF-IBL-Sampler/thirdparty/KTX-Software/lib/internalexport.def</ModuleDefinitionFile>
+      <ProgramDataBaseFile>D:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build/MinSizeRel/ktx_read.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\include;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\other_include;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\dfdutils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;LIBKTX;BASISD_SUPPORT_KTX2_ZSTD=0;BASISD_SUPPORT_KTX2=1;BASISD_SUPPORT_FXT1=0;KTX_API=__declspec(dllexport);BASISU_NO_ITERATOR_DEBUG_LEVEL;KTX_FEATURE_KTX1;KTX_FEATURE_KTX2;CMAKE_INTDIR="RelWithDebInfo";ktx_read_EXPORTS</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;LIBKTX;BASISD_SUPPORT_KTX2_ZSTD=0;BASISD_SUPPORT_KTX2=1;BASISD_SUPPORT_FXT1=0;KTX_API=__declspec(dllexport);BASISU_NO_ITERATOR_DEBUG_LEVEL;KTX_FEATURE_KTX1;KTX_FEATURE_KTX2;CMAKE_INTDIR=\"RelWithDebInfo\";ktx_read_EXPORTS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\include;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\other_include;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\dfdutils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\include;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\other_include;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\dfdutils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>D:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build/RelWithDebInfo/ktx_read.lib</ImportLibrary>
+      <ModuleDefinitionFile>D:/Tools/glTF-IBL-Sampler/thirdparty/KTX-Software/lib/internalexport.def</ModuleDefinitionFile>
+      <ProgramDataBaseFile>D:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build/RelWithDebInfo/ktx_read.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule D:/Tools/glTF-IBL-Sampler/thirdparty/KTX-Software/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"D:\Program Files\CMake\bin\cmake.exe" -SD:/Tools/glTF-IBL-Sampler/thirdparty/KTX-Software -BD:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build --check-stamp-file D:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\Program Files\CMake\share\cmake-3.26\Modules\BasicConfigVersion-SameMajorVersion.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCCompiler.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCCompilerABI.c;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCXXCompiler.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCXXCompilerABI.cpp;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCXXInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCommonLanguageInclude.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCompilerIdDetection.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDependentOption.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCXXCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompileFeatures.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompilerABI.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompilerId.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineRCCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineSystem.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeFindBinUtils.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeGenericSystem.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeInitializeConfigs.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeLanguageInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakePackageConfigHelpers.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseImplicitIncludeInfo.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseImplicitLinkInfo.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseLibraryArchitecture.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeRCCompiler.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeRCInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystem.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInitialize.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestCCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestCXXCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestCompilerCommon.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestRCCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CPack.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CPackComponent.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CTest.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CTestUseLaunchers.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ADSP-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ARMCC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ARMClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\AppleClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Borland-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Bruce-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\CMakeCommonCompilerMacros.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Clang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Clang-DetermineCompilerInternal.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Comeau-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Compaq-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Compaq-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Cray-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Embarcadero-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Fujitsu-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\FujitsuClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\GHS-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\GNU-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\GNU-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\HP-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\HP-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IAR-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IBMCPP-C-DetermineVersionInternal.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IBMCPP-CXX-DetermineVersionInternal.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IBMClang-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IBMClang-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Intel-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IntelLLVM-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\LCC-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\LCC-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-C.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-CXX.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\NVHPC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\NVIDIA-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\OpenWatcom-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\PGI-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\PathScale-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SCO-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SDCC-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SunPro-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SunPro-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\TI-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Tasking-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\TinyCC-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\VisualAge-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\VisualAge-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Watcom-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\XL-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\XL-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\XLClang-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\XLClang-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\zOS-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\zOS-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CompilerId\VS-10.vcxproj.in;D:\Program Files\CMake\share\cmake-3.26\Modules\FindCygwin.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\FindGit.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\FindMsys.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\FindPackageHandleStandardArgs.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\FindPackageMessage.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\FindPerl.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\GNUInstallDirs.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Internal\FeatureTesting.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-Determine-CXX.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC-C.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC-CXX.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\WindowsPaths.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\WriteBasicConfigVersionFile.cmake;D:\Program Files\CMake\share\cmake-3.26\Templates\CPackConfig.cmake.in;D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\CMakeFiles\3.26.0\CMakeCCompiler.cmake;D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\CMakeFiles\3.26.0\CMakeCXXCompiler.cmake;D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\CMakeFiles\3.26.0\CMakeRCCompiler.cmake;D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\CMakeFiles\3.26.0\CMakeSystem.cmake;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\cmake\cputypetest.cmake;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\cmake\mkvk.cmake;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\cmake\modules\FindBash.cmake;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\cmake\modules\GetGitRevisionDescription.cmake;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\cmake\version.cmake;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\cmake\xcode.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule D:/Tools/glTF-IBL-Sampler/thirdparty/KTX-Software/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"D:\Program Files\CMake\bin\cmake.exe" -SD:/Tools/glTF-IBL-Sampler/thirdparty/KTX-Software -BD:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build --check-stamp-file D:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\Program Files\CMake\share\cmake-3.26\Modules\BasicConfigVersion-SameMajorVersion.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCCompiler.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCCompilerABI.c;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCXXCompiler.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCXXCompilerABI.cpp;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCXXInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCommonLanguageInclude.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCompilerIdDetection.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDependentOption.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCXXCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompileFeatures.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompilerABI.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompilerId.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineRCCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineSystem.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeFindBinUtils.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeGenericSystem.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeInitializeConfigs.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeLanguageInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakePackageConfigHelpers.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseImplicitIncludeInfo.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseImplicitLinkInfo.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseLibraryArchitecture.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeRCCompiler.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeRCInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystem.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInitialize.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestCCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestCXXCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestCompilerCommon.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestRCCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CPack.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CPackComponent.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CTest.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CTestUseLaunchers.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ADSP-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ARMCC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ARMClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\AppleClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Borland-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Bruce-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\CMakeCommonCompilerMacros.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Clang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Clang-DetermineCompilerInternal.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Comeau-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Compaq-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Compaq-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Cray-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Embarcadero-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Fujitsu-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\FujitsuClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\GHS-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\GNU-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\GNU-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\HP-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\HP-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IAR-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IBMCPP-C-DetermineVersionInternal.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IBMCPP-CXX-DetermineVersionInternal.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IBMClang-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IBMClang-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Intel-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IntelLLVM-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\LCC-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\LCC-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-C.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-CXX.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\NVHPC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\NVIDIA-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\OpenWatcom-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\PGI-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\PathScale-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SCO-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SDCC-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SunPro-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SunPro-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\TI-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Tasking-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\TinyCC-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\VisualAge-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\VisualAge-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Watcom-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\XL-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\XL-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\XLClang-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\XLClang-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\zOS-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\zOS-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CompilerId\VS-10.vcxproj.in;D:\Program Files\CMake\share\cmake-3.26\Modules\FindCygwin.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\FindGit.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\FindMsys.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\FindPackageHandleStandardArgs.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\FindPackageMessage.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\FindPerl.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\GNUInstallDirs.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Internal\FeatureTesting.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-Determine-CXX.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC-C.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC-CXX.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\WindowsPaths.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\WriteBasicConfigVersionFile.cmake;D:\Program Files\CMake\share\cmake-3.26\Templates\CPackConfig.cmake.in;D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\CMakeFiles\3.26.0\CMakeCCompiler.cmake;D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\CMakeFiles\3.26.0\CMakeCXXCompiler.cmake;D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\CMakeFiles\3.26.0\CMakeRCCompiler.cmake;D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\CMakeFiles\3.26.0\CMakeSystem.cmake;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\cmake\cputypetest.cmake;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\cmake\mkvk.cmake;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\cmake\modules\FindBash.cmake;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\cmake\modules\GetGitRevisionDescription.cmake;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\cmake\version.cmake;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\cmake\xcode.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule D:/Tools/glTF-IBL-Sampler/thirdparty/KTX-Software/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"D:\Program Files\CMake\bin\cmake.exe" -SD:/Tools/glTF-IBL-Sampler/thirdparty/KTX-Software -BD:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build --check-stamp-file D:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\Program Files\CMake\share\cmake-3.26\Modules\BasicConfigVersion-SameMajorVersion.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCCompiler.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCCompilerABI.c;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCXXCompiler.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCXXCompilerABI.cpp;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCXXInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCommonLanguageInclude.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCompilerIdDetection.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDependentOption.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCXXCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompileFeatures.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompilerABI.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompilerId.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineRCCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineSystem.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeFindBinUtils.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeGenericSystem.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeInitializeConfigs.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeLanguageInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakePackageConfigHelpers.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseImplicitIncludeInfo.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseImplicitLinkInfo.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseLibraryArchitecture.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeRCCompiler.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeRCInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystem.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInitialize.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestCCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestCXXCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestCompilerCommon.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestRCCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CPack.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CPackComponent.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CTest.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CTestUseLaunchers.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ADSP-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ARMCC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ARMClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\AppleClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Borland-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Bruce-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\CMakeCommonCompilerMacros.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Clang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Clang-DetermineCompilerInternal.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Comeau-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Compaq-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Compaq-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Cray-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Embarcadero-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Fujitsu-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\FujitsuClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\GHS-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\GNU-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\GNU-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\HP-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\HP-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IAR-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IBMCPP-C-DetermineVersionInternal.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IBMCPP-CXX-DetermineVersionInternal.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IBMClang-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IBMClang-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Intel-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IntelLLVM-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\LCC-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\LCC-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-C.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-CXX.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\NVHPC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\NVIDIA-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\OpenWatcom-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\PGI-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\PathScale-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SCO-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SDCC-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SunPro-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SunPro-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\TI-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Tasking-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\TinyCC-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\VisualAge-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\VisualAge-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Watcom-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\XL-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\XL-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\XLClang-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\XLClang-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\zOS-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\zOS-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CompilerId\VS-10.vcxproj.in;D:\Program Files\CMake\share\cmake-3.26\Modules\FindCygwin.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\FindGit.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\FindMsys.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\FindPackageHandleStandardArgs.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\FindPackageMessage.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\FindPerl.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\GNUInstallDirs.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Internal\FeatureTesting.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-Determine-CXX.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC-C.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC-CXX.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\WindowsPaths.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\WriteBasicConfigVersionFile.cmake;D:\Program Files\CMake\share\cmake-3.26\Templates\CPackConfig.cmake.in;D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\CMakeFiles\3.26.0\CMakeCCompiler.cmake;D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\CMakeFiles\3.26.0\CMakeCXXCompiler.cmake;D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\CMakeFiles\3.26.0\CMakeRCCompiler.cmake;D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\CMakeFiles\3.26.0\CMakeSystem.cmake;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\cmake\cputypetest.cmake;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\cmake\mkvk.cmake;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\cmake\modules\FindBash.cmake;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\cmake\modules\GetGitRevisionDescription.cmake;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\cmake\version.cmake;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\cmake\xcode.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule D:/Tools/glTF-IBL-Sampler/thirdparty/KTX-Software/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"D:\Program Files\CMake\bin\cmake.exe" -SD:/Tools/glTF-IBL-Sampler/thirdparty/KTX-Software -BD:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build --check-stamp-file D:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\Program Files\CMake\share\cmake-3.26\Modules\BasicConfigVersion-SameMajorVersion.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCCompiler.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCCompilerABI.c;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCXXCompiler.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCXXCompilerABI.cpp;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCXXInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCommonLanguageInclude.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCompilerIdDetection.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDependentOption.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCXXCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompileFeatures.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompilerABI.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompilerId.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineRCCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineSystem.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeFindBinUtils.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeGenericSystem.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeInitializeConfigs.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeLanguageInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakePackageConfigHelpers.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseImplicitIncludeInfo.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseImplicitLinkInfo.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseLibraryArchitecture.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeRCCompiler.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeRCInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystem.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInitialize.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestCCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestCXXCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestCompilerCommon.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestRCCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CPack.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CPackComponent.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CTest.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CTestUseLaunchers.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ADSP-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ARMCC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ARMClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\AppleClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Borland-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Bruce-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\CMakeCommonCompilerMacros.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Clang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Clang-DetermineCompilerInternal.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Comeau-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Compaq-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Compaq-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Cray-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Embarcadero-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Fujitsu-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\FujitsuClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\GHS-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\GNU-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\GNU-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\HP-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\HP-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IAR-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IBMCPP-C-DetermineVersionInternal.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IBMCPP-CXX-DetermineVersionInternal.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IBMClang-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IBMClang-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Intel-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IntelLLVM-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\LCC-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\LCC-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-C.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-CXX.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\NVHPC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\NVIDIA-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\OpenWatcom-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\PGI-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\PathScale-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SCO-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SDCC-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SunPro-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SunPro-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\TI-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Tasking-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\TinyCC-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\VisualAge-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\VisualAge-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Watcom-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\XL-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\XL-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\XLClang-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\XLClang-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\zOS-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\zOS-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CompilerId\VS-10.vcxproj.in;D:\Program Files\CMake\share\cmake-3.26\Modules\FindCygwin.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\FindGit.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\FindMsys.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\FindPackageHandleStandardArgs.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\FindPackageMessage.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\FindPerl.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\GNUInstallDirs.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Internal\FeatureTesting.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-Determine-CXX.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC-C.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC-CXX.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\WindowsPaths.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\WriteBasicConfigVersionFile.cmake;D:\Program Files\CMake\share\cmake-3.26\Templates\CPackConfig.cmake.in;D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\CMakeFiles\3.26.0\CMakeCCompiler.cmake;D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\CMakeFiles\3.26.0\CMakeCXXCompiler.cmake;D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\CMakeFiles\3.26.0\CMakeRCCompiler.cmake;D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\CMakeFiles\3.26.0\CMakeSystem.cmake;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\cmake\cputypetest.cmake;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\cmake\mkvk.cmake;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\cmake\modules\FindBash.cmake;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\cmake\modules\GetGitRevisionDescription.cmake;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\cmake\version.cmake;D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\cmake\xcode.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\include\ktx.h" />
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basis_sgd.h" />
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basis_transcode.cpp" />
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder\basisu_containers.h" />
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder\basisu_containers_impl.h" />
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder\basisu_file_headers.h" />
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder\basisu_global_selector_cb.h" />
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder\basisu_global_selector_palette.h" />
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder\basisu_transcoder_internal.h" />
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder\basisu_transcoder_uastc.h" />
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder\basisu_transcoder.cpp" />
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder\basisu_transcoder.h" />
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder\basisu.h" />
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\zstd\zstd.c" />
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\checkheader.c" />
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\dfdutils\createdfd.c" />
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\dfdutils\colourspaces.c" />
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\dfdutils\dfd.h" />
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\dfdutils\dfd2vk.inl" />
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\dfdutils\interpretdfd.c" />
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\dfdutils\printdfd.c" />
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\dfdutils\queries.c" />
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\dfdutils\vk2dfd.c" />
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\dfdutils\vulkan\vk_platform.h" />
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\dfdutils\vulkan\vulkan_core.h" />
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\etcdec.cxx" />
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\etcunpack.cxx" />
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\filestream.c" />
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\filestream.h" />
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\formatsize.h" />
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\gl_format.h" />
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\gl_funcs.c" />
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\gl_funcs.h" />
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\glloader.c" />
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\hashlist.c" />
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\info.c" />
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\ktxint.h" />
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\memstream.c" />
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\memstream.h" />
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\stream.h" />
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\strings.c" />
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\swap.c" />
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\texture.c" />
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\texture.h" />
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\texture2.c" />
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\texture2.h" />
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\uthash.h" />
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\vk_format.h" />
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\vkformat_check.c" />
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\vkformat_enum.h" />
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\vkformat_str.c" />
+    <None Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\internalexport.def" />
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\texture1.c" />
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\texture1.h" />
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\include\ktxvulkan.h" />
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\vk_funcs.c" />
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\vk_funcs.h" />
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\vkloader.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\ZERO_CHECK.vcxproj">
+      <Project>{361AA96B-A1BB-3F8D-A0EA-CB5BED2A882E}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\mkvk.vcxproj">
+      <Project>{4AFF113E-B5F7-3FC1-A4AA-E0705421C29C}</Project>
+      <Name>mkvk</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\mkvkformatfiles.vcxproj">
+      <Project>{C76D6B5B-A44D-39EE-9E3E-0E8B1451B8B2}</Project>
+      <Name>mkvkformatfiles</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

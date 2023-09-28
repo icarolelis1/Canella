@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\interface\basisu_c_binding\src\basisu_c_binding.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder\basisu_transcoder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\interface\basisu_c_binding\inc\basisu_c_binding.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\interface\basisu_c_binding\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{0ED7B33F-06D7-3332-A3BB-AFA4B3113249}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{EC0E255D-7057-3764-9467-C463F294CED3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

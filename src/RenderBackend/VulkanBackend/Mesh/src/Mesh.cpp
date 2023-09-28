@@ -167,11 +167,13 @@ void MeshProcessing::load_asset_mesh(ModelMesh &model, const ::std::string &asse
 
         for (unsigned int j = 0; j < assimp_mesh->mNumVertices; j++)
         {
-            auto v3         = glm::make_vec4(&assimp_mesh->mVertices[j].x);
-            auto uv =         glm::make_vec2(&assimp_mesh->mTextureCoords[0][j].x);
+            auto v3     = glm::make_vec4( &assimp_mesh->mVertices[j].x );
+            auto uv     = glm::make_vec2( &assimp_mesh->mTextureCoords[0][j].x );
+            auto normal             = glm::make_vec4(&assimp_mesh->mNormals[j].x);
             Vertex vertex;
             vertex.position = v3;
             vertex.uv = glm::vec4(uv.x,uv.y,1.0,1.0);
+            vertex.normal = normal;
             positions.push_back(vertex);
         }
 

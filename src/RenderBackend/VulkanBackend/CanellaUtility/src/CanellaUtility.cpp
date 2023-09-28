@@ -24,6 +24,13 @@ namespace Canella
             {
                 if (strcmp(image_format, "VK_FORMAT_B8G8R8A8_UNORM") == 0)
                     return VK_FORMAT_B8G8R8A8_UNORM;
+                else if(strcmp(image_format, "VK_FORMAT_R8G8B8A8_UNORM") == 0)
+                    return VK_FORMAT_R8G8B8A8_UNORM;
+                else if(strcmp(image_format, "VK_FORMAT_R16G16_SFLOAT") == 0)
+                    return VK_FORMAT_R16G16_SFLOAT;
+                else if(strcmp(image_format, "VK_FORMAT_R16G16B16A16_SFLOAT") == 0)
+                    return VK_FORMAT_R16G16B16A16_SFLOAT;
+
                 return VK_FORMAT_B8G8R8A8_UNORM;
             }
 
@@ -52,12 +59,14 @@ namespace Canella
             {
                 if (strcmp(layout, "VK_IMAGE_LAYOUT_PRESENT_SRC_KHR") == 0)
                     return VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-                if (strcmp(layout, "VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL") == 0)
+                else if (strcmp(layout, "VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL") == 0)
                     return VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
-                if (strcmp(layout, "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL") == 0)
+                else  if (strcmp(layout, "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL") == 0)
                     return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-                if (strcmp(layout, "VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL") == 0)
+                else if (strcmp(layout, "VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL") == 0)
                     return VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+                else if (strcmp(layout, "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL") == 0)
+                    return  VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
                 return VK_IMAGE_LAYOUT_UNDEFINED;
             }
 
@@ -83,6 +92,8 @@ namespace Canella
                     return ShaderResourceType::IMAGE_SAMPLER;
                 else if (strcmp(type, "IMAGE_STORAGE") == 0)
                     return ShaderResourceType::IMAGE_STORAGE;
+                else if (strcmp(type, "SAMPLER_CUBE") == 0)
+                    return ShaderResourceType::IMAGE_SAMPLER_CUBE;
                 return ShaderResourceType::STORAGE_BUFFER;
             }
 
@@ -99,15 +110,11 @@ namespace Canella
 
             VkShaderStageFlags read_shader_stage_from_json(nlohmann::json stages_json)
             {
-                std::vector<VkShaderStageFlagBits> shader_stages;
                 std::vector<std::string> stages = stages_json.get<std::vector<std::string>>();
-                for (auto &stage : stages)
-                    shader_stages.push_back(convert_from_string_shader_stage(stage.c_str()));
-                VkShaderStageFlagBits stages_mask = shader_stages[0];
-
-                if (shader_stages.size() > 1)
-                    return VK_SHADER_STAGE_TASK_BIT_EXT | VK_SHADER_STAGE_MESH_BIT_EXT | VK_SHADER_STAGE_COMPUTE_BIT;
-                return stages_mask;
+                VkShaderStageFlags first_stage= convert_from_string_shader_stage(stages[0].c_str());
+                for (auto i = 1; i < stages.size(); i++)
+                    first_stage |= convert_from_string_shader_stage(stages[i].c_str());;
+                return first_stage;
             }
 
             size_t get_size_of_structure(const char *structure)

@@ -1,0 +1,32 @@
+^D:\TOOLS\GLTF-IBL-SAMPLER\BUILD\KTX\SRC\KTX-BUILD\CMAKEFILES\E4CBCC0F8450F5CB68C34643A24D3CE0\VERSION.H.RULE
+setlocal
+cd D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software
+if %errorlevel% neq 0 goto :cmEnd
+D:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\Git\bin\bash.exe" -c "\"./mkversion\" \"-o\" \"version.h\" \"lib\""
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^D:\TOOLS\GLTF-IBL-SAMPLER\BUILD\KTX\SRC\KTX-BUILD\CMAKEFILES\36D73E328342216F6E3732E2C45D61B8\KTX_VERSION.RULE
+setlocal
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^D:\TOOLS\GLTF-IBL-SAMPLER\THIRDPARTY\KTX-SOFTWARE\CMAKELISTS.TXT
+setlocal
+"D:\Program Files\CMake\bin\cmake.exe" -SD:/Tools/glTF-IBL-Sampler/thirdparty/KTX-Software -BD:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build --check-stamp-file D:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

@@ -2,17 +2,6 @@ import random
 import json
 
 def generate_random_points(n, X, Z):
-    """
-    Generates random 2D points within the specified dimensions.
-
-    Args:
-        n (int): The number of random points to generate.
-        X (float): The maximum X-coordinate.
-        Z (float): The maximum Z-coordinate.
-
-    Returns:
-        list: A list of dictionaries representing random points.
-    """
     random_points = []
     for _ in range(n):
         point = {
@@ -26,16 +15,6 @@ def generate_random_points(n, X, Z):
     return random_points
 
 def write_json_file(data, filename):
-    """
-    Writes data to a JSON file.
-
-    Args:
-        data: The data to be written to the JSON file.
-        filename: The name of the JSON file to be created.
-
-    Returns:
-        bool: True if the data was successfully written, False otherwise.
-    """
     try:
         with open(filename, 'w') as json_file:
             json.dump(data, json_file, indent=4)

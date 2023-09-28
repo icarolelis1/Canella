@@ -34,7 +34,7 @@ void CameraEditor::on_update(float delta_time)
     auto &keyboard = KeyBoard::instance();
     last_x = pos.x;
     last_y = pos.y;
-    update_euler_directions( delta_time );
+    update_euler_directions(  );
 
     if (keyboard.getKeyPressed(GLFW_KEY_W))
         camera_component->entity_transform->position += camera_component->euler.front * speed * delta_time;
@@ -51,21 +51,24 @@ void CameraEditor::on_update(float delta_time)
 }
 
 
-void CameraEditor::update_euler_directions( float d ) {
+void CameraEditor::update_euler_directions() {
 
-    glm::mat4 rotate          = glm::mat4_cast( camera_component->entity_transform->orientation );
-    auto      cam_pos_flipped = camera_component->entity_transform->position * glm::vec3( 1, 1, 1 );
-    glm::mat4 translate       = glm::mat4( 1.0f );
-    //translate = glm::translate( translate, -camera_component->entity_transform->position );
+    glm::mat4 rotate          = glm::mat4_cast( glm::normalize(camera_component->entity_transform->orientation ));
+    glm::mat4 translate       = glm::mat4( 1.0f ) ;
+    translate = glm::translate( translate, -camera_component->entity_transform->position ) ;
+    camera_component->view =  rotate * translate  ;
 
-    translate = glm::translate( translate, -cam_pos_flipped );
-    camera_component->view = rotate * translate;
 
-    //camera_component->view = glm::inverse(camera_component->entity_transform->model_matrix);
-    auto inv_view   = glm::inverse(camera_component->view);
-    camera_component->euler.up    = glm::normalize( inv_view[1] );
+    auto& pos = camera_component->entity_transform->position;
+
+    //Canella::Logger::Trace("View : %f %f %f ",-camera_component->view[3].x,-camera_component->view [3].y,-camera_component->view [3].z);
+    //Canella::Logger::Trace("View : %f %f %f ",pos.x,pos.y,pos.x,pos.z);
+
+    auto inv_view   = (camera_component->view);
+
+    camera_component->euler.right =  glm::normalize( inv_view[0] );
+    camera_component->euler.up    =  glm::normalize( inv_view[1] );
     camera_component->euler.front = -glm::normalize( inv_view[2] );
-    camera_component->euler.right = glm::normalize(glm::cross( camera_component->euler.up ,camera_component->euler.front));
 }
 
 void CameraEditor::set_mouse_callbacks()
@@ -133,8 +136,8 @@ void CameraEditor::set_mouse_callbacks()
             auto vertical_delta = rotating_y - y;
             camera_component->yaw += horizontal_delta  * sensitivity;
             camera_component->pitch += vertical_delta  * sensitivity;
-            auto quat_yaw = glm::normalize(glm::angleAxis( (float)camera_component->yaw,glm::vec3(0,1,0)));
-            auto quat_pitch = glm::normalize(glm::angleAxis( camera_component->pitch ,glm::vec3(1,0,0)));
+            auto quat_yaw   = (glm::angleAxis( (float)camera_component->yaw,glm::vec3(0,1,0)));
+            auto quat_pitch = (glm::angleAxis( camera_component->pitch ,glm::vec3(1,0,0)));
 
             camera_component->entity_transform->orientation = (quat_pitch * quat_yaw );
             // Canella::Logger::Info("Event input is working %d %d",x,y);

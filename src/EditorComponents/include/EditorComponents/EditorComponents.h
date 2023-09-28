@@ -29,10 +29,9 @@ namespace Canella{
         float rotating_y;
         bool dragging_position = false;
         bool camera_rotating = false;
-        glm::vec3 camera_rotation;
         float time = 0.0f;
         void set_mouse_callbacks();
-        void update_euler_directions( float d );
+        void update_euler_directions();
 
     };
 

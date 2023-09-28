@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <ProjectOutputs>
+    <ProjectOutput>
+      <FullPath>D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\x64\Debug\ZERO_CHECK</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\x64\Debug\mkvkformatfiles</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\x64\Debug\makedfd2vk</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\x64\Debug\makevkswitch</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\x64\Debug\mkvk</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>D:\Tools\glTF-IBL-Sampler\build\Ktx\src\Ktx-build\Debug\ktx_read.dll</FullPath>
+    </ProjectOutput>
+  </ProjectOutputs>
+  <ContentFiles />
+  <SatelliteDlls />
+  <NonRecipeFileRefs />
+</Project>

@@ -1,0 +1,26 @@
+{
+  "Name" : "DefaultMaterial",
+  "Pipeline": "MeshShaderPipeline",
+  "TextureSlots": [
+    {
+      "TextureSource" : "Lama\\Rock_Albedo.png",
+      "SemanticSlot" : "Albedo"
+    },
+    {
+      "TextureSource" : "Lama\\Rock_AO.png",
+      "SemanticSlot" : "Ao"
+    },
+    {
+      "TextureSource" : "Lama\\Rock_Metalness.png",
+      "SemanticSlot" : "Metalness"
+    },
+    {
+      "TextureSource" : "Lama\\Rock_Normal.png",
+      "SemanticSlot" : "Normal"
+    },
+    {
+      "TextureSource" : "Lama\\Rock_Roughness.png",
+      "SemanticSlot" : "Roughness"
+    }
+  ]
+}

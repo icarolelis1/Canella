@@ -9,21 +9,31 @@
 #include "CanellaUtility/CanellaUtility.h"
 #include "Components/ComponentTable.hpp"
 
-namespace Canella
-{
-    struct Euler
-    {
+//Todo reduce size of structs
+//Need to refactor majority of Components Layer
+namespace Canella {
+    struct Euler {
         glm::vec3 front;
         glm::vec3 up;
         glm::vec3 right;
     };
 
-    struct Reference
-    {
+    struct Reference {
         ComponentType type;
-        uint64_t uid = 0;
+        uint64_t      uid = 0;
     };
 
+    enum LightType
+    {
+        Point,
+        Directional
+    };
+
+    struct LightComponent
+    {
+        LightType type;
+        glm::vec3 position;
+    };
 
     //Todo completely refactor this. Remove the mat4 model,list,and reference.
     //Create alternative systems to support parenting and make this struct much much smaller.

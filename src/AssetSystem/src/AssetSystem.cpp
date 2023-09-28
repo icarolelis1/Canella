@@ -4,7 +4,6 @@
 #include "JobSystem/JobSystem.h"
 #include "Render/Framework.h"
 
-
 struct LoadModelJob : Canella::JobSystem::JobDetail
 {
     LoadModelJob(Canella::ModelAssetComponent &_asset,
@@ -132,3 +131,47 @@ void Canella::AssetSystem::load_material_async( Canella::MaterialDescription mat
     JobSystem::CanellaJob job(load_job);
     JobSystem::schedule((job));
 }
+
+void Canella::AssetSystem::batch_models_in_hierarchy( std::shared_ptr<Entity> entity ) {
+
+    nlohmann::json out_put;
+    out_put["Instances"] =  nlohmann::json::array();
+    nlohmann::json &instance_ref =  out_put["Instances"] ;
+    std::string suffix = "_instances.json";
+    std::string file_name =  (entity->name.c_str() + suffix)  ;
+    std::string instance_file_name = "resources/assets/model_test/"+ file_name ;
+
+    std::ofstream o(instance_file_name);
+
+    for ( auto &child_transform: entity->get_component<TransformComponent>().children)
+    {
+        auto child_entity = child_transform->owner;
+        if(child_entity->has_component<ModelAssetComponent>())
+        {
+            nlohmann::json instance;
+            auto& transform = child_entity->get_component<TransformComponent>();
+
+            instance["Orientation"]["W"] = transform.orientation.w;
+            instance["Orientation"]["Z"] = transform.orientation.z;
+            instance["Orientation"]["Y"] = transform.orientation.y;
+            instance["Orientation"]["X"] = transform.orientation.x;
+
+            instance["Scale"]["Z"] = transform.scale.z;
+            instance["Scale"]["Y"] = transform.scale.y;
+            instance["Scale"]["X"] = transform.scale.x;
+
+            instance["Position"]["Z"] = transform.position.z;
+            instance["Position"]["Y"] = transform.position.y;
+            instance["Position"]["X"] = transform.position.x;
+            instance_ref.push_back(instance);
+        }
+    }
+    o<< std::setw(4)<<out_put.dump();
+    o.close();
+}
+
+uint64_t Canella::AssetSystem::load_ktx_cube_map( const std::string &path ) {
+    std::string full_src  = std::string(project_src) + "\\Textures\\hdr\\" + path;
+    return Canella::create_ktx_cube_map(renderer,full_src);
+}
+

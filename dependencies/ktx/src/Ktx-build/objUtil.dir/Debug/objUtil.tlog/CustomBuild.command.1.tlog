@@ -1,0 +1,10 @@
+^D:\TOOLS\GLTF-IBL-SAMPLER\THIRDPARTY\KTX-SOFTWARE\CMAKELISTS.TXT
+setlocal
+"D:\Program Files\CMake\bin\cmake.exe" -SD:/Tools/glTF-IBL-Sampler/thirdparty/KTX-Software -BD:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build --check-stamp-file D:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

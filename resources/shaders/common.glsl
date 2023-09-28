@@ -72,6 +72,7 @@ struct Vertex
 {
 	vec4 position;
 	vec4 uv;
+	vec4 normal;
 };
 
 vec3 rotateQuat(vec3 v, vec4 q)

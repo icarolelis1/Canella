@@ -61,7 +61,7 @@ namespace Canella
 
                 struct HIZDepth
                 {
-                    ResourceAccessor pyramidImage;
+                    ResourceAccessor           pyramid_image;
                     std::array<VkImageView,16> mip_views;
                     uint32_t mip_count;
                     bool visibility_first_cleared = false;

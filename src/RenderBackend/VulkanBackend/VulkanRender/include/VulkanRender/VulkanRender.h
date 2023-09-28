@@ -48,7 +48,7 @@ namespace Canella
                  * @param view view matrix
                  * @param projectin projection matrix
                  */
-                void render(glm::mat4 &view, glm::mat4 &projection) override;
+                void render(glm::mat4 &view,glm::vec3& eye,glm::mat4 &projection) override;
                 /**
                  * @brief Add a new drawable object to be rendered
                  * @param drawable object added to be rendered
@@ -95,9 +95,16 @@ namespace Canella
                  * @brief enqueue a new Mesh to be rendered
                  * @param mesh mesh to be rendered
                 */
+
                 void enqueue_drawable(ModelMesh& mesh) override;
+
                 void create_render_graph_resources() override;
+
                 void allocate_material(MaterialData& material) override;
+
+                void set_environment_maps(EnvironmentMaps& maps);
+
+
                 Event<VkCommandBuffer &, uint32_t &> OnRecordCommandEvent;
                 PFN_vkCmdDrawMeshTasksEXT vkCmdDrawMeshTasksEXT;
                 PFN_vkCmdDrawMeshTasksIndirectEXT vkCmdDrawMeshTasksIndirectEXT;
@@ -121,7 +128,9 @@ namespace Canella
                 RenderCameraData render_camera_data;
                 std::vector<std::pair<std::string,VkDescriptorSet>> raw_materials;
                 VkSampler default_sampler;
-
+                VkSampler cube_sampler;
+                ResourceAccessor brdflut;
+                VkDescriptorSet enviroment_set;
             private:
                 Surface surface;
                 std::vector<ResourceAccessor> global_buffers;
@@ -148,7 +157,8 @@ namespace Canella
                 void destroy_pipelines();
                 void setup_frames();
                 void get_device_proc();
-                void update_view_projection( glm::mat4 &view, glm::mat4 &projection, uint32_t next_image_index );
+                void generate_brdf_lut();
+                void update_view_projection( glm::mat4 &view,glm::vec3& eye, glm::mat4 &projection, uint32_t next_image_index );
                 std::mutex mutex;
                 std::mutex mutex2;
                 int8_t should_reload =  0;

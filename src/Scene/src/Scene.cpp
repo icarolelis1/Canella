@@ -3,7 +3,8 @@
 #include "Systems/Systems.h"
 #include "Render/Render.h"
 #include "CanellaUtility/CanellaUtility.h"
-
+#include "AssetSystem/AssetSystem.h"
+#include "string"
 std::uniform_int_distribution<uint64_t> uniform_distribution;
 
 Canella::Entity& Canella::Scene::CreateEntity()
@@ -87,6 +88,45 @@ Canella::Entity &Canella::Scene::create_root_parented_entity() {
     transform.parent = &root_transform;
     return *entityLibrary[entt_entity];
 
+}
+
+Canella::Entity &Canella::Scene::copy_entity( std::shared_ptr<Entity> src_copy ) {
+
+    entt::entity entt_entity = registry.create();
+    auto shared_ptr = this->shared_from_this();
+    auto entity =  std::make_shared<Entity>(entt_entity, shared_ptr);
+    entity->uuid =  uniform_distribution(random_engine);
+    entity->name = "Copied Entity"  + std::to_string(static_cast<uint32_t>(entt_entity));
+    auto& transform = entity->add_component<TransformComponent>();
+    transform.owner = entity.get();
+
+    const auto& src_transform = src_copy->get_component<TransformComponent>();
+    auto parent = src_transform.parent;
+    parent->children.push_back(&transform);
+    transform.parent = parent;
+
+    if(src_copy->has_component<ModelAssetComponent>())
+    {
+        auto& model_copy = entity->add_component<ModelAssetComponent>();
+        model_copy = src_copy->get_component<ModelAssetComponent>();
+        model_copy.mesh.model_matrix = &transform.model_matrix;
+
+        transform.position = src_transform.position;
+        transform.scale = src_transform.scale;
+        transform.orientation = src_transform.orientation;
+        transform.owner = entity.get();
+
+        auto& asset_system = Canella::AssetSystem::instance();
+        asset_system.async_load_asset(model_copy);
+    }
+
+    entityLibrary[entt_entity] = std::move(entity);
+    return *entityLibrary[entt_entity];
+}
+
+void Canella::Scene::batch_models_in_hierarchy( std::shared_ptr<Entity> entity ) {
+    auto& asset_system = Canella::AssetSystem::instance();
+    asset_system.batch_models_in_hierarchy(entity);
 }
 
 

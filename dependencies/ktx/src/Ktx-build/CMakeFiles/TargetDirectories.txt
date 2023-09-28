@@ -1,0 +1,17 @@
+D:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build/CMakeFiles/mkvkformatfiles.dir
+D:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build/CMakeFiles/makevkswitch.dir
+D:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build/CMakeFiles/makedfd2vk.dir
+D:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build/CMakeFiles/mkvk.dir
+D:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build/CMakeFiles/ktx.dir
+D:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build/CMakeFiles/ktx_read.dir
+D:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build/CMakeFiles/ktx_version.dir
+D:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build/CMakeFiles/objUtil.dir
+D:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build/CMakeFiles/PACKAGE.dir
+D:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build/CMakeFiles/INSTALL.dir
+D:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build/CMakeFiles/ALL_BUILD.dir
+D:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build/CMakeFiles/ZERO_CHECK.dir
+D:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build/interface/basisu_c_binding/CMakeFiles/obj_basisu_cbind.dir
+D:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build/interface/basisu_c_binding/CMakeFiles/PACKAGE.dir
+D:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build/interface/basisu_c_binding/CMakeFiles/INSTALL.dir
+D:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build/tests/CMakeFiles/PACKAGE.dir
+D:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build/tests/CMakeFiles/INSTALL.dir

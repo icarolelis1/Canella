@@ -47,9 +47,14 @@ namespace Canella
          */
         void DeserializeEntities(const std::shared_ptr<Canella::Scene> scene, const std::string& file_path);
 
+        /**
+         * @brief Resolve references to another entities inside components
+         * @param referenced_entity
+         */
+        void resolve_references( std::shared_ptr<Scene> referenced_entity );
+
         std::string m_ProjectFolder;
 
-        void resolve_references( std::shared_ptr<Scene> shared_ptr_1 );
     };
 }
 

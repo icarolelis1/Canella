@@ -1,0 +1,8 @@
+D:/Tools/glTF-IBL-Sampler/build/Ktx/lib/ktx.lib
+D:/Tools/glTF-IBL-Sampler/build/Ktx/bin/ktx.dll
+D:/Tools/glTF-IBL-Sampler/build/Ktx/include/ktx.h
+D:/Tools/glTF-IBL-Sampler/build/Ktx/include/ktxvulkan.h
+D:/Tools/glTF-IBL-Sampler/build/Ktx/lib/cmake/ktx/KtxTargets.cmake
+D:/Tools/glTF-IBL-Sampler/build/Ktx/lib/cmake/ktx/KtxTargets-debug.cmake
+D:/Tools/glTF-IBL-Sampler/build/Ktx/lib/cmake/ktx/KtxConfig.cmake
+D:/Tools/glTF-IBL-Sampler/build/Ktx/lib/cmake/ktx/KtxConfigVersion.cmake

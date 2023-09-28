@@ -47,7 +47,7 @@ void Canella::EditorLayer::draw_guizmos() {
 
     //inspector.build();
 
-    if (entity_changed)
+    if (false)
     {
         if(selected_entity.expired())
         {

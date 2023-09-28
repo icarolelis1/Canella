@@ -14,33 +14,34 @@ layout(local_size_x = 32 ,local_size_y = 1 , local_size_z = 1 ) in;
 
 layout (set = 0 ,binding = 0) uniform UBO 
 {
-	mat4 view_projection;
-	vec4 eye;
-
+    mat4 view_projection;
+    vec4 eye;
+    mat4 projection;
+    mat4 view;
 } ubo;
 
-layout(std430,set = 1 ,binding = 0) readonly  buffer Model_Matrices
+layout(std430,set = 2 ,binding = 0) readonly  buffer Model_Matrices
 {
 	mat4 model_matrices[];
 };
 
 
-layout(set = 2 ,binding = 0)readonly  buffer Meshlets
+layout(set = 3 ,binding = 0)readonly  buffer Meshlets
 {
 	Meshlet meshlets[];
 };
 
-layout(set = 2 ,binding = 2)readonly  buffer Bounds
+layout(set = 3 ,binding = 2)readonly  buffer Bounds
 {
 	MeshletBound bounds[];
 };
 
-layout( set = 2 ,binding = 5) readonly buffer MeshDrawCommand
+layout( set = 3 ,binding = 5) readonly buffer MeshDrawCommand
 {
 	IndirectDrawDispatch draw_commands[];
 };
 
-layout( set = 2 ,binding = 6) readonly buffer MeshData
+layout( set = 3 ,binding = 6) readonly buffer MeshData
 {
 	StaticMeshData static_meshes[];
 };

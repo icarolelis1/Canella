@@ -58,6 +58,7 @@ namespace Canella
 
             void create_render_query(RenderQueries& renderQueries,Device* device,uint32_t time_stamps_count);
 
+            //Todo remove tthis
 			namespace initializers
 			{
 

@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basis_transcode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder\basisu_transcoder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\zstd\zstd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\checkheader.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\dfdutils\createdfd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\dfdutils\colourspaces.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\dfdutils\interpretdfd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\dfdutils\printdfd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\dfdutils\queries.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\dfdutils\vk2dfd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\etcdec.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\etcunpack.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\filestream.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\gl_funcs.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\glloader.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\hashlist.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\info.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\memstream.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\strings.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\swap.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\texture.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\texture2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\vkformat_check.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\vkformat_str.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\texture1.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\vk_funcs.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\vkloader.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\include\ktx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basis_sgd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder\basisu_containers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder\basisu_containers_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder\basisu_file_headers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder\basisu_global_selector_cb.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder\basisu_global_selector_palette.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder\basisu_transcoder_internal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder\basisu_transcoder_uastc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder\basisu_transcoder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\basisu\transcoder\basisu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\dfdutils\dfd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\dfdutils\dfd2vk.inl">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\dfdutils\vulkan\vk_platform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\dfdutils\vulkan\vulkan_core.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\filestream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\formatsize.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\gl_format.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\gl_funcs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\ktxint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\memstream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\stream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\texture2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\uthash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\vk_format.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\vkformat_enum.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\texture1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\include\ktxvulkan.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\vk_funcs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software\lib\internalexport.def">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{14B0E372-63C8-3A46-B8B3-91B7F3378D4C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{0ED7B33F-06D7-3332-A3BB-AFA4B3113249}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{EC0E255D-7057-3764-9467-C463F294CED3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

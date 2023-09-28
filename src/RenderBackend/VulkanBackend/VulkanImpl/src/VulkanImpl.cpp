@@ -20,13 +20,18 @@
                                                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
      }
 
-     uint64_t create_texture( VulkanBackend::VulkanRender *renderer,const std::string &file ) {
+     uint64_t create_texture( VulkanBackend::VulkanRender *renderer,const std::string &file,VkFormat format ) {
          auto &resource_manager = renderer->resources_manager;
-         return resource_manager.create_texture(file,&renderer->device, VK_FORMAT_R8G8B8A8_UNORM);
+         return resource_manager.create_texture(file,&renderer->device, format);
      }
 
      void allocate_material_data( MaterialData &material, VulkanBackend::VulkanRender *render ) {
          render->allocate_material(material);
+     }
+
+     uint64_t create_ktx_cube_map( VulkanBackend::VulkanRender* renderer,const std::string& path ) {
+         auto &resource_manager = renderer->resources_manager;
+         return resource_manager.create_cube_map( path );
      }
  }
 

@@ -63,7 +63,8 @@ namespace Canella
                 void create_frame_buffer(Swapchain* swapchain,
                                          ResourcesManager* resource_manager,
                                          nlohmann::json& frame_buffers_meta,
-                                         RenderpassManager& renderpass_manager);
+                                         RenderpassManager& renderpass_manager,
+                                         bool match_swapchain_targets_count = true);
 
                 /**
                  * @brief creates the image output attachments for the renderpass

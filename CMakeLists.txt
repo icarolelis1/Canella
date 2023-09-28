@@ -70,7 +70,13 @@ file (GLOB EDITOR_SRC
 add_executable(${PROJECT_NAME}  main.cpp
        ${EDITOR_SRC} src/EditorComponents/src/EditorComponents.cpp)
 
-target_link_directories(${PROJECT_NAME} PUBLIC $ENV{VULKAN_SDK}/Lib ${GLFW_LIB}  ${OS_LIBS_DIR}/assimp/lib/ ${OS_LIBS_DIR}/metis/lib/)
+target_link_directories(${PROJECT_NAME} PUBLIC
+        $ENV{VULKAN_SDK}/Lib
+        ${GLFW_LIB}
+        ${OS_LIBS_DIR}/assimp/lib/
+        ${OS_LIBS_DIR}/metis/lib/
+        ${OS_LIBS_DIR}/Ktx
+        )
 
 
 #Setup Imgui
@@ -81,6 +87,7 @@ add_library(ImGUI  ${IMGUI_SRC} src/ImGUI/ImCoolbar.cpp)
 include_directories(${PROJECT_NAME} PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/nlhoman
   ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/entt
+  ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/ktx/include
   ${GLFW_INCLUDE_DIRS}
   ${LIBS_DIR}/glm/include
   $ENV{VULKAN_SDK}/Include
@@ -103,8 +110,10 @@ IF(WIN32)
     assimp-vc143-mtd
     ImGUI
     metis
+    Ktx
     )
 
+#todo add Linux support
 ELSEIF(UNIX)
   target_link_libraries(${PROJECT_NAME} PRIVATE
     ${GLFW_LIB}

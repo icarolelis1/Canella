@@ -99,7 +99,7 @@ namespace Canella
                       VkMemoryPropertyFlags properties,
                       uint32_t num_mips = 1,
                       VkImageAspectFlags aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT,
-                      uint32_t arrayLayers = 1,
+                      uint32_t array_layers = 1,
                       VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT);
 
                 ~Image() override;
@@ -167,6 +167,9 @@ namespace Canella
 
 
                 ResourceAccessor create_texture(const std::string& file_path,Device* device,VkFormat format);
+
+
+                ResourceAccessor create_cube_map( const std::string& path );
 
                 void generate_mips(std::shared_ptr<Image> image,VkCommandBuffer command,uint32_t width,uint32_t height,uint32_t mip_levels);
 

@@ -1,0 +1,40 @@
+^D:\TOOLS\GLTF-IBL-SAMPLER\BUILD\KTX\SRC\KTX-BUILD\CMAKEFILES\E2CAA363ADE71E497CA560B61CF5D6C6\VKFORMAT_ENUM.H.RULE
+setlocal
+cd D:\Tools\glTF-IBL-Sampler\thirdparty\KTX-Software
+if %errorlevel% neq 0 goto :cmEnd
+D:
+if %errorlevel% neq 0 goto :cmEnd
+"D:\Program Files\CMake\bin\cmake.exe" -E make_directory lib
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\Git\bin\bash.exe" -c "VULKAN_SDK= lib/mkvkformatfiles lib"
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\Git\bin\bash.exe" -c "unix2dos D:/Tools/glTF-IBL-Sampler/thirdparty/KTX-Software/lib/vkformat_enum.h"
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\Git\bin\bash.exe" -c "unix2dos D:/Tools/glTF-IBL-Sampler/thirdparty/KTX-Software/lib/vkformat_check.c"
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\Git\bin\bash.exe" -c "unix2dos D:/Tools/glTF-IBL-Sampler/thirdparty/KTX-Software/lib/vkformat_str.c"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^D:\TOOLS\GLTF-IBL-SAMPLER\BUILD\KTX\SRC\KTX-BUILD\CMAKEFILES\36D73E328342216F6E3732E2C45D61B8\MKVKFORMATFILES.RULE
+setlocal
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^D:\TOOLS\GLTF-IBL-SAMPLER\THIRDPARTY\KTX-SOFTWARE\CMAKELISTS.TXT
+setlocal
+"D:\Program Files\CMake\bin\cmake.exe" -SD:/Tools/glTF-IBL-Sampler/thirdparty/KTX-Software -BD:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build --check-stamp-file D:/Tools/glTF-IBL-Sampler/build/Ktx/src/Ktx-build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

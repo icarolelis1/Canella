@@ -1,1 +1,310 @@
-{"Scene":{"Entities":[{"Components":[{"Orientation":{"w":1.0,"x":0.0,"y":0.0,"z":0.0},"Position":{"x":0.0,"y":0.0,"z":0.0},"References":[{"Entity":0,"Type":"ComponentType::Transform"}],"Rotation":{"x":0.0,"y":-0.0,"z":0.0},"Scale":{"x":1.0,"y":1.0,"z":1.0},"type":"Transform"},{"InstanceCount":1,"InstanceData":"model_test/wakfu_characters_yugo_instances.json","Source":"model_test/scene.glb","Static":true,"UID":0,"type":"MeshAsset"}],"Name":"Chrysal\u0000s","Parent":"Root","UUID":9223372036854775808},{"Components":[{"Orientation":{"w":0.7000361680984497,"x":-0.6832430958747864,"y":-0.1443651020526886,"z":-0.14929789304733276},"Position":{"x":0.0,"y":0.0,"z":0.0},"References":[{"Entity":0,"Type":"ComponentType::Transform"}],"Rotation":{"x":-88.4525375366211,"y":-23.9622859954834,"z":-0.7370492815971375},"Scale":{"x":1.0,"y":1.0,"z":1.0},"type":"Transform"},{"InstanceCount":1,"InstanceData":"model_test/grass_instances.json","Source":"model_test/grass.glb","Static":true,"UID":0,"type":"MeshAsset"}],"Name":"Grass\u0000s","Parent":"Root","UUID":0},{"Components":[{"Orientation":{"w":0.9750863313674927,"x":0.01305553037673235,"y":-0.22141477465629578,"z":-0.002964543178677559},"Position":{"x":0.0,"y":0.0,"z":-3.925671100616455},"References":[{"Entity":0,"Type":"ComponentType::Transform"}],"Rotation":{"x":1.700905442237854,"y":-25.576749801635742,"z":-0.7344917058944702},"Scale":{"x":3.392913818359375,"y":1.7999999523162842,"z":5.286454677581787},"type":"Transform"},{"InstanceCount":1,"InstanceData":"model_test/wakfu_characters_yugo_instances.json","Source":"model_test/ground.glb","Static":true,"UID":0,"type":"MeshAsset"}],"Name":"Ground","Parent":"Root","UUID":0},{"Components":[{"Orientation":{"w":0.6851847767829895,"x":-0.6950250864028931,"y":-0.03607894480228424,"z":-0.21484968066215515},"Position":{"x":4.104076385498047,"y":0.0,"z":0.0},"References":[{"Entity":0,"Type":"ComponentType::Transform"}],"Rotation":{"x":-88.08808898925781,"y":-20.370746612548828,"z":-15.10376262664795},"Scale":{"x":1.2160406112670898,"y":3.2749276161193848,"z":3.550443172454834},"type":"Transform"},{"InstanceCount":1,"InstanceData":"model_test/rock_instances.json","Source":"model_test/rock_photogrammetry_scan.glb","Static":true,"UID":0,"type":"MeshAsset"}],"Name":"Rock","Parent":"Root","UUID":18446744073709551615},{"Components":[{"Fovy":0.0,"Pitch":90.84638214111328,"UID":0,"Yaw":25.189416885375977,"Zfar":0.0,"Znear":0.0,"type":"Camera"},{"Orientation":{"w":0.1294853687286377,"x":0.991176426410675,"y":0.003670316655188799,"z":0.0280953086912632},"Position":{"x":1.242321252822876,"y":2.2809669971466064,"z":-5.212610721588135},"References":[{"Entity":0,"Type":"ComponentType::Transform"}],"Rotation":{"x":165.09146118164063,"y":-3.138187885284424,"z":0.8350344300270081},"Scale":{"x":1.0,"y":1.0,"z":1.0},"type":"Transform"},{"UID":0,"type":"CameraEditor"}],"Name":"Camera","Parent":"Root","UUID":5290263814667214259},{"Components":[{"Orientation":{"w":1.0,"x":0.0,"y":0.0,"z":0.0},"Position":{"x":0.0,"y":0.0,"z":0.0},"References":[{"Entity":9223372036854775808,"Type":"ComponentType::Transform"}],"Rotation":{"x":0.0,"y":-0.0,"z":0.0},"Scale":{"x":1.0,"y":1.0,"z":1.0},"type":"Transform"}],"Name":"Dumy\u0000y5","Parent":"Root","UUID":273239709227517024},{"Components":[{"Orientation":{"w":1.0,"x":0.0,"y":0.0,"z":0.0},"Position":{"x":0.0,"y":0.0,"z":0.0},"References":[{"Entity":0,"Type":"ComponentType::Transform"}],"Rotation":{"x":0.0,"y":-0.0,"z":0.0},"Scale":{"x":1.0,"y":1.0,"z":1.0},"type":"Transform"}],"Name":"Collect","Parent":"Root","UUID":15292366785786917798},{"Components":[{"Orientation":{"w":1.0,"x":0.0,"y":0.0,"z":0.0},"Position":{"x":0.0,"y":0.0,"z":0.0},"References":[{"Entity":15292366785786917798,"Type":"ComponentType::Transform"}],"Rotation":{"x":0.0,"y":-0.0,"z":0.0},"Scale":{"x":1.0,"y":1.0,"z":1.0},"type":"Transform"}],"Name":"item1\u00007","Parent":"Root","UUID":13178550988158910440},{"Components":[{"Orientation":{"w":1.0,"x":0.0,"y":0.0,"z":0.0},"Position":{"x":0.0,"y":0.0,"z":0.0},"References":[{"Entity":15292366785786917798,"Type":"ComponentType::Transform"}],"Rotation":{"x":0.0,"y":-0.0,"z":0.0},"Scale":{"x":1.0,"y":1.0,"z":1.0},"type":"Transform"}],"Name":"item2\u0000\u0000","Parent":"Root","UUID":10061619528887069750}]}}
+{
+  "Scene": {
+    "Entities": [
+      {
+        "Components": [
+          {
+            "Orientation": {
+              "w": 1.0,
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "Position": {
+              "x": 0.0,
+              "y": -0.1448322832584381,
+              "z": 2.5278725624084473
+            },
+            "References": [
+              {
+                "Entity": 0,
+                "Type": "ComponentType::Transform"
+              }
+            ],
+            "Rotation": {
+              "x": 0.0,
+              "y": -0.0,
+              "z": 0.0
+            },
+            "Scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "type": "Transform"
+          },
+          {
+            "InstanceCount": 1,
+            "InstanceData": "model_test/grass_instances.json",
+            "Source": "model_test/cube.glb",
+            "Static": true,
+            "UID": 0,
+            "type": "MeshAsset"
+          }
+        ],
+        "Name": "Chrysal\u0000s",
+        "Parent": "Root",
+        "UUID": 9223372036854775808
+      },
+      {
+        "Components": [
+          {
+            "Orientation": {
+              "w": 0.7000361680984497,
+              "x": -0.6832430958747864,
+              "y": -0.1443651020526886,
+              "z": -0.14929789304733276
+            },
+            "Position": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "References": [
+              {
+                "Entity": 0,
+                "Type": "ComponentType::Transform"
+              }
+            ],
+            "Rotation": {
+              "x": -88.4525375366211,
+              "y": -23.9622859954834,
+              "z": -0.7370492815971375
+            },
+            "Scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "type": "Transform"
+          },
+          {
+            "InstanceCount": 1,
+            "InstanceData": "model_test/grass_instances.json",
+            "Source": "model_test/grass.glb",
+            "Static": true,
+            "UID": 0,
+            "type": "MeshAsset"
+          }
+        ],
+        "Name": "Grass\u0000s",
+        "Parent": "Root",
+        "UUID": 0
+      },
+      {
+        "Components": [
+          {
+            "Orientation": {
+              "w": 0.9750863313674927,
+              "x": 0.01305553037673235,
+              "y": -0.22141477465629578,
+              "z": -0.002964543178677559
+            },
+            "Position": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": -3.925671100616455
+            },
+            "References": [
+              {
+                "Entity": 0,
+                "Type": "ComponentType::Transform"
+              }
+            ],
+            "Rotation": {
+              "x": 1.700905442237854,
+              "y": -25.576749801635742,
+              "z": -0.7344917058944702
+            },
+            "Scale": {
+              "x": 3.392913818359375,
+              "y": 1.7999999523162842,
+              "z": 5.286454677581787
+            },
+            "type": "Transform"
+          },
+          {
+            "InstanceCount": 1,
+            "InstanceData": "model_test/grass_instances.json",
+            "Source": "model_test/ground.glb",
+            "Static": true,
+            "UID": 0,
+            "type": "MeshAsset"
+          }
+        ],
+        "Name": "Ground",
+        "Parent": "Root",
+        "UUID": 0
+      },
+      {
+        "Components": [
+          {
+            "Orientation": {
+              "w": 0.13339848816394806,
+              "x": -0.341416597366333,
+              "y": 0.6784079074859619,
+              "z": 0.6367117166519165
+            },
+            "Position": {
+              "x": -6.667915344238281,
+              "y": 1.4653923511505127,
+              "z": 0.0
+            },
+            "References": [
+              {
+                "Entity": 0,
+                "Type": "ComponentType::Transform"
+              }
+            ],
+            "Rotation": {
+              "x": 101.24175262451172,
+              "y": 38.007545471191406,
+              "z": -158.14089965820313
+            },
+            "Scale": {
+              "x": 1.129027009010315,
+              "y": 3.2749276161193848,
+              "z": 3.550443172454834
+            },
+            "type": "Transform"
+          },
+          {
+            "InstanceCount": 1,
+            "InstanceData": "model_test/rock_instances.json",
+            "Source": "model_test/rock_photogrammetry_scan.glb",
+            "Static": true,
+            "UID": 0,
+            "type": "MeshAsset"
+          }
+        ],
+        "Name": "Rock",
+        "Parent": "Root",
+        "UUID": 18446744073709551615
+      },
+      {
+        "Components": [
+          {
+            "Fovy": 0.0,
+            "Pitch": 90.65625762939453,
+            "UID": 0,
+            "Yaw": 25.732751846313477,
+            "Zfar": 0.0,
+            "Znear": 0.0,
+            "type": "Camera"
+          },
+          {
+            "Orientation": {
+              "w": 0.21310842037200928,
+              "x": 0.9312624931335449,
+              "y": 0.06592340022325516,
+              "z": 0.2880786657333374
+            },
+            "Position": {
+              "x": 2.852304220199585,
+              "y": 2.062696695327759,
+              "z": -2.3577637672424316
+            },
+            "References": [
+              {
+                "Entity": 0,
+                "Type": "ComponentType::Transform"
+              }
+            ],
+            "Rotation": {
+              "x": 149.66465759277344,
+              "y": -30.561054229736328,
+              "z": 16.569808959960938
+            },
+            "Scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "type": "Transform"
+          },
+          {
+            "UID": 0,
+            "type": "CameraEditor"
+          }
+        ],
+        "Name": "Camera",
+        "Parent": "Root",
+        "UUID": 5290263814667214259
+      },
+      {
+        "Components": [
+          {
+            "Orientation": {
+              "w": 1.0,
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "Position": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "References": [
+              {
+                "Entity": 9223372036854775808,
+                "Type": "ComponentType::Transform"
+              }
+            ],
+            "Rotation": {
+              "x": 0.0,
+              "y": -0.0,
+              "z": 0.0
+            },
+            "Scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "type": "Transform"
+          }
+        ],
+        "Name": "Dumy\u0000y5",
+        "Parent": "Root",
+        "UUID": 273239709227517024
+      },
+      {
+        "Components": [
+          {
+            "Orientation": {
+              "w": 1.0,
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "Position": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "References": [
+              {
+                "Entity": 0,
+                "Type": "ComponentType::Transform"
+              }
+            ],
+            "Rotation": {
+              "x": 0.0,
+              "y": -0.0,
+              "z": 0.0
+            },
+            "Scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "type": "Transform"
+          }
+        ],
+        "Name": "Collect",
+        "Parent": "Root",
+        "UUID": 15292366785786917798
+      }
+    ]
+  }
+}

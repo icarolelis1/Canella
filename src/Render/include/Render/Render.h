@@ -49,6 +49,7 @@ namespace Canella
     {
         glm::vec4 position;
         glm::vec4 uv;
+        glm::vec4 normal;
     };
 
     struct SphereBoundingVolume
@@ -96,6 +97,11 @@ namespace Canella
         std::string name;
     };
 
+    struct EnvironmentMaps
+    {
+        uint64_t irradiance;
+        uint64_t specular;
+    };
 
     struct ModelMesh
     {
@@ -132,7 +138,7 @@ namespace Canella
         virtual void enqueue_drawables(Drawables &) = 0;
         virtual void create_render_graph_resources() = 0;
         virtual void enqueue_drawable(ModelMesh& ) = 0;
-        virtual void render(glm::mat4 &, glm::mat4 &) = 0;
+        virtual void render(glm::mat4 &,glm::vec3&, glm::mat4 &) = 0;
         virtual void allocate_material(MaterialData& material) = 0;
         virtual Drawables &get_drawables() = 0;
         OnOutputStatsEvent * display_render_stats_event;
